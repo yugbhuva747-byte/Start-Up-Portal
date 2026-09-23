@@ -14,6 +14,11 @@ $activeSessions = 0;
 $error = '';
 $flash = get_flash();
 
+$twoFactorRec = null;
+$backupCodesRemaining = 0;
+$newlyGeneratedCodes = $_SESSION['new_backup_codes'] ?? null;
+unset($_SESSION['new_backup_codes']);
+
 if ($db) {
     // Fetch categories
     $categories = $db->query("SELECT * FROM categories ORDER BY name ASC")->fetchAll();
@@ -28,6 +33,10 @@ if ($db) {
     
     // Active sessions count
     $activeSessions = (int)$db->query("SELECT COUNT(*) FROM login_sessions WHERE last_active_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)")->fetchColumn();
+
+    // 2FA Details
+    $twoFactorRec = get_2fa_record($user['id']);
+    $backupCodesRemaining = get_remaining_backup_codes_count($user['id']);
 }
 
 // Handle POST actions
@@ -37,6 +46,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
     } else {
         $action = $_POST['form_action'] ?? '';
         
+        if ($action === 'generate_backup_codes') {
+            $plainCodes = generate_2fa_backup_codes($user['id'], 5);
+            $_SESSION['new_backup_codes'] = $plainCodes;
+            set_flash('success', '5 new emergency backup recovery codes generated. Please store them securely!');
+            header('Location: ' . url('admin/settings.php'));
+            exit;
+        }
+
+        if ($action === 'reset_totp_qr') {
+            reset_admin_totp($user['id']);
+            set_flash('info', 'Mobile Authenticator has been reset. Please scan the new QR code with your mobile app.');
+            header('Location: ' . url('auth/setup_2fa.php'));
+            exit;
+        }
+
+        if ($action === 'toggle_2fa') {
+            $newState = (int)($_POST['enable_2fa'] ?? 1);
+            $db->prepare("UPDATE two_factor_auth SET is_enabled = ? WHERE user_id = ?")->execute([$newState, $user['id']]);
+            log_security_event($user['id'], $newState ? '2FA_ENFORCED' : '2FA_RELAXED', 'high', 'Admin 2FA enforcement policy modified');
+            log_audit($user['id'], $newState ? '2FA_POLICY_ENABLE' : '2FA_POLICY_DISABLE', 'two_factor_auth', $user['id']);
+            set_flash('success', 'Two-Factor Authentication policy updated.');
+            header('Location: ' . url('admin/settings.php'));
+            exit;
+        }
+
         if ($action === 'add_category') {
             $catName = trim($_POST['cat_name'] ?? '');
             $catSlug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $catName));
@@ -130,7 +164,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             </div>
 
             <!-- Platform Info -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="card-clean rounded-xl p-4">
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Platform</div>
                     <div class="text-sm font-bold text-slate-900"><?= APP_NAME ?></div>
@@ -151,6 +185,119 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                     <div class="text-sm font-bold text-slate-900"><?= DB_NAME ?></div>
                     <div class="text-[10px] text-slate-500 mt-0.5"><?= DB_HOST ?>:<?= DB_PORT ?></div>
                 </div>
+                <div class="card-clean rounded-xl p-4">
+                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Admin 2FA Status</div>
+                    <div class="text-sm font-bold text-emerald-600 flex items-center space-x-1.5">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                        <span><?= !empty($twoFactorRec['is_enabled']) ? 'Enforced' : 'Optional' ?></span>
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-0.5"><?= $backupCodesRemaining ?> recovery code<?= $backupCodesRemaining === 1 ? '' : 's' ?> active</div>
+                </div>
+            </div>
+
+            <!-- Two-Factor Authentication (2FA) Administration Card -->
+            <div class="card-clean rounded-2xl p-6 border-indigo-100 bg-gradient-to-br from-white via-indigo-50/20 to-white">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                    <div class="flex items-start space-x-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-indigo-600/20">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h3 class="text-sm font-bold text-slate-900">Mobile Authenticator (2FA) Security Control</h3>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">
+                                    <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'Active & Enforced' : 'Setup Required' ?>
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-0.5">Time-based One-Time Password (TOTP RFC 6238) paired with Google Authenticator / Microsoft Authenticator on your mobile phone.</p>
+                        </div>
+                    </div>
+
+                    <!-- Policy Toggle & Re-scan QR -->
+                    <div class="flex items-center space-x-2">
+                        <form method="POST" class="inline-flex items-center">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="reset_totp_qr">
+                            <button type="submit" class="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition flex items-center space-x-1.5" title="Re-scan QR code on a new phone">
+                                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
+                                <span>Re-scan QR Code</span>
+                            </button>
+                        </form>
+
+                        <form method="POST" class="inline-flex items-center">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="toggle_2fa">
+                            <input type="hidden" name="enable_2fa" value="<?= !empty($twoFactorRec['is_enabled']) ? '0' : '1' ?>">
+                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' ?>">
+                                <i data-lucide="<?= !empty($twoFactorRec['is_enabled']) ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
+                                <span><?= !empty($twoFactorRec['is_enabled']) ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 2FA Details & Recovery Codes Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
+                    <!-- Method -->
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Method</div>
+                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>Google / Microsoft Authenticator</span>
+                        </div>
+                        <div class="text-[10px] text-slate-500 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
+                    </div>
+
+                    <!-- Recovery Status -->
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
+                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                            <i data-lucide="key" class="w-3.5 h-3.5 text-purple-600"></i>
+                            <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1">Single-use emergency recovery codes</div>
+                    </div>
+
+                    <!-- Generate Codes Button -->
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Backup Codes</div>
+                            <div class="text-[11px] font-semibold text-slate-700">Regenerate 5 new codes</div>
+                        </div>
+                        <form method="POST" class="inline" onsubmit="return confirm('Generating new backup codes will invalidate any existing unused codes. Proceed?')">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="generate_backup_codes">
+                            <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
+                                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                                <span>Generate</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Newly Generated Codes Banner (Shown when generated) -->
+                <?php if (!empty($newlyGeneratedCodes)): ?>
+                    <div class="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
+                                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                                <span>Save Your Emergency Recovery Codes</span>
+                            </div>
+                            <button type="button" onclick="copyBackupCodes()" class="px-2 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold transition flex items-center space-x-1">
+                                <i data-lucide="copy" class="w-3 h-3"></i>
+                                <span id="copyBackupBtnText">Copy All Codes</span>
+                            </button>
+                        </div>
+                        <p class="text-[11px] text-amber-700 mb-3">Store these single-use codes safely. Each code can be used only once if you cannot access your 6-digit OTP code.</p>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="backupCodesContainer">
+                            <?php foreach ($newlyGeneratedCodes as $code): ?>
+                                <div class="px-3 py-1.5 rounded-lg bg-white border border-amber-200 font-mono text-center text-xs font-bold tracking-wider text-slate-800 shadow-2xs">
+                                    <?= htmlspecialchars($code) ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -332,6 +479,19 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <script>
         lucide.createIcons();
         gsap.from("#settings-main > *", { duration: 0.5, y: 15, opacity: 0, stagger: 0.08, ease: "power2.out" });
+
+        function copyBackupCodes() {
+            const container = document.getElementById('backupCodesContainer');
+            if (!container) return;
+            const codes = Array.from(container.children).map(el => el.textContent.trim()).join("\n");
+            navigator.clipboard.writeText(codes).then(() => {
+                const btnText = document.getElementById('copyBackupBtnText');
+                if (btnText) {
+                    btnText.textContent = 'Copied to Clipboard!';
+                    setTimeout(() => { btnText.textContent = 'Copy All Codes'; }, 2500);
+                }
+            });
+        }
     </script>
 </body>
 </html>

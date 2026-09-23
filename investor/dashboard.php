@@ -90,6 +90,9 @@ $flash = get_flash();
                 </div>
             <?php endif; ?>
 
+            <!-- Live Platform Announcements & Regulatory Bulletins -->
+            <?php include __DIR__ . '/../includes/announcement_banner.php'; ?>
+
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>

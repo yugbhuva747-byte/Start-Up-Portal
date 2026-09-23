@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `investment_orders` (
     FOREIGN KEY (`investor_user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- 11. Confirmed Investments
+-- 11. Confirmed Investments & Share Allotments
 CREATE TABLE IF NOT EXISTS `investments` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `order_id` INT NOT NULL,
@@ -177,7 +177,15 @@ CREATE TABLE IF NOT EXISTS `investments` (
     `company_id` INT NOT NULL,
     `amount_invested` DECIMAL(15,2) NOT NULL,
     `equity_allotted_percent` DECIMAL(6,3) DEFAULT 1.250,
+    `number_of_shares` INT NOT NULL DEFAULT 1000,
+    `price_per_share` DECIMAL(15,2) NOT NULL DEFAULT 100.00,
+    `distinctive_from` INT DEFAULT 1,
+    `distinctive_to` INT DEFAULT 1000,
+    `share_class` VARCHAR(100) DEFAULT 'Series Seed Compulsorily Convertible Preference Shares (CCPS)',
+    `folio_number` VARCHAR(50) DEFAULT 'FOLIO-001',
     `certificate_number` VARCHAR(100) NULL,
+    `verification_token` VARCHAR(64) NULL,
+    `allotment_status` ENUM('allotted', 'certificate_issued', 'transferred', 'cancelled') DEFAULT 'certificate_issued',
     `confirmed_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`order_id`) REFERENCES `investment_orders`(`id`) ON DELETE CASCADE,
@@ -372,4 +380,67 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 25. Platform Invoices & GST Commission Settlements
+CREATE TABLE IF NOT EXISTS `platform_invoices` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `invoice_number` VARCHAR(50) NOT NULL UNIQUE,
+    `company_id` INT NOT NULL,
+    `funding_round_id` INT NOT NULL,
+    `gross_amount_raised` DECIMAL(15,2) NOT NULL,
+    `commission_rate_percent` DECIMAL(5,2) DEFAULT 3.00,
+    `commission_amount` DECIMAL(15,2) NOT NULL,
+    `tech_fee` DECIMAL(15,2) DEFAULT 25000.00,
+    `subtotal` DECIMAL(15,2) NOT NULL,
+    `gst_rate_percent` DECIMAL(5,2) DEFAULT 18.00,
+    `gst_amount` DECIMAL(15,2) NOT NULL,
+    `total_payable` DECIMAL(15,2) NOT NULL,
+    `settlement_status` ENUM('UNSETTLED', 'SETTLED', 'PROCESSING', 'WAIVED') DEFAULT 'SETTLED',
+    `payment_mode` VARCHAR(50) DEFAULT 'Deducted from Escrow Disbursement',
+    `settled_at` DATETIME NULL,
+    `invoice_date` DATE NOT NULL,
+    `notes` TEXT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`funding_round_id`) REFERENCES `funding_rounds`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 26. Platform Broadcasts & Compliance Announcements
+CREATE TABLE IF NOT EXISTS `broadcasts` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `admin_user_id` INT NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `message` TEXT NOT NULL,
+    `priority` ENUM('urgent', 'compliance', 'update', 'opportunity') DEFAULT 'update',
+    `target_audience` ENUM('all', 'founder', 'investor', 'pending_kyc') DEFAULT 'all',
+    `show_banner` TINYINT(1) DEFAULT 1,
+    `cta_label` VARCHAR(100) NULL,
+    `cta_url` VARCHAR(255) NULL,
+    `image_url` VARCHAR(255) NULL,
+    `recipients_count` INT DEFAULT 0,
+    `is_active` TINYINT(1) DEFAULT 1,
+    `expires_at` DATETIME NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`admin_user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 27. Two-Factor Authentication (2FA) for Admin & High-Security Accounts
+CREATE TABLE IF NOT EXISTS `two_factor_auth` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL UNIQUE,
+    `auth_type` ENUM('email_otp', 'authenticator', 'sms') DEFAULT 'authenticator',
+    `secret_code` VARCHAR(255) NULL,
+    `current_otp` VARCHAR(10) NULL,
+    `otp_expires_at` DATETIME NULL,
+    `attempts` INT DEFAULT 0,
+    `backup_codes` TEXT NULL,
+    `is_enabled` TINYINT(1) DEFAULT 1,
+    `is_totp_setup` TINYINT(1) DEFAULT 0,
+    `last_verified_at` DATETIME NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 

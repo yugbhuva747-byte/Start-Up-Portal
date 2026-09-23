@@ -303,8 +303,17 @@ $flash = get_flash();
                                         <td class="py-3"><span class="font-bold text-indigo-600 text-xs"><?= $inv['equity_allotted_percent'] ?>%</span></td>
                                         <td class="py-3 text-slate-600 text-[11px]"><?= format_inr($inv['valuation'] ?? 0) ?></td>
                                         <td class="py-3">
-                                            <div class="font-mono text-indigo-600 font-semibold text-[11px]"><?= htmlspecialchars($inv['certificate_number'] ?? 'CERT-PENDING') ?></div>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($inv['transaction_ref'] ?? '') ?></div>
+                                            <div class="flex items-center space-x-1.5">
+                                                <span class="font-mono text-slate-800 font-semibold text-[11px]"><?= htmlspecialchars($inv['certificate_number'] ?? 'CERT-PENDING') ?></span>
+                                            </div>
+                                            <div class="mt-1 flex items-center space-x-2">
+                                                <a href="<?= url('certificate.php?id=' . $inv['id']) ?>" target="_blank" 
+                                                   class="inline-flex items-center space-x-1 px-2 py-0.5 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold border border-indigo-200 transition">
+                                                    <i data-lucide="download" class="w-3 h-3 text-indigo-600"></i>
+                                                    <span>Download</span>
+                                                </a>
+                                                <span class="text-[9.5px] text-slate-400 font-mono"><?= htmlspecialchars($inv['transaction_ref'] ?? '') ?></span>
+                                            </div>
                                         </td>
                                         <td class="py-3"><?= render_status_badge($inv['round_status']) ?></td>
                                         <td class="py-3 text-slate-500 text-[11px]"><?= date('d M Y', strtotime($inv['confirmed_at'])) ?></td>

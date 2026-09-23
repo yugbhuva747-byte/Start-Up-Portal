@@ -7,7 +7,15 @@ require_once __DIR__ . '/../config.php';
 
 if (auth_check()) {
     $u = current_user();
-    $redirect = match($u['role']) {
+    if ($u && $u['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int)$u['id'])) {
+        if (!is_admin_totp_setup((int)$u['id'])) {
+            header('Location: ' . url('auth/setup_2fa.php'));
+            exit;
+        }
+        header('Location: ' . url('auth/verify_2fa.php'));
+        exit;
+    }
+    $redirect = match($u['role'] ?? '') {
         'founder' => 'founder/dashboard.php',
         'investor' => 'investor/dashboard.php',
         'admin' => 'admin/dashboard.php',
@@ -39,6 +47,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($user && password_verify($password, $user['password_hash'])) {
                     if ($user['status'] === 'suspended') {
                         $error = 'Your account has been suspended. Please contact portal compliance.';
+                    } elseif ($user['role'] === 'admin' && is_admin_2fa_enforced((int)$user['id'])) {
+                        // Admin 2FA Verification Flow
+                        unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_name'], $_SESSION['2fa_verified']);
+                        $_SESSION['2fa_pending_user_id'] = (int)$user['id'];
+                        $_SESSION['2fa_pending_email'] = $user['email'];
+                        $_SESSION['2fa_pending_role'] = $user['role'];
+                        $_SESSION['2fa_pending_name'] = $user['name'];
+
+                        if (!is_admin_totp_setup((int)$user['id'])) {
+                            header('Location: ' . url('auth/setup_2fa.php'));
+                            exit;
+                        }
+
+                        header('Location: ' . url('auth/verify_2fa.php'));
+                        exit;
                     } else {
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['user_role'] = $user['role'];

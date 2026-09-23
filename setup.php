@@ -38,6 +38,9 @@ try {
         $stmt->execute(['Portal Compliance Admin', 'admin@portal.com', '+91 9876543210', $passwordHash, 'admin', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80']);
         $adminId = $db->lastInsertId();
 
+        // Initialize Admin 2FA
+        $db->prepare("INSERT INTO two_factor_auth (user_id, auth_type, is_enabled, created_at) VALUES (?, 'email_otp', 1, NOW())")->execute([$adminId]);
+
         $stmt->execute(['Aarav Sharma', 'founder@techpulse.io', '+91 9123456780', $passwordHash, 'founder', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80']);
         $founder1Id = $db->lastInsertId();
 

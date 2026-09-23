@@ -25,6 +25,11 @@ if ($db) {
             </a>
         <?php endif; ?>
 
+        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[10.5px] text-emerald-700 font-semibold" title="Session authenticated via Two-Factor Verification">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+            <span>2FA Verified</span>
+        </div>
+
         <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10.5px] text-slate-600 font-medium">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>Platform Secure</span>

@@ -146,17 +146,22 @@ $flash = get_flash();
                 </div>
             <?php endif; ?>
 
+            <!-- Live Platform Announcements & Regulatory Bulletins -->
+            <?php include __DIR__ . '/../includes/announcement_banner.php'; ?>
+
             <!-- Welcome Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
                     <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
                         <span>Welcome, <?= htmlspecialchars($user['name']) ?></span>
                     </h1>
-                    <p class="text-xs text-slate-500 mt-0.5">
-                        Managing <span class="text-indigo-600 font-bold"><?= $company ? htmlspecialchars($company['name']) : 'Your Startup' ?></span> • <?= $company ? htmlspecialchars($company['industry']) : 'Setup in progress' ?>
-                    </p>
+                   
                 </div>
                 <div class="flex items-center space-x-2">
+                    <a href="<?= url('founder/cap_table.php') ?>" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                        <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <span>Cap Table</span>
+                    </a>
                     <a href="<?= url('founder/view.php') ?>" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
                         <span>View Public Profile</span>

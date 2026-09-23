@@ -64,6 +64,12 @@ $founderProgress = get_profile_progress($founderUser['id'], 'founder');
                 <span>Funding Rounds</span>
             </a>
 
+            <a href="<?= url('founder/cap_table.php') ?>" 
+               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'cap_table.php' ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                <i data-lucide="pie-chart" class="w-4 h-4 <?= $currentPage === 'cap_table.php' ? 'text-indigo-600' : 'text-slate-400' ?>"></i>
+                <span>Cap Table & Equity</span>
+            </a>
+
             <a href="<?= url('founder/verification.php') ?>" 
                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'verification.php' ? 'bg-indigo-50 text-indigo-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
                 <i data-lucide="shield-check" class="w-4 h-4 <?= $currentPage === 'verification.php' ? 'text-indigo-600' : 'text-slate-400' ?>"></i>

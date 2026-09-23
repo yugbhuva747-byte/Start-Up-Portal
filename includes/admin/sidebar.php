@@ -62,10 +62,22 @@ $adminUser = current_user();
                 <span>Startup Companies</span>
             </a>
 
+            <a href="<?= url('admin/share_allotments.php') ?>" 
+               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'share_allotments.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                <i data-lucide="award" class="w-4 h-4 <?= $currentPage === 'share_allotments.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
+                <span>Share Allotments</span>
+            </a>
+
             <a href="<?= url('admin/transactions.php') ?>" 
                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'transactions.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
                 <i data-lucide="banknote" class="w-4 h-4 <?= $currentPage === 'transactions.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
                 <span>Transactions & Escrow</span>
+            </a>
+
+            <a href="<?= url('admin/revenue.php') ?>" 
+               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'revenue.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                <i data-lucide="receipt" class="w-4 h-4 <?= $currentPage === 'revenue.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
+                <span>Revenue & Commissions</span>
             </a>
 
             <a href="<?= url('admin/audit_logs.php') ?>" 
@@ -78,6 +90,12 @@ $adminUser = current_user();
                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'reports.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
                 <i data-lucide="bar-chart-3" class="w-4 h-4 <?= $currentPage === 'reports.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
                 <span>Reports & Analytics</span>
+            </a>
+
+            <a href="<?= url('admin/broadcasts.php') ?>" 
+               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'broadcasts.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                <i data-lucide="megaphone" class="w-4 h-4 <?= $currentPage === 'broadcasts.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
+                <span>Platform Broadcasts</span>
             </a>
 
             <a href="<?= url('admin/settings.php') ?>" 
