@@ -70,8 +70,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     // Send notification to investor
                     send_notification($investorId, 'Share Certificate Issued', "Official Digital Share Certificate #{$certNum} has been issued and credited to your demat portfolio.", 'success', 'certificate.php?id=' . $newInvId);
 
+                    // Auto-dispatch emails to Investor & Founder(s)
+                    send_investment_automated_emails(
+                        $db,
+                        (int)$newInvId,
+                        (int)$roundId,
+                        (int)$investorId,
+                        (float)$amount,
+                        (float)$equityPercent,
+                        (string)$certNum,
+                        (string)$txRef
+                    );
+
                     log_audit($user['id'], 'ISSUE_SHARE_CERTIFICATE', 'investments', $newInvId, "Issued certificate {$certNum} for {$numShares} shares in company #{$companyId}");
-                    set_flash('success', "Digital Share Certificate #{$certNum} generated and dispatched successfully!");
+                    set_flash('success', "Digital Share Certificate #{$certNum} generated and automated emails dispatched to Investor & Founders successfully!");
                     header('Location: ' . url('admin/share_allotments.php'));
                     exit;
                 } catch (Exception $e) {

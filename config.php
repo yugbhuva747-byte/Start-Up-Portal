@@ -58,6 +58,17 @@ if (!empty($env['APP_URL'])) {
 define('BASE_URL', $baseUrl);
 define('ROOT_PATH', __DIR__);
 
-// Include database & helpers
+// Mail Configuration
+define('MAIL_MAILER', $env['MAIL_MAILER'] ?? 'mail');
+define('MAIL_HOST', $env['MAIL_HOST'] ?? ($env['SMTP_HOST'] ?? ''));
+define('MAIL_PORT', (int)($env['MAIL_PORT'] ?? ($env['SMTP_PORT'] ?? 587)));
+define('MAIL_USERNAME', $env['MAIL_USERNAME'] ?? ($env['SMTP_USER'] ?? ''));
+define('MAIL_PASSWORD', $env['MAIL_PASSWORD'] ?? ($env['SMTP_PASS'] ?? ''));
+define('MAIL_ENCRYPTION', $env['MAIL_ENCRYPTION'] ?? 'tls');
+define('MAIL_FROM_ADDRESS', $env['MAIL_FROM_ADDRESS'] ?? 'notifications@startupportal.com');
+define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? APP_NAME);
+
+// Include database, helpers & mailer
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/mailer.php';

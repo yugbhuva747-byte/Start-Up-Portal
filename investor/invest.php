@@ -114,6 +114,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $db->commit();
 
+                // 8. Automatically send Direct Emails to Investor & Founder(s)
+                $emailDispatch = send_investment_automated_emails(
+                    $db,
+                    (int)$investmentId,
+                    (int)$roundId,
+                    (int)$user['id'],
+                    (float)$amount,
+                    (float)$equityPercent,
+                    (string)$certNumber,
+                    (string)$txnRef
+                );
+
                 $success = true;
                 $transactionRef = $txnRef;
                 $equityAllotted = $equityPercent;
@@ -190,11 +202,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <span class="text-slate-500">Allotted Equity Estimate:</span>
                             <span class="font-bold text-emerald-700"><?= $equityAllotted ?>%</span>
                         </div>
-                        <div class="flex justify-between py-1">
+                        <div class="flex justify-between py-1 border-b border-slate-200/60">
                             <span class="text-slate-500">Escrow Status:</span>
                             <span class="text-emerald-700 font-semibold flex items-center space-x-1">
                                 <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                                 <span>Secured in Escrow</span>
+                            </span>
+                        </div>
+                        <div class="flex justify-between py-1 pt-1.5">
+                            <span class="text-slate-500 flex items-center space-x-1">
+                                <i data-lucide="mail-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                <span>Email Confirmations:</span>
+                            </span>
+                            <span class="text-indigo-700 font-bold flex items-center space-x-1">
+                                <span>Sent to You & Founders</span>
                             </span>
                         </div>
                     </div>

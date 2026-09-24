@@ -98,6 +98,12 @@ $adminUser = current_user();
                 <span>Platform Broadcasts</span>
             </a>
 
+            <a href="<?= url('admin/email_templates.php') ?>" 
+               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'email_templates.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
+                <i data-lucide="mail-check" class="w-4 h-4 <?= $currentPage === 'email_templates.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>
+                <span>Email Templates & Logs</span>
+            </a>
+
             <a href="<?= url('admin/settings.php') ?>" 
                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'settings.php' ? 'bg-purple-50 text-purple-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
                 <i data-lucide="settings" class="w-4 h-4 <?= $currentPage === 'settings.php' ? 'text-purple-600' : 'text-slate-400' ?>"></i>

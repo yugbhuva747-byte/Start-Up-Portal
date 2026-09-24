@@ -442,5 +442,18 @@ CREATE TABLE IF NOT EXISTS `two_factor_auth` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 28. Automated Email Delivery Logs
+CREATE TABLE IF NOT EXISTS `email_logs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `recipient_email` VARCHAR(191) NOT NULL,
+    `recipient_name` VARCHAR(150) NULL,
+    `subject` VARCHAR(255) NOT NULL,
+    `template_type` VARCHAR(100) NOT NULL DEFAULT 'general',
+    `body_html` LONGTEXT NOT NULL,
+    `status` ENUM('sent', 'logged', 'failed') NOT NULL DEFAULT 'logged',
+    `error_message` TEXT NULL,
+    `sent_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
