@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <!-- Form Card -->
-        <div class="card-clean rounded-2xl p-6 md:p-8">
+        <div class="card-clean rounded-2xl p-4 sm:p-6 md:p-8">
             <form action="<?= url('auth/onboarding.php') ?>" method="POST" class="space-y-5 text-xs">
                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
 

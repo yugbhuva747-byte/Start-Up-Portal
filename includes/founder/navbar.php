@@ -18,14 +18,19 @@ if ($db) {
     $unreadCount = (int)$cStmt->fetchColumn();
 }
 ?>
-<header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur-md px-6 flex items-center justify-between sticky top-0 z-20">
-    <div class="flex items-center space-x-3">
-        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center space-x-2">
-            <span><?= $pageTitle ?? 'Founder Workspace' ?></span>
+<header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+    <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <!-- Hamburger Menu Button (Mobile & Tablet) -->
+        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0" aria-label="Open sidebar menu">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center space-x-2 truncate">
+            <span class="truncate"><?= $pageTitle ?? 'Founder Workspace' ?></span>
         </h2>
     </div>
 
-    <div class="flex items-center space-x-3">
+    <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
         <!-- Status Indicator -->
         <div class="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs">
             <span class="w-1.5 h-1.5 rounded-full <?= $currentUser['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>

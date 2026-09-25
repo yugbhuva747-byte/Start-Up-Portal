@@ -141,7 +141,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
 
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -215,14 +215,14 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
                     <!-- Policy Toggle & Re-scan QR -->
                     <div class="flex items-center space-x-2">
-                        <form method="POST" class="inline-flex items-center">
+                        <!-- <form method="POST" class="inline-flex items-center">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="reset_totp_qr">
                             <button type="submit" class="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition flex items-center space-x-1.5" title="Re-scan QR code on a new phone">
                                 <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
                                 <span>Re-scan QR Code</span>
                             </button>
-                        </form>
+                        </form> -->
 
                         <form method="POST" class="inline-flex items-center">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">

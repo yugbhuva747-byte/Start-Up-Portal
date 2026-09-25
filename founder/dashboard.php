@@ -133,10 +133,10 @@ $flash = get_flash();
     
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="dashboard-content">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="dashboard-content">
             
             <!-- Flash notification -->
             <?php if ($flash): ?>
@@ -155,18 +155,17 @@ $flash = get_flash();
                     <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
                         <span>Welcome, <?= htmlspecialchars($user['name']) ?></span>
                     </h1>
-                   
                 </div>
-                <div class="flex items-center space-x-2">
-                    <a href="<?= url('founder/cap_table.php') ?>" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="<?= url('founder/cap_table.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-indigo-600"></i>
                         <span>Cap Table</span>
                     </a>
-                    <a href="<?= url('founder/view.php') ?>" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    <a href="<?= url('founder/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
-                        <span>View Public Profile</span>
+                        <span>View Profile</span>
                     </a>
-                    <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="plus" class="w-3 h-3"></i>
                         <span>Launch Round</span>
                     </a>

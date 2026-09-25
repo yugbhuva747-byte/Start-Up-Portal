@@ -32,9 +32,9 @@ if ($db) {
 
     if ($company) {
         $compId = $company['id'];
-        $authorizedCapital = (float)($company['authorized_capital'] ?: 10000000.00);
-        $faceValue = (float)($company['face_value_per_share'] ?: 10.00);
-        $esopPercent = (float)($company['esop_pool_percent'] ?: 10.00);
+        $authorizedCapital = !empty($company['authorized_capital']) ? (float)$company['authorized_capital'] : 10000000.00;
+        $faceValue = !empty($company['face_value_per_share']) ? (float)$company['face_value_per_share'] : 10.00;
+        $esopPercent = isset($company['esop_pool_percent']) && $company['esop_pool_percent'] !== '' ? (float)$company['esop_pool_percent'] : 10.00;
 
         // 2. Fetch founders
         $fStmt = $db->prepare("
@@ -59,20 +59,6 @@ if ($db) {
         $invStmt->execute([$compId]);
         $investments = $invStmt->fetchAll();
 
-        // 4. Handle POST to update authorized capital or ESOP pool
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && verify_csrf($_POST['csrf_token'] ?? '')) {
-            $newAuthCap = (float)($_POST['authorized_capital'] ?? $authorizedCapital);
-            $newEsop = (float)($_POST['esop_pool_percent'] ?? $esopPercent);
-            $newFaceVal = (float)($_POST['face_value_per_share'] ?? $faceValue);
-
-            $upd = $db->prepare("UPDATE companies SET authorized_capital = ?, esop_pool_percent = ?, face_value_per_share = ? WHERE id = ?");
-            $upd->execute([$newAuthCap, $newEsop, $newFaceVal, $compId]);
-
-            log_audit($user['id'], 'UPDATE_CAP_TABLE_TERMS', 'companies', $compId, "Updated Authorized Cap to ₹{$newAuthCap} and ESOP to {$newEsop}%");
-            set_flash('success', 'Cap Table corporate structure updated successfully!');
-            header('Location: ' . url('founder/cap_table.php'));
-            exit;
-        }
     }
 }
 
@@ -116,7 +102,7 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
         <!-- Founder Navbar -->
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="founder-cap-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="founder-cap-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -137,32 +123,17 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
             <?php else: ?>
 
             <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
-                            Statutory MCA Register
-                        </span>
-                        <span class="text-xs text-slate-400 font-mono">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verified') ?></span>
-                    </div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1">
-                        <?= htmlspecialchars($company['name']) ?> — Master Cap Table
-                    </h1>
-                    <p class="text-xs text-slate-500">Live ownership register, share certificate tracking, and dilution modeling.</p>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                        Statutory MCA Register
+                    </span>
+                    <span class="text-xs text-slate-400 font-mono">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verified') ?></span>
                 </div>
-                
-                <div class="flex items-center space-x-2.5">
-                    <button onclick="document.getElementById('editCapModal').classList.remove('hidden')"
-                            class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
-                        <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
-                        <span>Adjust Capital & ESOP</span>
-                    </button>
-                    <button onclick="window.print()" 
-                            class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm shadow-indigo-600/20">
-                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                        <span>Export Cap Table</span>
-                    </button>
-                </div>
+                <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                    <?= htmlspecialchars($company['name']) ?> — Master Cap Table
+                </h1>
+                <p class="text-xs text-slate-500">Live ownership register, share certificate tracking, and dilution modeling.</p>
             </div>
 
             <!-- Capital Structure Summary Cards -->
@@ -351,51 +322,6 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
                 </div>
             </div>
 
-            <!-- Edit Cap Modal -->
-            <div id="editCapModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-                <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 relative">
-                    <button onclick="document.getElementById('editCapModal').classList.add('hidden')" 
-                            class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-
-                    <h3 class="text-sm font-bold text-slate-900 mb-1">Adjust Corporate Capital & ESOP Pool</h3>
-                    <p class="text-xs text-slate-500 mb-4">Update statutory Authorized Capital and employee stock option reserves.</p>
-
-                    <form method="POST" class="space-y-4 text-xs">
-                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-
-                        <div>
-                            <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Authorized Share Capital (INR)</label>
-                            <input type="number" step="1000" name="authorized_capital" value="<?= $authorizedCapital ?>" required
-                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono outline-none focus:bg-white focus:border-indigo-600">
-                        </div>
-
-                        <div>
-                            <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Face Value per Share (INR)</label>
-                            <input type="number" step="0.01" name="face_value_per_share" value="<?= $faceValue ?>" required
-                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono outline-none focus:bg-white focus:border-indigo-600">
-                        </div>
-
-                        <div>
-                            <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">ESOP Pool Allocation (%)</label>
-                            <input type="number" step="0.1" name="esop_pool_percent" value="<?= $esopPercent ?>" required
-                                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono outline-none focus:bg-white focus:border-indigo-600">
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
-                            <button type="button" onclick="document.getElementById('editCapModal').classList.add('hidden')" 
-                                    class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
-                                Cancel
-                            </button>
-                            <button type="submit" 
-                                    class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition">
-                                Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
 
             <?php endif; ?>
 

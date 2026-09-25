@@ -78,10 +78,10 @@ $flash = get_flash();
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="investor-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="investor-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -101,12 +101,12 @@ $flash = get_flash();
                     </h1>
                     <p class="text-xs text-slate-500 mt-0.5 font-medium">Accredited Angel & Syndicate Portfolio Workspace</p>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <a href="<?= url('investor/view.php') ?>" class="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="<?= url('investor/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
-                        <span>View Public Profile</span>
+                        <span>View Profile</span>
                     </a>
-                    <a href="<?= url('investor/discover.php') ?>" class="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    <a href="<?= url('investor/discover.php') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="compass" class="w-3.5 h-3.5"></i>
                         <span>Explore Startups</span>
                     </a>

@@ -63,20 +63,20 @@ if ($db) {
 
     <!-- Top Navigation -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="<?= url('index.php') ?>" class="flex items-center space-x-2.5 group">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <a href="<?= url('index.php') ?>" class="flex items-center space-x-2 sm:space-x-2.5 group">
                 <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20 group-hover:scale-105 transition">
                     <i data-lucide="zap" class="w-4 h-4"></i>
                 </div>
                 <div>
-                    <span class="text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
+                    <span class="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
                         STARTUP <span class="text-indigo-600">×</span> INVESTOR
                     </span>
-                    <span class="block text-[8.5px] tracking-widest text-slate-400 uppercase font-bold">Venture Platform</span>
+                    <span class="block text-[7.5px] sm:text-[8.5px] tracking-widest text-slate-400 uppercase font-bold">Venture Platform</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center space-x-7 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            <nav class="hidden md:flex items-center space-x-6 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <a href="#ecosystem" class="hover:text-slate-900 transition flex items-center gap-1">
                     <i data-lucide="layers" class="w-3 h-3 text-slate-400"></i>
                     <span>Ecosystem</span>
@@ -85,13 +85,17 @@ if ($db) {
                     <i data-lucide="compass" class="w-3 h-3 text-slate-400"></i>
                     <span>Live Rounds</span>
                 </a>
+                <a href="<?= url('blog.php') ?>" class="hover:text-indigo-600 transition flex items-center gap-1">
+                    <i data-lucide="book-open" class="w-3 h-3 text-slate-400"></i>
+                    <span>Insights</span>
+                </a>
                 <a href="<?= url('setup.php') ?>" class="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100">
                     <i data-lucide="database" class="w-3 h-3"></i>
-                    <span>DB Diagnostics</span>
+                    <span>Diagnostics</span>
                 </a>
             </nav>
 
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2 sm:space-x-3">
                 <?php if (auth_check()): 
                     $u = current_user();
                     $dashUrl = match($u['role']) {
@@ -101,37 +105,62 @@ if ($db) {
                         default => 'index.php'
                     };
                 ?>
-                    <a href="<?= url($dashUrl) ?>" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <span>Dashboard (<?= ucfirst($u['role']) ?>)</span>
+                    <a href="<?= url($dashUrl) ?>" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                        <span class="hidden sm:inline">Dashboard</span> (<?= ucfirst($u['role']) ?>)
                         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 <?php else: ?>
-                    <a href="<?= url('auth/login.php') ?>" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition px-2.5 py-1.5">
+                    <a href="<?= url('auth/login.php') ?>" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition px-2 py-1.5">
                         Sign In
                     </a>
-                    <a href="<?= url('auth/register.php') ?>" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    <a href="<?= url('auth/register.php') ?>" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
                         <span>Get Started</span>
                     </a>
                 <?php endif; ?>
+
+                <!-- Mobile Navigation Toggle -->
+                <button type="button" onclick="toggleMobileNav()" class="md:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition" aria-label="Toggle navigation">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
             </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-nav" class="hidden md:hidden border-t border-slate-100 bg-white/95 px-4 py-3 space-y-2 text-xs font-semibold shadow-md">
+            <a href="#ecosystem" onclick="toggleMobileNav()" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+                <i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>
+                <span>Ecosystem Architecture</span>
+            </a>
+            <a href="#discovery" onclick="toggleMobileNav()" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+                <i data-lucide="compass" class="w-4 h-4 text-slate-400"></i>
+                <span>Live Deals & Rounds</span>
+            </a>
+            <a href="<?= url('blog.php') ?>" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+                <i data-lucide="book-open" class="w-4 h-4 text-slate-400"></i>
+                <span>Insights & Stories (Blog)</span>
+            </a>
+            <a href="<?= url('setup.php') ?>" class="flex items-center space-x-2 py-2 text-indigo-600 font-bold">
+                <i data-lucide="database" class="w-4 h-4 text-indigo-500"></i>
+                <span>DB Diagnostics & Setup</span>
+            </a>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="relative pt-32 pb-16 px-6">
+    <section class="relative pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
         <div class="max-w-4xl mx-auto text-center">
             
             <!-- Verified Pill Badge -->
-            <div id="hero-badge" class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-semibold text-slate-600 mb-6 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <div id="hero-badge" class="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] sm:text-[11px] font-semibold text-slate-600 mb-6 shadow-sm max-w-full">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
                 <span class="text-emerald-700 font-bold">MCA & DigiLocker Verified</span>
-                <span class="text-slate-300">•</span>
-                <span class="text-slate-500">Two-Sided Venture Infrastructure</span>
+                <span class="text-slate-300 hidden sm:inline">•</span>
+                <span class="text-slate-500 hidden sm:inline">Two-Sided Venture Infrastructure</span>
             </div>
 
             <!-- Headline -->
-            <h1 id="hero-title" class="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 leading-[1.15] mb-4">
+            <h1 id="hero-title" class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.15] mb-4">
                 Where Verified Startups Meet <span class="text-indigo-600">Smart Capital</span>.
             </h1>
 
@@ -141,7 +170,7 @@ if ($db) {
             </p>
 
             <!-- Dual Action CTAs -->
-            <div id="hero-actions" class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14">
+            <div id="hero-actions" class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12 sm:mb-14">
                 <a href="<?= url('auth/register.php?role=founder') ?>" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm flex items-center justify-center space-x-2 transition">
                     <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
                     <span>Raise Capital as Founder</span>
@@ -154,10 +183,10 @@ if ($db) {
             </div>
 
             <!-- Stats Bar -->
-            <div id="hero-stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl mx-auto">
-                <div class="card-clean rounded-xl p-4 text-left">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Capital Facilitated</div>
-                    <div class="text-lg font-black text-slate-900"><?= format_inr($totalFundingRaised) ?>+</div>
+            <div id="hero-stats" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 max-w-3xl mx-auto">
+                <div class="card-clean rounded-xl p-3.5 sm:p-4 text-left">
+                    <div class="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Capital Facilitated</div>
+                    <div class="text-base sm:text-lg font-black text-slate-900"><?= format_inr($totalFundingRaised) ?>+</div>
                     <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">Escrow Reconciled</div>
                 </div>
 
@@ -311,7 +340,7 @@ if ($db) {
     </section>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 py-10 px-6 bg-white text-slate-500 text-xs">
+    <footer class="border-t border-slate-200 py-10 px-4 sm:px-6 bg-white text-slate-500 text-xs">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2">
                 <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
@@ -321,16 +350,30 @@ if ($db) {
                 <span class="text-slate-300">•</span>
                 <span class="text-slate-500 text-[11px]">Two-Sided Platform</span>
             </div>
-            <div class="flex items-center space-x-5 text-xs text-slate-600 font-medium">
+            <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 font-medium">
                 <a href="<?= url('auth/login.php') ?>" class="hover:text-slate-900 transition">Sign In</a>
                 <a href="<?= url('auth/register.php?role=founder') ?>" class="hover:text-slate-900 transition">Founder Portal</a>
                 <a href="<?= url('auth/register.php?role=investor') ?>" class="hover:text-slate-900 transition">Investor Portal</a>
+                <a href="<?= url('blog.php') ?>" class="hover:text-slate-900 transition">Insights & Stories</a>
                 <a href="<?= url('setup.php') ?>" class="hover:text-slate-900 text-indigo-600 transition">Diagnostics</a>
+            </div>
+        </div>
+        <div class="max-w-5xl mx-auto mt-6 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[11.5px] text-slate-400 gap-2">
+            <div>
+                &copy; <?= date('Y') ?> <?= APP_NAME ?>. All rights reserved.
+            </div>
+            <div>
+                Powered by <a href="https://socialamplifiers.com/" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-600 hover:text-indigo-800 transition underline underline-offset-2">Social Amplifiers</a>
             </div>
         </div>
     </footer>
 
     <script>
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobile-nav');
+            if (nav) nav.classList.toggle('hidden');
+        }
+
         lucide.createIcons();
         gsap.from("#hero-badge", { y: -15, opacity: 0, duration: 0.5, ease: "power2.out" });
         gsap.from("#hero-title", { y: 20, opacity: 0, duration: 0.6, ease: "power2.out", delay: 0.1 });

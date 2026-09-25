@@ -190,11 +190,66 @@ try {
         $notifStmt->execute([$founder1Id, 'Investment Confirmed!', 'Vikramaditya Singhania invested ₹25,00,000 in your Seed Round.', 'success', 'founder/funding_rounds.php']);
         $notifStmt->execute([$investor1Id, 'Allocation Allotted', 'Your investment of ₹25,00,000 in TechPulse AI has been confirmed.', 'success', 'investor/portfolio.php']);
 
+        // Seed Categories
+        $categories = [
+            ['name' => 'AI / SaaS', 'slug' => 'ai-saas', 'description' => 'Artificial intelligence, automated workflows, LLMs, and enterprise B2B software solutions.', 'icon' => 'bot'],
+            ['name' => 'FinTech', 'slug' => 'fintech', 'description' => 'Payment systems, neo-banking, cross-border remittance, lending, and algorithmic wealth tech.', 'icon' => 'wallet'],
+            ['name' => 'HealthTech', 'slug' => 'healthtech', 'description' => 'Digital therapeutics, non-invasive biomarker diagnostics, telemedicine, and medical devices.', 'icon' => 'heart-pulse'],
+            ['name' => 'CleanTech & EV', 'slug' => 'cleantech-ev', 'description' => 'Renewable energy, smart battery swapping, electric mobility, and carbon offset platforms.', 'icon' => 'zap'],
+            ['name' => 'EdTech', 'slug' => 'edtech', 'description' => 'Adaptive learning, workforce upskilling, and next-generation educational technologies.', 'icon' => 'graduation-cap'],
+            ['name' => 'DeepTech', 'slug' => 'deeptech', 'description' => 'Semiconductor design, quantum computing, robotics, and advanced materials engineering.', 'icon' => 'cpu'],
+            ['name' => 'ConsumerTech', 'slug' => 'consumertech', 'description' => 'Direct-to-consumer lifestyle brands, creator economy tools, and quick-commerce solutions.', 'icon' => 'shopping-bag'],
+            ['name' => 'AgriTech', 'slug' => 'agritech', 'description' => 'Precision drone farming, supply chain traceability, and smart greenhouse IoT hardware.', 'icon' => 'sprout'],
+        ];
+        $catStmt = $db->prepare("INSERT INTO categories (name, slug, description, icon, is_active) VALUES (?, ?, ?, ?, 1)");
+        foreach ($categories as $cat) {
+            $catStmt->execute([$cat['name'], $cat['slug'], $cat['description'], $cat['icon']]);
+        }
+
+        // Setup Admin Backup Codes (Sync with credentials.txt)
+        $plainCodes = ['25AF-4F89', '10DF-3560', 'C01A-B0D8', '3590-5208', 'EF5F-7EAF'];
+        $storageCodes = [];
+        foreach ($plainCodes as $code) {
+            $storageCodes[] = [
+                'code_hash' => password_hash(str_replace('-', '', $code), PASSWORD_DEFAULT),
+                'used' => false,
+                'used_at' => null
+            ];
+        }
+        $db->prepare("UPDATE two_factor_auth SET backup_codes = ?, auth_type = 'email_otp', is_enabled = 1, updated_at = NOW() WHERE user_id = ?")
+           ->execute([json_encode($storageCodes), $adminId]);
+
+        // Seed Company Blogs
+        $bStmt = $db->prepare("INSERT INTO company_blogs (company_id, author_user_id, title, slug, category, summary, content, cover_image, read_time_minutes, views_count, is_published, published_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NOW(), NOW())");
+        $bStmt->execute([$comp1Id, $founder1Id, 'How We Scaled Enterprise AI Contract Auditing to 15,000 Documents Daily', 'scaling-enterprise-ai-contract-auditing', 'Engineering Milestone', 'A deep dive into our hybrid multi-agent LLM pipeline, latency optimizations, and bank-grade privacy compliance.', '<p>Building automated legal risk intelligence for tier-1 financial institutions requires strict zero-data-retention guarantees combined with sub-second analysis speed.</p><p>Over the past quarter, TechPulse AI transitioned from single-shot prompts to an ensemble of specialized micro-models. Our benchmarks demonstrate a 99.4% precision rate in identifying non-standard indemnity obligations and SEBI regulatory discrepancies.</p>', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80', 4, 342]);
+        $bStmt->execute([$comp2Id, $founder2Id, 'Completing 1,200 Clinical Trials: The Future of Non-Invasive Point-of-Care Diagnostics', 'completing-clinical-trials-point-of-care-diagnostics', 'Clinical Validation', 'Our micro-spectroscopy device achieved 97.8% clinical concordance against traditional laboratory blood draws.', '<p>In our largest validation cohort to date spanning 3 hospital networks in Mumbai and Pune, the BioZenith micro-sensor demonstrated clinical equivalence to automated wet-lab analyzers in determining HbA1c and lipid profiles.</p>', 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=800&auto=format&fit=crop&q=80', 5, 518]);
+        $bStmt->execute([$comp3Id, $founder3Id, 'Zero-Grid Solar Battery Swapping: Achieving 90-Second Turnaround in Delhi NCR', 'zero-grid-solar-battery-swapping-delhi-ncr', 'Product Launch', 'How our solar micro-hubs eliminate thermal stress and offer uninterrupted 24/7 uptime for commercial two-wheeler delivery fleets.', '<p>Commercial gig delivery riders lose up to 3 hours daily waiting at traditional plug-in EV chargers. SolarisPulse replaces this downtime with modular solar-assisted swapping stations deployed near major logistic nodes.</p>', 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=800&auto=format&fit=crop&q=80', 3, 280]);
+
+        // Seed Startup Updates
+        $uStmt = $db->prepare("INSERT INTO startup_updates (company_id, founder_user_id, title, category, metrics_summary, image_url, content, visibility, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'all_investors', NOW())");
+        $uStmt->execute([$comp1Id, $founder1Id, 'Crossed ₹1.2 Cr Annualized Recurring Revenue (ARR)', 'Revenue & Growth', '₹1.2 Cr ARR • 42 Enterprise Customers • 105% Net Retention', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80', 'Delighted to share with our investors that we have reached ₹1.2 Cr ARR ahead of projections, driven by rapid customer expansion across leading fintech and insurance NBFCs.']);
+        $uStmt->execute([$comp2Id, $founder2Id, 'Filed 2 New Patents for Optical Non-Invasive Spectrometry', 'Intellectual Property', '2 Indian Patents Filed • 1 PCT International Application', 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?w=600&auto=format&fit=crop&q=80', 'Our R&D team has formally filed complete patent specifications covering our non-destructive sensor array and automated baseline calibration algorithms.']);
+
+        // Seed Broadcasts
+        $bcStmt = $db->prepare("INSERT INTO broadcasts (admin_user_id, title, message, priority, target_audience, show_banner, cta_label, cta_url, recipients_count, is_active, created_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, 1, NOW())");
+        $bcStmt->execute([$adminId, 'FY2026 Angel Tax Exemption & MCA Compliance Guidelines Released', 'All onboarded startups and accredited investors are requested to verify their updated PAN and CIN linkages in compliance with Section 56(2)(viib) regulations.', 'compliance', 'all', 'View Regulatory Circular', 'admin/compliance.php', 6]);
+        $bcStmt->execute([$adminId, 'Q3 Venture Syndicate Pitch Day Scheduled for October 15', 'Founders with active Seed or Pre-Series A rounds who have met KYC verification criteria can now request 1-on-1 breakout slots with attending venture partners.', 'opportunity', 'founder', 'Submit Pitch Request', 'founder/funding_rounds.php', 3]);
+
+        // Seed Platform Invoices
+        $invStmt = $db->prepare("INSERT INTO platform_invoices (invoice_number, company_id, funding_round_id, gross_amount_raised, commission_rate_percent, commission_amount, tech_fee, subtotal, gst_rate_percent, gst_amount, total_payable, settlement_status, payment_mode, settled_at, invoice_date, notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'SETTLED', 'Deducted from Escrow Disbursement', NOW(), CURDATE(), ?)");
+        $invStmt->execute(['INV-2026-TP-001', $comp1Id, $round1Id, 5000000.00, 3.00, 150000.00, 25000.00, 175000.00, 18.00, 31500.00, 206500.00, 'Tax invoice for 3% platform facilitation fee and digital escrow infrastructure services for Seed Round milestone 1.']);
+
+        // Seed Verification Documents
+        $vrReqId = $db->query("SELECT id FROM verification_requests WHERE company_id = {$comp1Id} LIMIT 1")->fetchColumn() ?: 1;
+        $vdStmt = $db->prepare("INSERT INTO verification_documents (verification_request_id, user_id, company_id, document_type, file_path, file_size, status, verified_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())");
+        $vdStmt->execute([$vrReqId, $founder1Id, $comp1Id, 'PAN Card', 'uploads/verifications/founder_pan_aarav.pdf', '850 KB', 'verified']);
+        $vdStmt->execute([$vrReqId, $founder1Id, $comp1Id, 'Certificate of Incorporation', 'uploads/verifications/mca_cin_techpulse.pdf', '1.4 MB', 'verified']);
+
         log_audit($founder1Id, 'CREATE_FUNDING_ROUND', 'funding_rounds', $round1Id, 'Founder created Seed Round with target ₹1,00,00,000');
         log_audit($investor1Id, 'SUBMIT_INVESTMENT_ORDER', 'investment_orders', $order1Id, 'Investor submitted order for ₹25,00,000');
         log_audit($adminId, 'VERIFY_COMPANY', 'companies', $comp1Id, 'Compliance Admin approved KYC and CIN verification for TechPulse AI');
 
-        $output[] = "✓ Seed data populated successfully with Admin, Founders, Investors, Startups & Funding Rounds.";
+        $output[] = "✓ Seed data populated successfully with Admin, Founders, Investors, Startups, Rounds, Blogs, Documents & Categories.";
     } else {
         $output[] = "✓ Database is connected and verified. Users and seed records are already initialized.";
     }

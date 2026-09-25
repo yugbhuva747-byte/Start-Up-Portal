@@ -74,10 +74,10 @@ $flash = get_flash();
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="admin-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="admin-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
@@ -94,8 +94,8 @@ $flash = get_flash();
                     </h1>
                     <p class="text-xs text-slate-500 mt-0.5">SEBI Regulatory Framework, DigiLocker Verification & Escrow Oversight</p>
                 </div>
-                <div class="flex items-center space-x-2.5">
-                    <a href="<?= url('admin/verification_queue.php') ?>" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="<?= url('admin/verification_queue.php') ?>" class="w-full sm:w-auto justify-center px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
                         <span>Process KYC Queue (<?= $pendingVerifications ?>)</span>
                     </a>

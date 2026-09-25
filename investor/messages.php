@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
         <div class="flex-1 flex overflow-hidden">
             
             <!-- Conversation Threads List -->
-            <div class="w-80 md:w-96 border-r border-slate-200 bg-white flex flex-col">
+            <div class="<?= $activeConv ? 'hidden md:flex' : 'flex' ?> w-full md:w-80 lg:w-96 border-r border-slate-200 bg-white flex-col">
                 <div class="p-4 border-b border-slate-100">
                     <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-2">Deal Conversations</h2>
                     <div class="relative">
@@ -180,14 +180,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
             </div>
 
             <!-- Active Chat Box -->
-            <div class="flex-1 flex flex-col bg-[#FAFAFB]">
+            <div class="<?= !$activeConv ? 'hidden md:flex' : 'flex' ?> flex-1 flex-col bg-[#FAFAFB]">
                 <?php if ($activeConv): ?>
                     <!-- Active Header -->
-                    <div class="h-14 px-6 border-b border-slate-200 bg-white flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
+                    <div class="h-14 px-3 sm:px-6 border-b border-slate-200 bg-white flex items-center justify-between">
+                        <div class="flex items-center space-x-2 sm:space-x-3">
+                            <a href="<?= url('investor/messages.php') ?>" class="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 transition" title="Back to discussions">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            </a>
                             <img src="<?= $activeConv['other_user_avatar'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>" class="w-8 h-8 rounded-full object-cover border border-slate-200">
                             <div>
-                                <div class="text-xs font-bold text-slate-900"><?= htmlspecialchars($activeConv['other_user_name']) ?></div>
+                                <div class="text-xs font-bold text-slate-900 truncate"><?= htmlspecialchars($activeConv['other_user_name']) ?></div>
                                 <div class="text-[10px] text-emerald-600 flex items-center space-x-1 font-semibold">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                     <span>Founder of <?= htmlspecialchars($activeConv['company_name'] ?? 'Startup') ?></span>

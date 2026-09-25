@@ -56,7 +56,7 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="audit-admin-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="audit-admin-main">
             
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>

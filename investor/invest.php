@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-3xl w-full mx-auto" id="invest-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-3xl w-full mx-auto" id="invest-main">
             
             <!-- Breadcrumb -->
             <div class="flex items-center space-x-2 text-xs text-slate-400">

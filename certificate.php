@@ -92,7 +92,7 @@ if (!$user) {
 // Ensure certificate values
 $numShares = (int)($cert['number_of_shares'] ?: max(100, (int)($cert['amount_invested'] / 250)));
 $pricePerShare = (float)($cert['price_per_share'] ?: round($cert['amount_invested'] / $numShares, 2));
-$faceValue = (float)($cert['face_value_per_share'] ?: 10.00);
+$faceValue = !empty($cert['face_value_per_share']) ? (float)$cert['face_value_per_share'] : 10.00;
 $distinctiveFrom = $cert['distinctive_from'] ?: 10001;
 $distinctiveTo = $cert['distinctive_to'] ?: ($distinctiveFrom + $numShares - 1);
 $shareClass = $cert['share_class'] ?: 'Series Seed Compulsorily Convertible Preference Shares (CCPS)';

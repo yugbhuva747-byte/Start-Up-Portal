@@ -131,7 +131,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-4xl w-full mx-auto" id="profile-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-4xl w-full mx-auto" id="profile-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">

@@ -87,6 +87,9 @@ CREATE TABLE IF NOT EXISTS `companies` (
     `state` VARCHAR(100) DEFAULT 'Karnataka',
     `country` VARCHAR(100) DEFAULT 'India',
     `verified_status` ENUM('unverified', 'pending', 'verified', 'rejected') DEFAULT 'verified',
+    `authorized_capital` DECIMAL(15,2) DEFAULT 10000000.00,
+    `face_value_per_share` DECIMAL(10,2) DEFAULT 10.00,
+    `esop_pool_percent` DECIMAL(5,2) DEFAULT 10.00,
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

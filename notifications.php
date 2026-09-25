@@ -107,7 +107,7 @@ $unread = (int)$unreadCount->fetchColumn();
             <?php include __DIR__ . '/includes/admin/navbar.php'; ?>
         <?php endif; ?>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="notif-main">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="notif-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">

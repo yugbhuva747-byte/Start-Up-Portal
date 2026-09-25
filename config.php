@@ -46,7 +46,7 @@ $scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
 // If within a subfolder like /start up portal/founder, extract root
 $docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
 $currentDir = str_replace('\\', '/', __DIR__);
-$relativeAppPath = str_replace($docRoot, '', $currentDir);
+$relativeAppPath = str_ireplace($docRoot, '', $currentDir);
 $relativeAppPath = '/' . ltrim($relativeAppPath, '/');
 
 if (!empty($env['APP_URL'])) {

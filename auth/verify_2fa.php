@@ -169,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <!-- Main Card -->
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm relative overflow-hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm relative overflow-hidden">
             
             <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
 
@@ -286,12 +286,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Action Toggles -->
-            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                <!-- Re-scan QR Option -->
+            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-center text-xs">
+                <?php /* Re-scan QR Option (Commented for now)
                 <a href="<?= url('auth/setup_2fa.php') ?>" class="text-indigo-600 hover:text-indigo-700 font-semibold text-[11px] flex items-center space-x-1 transition">
                     <i data-lucide="qr-code" class="w-3 h-3"></i>
                     <span>Re-scan QR Code</span>
                 </a>
+                */ ?>
 
                 <!-- Toggle Recovery Option -->
                 <button type="button" onclick="toggleBackupMode()" id="backupToggleBtn" class="text-slate-500 hover:text-slate-700 font-semibold text-[11px] flex items-center space-x-1 transition">

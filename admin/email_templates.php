@@ -156,7 +156,7 @@ $activeTemplate = $_GET['template'] ?? 'investor';
             </div>
         </header>
 
-        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
             
             <?php if (!empty($successMsg)): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-2">

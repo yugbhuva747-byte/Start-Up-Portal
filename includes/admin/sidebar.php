@@ -6,20 +6,28 @@
 $currentPage = basename($_SERVER['PHP_SELF']);
 $adminUser = current_user();
 ?>
-<aside class="w-60 bg-white border-r border-slate-200 flex flex-col justify-between h-screen sticky top-0 z-30 select-none">
-    <div class="p-5">
-        <!-- Brand Logo -->
-        <a href="<?= url('admin/dashboard.php') ?>" class="flex items-center space-x-2.5 mb-6 group">
-            <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white shadow-sm shadow-purple-600/20 group-hover:scale-105 transition">
-                <i data-lucide="shield" class="w-4 h-4"></i>
-            </div>
-            <div>
-                <div class="font-extrabold text-slate-900 text-sm tracking-tight leading-tight flex items-center gap-1">
-                    ADMIN <span class="text-purple-600">CONTROL</span>
+<!-- Mobile Drawer Backdrop -->
+<div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
+
+<aside id="main-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-60 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none">
+    <div class="p-4 sm:p-5 overflow-y-auto flex-1">
+        <!-- Brand Logo & Mobile Close Button -->
+        <div class="flex items-center justify-between mb-5 sm:mb-6">
+            <a href="<?= url('admin/dashboard.php') ?>" class="flex items-center space-x-2.5 group">
+                <div class="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center text-white shadow-sm shadow-purple-600/20 group-hover:scale-105 transition">
+                    <i data-lucide="shield" class="w-4 h-4"></i>
                 </div>
-                <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider">Compliance & Audit</div>
-            </div>
-        </a>
+                <div>
+                    <div class="font-extrabold text-slate-900 text-sm tracking-tight leading-tight flex items-center gap-1">
+                        ADMIN <span class="text-purple-600">CONTROL</span>
+                    </div>
+                    <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider">Compliance & Audit</div>
+                </div>
+            </a>
+            <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Close navigation">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
 
         <!-- Admin Badge -->
         <div class="mb-5 p-2.5 rounded-xl bg-purple-50 border border-purple-100 text-xs">
@@ -128,3 +136,20 @@ $adminUser = current_user();
         </div>
     </div>
 </aside>
+<script>
+    function toggleMobileSidebar() {
+        const sidebar = document.getElementById('main-sidebar');
+        const backdrop = document.getElementById('mobile-sidebar-backdrop');
+        if (!sidebar) return;
+        const isClosed = sidebar.classList.contains('-translate-x-full');
+        if (isClosed) {
+            sidebar.classList.remove('-translate-x-full');
+            if (backdrop) backdrop.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden', 'lg:overflow-auto');
+        } else {
+            sidebar.classList.add('-translate-x-full');
+            if (backdrop) backdrop.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
+        }
+    }
+</script>
