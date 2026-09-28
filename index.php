@@ -23,35 +23,41 @@ if ($db) {
         ");
         $featuredStartups = $st->fetchAll();
 
-        $totalFundingRaised = (float)$db->query("SELECT SUM(amount_raised) FROM funding_rounds")->fetchColumn() ?: 12000000;
-        $totalStartups = (int)$db->query("SELECT COUNT(*) FROM companies")->fetchColumn() ?: 12;
-        $totalInvestors = (int)$db->query("SELECT COUNT(*) FROM users WHERE role = 'investor'")->fetchColumn() ?: 45;
-    } catch (Exception $e) {}
+        $totalFundingRaised = (float) $db->query("SELECT SUM(amount_raised) FROM funding_rounds")->fetchColumn() ?: 12000000;
+        $totalStartups = (int) $db->query("SELECT COUNT(*) FROM companies")->fetchColumn() ?: 12;
+        $totalInvestors = (int) $db->query("SELECT COUNT(*) FROM users WHERE role = 'investor'")->fetchColumn() ?: 45;
+    } catch (Exception $e) {
+    }
 }
 ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STARTUP × INVESTOR • Portal</title>
-    <meta name="description" content="A secure two-sided startup ecosystem connecting verified founders and accredited investors through structured profiles, DigiLocker verification, and funding workflows.">
+    <meta name="description"
+        content="A secure two-sided startup ecosystem connecting verified founders and accredited investors through structured profiles, DigiLocker verification, and funding workflows.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #FAFAFB;
             color: #0F172A;
         }
+
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         .card-clean:hover {
             border-color: #CBD5E1;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
@@ -59,24 +65,31 @@ if ($db) {
         }
     </style>
 </head>
+
 <body class="bg-[#FAFAFB] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900 antialiased min-h-screen">
 
     <!-- Top Navigation -->
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+    <header
+        class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
             <a href="<?= url('index.php') ?>" class="flex items-center space-x-2 sm:space-x-2.5 group">
-                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20 group-hover:scale-105 transition">
+                <div
+                    class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20 group-hover:scale-105 transition">
                     <i data-lucide="zap" class="w-4 h-4"></i>
                 </div>
                 <div>
-                    <span class="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
+                    <span
+                        class="text-xs sm:text-sm font-extrabold tracking-tight text-slate-900 flex items-center gap-1">
                         STARTUP <span class="text-indigo-600">×</span> INVESTOR
                     </span>
-                    <span class="block text-[7.5px] sm:text-[8.5px] tracking-widest text-slate-400 uppercase font-bold">Venture Platform</span>
+                    <span
+                        class="block text-[7.5px] sm:text-[8.5px] tracking-widest text-slate-400 uppercase font-bold">Venture
+                        Platform</span>
                 </div>
             </a>
 
-            <nav class="hidden md:flex items-center space-x-6 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            <nav
+                class="hidden md:flex items-center space-x-6 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <a href="#ecosystem" class="hover:text-slate-900 transition flex items-center gap-1">
                     <i data-lucide="layers" class="w-3 h-3 text-slate-400"></i>
                     <span>Ecosystem</span>
@@ -89,54 +102,64 @@ if ($db) {
                     <i data-lucide="book-open" class="w-3 h-3 text-slate-400"></i>
                     <span>Insights</span>
                 </a>
-                <a href="<?= url('setup.php') ?>" class="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100">
+                <a href="<?= url('setup.php') ?>"
+                    class="text-indigo-600 hover:text-indigo-700 flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-100">
                     <i data-lucide="database" class="w-3 h-3"></i>
                     <span>Diagnostics</span>
                 </a>
             </nav>
 
             <div class="flex items-center space-x-2 sm:space-x-3">
-                <?php if (auth_check()): 
+                <?php if (auth_check()):
                     $u = current_user();
-                    $dashUrl = match($u['role']) {
+                    $dashUrl = match ($u['role']) {
                         'founder' => 'founder/dashboard.php',
                         'investor' => 'investor/dashboard.php',
                         'admin' => 'admin/dashboard.php',
                         default => 'index.php'
                     };
-                ?>
-                    <a href="<?= url($dashUrl) ?>" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    ?>
+                    <a href="<?= url($dashUrl) ?>"
+                        class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <span class="hidden sm:inline">Dashboard</span> (<?= ucfirst($u['role']) ?>)
                         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                 <?php else: ?>
-                    <a href="<?= url('auth/login.php') ?>" class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition px-2 py-1.5">
+                    <a href="<?= url('auth/login.php') ?>"
+                        class="text-xs font-semibold text-slate-600 hover:text-slate-900 transition px-2 py-1.5">
                         Sign In
                     </a>
-                    <a href="<?= url('auth/register.php') ?>" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+                    <a href="<?= url('auth/register.php') ?>"
+                        class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
                         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
                         <span>Get Started</span>
                     </a>
                 <?php endif; ?>
 
                 <!-- Mobile Navigation Toggle -->
-                <button type="button" onclick="toggleMobileNav()" class="md:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition" aria-label="Toggle navigation">
+                <button type="button" onclick="toggleMobileNav()"
+                    class="md:hidden p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 transition"
+                    aria-label="Toggle navigation">
                     <i data-lucide="menu" class="w-5 h-5"></i>
                 </button>
             </div>
         </div>
 
         <!-- Mobile Navigation Menu Dropdown -->
-        <div id="mobile-nav" class="hidden md:hidden border-t border-slate-100 bg-white/95 px-4 py-3 space-y-2 text-xs font-semibold shadow-md">
-            <a href="#ecosystem" onclick="toggleMobileNav()" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+        <div id="mobile-nav"
+            class="hidden md:hidden border-t border-slate-100 bg-white/95 px-4 py-3 space-y-2 text-xs font-semibold shadow-md">
+            <a href="#ecosystem" onclick="toggleMobileNav()"
+                class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
                 <i data-lucide="layers" class="w-4 h-4 text-slate-400"></i>
                 <span>Ecosystem Architecture</span>
             </a>
-            <a href="#discovery" onclick="toggleMobileNav()" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+            <a href="#discovery" onclick="toggleMobileNav()"
+                class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
                 <i data-lucide="compass" class="w-4 h-4 text-slate-400"></i>
                 <span>Live Deals & Rounds</span>
             </a>
-            <a href="<?= url('blog.php') ?>" class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
+            <a href="<?= url('blog.php') ?>"
+                class="flex items-center space-x-2 py-2 text-slate-600 hover:text-indigo-600">
                 <i data-lucide="book-open" class="w-4 h-4 text-slate-400"></i>
                 <span>Insights & Stories (Blog)</span>
             </a>
@@ -150,9 +173,10 @@ if ($db) {
     <!-- Hero Section -->
     <section class="relative pt-28 sm:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
         <div class="max-w-4xl mx-auto text-center">
-            
+
             <!-- Verified Pill Badge -->
-            <div id="hero-badge" class="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] sm:text-[11px] font-semibold text-slate-600 mb-6 shadow-sm max-w-full">
+            <div id="hero-badge"
+                class="inline-flex items-center space-x-1.5 sm:space-x-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-[10px] sm:text-[11px] font-semibold text-slate-600 mb-6 shadow-sm max-w-full">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
                 <span class="text-emerald-700 font-bold">MCA & DigiLocker Verified</span>
                 <span class="text-slate-300 hidden sm:inline">•</span>
@@ -160,23 +184,27 @@ if ($db) {
             </div>
 
             <!-- Headline -->
-            <h1 id="hero-title" class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.15] mb-4">
+            <h1 id="hero-title"
+                class="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 leading-[1.15] mb-4">
                 Where Verified Startups Meet <span class="text-indigo-600">Smart Capital</span>.
             </h1>
 
             <!-- Subtitle -->
             <p id="hero-desc" class="max-w-xl mx-auto text-xs sm:text-sm text-slate-600 mb-8 leading-relaxed">
-                Connect India's verified startup founders with accredited angel syndicates and VCs. Corporate CIN integration, DigiLocker KYC, structured data rooms, and milestone funding escrow.
+                Connect India's verified startup founders with accredited angel syndicates and VCs. Corporate CIN
+                integration, DigiLocker KYC, structured data rooms, and milestone funding escrow.
             </p>
 
             <!-- Dual Action CTAs -->
             <div id="hero-actions" class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-12 sm:mb-14">
-                <a href="<?= url('auth/register.php?role=founder') ?>" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm flex items-center justify-center space-x-2 transition">
+                <a href="<?= url('auth/register.php?role=founder') ?>"
+                    class="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm flex items-center justify-center space-x-2 transition">
                     <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
                     <span>Raise Capital as Founder</span>
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
-                <a href="<?= url('auth/register.php?role=investor') ?>" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs shadow-sm flex items-center justify-center space-x-2 transition">
+                <a href="<?= url('auth/register.php?role=investor') ?>"
+                    class="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs shadow-sm flex items-center justify-center space-x-2 transition">
                     <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
                     <span>Discover Startups as Investor</span>
                 </a>
@@ -185,19 +213,23 @@ if ($db) {
             <!-- Stats Bar -->
             <div id="hero-stats" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 max-w-3xl mx-auto">
                 <div class="card-clean rounded-xl p-3.5 sm:p-4 text-left">
-                    <div class="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Capital Facilitated</div>
-                    <div class="text-base sm:text-lg font-black text-slate-900"><?= format_inr($totalFundingRaised) ?>+</div>
+                    <div class="text-[9.5px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                        Capital Facilitated</div>
+                    <div class="text-base sm:text-lg font-black text-slate-900"><?= format_inr($totalFundingRaised) ?>+
+                    </div>
                     <div class="text-[10px] text-emerald-600 font-semibold mt-0.5">Escrow Reconciled</div>
                 </div>
 
                 <div class="card-clean rounded-xl p-4 text-left">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Verification Rate</div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Verification Rate
+                    </div>
                     <div class="text-lg font-black text-emerald-600">100%</div>
                     <div class="text-[10px] text-slate-500 mt-0.5">MCA & DigiLocker KYC</div>
                 </div>
 
                 <div class="card-clean rounded-xl p-4 text-left">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Active Startups</div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Active Startups
+                    </div>
                     <div class="text-lg font-black text-slate-900"><?= $totalStartups ?></div>
                     <div class="text-[10px] text-slate-500 mt-0.5">Live Deal Rooms</div>
                 </div>
@@ -215,21 +247,26 @@ if ($db) {
     <section id="ecosystem" class="py-16 px-6 border-t border-slate-200/80 bg-white">
         <div class="max-w-5xl mx-auto">
             <div class="text-center mb-12">
-                <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 mb-1 block">Platform Architecture</span>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 mb-1 block">Platform
+                    Architecture</span>
                 <h2 class="text-2xl font-black text-slate-900">Two Specialized Workspaces</h2>
-                <p class="text-slate-500 text-xs mt-1.5 max-w-md mx-auto">Distinct onboarding questions, separate dashboards, strict permissions, and compliance pipelines.</p>
+                <p class="text-slate-500 text-xs mt-1.5 max-w-md mx-auto">Distinct onboarding questions, separate
+                    dashboards, strict permissions, and compliance pipelines.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Founder Card -->
                 <div class="card-clean rounded-2xl p-7 border border-slate-200">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-5">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 mb-5">
                         <i data-lucide="building-2" class="w-5 h-5"></i>
                     </div>
-                    <div class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mb-1">Founder Portal</div>
+                    <div class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mb-1">Founder Portal
+                    </div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Startup Fundraising Hub</h3>
                     <p class="text-xs text-slate-500 mb-6 leading-relaxed">
-                        Create structured company master records, launch customizable funding rounds (Seed, Pre-Series A), upload confidential data rooms, and connect with verified angels.
+                        Create structured company master records, launch customizable funding rounds (Seed, Pre-Series
+                        A), upload confidential data rooms, and connect with verified angels.
                     </p>
                     <div class="space-y-2 text-xs text-slate-600 mb-6 border-t border-slate-100 pt-4">
                         <div class="flex items-center space-x-2">
@@ -245,7 +282,8 @@ if ($db) {
                             <span>Encrypted deal room chat with verified investors</span>
                         </div>
                     </div>
-                    <a href="<?= url('auth/register.php?role=founder') ?>" class="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition">
+                    <a href="<?= url('auth/register.php?role=founder') ?>"
+                        class="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition">
                         <span>Launch Founder Profile</span>
                         <i data-lucide="arrow-right" class="w-3 h-3"></i>
                     </a>
@@ -253,13 +291,16 @@ if ($db) {
 
                 <!-- Investor Card -->
                 <div class="card-clean rounded-2xl p-7 border border-slate-200">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-5">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 mb-5">
                         <i data-lucide="pie-chart" class="w-5 h-5"></i>
                     </div>
-                    <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Investor Portal</div>
+                    <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-widest mb-1">Investor Portal
+                    </div>
                     <h3 class="text-lg font-bold text-slate-900 mb-2">Deal Discovery & Portfolio</h3>
                     <p class="text-xs text-slate-500 mb-6 leading-relaxed">
-                        Filter high-caliber startups across FinTech, AI/SaaS, HealthTech, review financial models, commit capital within target allocation limits, and track your active portfolio.
+                        Filter high-caliber startups across FinTech, AI/SaaS, HealthTech, review financial models,
+                        commit capital within target allocation limits, and track your active portfolio.
                     </p>
                     <div class="space-y-2 text-xs text-slate-600 mb-6 border-t border-slate-100 pt-4">
                         <div class="flex items-center space-x-2">
@@ -275,7 +316,8 @@ if ($db) {
                             <span>Direct portfolio equity % & certificate tracking</span>
                         </div>
                     </div>
-                    <a href="<?= url('auth/register.php?role=investor') ?>" class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition">
+                    <a href="<?= url('auth/register.php?role=investor') ?>"
+                        class="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 transition">
                         <span>Discover Startup Deal Flow</span>
                         <i data-lucide="arrow-right" class="w-3 h-3"></i>
                     </a>
@@ -289,10 +331,12 @@ if ($db) {
         <div class="max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest block mb-0.5">Live Deals</span>
+                    <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest block mb-0.5">Live
+                        Deals</span>
                     <h2 class="text-xl font-bold text-slate-900">Featured Verified Startups</h2>
                 </div>
-                <a href="<?= url('investor/discover.php') ?>" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center space-x-1">
+                <a href="<?= url('investor/discover.php') ?>"
+                    class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center space-x-1">
                     <span>View All Startups</span>
                     <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
@@ -304,20 +348,23 @@ if ($db) {
                         No active startups currently listed.
                     </div>
                 <?php else: ?>
-                    <?php foreach ($featuredStartups as $company): 
+                    <?php foreach ($featuredStartups as $company):
                         $pct = ($company['target_amount'] ?? 0) > 0 ? round(($company['amount_raised'] / $company['target_amount']) * 100) : 0;
                         $hashId = hash_id_encode($company['id']);
-                    ?>
+                        ?>
                         <div class="card-clean rounded-2xl p-5 flex flex-col justify-between">
                             <div>
                                 <div class="flex items-start justify-between mb-3">
-                                    <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-10 h-10 rounded-xl object-cover border border-slate-200">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                    <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>"
+                                        class="w-10 h-10 rounded-xl object-cover border border-slate-200">
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                         <?= htmlspecialchars($company['industry']) ?>
                                     </span>
                                 </div>
                                 <h3 class="text-sm font-bold text-slate-900 mb-1"><?= htmlspecialchars($company['name']) ?></h3>
-                                <p class="text-xs text-slate-500 line-clamp-2 mb-4"><?= htmlspecialchars($company['pitch']) ?></p>
+                                <p class="text-xs text-slate-500 line-clamp-2 mb-4"><?= htmlspecialchars($company['pitch']) ?>
+                                </p>
                             </div>
 
                             <div class="pt-3 border-t border-slate-100">
@@ -328,7 +375,8 @@ if ($db) {
                                 <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-3">
                                     <div class="h-full bg-indigo-600 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
                                 </div>
-                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 text-center text-xs font-semibold block transition">
+                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
+                                    class="w-full py-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-800 border border-slate-200 text-center text-xs font-semibold block transition">
                                     View Data Room →
                                 </a>
                             </div>
@@ -343,7 +391,8 @@ if ($db) {
     <footer class="border-t border-slate-200 py-10 px-4 sm:px-6 bg-white text-slate-500 text-xs">
         <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-2">
-                <div class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
+                <div
+                    class="w-6 h-6 rounded bg-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
                     <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                 </div>
                 <span class="font-bold text-slate-800 text-xs">STARTUP × INVESTOR</span>
@@ -352,18 +401,24 @@ if ($db) {
             </div>
             <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-slate-600 font-medium">
                 <a href="<?= url('auth/login.php') ?>" class="hover:text-slate-900 transition">Sign In</a>
-                <a href="<?= url('auth/register.php?role=founder') ?>" class="hover:text-slate-900 transition">Founder Portal</a>
-                <a href="<?= url('auth/register.php?role=investor') ?>" class="hover:text-slate-900 transition">Investor Portal</a>
+                <a href="<?= url('auth/register.php?role=founder') ?>" class="hover:text-slate-900 transition">Founder
+                    Portal</a>
+                <a href="<?= url('auth/register.php?role=investor') ?>" class="hover:text-slate-900 transition">Investor
+                    Portal</a>
                 <a href="<?= url('blog.php') ?>" class="hover:text-slate-900 transition">Insights & Stories</a>
-                <a href="<?= url('setup.php') ?>" class="hover:text-slate-900 text-indigo-600 transition">Diagnostics</a>
+                <a href="<?= url('setup.php') ?>"
+                    class="hover:text-slate-900 text-indigo-600 transition">Diagnostics</a>
             </div>
         </div>
-        <div class="max-w-5xl mx-auto mt-6 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[11.5px] text-slate-400 gap-2">
+        <div
+            class="max-w-5xl mx-auto mt-6 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-[11.5px] text-slate-400 gap-2">
             <div>
                 &copy; <?= date('Y') ?> <?= APP_NAME ?>. All rights reserved.
             </div>
             <div>
-                Powered by <a href="https://socialamplifiers.com/" target="_blank" rel="noopener noreferrer" class="font-bold text-indigo-600 hover:text-indigo-800 transition underline underline-offset-2">Social Amplifiers</a>
+                Powered by <a href="https://socialamplifiers.com/" target="_blank" rel="noopener noreferrer"
+                    class="font-bold text-indigo-600 hover:text-indigo-800 transition underline underline-offset-2">Social
+                    Amplifiers</a>
             </div>
         </div>
     </footer>
@@ -383,4 +438,5 @@ if ($db) {
     </script>
     <?php include_once __DIR__ . '/includes/smooth_scroll.php'; ?>
 </body>
+
 </html>

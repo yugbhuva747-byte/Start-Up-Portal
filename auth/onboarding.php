@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             log_audit($user['id'], 'UPDATE_ONBOARDING', 'investor_profiles', $user['id'], 'Investor completed onboarding profile');
             set_flash('success', 'Investment preferences updated! Welcome to your discovery dashboard.');
-            header('Location: ' . url('investor/dashboard.php'));
+            header('Location: ' . url('investor/discover.php'));
             exit;
         }
     }
@@ -151,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p class="text-xs text-slate-500">Step 2 of 2 • Role: <span class="capitalize font-semibold text-indigo-600"><?= htmlspecialchars($role) ?></span></p>
                 </div>
             </div>
-            <a href="<?= url($role === 'founder' ? 'founder/dashboard.php' : 'investor/dashboard.php') ?>" class="text-xs text-slate-500 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-white border border-slate-200 shadow-sm transition">
+            <a href="<?= url($role === 'founder' ? 'founder/dashboard.php' : 'investor/discover.php') ?>" class="text-xs text-slate-500 hover:text-slate-900 px-3 py-1.5 rounded-lg bg-white border border-slate-200 shadow-sm transition">
                 Skip for now →
             </a>
         </div>

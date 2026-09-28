@@ -64,28 +64,52 @@ require_once __DIR__ . '/theme.php';
             </div>
         </div>
 
-        <!-- Navigation Links: DEAL DISCOVERY and INVESTMENTS & NETWORK removed as they are present in Top Navbar -->
+        <?php
+        $navGroups = [
+            'Identity & Trust' => [
+                [
+                    'title' => 'Public Profile',
+                    'url' => url('investor/view.php'),
+                    'icon' => 'user-check',
+                    'active' => ($currentPage === 'view.php')
+                ],
+                [
+                    'title' => 'Thesis & Settings',
+                    'url' => url('investor/profile.php'),
+                    'icon' => 'sliders-horizontal',
+                    'active' => ($currentPage === 'profile.php')
+                ],
+                [
+                    'title' => 'Verification Center',
+                    'url' => url('investor/verification.php'),
+                    'icon' => 'shield-check',
+                    'active' => ($currentPage === 'verification.php')
+                ],
+            ]
+        ];
+        ?>
+
+        <!-- Navigation Links with Prominent Active Indicators -->
         <div class="space-y-6">
-            <div>
-                <div class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider px-3.5 mb-2.5">Identity & Trust</div>
-                <nav class="space-y-1">
-                    <a href="<?= url('investor/view.php') ?>"
-                        class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm transition font-semibold <?= $currentPage === 'view.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-300 font-bold shadow-xs' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800' ?>">
-                        <i data-lucide="user-check" class="w-5 h-5 flex-shrink-0 <?= $currentPage === 'view.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
-                        <span>Public Profile</span>
-                    </a>
-                    <a href="<?= url('investor/profile.php') ?>"
-                        class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm transition font-semibold <?= $currentPage === 'profile.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-300 font-bold shadow-xs' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800' ?>">
-                        <i data-lucide="sliders-horizontal" class="w-5 h-5 flex-shrink-0 <?= $currentPage === 'profile.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
-                        <span>Thesis & Settings</span>
-                    </a>
-                    <a href="<?= url('investor/verification.php') ?>"
-                        class="flex items-center space-x-3 px-3.5 py-3 rounded-xl text-sm transition font-semibold <?= $currentPage === 'verification.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-300 font-bold shadow-xs' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800' ?>">
-                        <i data-lucide="shield-check" class="w-5 h-5 flex-shrink-0 <?= $currentPage === 'verification.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
-                        <span>Verification Center</span>
-                    </a>
-                </nav>
-            </div>
+            <?php foreach ($navGroups as $groupTitle => $items): ?>
+                <div>
+                    <div class="text-[11px] font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider px-3.5 mb-2"><?= $groupTitle ?></div>
+                    <nav class="space-y-1">
+                        <?php foreach ($items as $item): ?>
+                            <a href="<?= $item['url'] ?>"
+                                class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition font-semibold group border <?= $item['active'] ? 'bg-[#EAF2FF] dark:bg-blue-950/70 text-[#123B7A] dark:text-blue-300 font-bold shadow-xs border-[#123B7A]/20 dark:border-blue-700/60' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800 border-transparent' ?>">
+                                <div class="flex items-center space-x-3 min-w-0">
+                                    <i data-lucide="<?= $item['icon'] ?>" class="w-4.5 h-4.5 flex-shrink-0 <?= $item['active'] ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400 group-hover:text-[#111827] dark:group-hover:text-white' ?>"></i>
+                                    <span class="truncate"><?= htmlspecialchars($item['title']) ?></span>
+                                </div>
+                                <?php if ($item['active']): ?>
+                                    <span class="w-1.5 h-4 rounded-full bg-[#123B7A] dark:bg-blue-400 flex-shrink-0" title="Active Page"></span>
+                                <?php endif; ?>
+                            </a>
+                        <?php endforeach; ?>
+                    </nav>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 
