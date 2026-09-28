@@ -1,7 +1,8 @@
 <?php
 /**
  * Founder Top Navigation Bar Component
- * Clean White / Light Theme, Small Crisp Typography
+ * Clean, High-Legibility Theme with "Vay Portal", Sans-serif
+ * Enhanced layout with large avatar profile card and quick search
  */
 $currentUser = current_user();
 $db = get_db();
@@ -18,71 +19,95 @@ if ($db) {
     $unreadCount = (int)$cStmt->fetchColumn();
 }
 ?>
-<header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-20">
-    <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+<style>
+    .founder-navbar, .founder-navbar * {
+        font-family: "Vay Portal", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+</style>
+<header class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-20" style="font-family: 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+    <!-- Left Section: Mobile Menu + Quick Search (Founder Command Center removed) -->
+    <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
-        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0" aria-label="Open sidebar menu">
+        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0 border border-slate-200" aria-label="Open sidebar menu">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center space-x-2 truncate">
-            <span class="truncate"><?= $pageTitle ?? 'Founder Workspace' ?></span>
-        </h2>
+        <!-- Quick Platform Search -->
+        <form action="<?= url('founder/funding_rounds.php') ?>" method="GET" class="relative hidden sm:block w-72 md:w-84 m-0">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+            <input type="text" name="q" placeholder="Search rounds, investors, documents..." 
+                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none transition" />
+        </form>
     </div>
 
-    <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-        <!-- Status Indicator -->
-        <div class="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs">
-            <span class="w-1.5 h-1.5 rounded-full <?= $currentUser['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>
-            <span class="text-slate-600 font-medium text-[10.5px]"><?= $currentUser['is_verified'] ? 'MCA & DigiLocker Verified' : 'KYC Under Review' ?></span>
+    <!-- Right Section: Verification Badge + Actions + Large Profile Card -->
+    <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
+        <!-- Verification Status Indicator -->
+        <div class="hidden sm:flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs">
+            <span class="w-2.5 h-2.5 rounded-full <?= $currentUser['is_verified'] ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500' ?>"></span>
+            <span class="text-slate-700 font-semibold text-xs"><?= $currentUser['is_verified'] ? 'MCA & DigiLocker Verified' : 'KYC Under Review' ?></span>
         </div>
 
-        <!-- Create Round Quick Action -->
-        <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
-            <i data-lucide="plus" class="w-3 h-3"></i>
+        <!-- Launch Round Quick Action Button -->
+        <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="hidden md:inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-xs transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
             <span>New Round</span>
         </a>
 
         <!-- Notifications Bell -->
         <div class="relative" id="notif-dropdown-wrapper">
-            <button onclick="toggleNotifs()" class="relative p-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 transition">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+            <button onclick="toggleNotifs()" class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition" aria-label="Notifications">
+                <i data-lucide="bell" class="w-4 h-4"></i>
                 <?php if ($unreadCount > 0): ?>
-                    <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-indigo-600 text-white text-[8px] font-black flex items-center justify-center">
+                    <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center">
                         <?= $unreadCount ?>
                     </span>
                 <?php endif; ?>
             </button>
 
             <!-- Dropdown Menu -->
-            <div id="notif-menu" class="hidden absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-3 z-50">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100 text-xs font-bold text-slate-900">
+            <div id="notif-menu" class="hidden absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 text-sm font-bold text-slate-900">
                     <span>Notifications</span>
-                    <span class="text-indigo-600 font-normal text-[10.5px]"><?= count($notifs) ?> recent</span>
+                    <span class="text-indigo-600 font-medium text-xs"><?= count($notifs) ?> recent</span>
                 </div>
-                <div class="divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto">
                     <?php if (empty($notifs)): ?>
-                        <div class="py-5 text-center text-xs text-slate-400">No notifications yet</div>
+                        <div class="py-6 text-center text-sm text-slate-400">No notifications yet</div>
                     <?php else: ?>
                         <?php foreach ($notifs as $n): ?>
-                            <div class="py-2.5 text-xs <?= $n['is_read'] ? 'opacity-70' : 'font-semibold' ?>">
-                                <div class="text-slate-800 text-[11px]"><?= htmlspecialchars($n['title']) ?></div>
-                                <div class="text-slate-500 text-[10px] mt-0.5"><?= htmlspecialchars($n['message']) ?></div>
-                                <div class="text-[9px] text-slate-400 mt-0.5"><?= date('M d, H:i', strtotime($n['created_at'])) ?></div>
+                            <div class="py-3 text-sm <?= $n['is_read'] ? 'opacity-70' : 'font-semibold' ?>">
+                                <div class="text-slate-800 text-sm leading-snug"><?= htmlspecialchars($n['title']) ?></div>
+                                <div class="text-slate-500 text-xs mt-1 leading-relaxed"><?= htmlspecialchars($n['message']) ?></div>
+                                <div class="text-[11px] text-slate-400 mt-1"><?= date('M d, H:i', strtotime($n['created_at'])) ?></div>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
-                <div class="pt-2 mt-1 border-t border-slate-100 text-center">
-                    <a href="<?= url('notifications.php') ?>" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-700">View all notifications →</a>
+                <div class="pt-3 mt-2 border-t border-slate-100 text-center">
+                    <a href="<?= url('notifications.php') ?>" class="text-xs font-bold text-indigo-600 hover:text-indigo-700">View all notifications →</a>
                 </div>
             </div>
         </div>
 
-        <!-- Founder User Profile Link -->
-        <a href="<?= url('founder/view.php') ?>" title="View My Profile" class="flex items-center space-x-2 pl-2 pr-2.5 py-1 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition group">
-            <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>" class="w-6 h-6 rounded-full object-cover border border-slate-200">
-            <span class="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 hidden md:inline"><?= htmlspecialchars(explode(' ', $currentUser['name'])[0]) ?></span>
+        <!-- Founder User Profile Card with Large Avatar -->
+        <a href="<?= url('founder/view.php') ?>" title="View My Profile" class="flex items-center space-x-3 p-1.5 pr-3.5 rounded-2xl border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition group">
+            <div class="relative flex-shrink-0">
+                <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120' ?>" 
+                     alt="<?= htmlspecialchars($currentUser['name']) ?>" 
+                     class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white ring-2 ring-indigo-500/20 group-hover:ring-indigo-500/50 transition shadow-xs">
+                <span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+            </div>
+            <div class="hidden md:block text-left">
+                <div class="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition leading-snug truncate max-w-[130px]">
+                    <?= htmlspecialchars($currentUser['name']) ?>
+                </div>
+                <div class="text-[11px] font-semibold text-slate-400 leading-none mt-0.5">
+                    Founder
+                </div>
+            </div>
         </a>
     </div>
 </header>
@@ -93,4 +118,3 @@ if ($db) {
     }
 </script>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
-
