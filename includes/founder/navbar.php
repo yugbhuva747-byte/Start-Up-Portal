@@ -21,12 +21,21 @@ if ($db) {
 ?>
 <style>
     .founder-navbar, .founder-navbar * {
-        font-family: "Vay Portal", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        font-family: "Vay Portal", Sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
+    .founder-navbar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 40 !important;
+        background-color: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02) !important;
+    }
 </style>
-<header class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-20" style="font-family: 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+<header class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-40" style="font-family: 'Vay Portal', Sans-serif;">
     <!-- Left Section: Mobile Menu + Quick Search (Founder Command Center removed) -->
     <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->

@@ -9,7 +9,7 @@ $founderProgress = get_profile_progress($founderUser['id'], 'founder');
 ?>
 <style>
     #main-sidebar, #main-sidebar * {
-        font-family: "Vay Portal", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+        font-family: "Vay Portal", Sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
@@ -17,7 +17,7 @@ $founderProgress = get_profile_progress($founderUser['id'], 'founder');
 <!-- Mobile Drawer Backdrop -->
 <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
 
-<aside id="main-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none" style="font-family: 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+<aside id="main-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none" style="font-family: 'Vay Portal', Sans-serif;">
     <div class="p-4 sm:p-5 overflow-y-auto flex-1">
         <!-- Brand Logo & Mobile Close Button -->
         <div class="flex items-center justify-between mb-6">

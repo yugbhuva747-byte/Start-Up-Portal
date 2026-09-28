@@ -103,10 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
+            font-family: "Vay Portal", Sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>

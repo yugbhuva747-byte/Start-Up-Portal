@@ -124,7 +124,7 @@ $flash = get_flash();
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
-            font-family: "Vay Portal", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+            font-family: "Vay Portal", Sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
@@ -145,14 +145,14 @@ $flash = get_flash();
         .progress-ring { transition: stroke-dashoffset 1.2s ease; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 flex min-h-screen antialiased">
+<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="dashboard-content">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="dashboard-content">
             
             <!-- Flash notification -->
             <?php if ($flash): ?>

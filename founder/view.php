@@ -87,15 +87,23 @@ $flash = get_flash();
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
+            font-family: "Vay Portal", Sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .card-clean:hover {
+            border-color: #CBD5E1;
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Sidebar Navigation based on current user role -->
     <?php 
@@ -108,7 +116,7 @@ $flash = get_flash();
     }
     ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php 
         if ($currentUser['role'] === 'founder') {
             include __DIR__ . '/../includes/founder/navbar.php';
@@ -119,7 +127,7 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="founder-view-main">
+        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-view-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
