@@ -358,6 +358,12 @@
 
     /* Soft Blue Badges & Accent Fills */
     html.dark .bg-\[\#EAF2FF\],
+    html.dark .bg-\[\#EAF2FF\]\/40,
+    html.dark .bg-\[\#EAF2FF\]\/50,
+    html.dark .bg-\[\#EAF2FF\]\/60,
+    html.dark .bg-\[\#EAF2FF\]\/70,
+    html.dark .bg-\[\#EAF2FF\]\/80,
+    html.dark .bg-\[\#EAF2FF\]\/90,
     html.dark .bg-blue-50 {
         background-color: rgba(30, 58, 138, 0.38) !important;
         color: #93C5FD !important;
@@ -404,5 +410,76 @@
     }
     #investor-theme-toggle-btn:active {
         transform: scale(0.92);
+    }
+
+    /* ====================================================
+       UNIVERSAL DARK MODE HOVER OVERRIDES (GLITCH-FREE)
+       ==================================================== */
+    /* Prevent light background flash on hover in dark mode */
+    html.dark .hover\:bg-\[\#FAFBFD\]:hover,
+    html.dark .hover\:bg-\[\#FAFAFB\]:hover,
+    html.dark .hover\:bg-\[\#F8FAFC\]:hover,
+    html.dark .hover\:bg-slate-50:hover,
+    html.dark .hover\:bg-gray-50:hover {
+        background-color: #1E293B !important;
+    }
+
+    html.dark .hover\:bg-slate-100:hover,
+    html.dark .hover\:bg-gray-100:hover {
+        background-color: #334155 !important;
+    }
+
+    html.dark .hover\:bg-slate-200:hover,
+    html.dark .hover\:bg-gray-200:hover {
+        background-color: #475569 !important;
+    }
+
+    html.dark .hover\:bg-white:hover {
+        background-color: #1E293B !important;
+        border-color: #38BDF8 !important;
+    }
+
+    html.dark .hover\:bg-\[\#EAF2FF\]:hover,
+    html.dark .hover\:bg-blue-50:hover {
+        background-color: rgba(30, 58, 138, 0.45) !important;
+        color: #93C5FD !important;
+    }
+
+    /* Prevent dark black text on hover in dark mode */
+    html.dark .hover\:text-\[\#0B1F3A\]:hover,
+    html.dark .hover\:text-\[\#111827\]:hover,
+    html.dark .hover\:text-slate-900:hover,
+    html.dark .hover\:text-slate-800:hover,
+    html.dark .hover\:text-gray-900:hover,
+    html.dark .hover\:text-gray-800:hover,
+    html.dark .hover\:text-black:hover {
+        color: #FFFFFF !important;
+    }
+
+    html.dark .hover\:text-\[\#123B7A\]:hover {
+        color: #60A5FA !important;
+    }
+
+    html.dark .hover\:text-\[\#0A66C2\]:hover {
+        color: #38BDF8 !important;
+    }
+
+    /* Interactive borders on hover in dark mode */
+    html.dark .hover\:border-\[\#E4E8EF\]:hover,
+    html.dark .hover\:border-slate-200:hover,
+    html.dark .hover\:border-slate-300:hover {
+        border-color: #475569 !important;
+    }
+
+    html.dark .hover\:border-\[\#123B7A\]:hover,
+    html.dark .hover\:border-\[\#0A66C2\]:hover {
+        border-color: #38BDF8 !important;
+    }
+
+    /* Smooth transition for all interactive hover elements */
+    button, a, select, input, .network-row, .card-clean, .linkedin-card, article {
+        transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
     }
 </style>

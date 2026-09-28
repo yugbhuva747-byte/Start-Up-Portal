@@ -120,10 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         @font-face {
             font-family: 'Vay Portal - Regular';
@@ -141,13 +138,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
         }
         body {
             font-family: 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
-            background-color: var(--inv-bg);
-            color: var(--inv-text);
+        }
+
+        /* Dedicated Chat Styles with High Contrast in Dark & Light Modes */
+        .chat-bubble-me {
+            background-color: #123B7A !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 2px 8px -2px rgba(18, 59, 122, 0.25);
+        }
+        html.dark .chat-bubble-me {
+            background-color: #2563EB !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 14px -2px rgba(37, 99, 235, 0.4) !important;
+        }
+
+        .chat-bubble-them {
+            background-color: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 1px solid #E2E8F0 !important;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+        }
+        html.dark .chat-bubble-them {
+            background-color: #1E293B !important;
+            color: #F1F5F9 !important;
+            border: 1px solid #334155 !important;
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.45) !important;
+        }
+
+        .chat-item-active {
+            background-color: #EAF2FF !important;
+            border-left: 4px solid #123B7A !important;
+        }
+        html.dark .chat-item-active {
+            background-color: #1E293B !important;
+            border-left: 4px solid #3B82F6 !important;
+        }
+
+        .chat-item-inactive {
+            border-left: 4px solid transparent !important;
+        }
+        .chat-item-inactive:hover {
+            background-color: #F8FAFC !important;
+        }
+        html.dark .chat-item-inactive:hover {
+            background-color: rgba(30, 41, 59, 0.6) !important;
+        }
+
+        /* Smooth scrollbars for chat containers */
+        #chat-messages-container::-webkit-scrollbar,
+        .thread-scroll-pane::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-messages-container::-webkit-scrollbar-track,
+        .thread-scroll-pane::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #chat-messages-container::-webkit-scrollbar-thumb,
+        .thread-scroll-pane::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 9999px;
+        }
+        #chat-messages-container::-webkit-scrollbar-thumb:hover,
+        .thread-scroll-pane::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.5);
         }
     </style>
 </head>
 
-<body class="bg-[#FAFBFD] text-[#111827] flex min-h-screen antialiased">
+<body class="bg-[#FAFBFD] dark:bg-[#0B0F19] text-[#111827] dark:text-[#F3F4F6] flex h-screen overflow-hidden antialiased">
 
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
@@ -155,30 +213,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
     <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <div class="flex-1 flex overflow-hidden">
+        <div class="flex-1 flex overflow-hidden min-h-0">
 
             <!-- Conversation Threads List (Left Pane) -->
-            <div class="<?= $activeConv ? 'hidden md:flex' : 'flex' ?> w-full md:w-80 lg:w-96 border-r border-[#E4E8EF] bg-white flex-col">
-                <div class="p-4 border-b border-[#E4E8EF] space-y-3">
+            <div class="<?= $activeConv ? 'hidden md:flex' : 'flex' ?> w-full md:w-80 lg:w-96 border-r border-[#E4E8EF] dark:border-slate-800 bg-white dark:bg-[#0F172A] flex-col min-h-0 h-full flex-shrink-0">
+                <div class="p-4 border-b border-[#E4E8EF] dark:border-slate-800 space-y-3 flex-shrink-0">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Deal Conversations</h2>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EAF2FF] text-[#123B7A]">
+                        <h2 class="text-xs font-bold text-[#0B1F3A] dark:text-slate-200 uppercase tracking-wider">Deal Conversations</h2>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EAF2FF] dark:bg-blue-950/70 text-[#123B7A] dark:text-blue-300 border border-[#123B7A]/15 dark:border-blue-700/50">
                             <?= count($conversations) ?>
                         </span>
                     </div>
                     <div class="relative">
-                        <i data-lucide="search" class="w-3.5 h-3.5 text-[#667085] absolute left-3 top-1/2 -translate-y-1/2"></i>
-                        <input type="text" placeholder="Search discussions..."
-                            class="w-full pl-9 pr-3 py-1.5 bg-[#FAFBFD] border border-[#E4E8EF] rounded-xl text-xs text-[#111827] placeholder-[#667085] outline-none focus:bg-white focus:border-[#123B7A] transition">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-[#667085] dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="discussion-search-input" placeholder="Search discussions..."
+                            class="w-full pl-9 pr-3 py-2 bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 rounded-xl text-xs text-[#111827] dark:text-white placeholder-[#667085] dark:placeholder-slate-400 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-[#123B7A] dark:focus:border-blue-500 transition shadow-2xs">
                     </div>
                 </div>
 
-                <div class="flex-1 overflow-y-auto divide-y divide-[#E4E8EF]">
+                <div class="flex-1 overflow-y-auto divide-y divide-[#E4E8EF] dark:divide-slate-800/80 thread-scroll-pane min-h-0" id="conversations-thread-list">
                     <?php if (empty($conversations)): ?>
-                        <div class="p-8 text-center text-xs text-[#667085] space-y-2">
-                            <i data-lucide="message-square-off" class="w-8 h-8 text-[#667085]/30 mx-auto"></i>
-                            <div class="font-bold text-[#0B1F3A]">No active discussions</div>
-                            <p class="text-[11px] text-[#667085]">Explore the Discover marketplace to contact founders directly.</p>
+                        <div class="p-8 text-center text-xs text-[#667085] dark:text-slate-400 space-y-2">
+                            <i data-lucide="message-square-off" class="w-8 h-8 text-[#667085]/30 dark:text-slate-600 mx-auto"></i>
+                            <div class="font-bold text-[#0B1F3A] dark:text-slate-200">No active discussions</div>
+                            <p class="text-[11px] text-[#667085] dark:text-slate-400">Explore the Discover marketplace to contact founders directly.</p>
                         </div>
                     <?php else: ?>
                         <?php foreach ($conversations as $c):
@@ -186,24 +244,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                             $hash = hash_id_encode($c['id']);
                             ?>
                             <a href="<?= url('investor/messages.php?conv=' . $hash) ?>"
-                                class="p-4 block transition <?= $isActive ? 'bg-[#EAF2FF]/60 border-l-4 border-[#123B7A]' : 'hover:bg-[#FAFBFD]' ?>">
+                                class="p-4 block transition conversation-thread-item <?= $isActive ? 'chat-item-active' : 'chat-item-inactive' ?>"
+                                data-name="<?= strtolower(htmlspecialchars($c['other_user_name'])) ?>"
+                                data-company="<?= strtolower(htmlspecialchars($c['company_name'] ?? '')) ?>">
                                 <div class="flex items-start space-x-3">
                                     <img src="<?= $c['other_user_avatar'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>"
-                                        class="w-10 h-10 rounded-full object-cover border border-[#E4E8EF] bg-white flex-shrink-0">
+                                        class="w-10 h-10 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 bg-white dark:bg-slate-800 flex-shrink-0">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between gap-1">
-                                            <span class="text-xs font-bold text-[#0B1F3A] truncate"><?= htmlspecialchars($c['other_user_name']) ?></span>
-                                            <span class="text-[10px] text-[#667085] flex-shrink-0"><?= $c['last_msg_time'] ? date('H:i', strtotime($c['last_msg_time'])) : '' ?></span>
+                                            <span class="text-xs font-bold text-[#0B1F3A] dark:text-slate-100 truncate"><?= htmlspecialchars($c['other_user_name']) ?></span>
+                                            <span class="text-[10px] text-[#667085] dark:text-slate-400 flex-shrink-0"><?= $c['last_msg_time'] ? date('H:i', strtotime($c['last_msg_time'])) : '' ?></span>
                                         </div>
-                                        <div class="text-[10px] text-[#123B7A] font-semibold uppercase tracking-wider mt-0.5 truncate">
+                                        <div class="text-[10px] text-[#123B7A] dark:text-blue-400 font-semibold uppercase tracking-wider mt-0.5 truncate">
                                             <?= htmlspecialchars($c['company_name'] ?? 'Startup') ?>
                                         </div>
-                                        <div class="text-xs text-[#667085] truncate mt-1">
+                                        <div class="text-xs text-[#667085] dark:text-slate-300 truncate mt-1">
                                             <?= htmlspecialchars($c['last_msg'] ?? 'No messages yet') ?>
                                         </div>
                                     </div>
                                     <?php if ($c['unread_count'] > 0): ?>
-                                        <span class="w-5 h-5 rounded-full bg-[#123B7A] text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                                        <span class="w-5 h-5 rounded-full bg-[#123B7A] dark:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                                             <?= $c['unread_count'] ?>
                                         </span>
                                     <?php endif; ?>
@@ -215,31 +275,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
             </div>
 
             <!-- Active Chat Box (Right Pane) -->
-            <div class="<?= !$activeConv ? 'hidden md:flex' : 'flex' ?> flex-1 flex-col bg-[#FAFBFD]">
+            <div class="<?= !$activeConv ? 'hidden md:flex' : 'flex' ?> flex-1 flex-col bg-[#FAFBFD] dark:bg-[#0B0F19] min-h-0 h-full overflow-hidden">
                 <?php if ($activeConv): ?>
                     <!-- Active Header -->
-                    <div class="h-16 px-4 sm:px-6 border-b border-[#E4E8EF] bg-white flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
+                    <div class="h-16 px-4 sm:px-6 border-b border-[#E4E8EF] dark:border-slate-800 bg-white dark:bg-[#0F172A] flex items-center justify-between flex-shrink-0 shadow-2xs">
+                        <div class="flex items-center space-x-3 min-w-0">
                             <a href="<?= url('investor/messages.php') ?>"
-                                class="md:hidden p-1.5 rounded-lg text-[#667085] hover:bg-[#FAFBFD] transition"
+                                class="md:hidden p-1.5 rounded-lg text-[#667085] dark:text-slate-400 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 transition"
                                 title="Back to discussions">
                                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
                             </a>
                             <img src="<?= $activeConv['other_user_avatar'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>"
-                                class="w-9 h-9 rounded-full object-cover border border-[#E4E8EF] bg-white">
-                            <div>
-                                <div class="text-xs font-bold text-[#0B1F3A] truncate">
+                                class="w-10 h-10 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 bg-white dark:bg-slate-800 flex-shrink-0">
+                            <div class="min-w-0">
+                                <div class="text-sm font-bold text-[#0B1F3A] dark:text-white truncate">
                                     <?= htmlspecialchars($activeConv['other_user_name']) ?>
                                 </div>
-                                <div class="text-[10.5px] text-emerald-700 flex items-center space-x-1.5 font-semibold">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>Founder • <?= htmlspecialchars($activeConv['company_name'] ?? 'Startup') ?></span>
+                                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5 font-semibold mt-0.5">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                                    <span class="truncate">Founder • <?= htmlspecialchars($activeConv['company_name'] ?? 'Startup') ?></span>
                                 </div>
                             </div>
                         </div>
                         <?php if (!empty($activeConv['comp_id'])): ?>
                             <a href="<?= url('investor/startup_detail.php?id=' . hash_id_encode($activeConv['comp_id'])) ?>"
-                                class="text-xs font-bold text-[#123B7A] hover:text-[#0B1F3A] flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#EAF2FF] transition">
+                                class="text-xs font-bold text-[#123B7A] dark:text-blue-300 hover:text-[#0B1F3A] dark:hover:text-white flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#EAF2FF] dark:bg-blue-950/70 border border-[#123B7A]/15 dark:border-blue-700/50 hover:bg-[#d8e6ff] dark:hover:bg-blue-900/60 transition shadow-2xs flex-shrink-0">
                                 <span>Deal Room</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </a>
@@ -247,10 +307,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                     </div>
 
                     <!-- Messages Stream -->
-                    <div class="flex-1 p-6 overflow-y-auto space-y-4" id="chat-messages-container">
+                    <div class="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto space-y-4" id="chat-messages-container">
                         <div class="text-center py-2">
-                            <span class="px-3 py-1 rounded-full bg-[#EAF2FF] text-[#123B7A] text-[10px] font-semibold border border-[#123B7A]/10">
-                                End-to-End Diligence Encrypted • Direct Founder Channel
+                            <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#EAF2FF] dark:bg-slate-800 text-[#123B7A] dark:text-blue-300 text-[11px] font-semibold border border-[#123B7A]/15 dark:border-slate-700 shadow-2xs">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#123B7A] dark:text-blue-400"></i>
+                                <span>End-to-End Diligence Encrypted • Direct Founder Channel</span>
                             </span>
                         </div>
 
@@ -260,12 +321,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                             <div class="flex items-end space-x-2.5 <?= $isMe ? 'justify-end' : 'justify-start' ?>">
                                 <?php if (!$isMe): ?>
                                     <img src="<?= $msg['sender_avatar'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>"
-                                        class="w-7 h-7 rounded-full object-cover mb-0.5 border border-[#E4E8EF] flex-shrink-0">
+                                        class="w-8 h-8 rounded-full object-cover mb-0.5 border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">
                                 <?php endif; ?>
 
-                                <div class="max-w-md rounded-2xl p-3.5 text-xs leading-relaxed <?= $isMe ? 'bg-[#123B7A] text-white rounded-br-xs shadow-sm' : 'bg-white border border-[#E4E8EF] text-[#111827] rounded-bl-xs shadow-sm' ?>">
-                                    <div class="break-words"><?= nl2br(htmlspecialchars($msg['message_text'])) ?></div>
-                                    <div class="text-[9px] mt-1.5 text-right <?= $isMe ? 'text-[#EAF2FF]' : 'text-[#667085]' ?>">
+                                <div class="max-w-md lg:max-w-lg rounded-2xl p-4 text-xs leading-relaxed <?= $isMe ? 'chat-bubble-me rounded-br-xs' : 'chat-bubble-them rounded-bl-xs' ?>">
+                                    <div class="break-words font-medium"><?= nl2br(htmlspecialchars($msg['message_text'])) ?></div>
+                                    <div class="text-[9.5px] mt-1.5 text-right <?= $isMe ? 'opacity-80 text-white' : 'text-[#667085] dark:text-slate-400' ?>">
                                         <?= date('h:i A', strtotime($msg['created_at'])) ?>
                                     </div>
                                 </div>
@@ -273,24 +334,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                         <?php endforeach; ?>
                     </div>
 
-                    <!-- Message Input Form -->
+                    <!-- Message Input Form (Fixed at bottom of chat column) -->
                     <form action="<?= url('investor/messages.php?conv=' . hash_id_encode($selectedConvId)) ?>" method="POST"
-                        class="p-4 bg-white border-t border-[#E4E8EF] flex items-center space-x-3">
+                        class="p-4 bg-white dark:bg-[#0F172A] border-t border-[#E4E8EF] dark:border-slate-800 flex items-center space-x-3 flex-shrink-0 shadow-xs">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                         <input type="text" name="message_text" required autocomplete="off"
                             placeholder="Type your diligence query or deal term inquiry..."
-                            class="flex-1 px-4 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] placeholder-[#667085] outline-none transition">
+                            class="flex-1 px-4 py-2.5 bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 focus:bg-white dark:focus:bg-slate-800 focus:border-[#123B7A] dark:focus:border-blue-500 rounded-xl text-xs text-[#111827] dark:text-white placeholder-[#667085] dark:placeholder-slate-400 outline-none transition shadow-2xs">
                         <button type="submit"
-                            class="px-4 py-2.5 bg-[#123B7A] hover:bg-[#0B1F3A] text-white rounded-xl shadow-sm transition flex items-center space-x-1.5 font-bold text-xs">
+                            class="px-5 py-2.5 bg-[#123B7A] dark:bg-blue-600 hover:bg-[#0B1F3A] dark:hover:bg-blue-500 text-white rounded-xl shadow-sm transition flex items-center space-x-1.5 font-bold text-xs flex-shrink-0 cursor-pointer">
                             <span>Send</span>
                             <i data-lucide="send" class="w-3.5 h-3.5"></i>
                         </button>
                     </form>
                 <?php else: ?>
-                    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#667085] space-y-3">
-                        <i data-lucide="message-circle" class="w-12 h-12 text-[#667085]/30"></i>
-                        <div class="text-sm font-bold text-[#0B1F3A]">Select a deal conversation</div>
-                        <p class="text-xs text-[#667085] max-w-sm">Choose a conversation from the left to review deal correspondence with founders.</p>
+                    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center text-[#667085] dark:text-slate-400 space-y-3">
+                        <i data-lucide="message-circle" class="w-12 h-12 text-[#667085]/30 dark:text-slate-600"></i>
+                        <div class="text-sm font-bold text-[#0B1F3A] dark:text-slate-200">Select a deal conversation</div>
+                        <p class="text-xs text-[#667085] dark:text-slate-400 max-w-sm">Choose a conversation from the left to review deal correspondence with founders.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -303,6 +364,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
         const container = document.getElementById('chat-messages-container');
         if (container) {
             container.scrollTop = container.scrollHeight;
+        }
+
+        // Live conversation search filter
+        const searchInput = document.getElementById('discussion-search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                const items = document.querySelectorAll('.conversation-thread-item');
+                items.forEach(item => {
+                    const name = item.getAttribute('data-name') || '';
+                    const company = item.getAttribute('data-company') || '';
+                    if (!query || name.includes(query) || company.includes(query)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
         }
     </script>
 </body>

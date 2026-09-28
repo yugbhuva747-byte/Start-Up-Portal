@@ -68,11 +68,7 @@ $flash = get_flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Holdings • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -224,49 +220,49 @@ $flash = get_flash();
             <section class="space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-[#0B1F3A]">Portfolio Holdings & Allotments</h2>
-                        <p class="text-xs text-[#667085]">Detailed share allotment contracts and cap table records</p>
+                        <h2 class="text-base font-bold text-[#0B1F3A] dark:text-white">Portfolio Holdings & Allotments</h2>
+                        <p class="text-xs text-[#667085] dark:text-slate-400">Detailed share allotment contracts and cap table records</p>
                     </div>
-                    <span class="text-xs text-[#667085] font-semibold"><?= count($investments) ?> Total Entries</span>
+                    <span class="text-xs text-[#667085] dark:text-slate-400 font-semibold"><?= count($investments) ?> Total Entries</span>
                 </div>
 
                 <?php if (empty($investments)): ?>
-                    <div class="bg-white border border-[#E4E8EF] rounded-xl p-12 text-center text-xs text-[#667085]">
-                        <div class="w-12 h-12 rounded-full bg-[#EAF2FF] text-[#123B7A] flex items-center justify-center mx-auto mb-3">
+                    <div class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl p-12 text-center text-xs text-[#667085] dark:text-slate-400">
+                        <div class="w-12 h-12 rounded-full bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400 flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="briefcase" class="w-6 h-6"></i>
                         </div>
-                        <div class="text-sm font-bold text-[#0B1F3A] mb-1">No venture investments yet</div>
-                        <p class="max-w-md mx-auto text-[#667085] leading-relaxed">
+                        <div class="text-sm font-bold text-[#0B1F3A] dark:text-white mb-1">No venture investments yet</div>
+                        <p class="max-w-md mx-auto text-[#667085] dark:text-slate-400 leading-relaxed">
                             Start building your startup investment portfolio. Browse live opportunities, review comprehensive diligence rooms, and commit early-stage capital.
                         </p>
-                        <a href="<?= url('investor/discover.php') ?>" class="inline-block mt-4 px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-bold text-xs transition">
+                        <a href="<?= url('investor/discover.php') ?>" class="inline-block mt-4 px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-bold text-xs transition">
                             Explore Active Rounds
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
+                    <div class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl divide-y divide-[#E4E8EF] dark:divide-slate-800">
                         <?php foreach ($investments as $inv): 
                             $encCompId = encode_id($inv['comp_id']);
                         ?>
-                            <div class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-[#FAFBFD] transition">
+                            <div class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-[#FAFBFD] dark:hover:bg-slate-800/80 transition">
                                 <!-- Startup Identity -->
                                 <div class="flex items-start space-x-4 min-w-0 flex-1">
                                     <img src="<?= $inv['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>"
-                                        class="w-12 h-12 rounded-xl object-cover border border-[#E4E8EF] flex-shrink-0">
+                                        class="w-12 h-12 rounded-xl object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">
                                     <div class="min-w-0 flex-1">
                                         <div class="flex flex-wrap items-center gap-2">
                                             <a href="<?= url('investor/startup_detail.php?id=' . $encCompId) ?>"
-                                                class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
+                                                class="text-sm font-bold text-[#0B1F3A] dark:text-white hover:text-[#123B7A] dark:hover:text-blue-400 transition truncate">
                                                 <?= htmlspecialchars($inv['company_name']) ?>
                                             </a>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] dark:bg-slate-800 text-[#667085] dark:text-slate-300 border border-[#E4E8EF] dark:border-slate-700">
                                                 <?= htmlspecialchars($inv['industry']) ?>
                                             </span>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EAF2FF] text-[#123B7A]">
+                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400">
                                                 <?= htmlspecialchars($inv['round_name']) ?>
                                             </span>
                                         </div>
-                                        <div class="text-xs text-[#667085] mt-1 flex flex-wrap items-center gap-3">
+                                        <div class="text-xs text-[#667085] dark:text-slate-400 mt-1 flex flex-wrap items-center gap-3">
                                             <span>CIN: <?= htmlspecialchars($inv['cin_number'] ?? 'Verified') ?></span>
                                             <span>•</span>
                                             <span>Confirmed: <?= date('d M Y', strtotime($inv['confirmed_at'])) ?></span>
@@ -277,28 +273,28 @@ $flash = get_flash();
                                 </div>
 
                                 <!-- Financial Metrics & Action -->
-                                <div class="flex items-center justify-between lg:justify-end gap-6 text-xs flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#E4E8EF]">
+                                <div class="flex items-center justify-between lg:justify-end gap-6 text-xs flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#E4E8EF] dark:border-slate-800">
                                     <div>
-                                        <span class="text-[10px] text-[#667085] block">Committed Capital</span>
-                                        <span class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($inv['amount_invested']) ?></span>
+                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Committed Capital</span>
+                                        <span class="font-extrabold text-[#0B1F3A] dark:text-white text-sm"><?= format_inr($inv['amount_invested']) ?></span>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] text-[#667085] block">Equity Stake</span>
-                                        <span class="font-extrabold text-[#123B7A] text-sm"><?= $inv['equity_allotted_percent'] ?>%</span>
+                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Equity Stake</span>
+                                        <span class="font-extrabold text-[#123B7A] dark:text-blue-400 text-sm"><?= $inv['equity_allotted_percent'] ?>%</span>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] text-[#667085] block">Round Valuation</span>
-                                        <span class="font-semibold text-[#111827]"><?= format_inr($inv['valuation'] ?? 0) ?></span>
+                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Round Valuation</span>
+                                        <span class="font-semibold text-[#111827] dark:text-slate-200"><?= format_inr($inv['valuation'] ?? 0) ?></span>
                                     </div>
 
                                     <div class="flex items-center space-x-2">
                                         <a href="<?= url('certificate.php?id=' . $inv['id']) ?>" target="_blank"
-                                            class="px-3.5 py-2 rounded-lg bg-[#FAFBFD] hover:bg-[#EAF2FF] text-[#123B7A] border border-[#E4E8EF] font-bold text-xs flex items-center space-x-1.5 transition">
+                                            class="px-3.5 py-2 rounded-lg bg-[#FAFBFD] dark:bg-slate-800 hover:bg-[#EAF2FF] dark:hover:bg-slate-700 text-[#123B7A] dark:text-blue-400 border border-[#E4E8EF] dark:border-slate-700 font-bold text-xs flex items-center space-x-1.5 transition">
                                             <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                             <span>Certificate</span>
                                         </a>
                                         <a href="<?= url('investor/startup_detail.php?id=' . $encCompId) ?>"
-                                            class="px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAFBFD] border border-[#E4E8EF] text-[#111827] font-semibold text-xs transition">
+                                            class="px-3.5 py-2 rounded-lg bg-white dark:bg-slate-800 hover:bg-[#FAFBFD] dark:hover:bg-slate-700 border border-[#E4E8EF] dark:border-slate-700 text-[#111827] dark:text-white font-semibold text-xs transition">
                                             Deal Room →
                                         </a>
                                     </div>
