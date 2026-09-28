@@ -149,11 +149,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             border-radius: 1.5rem;
             box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
         }
-        .hero-banner {
+        html:not(.dark) .hero-banner {
             background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #F1F5F9 100%);
             border: 1px solid #E2E8F0;
-            border-radius: 1.5rem;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .hero-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+        html.dark .hero-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
         }
         .form-input-clean {
             width: 100%;
@@ -194,12 +202,29 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             border-color: #6366F1;
             box-shadow: 0 6px 16px -2px rgba(99, 102, 241, 0.12);
         }
-        .preview-phone-frame {
+        html:not(.dark) .preview-phone-frame {
             border: 1px solid #E2E8F0;
             background: #FFFFFF;
-            border-radius: 1.25rem;
             box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+        }
+        .preview-phone-frame {
+            border-radius: 1.25rem;
             position: relative;
+            transition: all 0.2s ease;
+        }
+        html.dark .preview-phone-frame {
+            border-color: #1E293B !important;
+            background-color: #111827 !important;
+            background: #111827 !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.65) !important;
+        }
+        html.dark .template-pill-card {
+            background-color: #111827 !important;
+            border-color: #1E293B !important;
+        }
+        html.dark .template-pill-card:hover {
+            background-color: #1E293B !important;
+            border-color: #6366F1 !important;
         }
         .custom-scroll::-webkit-scrollbar {
             width: 6px;
@@ -390,11 +415,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <!-- Mode Toggle / Actions -->
                     <div class="flex items-center space-x-2">
                         <span class="text-xs text-slate-400 font-semibold hidden sm:inline">Preview Mode:</span>
-                        <div class="p-1 bg-slate-100 rounded-xl flex items-center space-x-1 text-xs">
-                            <button type="button" id="btn-view-card" onclick="setPreviewDevice('card')" class="px-3 py-1.5 rounded-lg bg-white shadow-xs font-bold text-slate-800 transition">
+                        <div class="p-1 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center space-x-1 text-xs">
+                            <button type="button" id="btn-view-card" onclick="setPreviewDevice('card')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-xs font-bold text-slate-800 dark:text-white transition">
                                 🖥️ Card Feed
                             </button>
-                            <button type="button" id="btn-view-email" onclick="setPreviewDevice('email')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 font-medium transition">
+                            <button type="button" id="btn-view-email" onclick="setPreviewDevice('email')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">
                                 📱 Investor Email
                             </button>
                         </div>
@@ -405,58 +430,58 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <div>
                     <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
                         <span>⚡ 1-Click Executive Templates:</span>
-                        <span class="text-[11px] text-indigo-600 font-medium">Click any template to auto-fill</span>
+                        <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">Click any template to auto-fill</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                         <!-- Template 1: Revenue & MRR -->
-                        <div onclick="applyTemplate('revenue')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/20">
+                        <div onclick="applyTemplate('revenue')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-300 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center font-bold text-sm">
                                     📈
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-slate-900">Monthly MRR & ARR</div>
-                                    <div class="text-[10.5px] text-slate-500">Revenue, burn & runway</div>
+                                    <div class="text-xs font-bold text-slate-900 dark:text-white">Monthly MRR & ARR</div>
+                                    <div class="text-[10.5px] text-slate-500 dark:text-slate-400">Revenue, burn & runway</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Template 2: Product Ship -->
-                        <div onclick="applyTemplate('product')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-cyan-300 hover:bg-cyan-50/20">
+                        <div onclick="applyTemplate('product')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-cyan-300 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-cyan-50 text-cyan-600 border border-cyan-100 flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-100 dark:border-cyan-800 flex items-center justify-center font-bold text-sm">
                                     ⚡
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-slate-900">Product Ship / V2</div>
-                                    <div class="text-[10.5px] text-slate-500">Features, NPS & speeds</div>
+                                    <div class="text-xs font-bold text-slate-900 dark:text-white">Product Ship / V2</div>
+                                    <div class="text-[10.5px] text-slate-500 dark:text-slate-400">Features, NPS & speeds</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Template 3: Milestone -->
-                        <div onclick="applyTemplate('milestone')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-amber-300 hover:bg-amber-50/20">
+                        <div onclick="applyTemplate('milestone')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-amber-300 hover:bg-amber-50/20 dark:hover:bg-amber-950/20">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800 flex items-center justify-center font-bold text-sm">
                                     🏆
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-slate-900">Major Milestone</div>
-                                    <div class="text-[10.5px] text-slate-500">Partnership, grant or PR</div>
+                                    <div class="text-xs font-bold text-slate-900 dark:text-white">Major Milestone</div>
+                                    <div class="text-[10.5px] text-slate-500 dark:text-slate-400">Partnership, grant or PR</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Template 4: Key Hire -->
-                        <div onclick="applyTemplate('hiring')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50/20">
+                        <div onclick="applyTemplate('hiring')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-300 hover:bg-purple-50/20 dark:hover:bg-purple-950/20">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center font-bold text-sm">
+                                <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800 flex items-center justify-center font-bold text-sm">
                                     👥
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-slate-900">Key Talent & Hire</div>
-                                    <div class="text-[10.5px] text-slate-500">Leadership & team scale</div>
+                                    <div class="text-xs font-bold text-slate-900 dark:text-white">Key Talent & Hire</div>
+                                    <div class="text-[10.5px] text-slate-500 dark:text-slate-400">Leadership & team scale</div>
                                 </div>
                             </div>
                         </div>
@@ -538,11 +563,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 <!-- Quick Metric Pill Helpers -->
                                 <div class="flex flex-wrap items-center gap-1.5 mt-2 text-[11px]">
                                     <span class="text-slate-400 font-medium">Quick chips:</span>
-                                    <button type="button" onclick="appendMetricTag('+25% MoM')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition">+25% MoM</button>
-                                    <button type="button" onclick="appendMetricTag('₹1 Cr+ ARR')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition">₹1 Cr+ ARR</button>
-                                    <button type="button" onclick="appendMetricTag('Cashflow +ve')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition">Cashflow +ve</button>
-                                    <button type="button" onclick="appendMetricTag('18 Mo Runway')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition">18 Mo Runway</button>
-                                    <button type="button" onclick="appendMetricTag('Zero Churn')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono transition">Zero Churn</button>
+                                    <button type="button" onclick="appendMetricTag('+25% MoM')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">+25% MoM</button>
+                                    <button type="button" onclick="appendMetricTag('₹1 Cr+ ARR')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">₹1 Cr+ ARR</button>
+                                    <button type="button" onclick="appendMetricTag('Cashflow +ve')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">Cashflow +ve</button>
+                                    <button type="button" onclick="appendMetricTag('18 Mo Runway')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">18 Mo Runway</button>
+                                    <button type="button" onclick="appendMetricTag('Zero Churn')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">Zero Churn</button>
                                 </div>
                             </div>
 
@@ -558,13 +583,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 <!-- Fast Structured Section Injection Tools -->
                                 <div class="flex flex-wrap items-center gap-1.5 mb-2 text-xs">
                                     <span class="text-slate-400 text-[11px]">Structure aids:</span>
-                                    <button type="button" onclick="injectSection('highlights')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">
+                                    <button type="button" onclick="injectSection('highlights')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-medium transition">
                                         + Key Wins
                                     </button>
-                                    <button type="button" onclick="injectSection('lowlights')" class="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition">
+                                    <button type="button" onclick="injectSection('lowlights')" class="px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-medium transition">
                                         + Lowlights
                                     </button>
-                                    <button type="button" onclick="injectSection('ask')" class="px-2 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-semibold transition">
+                                    <button type="button" onclick="injectSection('ask')" class="px-2 py-1 rounded bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-semibold transition">
                                         + The Ask for Investors
                                     </button>
                                 </div>
@@ -576,13 +601,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             </div>
 
                             <!-- Form Action Bar -->
-                            <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div class="text-xs text-slate-500 flex items-center space-x-1.5">
+                            <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-1.5">
                                     <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-                                    <span>Sends instant alerts to <strong><?= max(1, $totalStakeholders) ?> stakeholders</strong></span>
+                                    <span>Sends instant alerts to <strong class="text-slate-800 dark:text-white"><?= max(1, $totalStakeholders) ?> stakeholders</strong></span>
                                 </div>
                                 <div class="flex items-center space-x-2.5">
-                                    <button type="button" onclick="resetStudio()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition">
+                                    <button type="button" onclick="resetStudio()" class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold transition">
                                         Reset
                                     </button>
                                     <button type="submit" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition flex items-center space-x-2">
@@ -597,26 +622,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div class="lg:col-span-5 space-y-3 sticky top-24">
                             <div class="flex items-center justify-between px-1">
                                 <div class="flex items-center space-x-2">
-                                    <i data-lucide="smartphone" class="w-4 h-4 text-indigo-600"></i>
-                                    <span class="text-xs font-bold text-slate-800">Live Investor View Simulator</span>
+                                    <i data-lucide="smartphone" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                    <span class="text-xs font-bold text-slate-800 dark:text-white">Live Investor View Simulator</span>
                                 </div>
-                                <span class="text-[11px] font-mono text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">● Realtime Sync</span>
+                                <span class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">● Realtime Sync</span>
                             </div>
 
                             <!-- The Simulated Card Screen Container -->
-                            <div class="preview-phone-frame p-5 space-y-4">
+                            <div class="preview-phone-frame bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 p-5 space-y-4">
                                 <!-- Top Bar of Simulator -->
-                                <div class="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+                                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 text-xs">
                                     <div class="flex items-center space-x-2">
                                         <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
                                             <?= strtoupper(substr($company['name'] ?? 'S', 0, 1)) ?>
                                         </div>
                                         <div>
-                                            <div class="font-bold text-slate-900 leading-tight"><?= htmlspecialchars($company['name'] ?? 'Your Startup') ?></div>
-                                            <div class="text-[10px] text-slate-400">Verified Issuer</div>
+                                            <div class="font-bold text-slate-900 dark:text-white leading-tight"><?= htmlspecialchars($company['name'] ?? 'Your Startup') ?></div>
+                                            <div class="text-[10px] text-slate-400 dark:text-slate-400">Verified Issuer</div>
                                         </div>
                                     </div>
-                                    <span id="prev-scope-badge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                    <span id="prev-scope-badge" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">
                                         Public Feed
                                     </span>
                                 </div>
@@ -624,36 +649,36 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 <!-- Live Preview Header -->
                                 <div class="space-y-2">
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <span id="prev-category-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 inline-flex items-center gap-1">
+                                        <span id="prev-category-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1">
                                             <i data-lucide="trending-up" class="w-3 h-3"></i>
                                             <span id="prev-category-text">Traction & Revenue</span>
                                         </span>
-                                        <span class="text-[11px] text-slate-400 font-mono">Today • Live Draft</span>
+                                        <span class="text-[11px] text-slate-400 dark:text-slate-400 font-mono">Today • Live Draft</span>
                                     </div>
 
-                                    <h3 id="prev-title" class="text-base font-extrabold text-slate-900 leading-snug">
+                                    <h3 id="prev-title" class="text-base font-extrabold text-slate-900 dark:text-white leading-snug">
                                         Type a headline to preview your investor announcement...
                                     </h3>
                                 </div>
 
                                 <!-- Live Metrics Pill Preview -->
-                                <div id="prev-metrics-container" class="p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-200/80 text-xs font-bold text-emerald-900 flex items-center space-x-2">
-                                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
+                                <div id="prev-metrics-container" class="p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 dark:from-emerald-950/50 dark:to-teal-950/40 border border-emerald-200/80 dark:border-emerald-800/60 text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center space-x-2">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0"></i>
                                     <span id="prev-metrics" class="truncate">+25% MoM • ₹3.8 Cr ARR • 98% Retention</span>
                                 </div>
 
                                 <!-- Live Body Scroll Container -->
-                                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 max-h-56 overflow-y-auto custom-scroll text-xs text-slate-700 leading-relaxed whitespace-pre-line font-normal" id="prev-content">
+                                <div class="bg-slate-50 dark:bg-slate-900/80 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 max-h-56 overflow-y-auto custom-scroll text-xs text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line font-normal" id="prev-content">
                                     Your detailed progress updates, customer wins, and requests for investor help will render here in real-time as you type in the editor...
                                 </div>
 
                                 <!-- Simulator Footer Bar -->
-                                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                                    <span class="flex items-center gap-1 text-slate-500">
-                                        <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400">
+                                    <span class="flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                                        <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
                                         <span>Delivered to investor inboxes</span>
                                     </span>
-                                    <span class="font-semibold text-indigo-600">Simulated Card</span>
+                                    <span class="font-semibold text-indigo-600 dark:text-indigo-400">Simulated Card</span>
                                 </div>
                             </div>
                         </div>
@@ -803,7 +828,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                                 <!-- Key Metrics Pill Strip -->
                                 <?php if (!empty($upd['metrics_summary'])): ?>
-                                    <div class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50/50 border border-emerald-200 text-xs font-bold text-emerald-900 flex items-center space-x-2.5">
+                                    <div class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50/50 dark:from-emerald-950/50 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center space-x-2.5">
                                         <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
                                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                                         </div>
@@ -878,10 +903,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             if (prevScopeBadge) {
                 if (visibility === 'portfolio_only') {
                     prevScopeBadge.innerText = '🔒 Confidential';
-                    prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100';
+                    prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
                 } else {
                     prevScopeBadge.innerText = '🌐 Public Feed';
-                    prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100';
+                    prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
                 }
             }
 
@@ -1000,10 +1025,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             btns.forEach(btn => {
                 if (btn.getAttribute('data-filter') === cat) {
                     btn.classList.add('bg-indigo-600', 'text-white');
-                    btn.classList.remove('bg-white', 'text-slate-700', 'hover:bg-slate-50');
+                    btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'hover:bg-slate-50', 'dark:hover:bg-slate-800');
                 } else {
                     btn.classList.remove('bg-indigo-600', 'text-white');
-                    btn.classList.add('bg-white', 'text-slate-700', 'hover:bg-slate-50');
+                    btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'hover:bg-slate-50', 'dark:hover:bg-slate-800');
                 }
             });
 

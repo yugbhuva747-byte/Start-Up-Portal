@@ -79,12 +79,12 @@ if ($db && $user):
         // Theme palette configuration
         $theme = match($bPriority) {
             'urgent' => [
-                'card_bg' => 'bg-gradient-to-r from-rose-50/90 via-white to-rose-50/40',
-                'border' => 'border-rose-200/90',
-                'ring' => 'ring-1 ring-rose-500/10',
+                'card_bg' => 'bg-gradient-to-r from-rose-50/90 via-white to-rose-50/40 dark:from-rose-950/40 dark:via-slate-900/95 dark:to-slate-900/90',
+                'border' => 'border-rose-200/90 dark:border-rose-900/50',
+                'ring' => 'ring-1 ring-rose-500/10 dark:ring-rose-500/20',
                 'shadow' => 'shadow-sm shadow-rose-950/5 hover:shadow-md hover:shadow-rose-950/10',
                 'accent_bar' => 'bg-gradient-to-b from-rose-500 via-rose-600 to-rose-700',
-                'badge_bg' => 'bg-rose-100/90 text-rose-800 border-rose-200/90',
+                'badge_bg' => 'bg-rose-100/90 text-rose-800 border-rose-200/90 dark:bg-rose-950/80 dark:text-rose-300 dark:border-rose-800/60',
                 'badge_label' => 'URGENT NOTICE',
                 'beacon_ping' => 'bg-rose-400',
                 'beacon_dot' => 'bg-rose-600',
@@ -93,15 +93,15 @@ if ($db && $user):
                 'img_ring' => 'ring-rose-300',
                 'btn' => 'bg-rose-600 hover:bg-rose-700 text-white shadow-rose-600/20',
                 'btn_icon' => 'arrow-right',
-                'dismiss_hover' => 'hover:bg-rose-100 text-slate-400 hover:text-rose-700'
+                'dismiss_hover' => 'hover:bg-rose-100 text-slate-400 hover:text-rose-700 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white'
             ],
             'compliance' => [
-                'card_bg' => 'bg-gradient-to-r from-amber-50/90 via-white to-amber-50/40',
-                'border' => 'border-amber-200/90',
-                'ring' => 'ring-1 ring-amber-500/10',
+                'card_bg' => 'bg-gradient-to-r from-amber-50/90 via-white to-amber-50/40 dark:from-amber-950/40 dark:via-slate-900/95 dark:to-slate-900/90',
+                'border' => 'border-amber-200/90 dark:border-amber-900/50',
+                'ring' => 'ring-1 ring-amber-500/10 dark:ring-amber-500/20',
                 'shadow' => 'shadow-sm shadow-amber-950/5 hover:shadow-md hover:shadow-amber-950/10',
                 'accent_bar' => 'bg-gradient-to-b from-amber-500 via-amber-600 to-amber-700',
-                'badge_bg' => 'bg-amber-100/90 text-amber-900 border-amber-200/90',
+                'badge_bg' => 'bg-amber-100/90 text-amber-900 border-amber-200/90 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800/60',
                 'badge_label' => 'COMPLIANCE BULLETIN',
                 'beacon_ping' => 'bg-amber-400',
                 'beacon_dot' => 'bg-amber-600',
@@ -110,15 +110,15 @@ if ($db && $user):
                 'img_ring' => 'ring-amber-300',
                 'btn' => 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/20',
                 'btn_icon' => 'file-text',
-                'dismiss_hover' => 'hover:bg-amber-100 text-slate-400 hover:text-amber-800'
+                'dismiss_hover' => 'hover:bg-amber-100 text-slate-400 hover:text-amber-800 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white'
             ],
             'opportunity' => [
-                'card_bg' => 'bg-gradient-to-r from-emerald-50/90 via-white to-teal-50/40',
-                'border' => 'border-emerald-200/90',
-                'ring' => 'ring-1 ring-emerald-500/10',
+                'card_bg' => 'bg-gradient-to-r from-emerald-50/90 via-white to-teal-50/40 dark:from-emerald-950/40 dark:via-slate-900/95 dark:to-slate-900/90',
+                'border' => 'border-emerald-200/90 dark:border-emerald-900/50',
+                'ring' => 'ring-1 ring-emerald-500/10 dark:ring-emerald-500/20',
                 'shadow' => 'shadow-sm shadow-emerald-950/5 hover:shadow-md hover:shadow-emerald-950/10',
                 'accent_bar' => 'bg-gradient-to-b from-emerald-500 via-teal-600 to-teal-700',
-                'badge_bg' => 'bg-emerald-100/90 text-emerald-900 border-emerald-200/90',
+                'badge_bg' => 'bg-emerald-100/90 text-emerald-900 border-emerald-200/90 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800/60',
                 'badge_label' => 'NEW OPPORTUNITY',
                 'beacon_ping' => 'bg-emerald-400',
                 'beacon_dot' => 'bg-emerald-600',
@@ -127,15 +127,15 @@ if ($db && $user):
                 'img_ring' => 'ring-emerald-300',
                 'btn' => 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20',
                 'btn_icon' => 'arrow-right',
-                'dismiss_hover' => 'hover:bg-emerald-100 text-slate-400 hover:text-emerald-800'
+                'dismiss_hover' => 'hover:bg-emerald-100 text-slate-400 hover:text-emerald-800 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white'
             ],
             default => [
-                'card_bg' => 'bg-gradient-to-r from-indigo-50/90 via-white to-blue-50/40',
-                'border' => 'border-indigo-200/90',
-                'ring' => 'ring-1 ring-indigo-500/10',
+                'card_bg' => 'bg-gradient-to-r from-indigo-50/90 via-white to-blue-50/40 dark:from-indigo-950/40 dark:via-slate-900/95 dark:to-slate-900/90',
+                'border' => 'border-indigo-200/90 dark:border-indigo-900/50',
+                'ring' => 'ring-1 ring-indigo-500/10 dark:ring-indigo-500/20',
                 'shadow' => 'shadow-sm shadow-indigo-950/5 hover:shadow-md hover:shadow-indigo-950/10',
                 'accent_bar' => 'bg-gradient-to-b from-indigo-500 via-indigo-600 to-blue-600',
-                'badge_bg' => 'bg-indigo-100/90 text-indigo-900 border-indigo-200/90',
+                'badge_bg' => 'bg-indigo-100/90 text-indigo-900 border-indigo-200/90 dark:bg-indigo-950/80 dark:text-indigo-300 dark:border-indigo-800/60',
                 'badge_label' => 'PLATFORM ANNOUNCEMENT',
                 'beacon_ping' => 'bg-indigo-400',
                 'beacon_dot' => 'bg-indigo-600',
@@ -144,7 +144,7 @@ if ($db && $user):
                 'img_ring' => 'ring-indigo-300',
                 'btn' => 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20',
                 'btn_icon' => 'arrow-right',
-                'dismiss_hover' => 'hover:bg-indigo-100 text-slate-400 hover:text-indigo-800'
+                'dismiss_hover' => 'hover:bg-indigo-100 text-slate-400 hover:text-indigo-800 dark:hover:bg-slate-800 dark:text-slate-400 dark:hover:text-white'
             ]
         };
     ?>
@@ -162,13 +162,13 @@ if ($db && $user):
                 <?php if (!empty($banner['image_url'])): ?>
                     <!-- Professional Studio Thumbnail with subtle ring & badge -->
                     <div class="relative flex-shrink-0">
-                        <div class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden ring-2 <?= $theme['img_ring'] ?> shadow-sm bg-slate-100">
+                        <div class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden ring-2 <?= $theme['img_ring'] ?> shadow-sm bg-slate-100 dark:bg-slate-800">
                             <img src="<?= htmlspecialchars($banner['image_url']) ?>" 
                                  alt="Notice visual" 
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                  onerror="this.onerror=null; this.parentElement.style.display='none';">
                         </div>
-                        <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-md <?= $theme['icon_bg'] ?> flex items-center justify-center ring-2 ring-white shadow-xs">
+                        <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-md <?= $theme['icon_bg'] ?> flex items-center justify-center ring-2 ring-white dark:ring-slate-900 shadow-xs">
                             <i data-lucide="<?= $theme['icon'] ?>" class="w-3 h-3"></i>
                         </div>
                     </div>
@@ -195,14 +195,14 @@ if ($db && $user):
                         </span>
 
                         <!-- Target Audience Tag -->
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-500 bg-white/70 border border-slate-200/70">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-500 bg-white/70 border border-slate-200/70 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700">
                             <i data-lucide="users" class="w-2.5 h-2.5 text-slate-400"></i>
                             <span><?= ucfirst(htmlspecialchars($banner['target_audience'])) ?> Channel</span>
                         </span>
 
                         <!-- Expiry Countdown Badge (if scheduled) -->
                         <?php if ($expiryBadge): ?>
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-600 bg-white/70 border border-slate-200/70" title="Notice expiration window">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold text-slate-600 bg-white/70 border border-slate-200/70 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700" title="Notice expiration window">
                                 <i data-lucide="clock" class="w-2.5 h-2.5 text-slate-400"></i>
                                 <span><?= $expiryBadge ?></span>
                             </span>
@@ -211,19 +211,19 @@ if ($db && $user):
                     </div>
 
                     <!-- Title -->
-                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 tracking-tight leading-snug">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
                         <?= htmlspecialchars($banner['title']) ?>
                     </h3>
 
                     <!-- Body Message -->
-                    <p class="text-xs text-slate-600 leading-relaxed mt-0.5 line-clamp-2 sm:line-clamp-none max-w-3xl">
+                    <p class="text-xs text-slate-600 dark:text-slate-200 leading-relaxed mt-0.5 line-clamp-2 sm:line-clamp-none max-w-3xl">
                         <?= htmlspecialchars($banner['message']) ?>
                     </p>
                 </div>
             </div>
 
             <!-- Right block: Call-to-Action & Session Dismiss Button -->
-            <div class="flex items-center space-x-2.5 flex-shrink-0 self-end md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-200/60 w-full md:w-auto justify-between md:justify-end">
+            <div class="flex items-center space-x-2.5 flex-shrink-0 self-end md:self-center pt-2 md:pt-0 border-t md:border-t-0 border-slate-200/60 dark:border-slate-800 w-full md:w-auto justify-between md:justify-end">
                 
                 <?php if (!empty($banner['cta_label']) && !empty($banner['cta_url'])): ?>
                     <a href="<?= url($banner['cta_url']) ?>" 

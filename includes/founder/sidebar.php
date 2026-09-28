@@ -6,10 +6,13 @@
 $currentPage = basename($_SERVER['PHP_SELF']);
 $founderUser = current_user();
 $founderProgress = get_profile_progress($founderUser['id'], 'founder');
+
+// Include Founder Dark & Light Theme Controller
+require_once __DIR__ . '/theme.php';
 ?>
 <style>
     #main-sidebar, #main-sidebar * {
-        font-family: "Vay Portal", Sans-serif;
+        font-family: "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }

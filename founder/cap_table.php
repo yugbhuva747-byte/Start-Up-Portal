@@ -203,11 +203,19 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
             border-color: #CBD5E1;
             box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
         }
-        .hero-cap-banner {
+        html:not(.dark) .hero-cap-banner {
             background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #FAF5FF 100%);
             border: 1px solid #E2E8F0;
-            border-radius: 1.5rem;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .hero-cap-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+        html.dark .hero-cap-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
         }
         .form-input-clean {
             width: 100%;

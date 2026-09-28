@@ -271,7 +271,7 @@ if (!empty($company['name'])) {
             </div>
 
             <!-- Executive Startup Card with Profile Readiness Bar -->
-            <div class="section-card p-5 sm:p-6 bg-gradient-to-br from-white via-white to-slate-50 border-slate-200/90 relative overflow-hidden">
+            <div class="section-card p-5 sm:p-6 bg-gradient-to-br from-white via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 border-slate-200/90 dark:border-slate-800 relative overflow-hidden">
                 <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                     <!-- Left: Brand Identity & Chips -->
                     <div class="flex items-start sm:items-center space-x-4">

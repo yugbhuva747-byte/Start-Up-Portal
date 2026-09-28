@@ -133,11 +133,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             border-color: #CBD5E1;
             box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
         }
-        .hero-profile-banner {
+        html:not(.dark) .hero-profile-banner {
             background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #F1F5F9 100%);
             border: 1px solid #E2E8F0;
-            border-radius: 1.5rem;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .hero-profile-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+        html.dark .hero-profile-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
         }
         .form-input-clean {
             width: 100%;
@@ -202,7 +210,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             <?php endif; ?>
 
             <!-- Executive Persona Hero Card -->
-            <div class="hero-profile-banner p-6 sm:p-8 relative overflow-hidden">
+            <div class="hero-profile-banner p-6 sm:p-8 relative overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute right-32 -bottom-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -210,26 +218,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-5">
                         <div class="relative group">
                             <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white shadow-md" id="avatar-preview-img">
-                            <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white <?= $user['is_verified'] ? 'bg-emerald-500' : 'bg-amber-400' ?>"></span>
+                                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md" id="avatar-preview-img">
+                            <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 <?= $user['is_verified'] ? 'bg-emerald-500' : 'bg-amber-400' ?>"></span>
                         </div>
 
                         <div class="text-center sm:text-left space-y-1.5">
                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+                                <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                     <?= htmlspecialchars($user['name']) ?>
                                 </h1>
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?= $user['is_verified'] ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?= $user['is_verified'] ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' ?>">
                                     <?= $user['is_verified'] ? 'KYC VERIFIED FOUNDER' : 'KYC PENDING' ?>
                                 </span>
                             </div>
-                            <div class="text-xs sm:text-sm text-indigo-600 font-bold">
+                            <div class="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-bold">
                                 <?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>
                                 <?php if ($company): ?>
-                                    • <span class="text-slate-800 font-semibold"><?= htmlspecialchars($company['name']) ?></span>
+                                    • <span class="text-slate-800 dark:text-slate-200 font-semibold"><?= htmlspecialchars($company['name']) ?></span>
                                 <?php endif; ?>
                             </div>
-                            <div class="text-xs text-slate-500 flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-0.5">
+                            <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-0.5">
                                 <span><?= htmlspecialchars($user['email']) ?></span>
                                 <span>•</span>
                                 <span><?= htmlspecialchars($user['city'] ?? 'India') ?></span>
@@ -243,8 +251,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                     <!-- Public Profile Link Button -->
                     <div class="flex items-center space-x-2.5">
-                        <a href="<?= url('founder/view.php') ?>" class="px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-2">
-                            <i data-lucide="external-link" class="w-4 h-4 text-indigo-600"></i>
+                        <a href="<?= url('founder/view.php') ?>" class="px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-2">
+                            <i data-lucide="external-link" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                             <span>View Public Founder Profile</span>
                         </a>
                     </div>
@@ -257,32 +265,32 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="update_profile">
 
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                         <div>
-                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-                                <i data-lucide="user-check" class="w-4 h-4 text-indigo-600"></i>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+                                <i data-lucide="user-check" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                                 <span>Personal Information & Bio</span>
                             </h3>
-                            <p class="text-xs text-slate-500 mt-0.5">Visible to angel syndicates and venture investors researching your leadership background.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visible to angel syndicates and venture investors researching your leadership background.</p>
                         </div>
                     </div>
 
                     <!-- Photo Upload Dropzone -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex flex-col sm:flex-row items-center gap-5">
+                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5">
                         <div class="relative flex-shrink-0 group">
                             <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                 class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md bg-white transition group-hover:brightness-95" id="avatar-form-img">
+                                 class="w-20 h-20 rounded-2xl object-cover border-2 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 transition group-hover:brightness-95" id="avatar-form-img">
                             <label for="avatar_file" class="absolute inset-0 bg-black/40 rounded-2xl flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition cursor-pointer" title="Click to choose photo">
                                 <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
                                 <span class="text-[9px] font-bold">Change</span>
                             </label>
                         </div>
                         <div class="flex-1 text-center sm:text-left space-y-1.5 w-full">
-                            <div class="font-bold text-slate-800 text-xs flex items-center justify-center sm:justify-start space-x-2">
+                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center justify-center sm:justify-start space-x-2">
                                 <span>Executive Headshot</span>
-                                <span class="text-[10px] px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-bold">JPG, PNG, WEBP</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full font-bold">JPG, PNG, WEBP</span>
                             </div>
-                            <p class="text-xs text-slate-500">Upload a crisp professional headshot. Max file size: 8MB.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Upload a crisp professional headshot. Max file size: 8MB.</p>
                             
                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 pt-1">
                                 <label for="avatar_file" class="cursor-pointer inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs shadow-xs transition">

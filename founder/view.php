@@ -165,16 +165,16 @@ $flash = get_flash();
             <!-- Master Profile Header Card -->
             <div class="card-clean rounded-2xl overflow-hidden relative">
                 <!-- Cover Banner Strip -->
-                <div class="h-28 bg-gradient-to-r from-slate-100 via-indigo-50/60 to-slate-100 border-b border-slate-200/80 relative">
+                <div class="h-28 bg-gradient-to-r from-slate-100 via-indigo-50/60 to-slate-100 dark:from-slate-900 dark:via-indigo-950/50 dark:to-slate-900 border-b border-slate-200/80 dark:border-slate-800 relative">
                     <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:16px_16px]"></div>
                 </div>
 
                 <div class="px-6 pb-6 pt-0 relative">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                         <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                             <div class="relative -mt-12 flex-shrink-0">
                                 <img src="<?= $founder['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                     class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md bg-white">
+                                     class="w-24 h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-800">
                                 <?php if ($founder['is_verified']): ?>
                                     <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm" title="Verified Founder">
                                         <i data-lucide="check" class="w-3.5 h-3.5"></i>

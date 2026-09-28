@@ -168,11 +168,19 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
             border-color: #CBD5E1;
             box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
         }
-        .hero-trust-banner {
+        html:not(.dark) .hero-trust-banner {
             background: radial-gradient(130% 100% at 0% 0%, #EFF6FF 0%, #F8FAFC 50%, #F1F5F9 100%);
             border: 1px solid #DBEAFE;
-            border-radius: 1.5rem;
             box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+        .hero-trust-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+        html.dark .hero-trust-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
         }
         .form-input-clean {
             width: 100%;
@@ -228,7 +236,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
             <?php endif; ?>
 
             <!-- Trust & National Gateway Executive Hero Banner -->
-            <div class="hero-trust-banner p-6 sm:p-8 relative overflow-hidden">
+            <div class="hero-trust-banner p-6 sm:p-8 relative overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute right-32 -bottom-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -240,31 +248,31 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                                 <span><?= $isVerified ? 'DigiLocker Verified Compliance' : 'Official National KYC Gateway' ?></span>
                             </span>
                             <?php if ($company): ?>
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/80 border border-slate-200/80 text-slate-700 backdrop-blur-sm">
-                                    <i data-lucide="building" class="w-3.5 h-3.5 text-blue-600"></i>
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/80 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 backdrop-blur-sm">
+                                    <i data-lucide="building" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
                                     <span><?= htmlspecialchars($company['name']) ?></span>
-                                    <span class="text-slate-300">•</span>
-                                    <span class="text-[11px] font-mono text-slate-500">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verification in Progress') ?></span>
+                                    <span class="text-slate-300 dark:text-slate-600">•</span>
+                                    <span class="text-[11px] font-mono text-slate-500 dark:text-slate-400">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verification in Progress') ?></span>
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                             Identity & DigiLocker Compliance Verification
                         </h1>
-                        <p class="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
                             Official statutory verification infrastructure backed by National DigiLocker API gateways, MCA Master Data matching, and SEBI angel investment regulatory standards.
                         </p>
                     </div>
 
                     <!-- Trust Status Badge Widget -->
                     <div class="flex items-center space-x-3">
-                        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center space-x-3">
-                            <div class="w-10 h-10 rounded-xl <?= $isVerified ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100' ?> flex items-center justify-center font-bold flex-shrink-0">
+                        <div class="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl <?= $isVerified ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800' ?> flex items-center justify-center font-bold flex-shrink-0">
                                 <i data-lucide="<?= $isVerified ? 'award' : 'clock' ?>" class="w-5 h-5"></i>
                             </div>
                             <div>
                                 <div class="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider">Platform Status</div>
-                                <div class="text-sm font-extrabold <?= $isVerified ? 'text-emerald-700' : 'text-amber-700' ?>">
+                                <div class="text-sm font-extrabold <?= $isVerified ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400' ?>">
                                     <?= $isVerified ? 'Verified Issuer' : 'Verification Required' ?>
                                 </div>
                             </div>
@@ -276,54 +284,54 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
             <!-- 4-Step Statutory Verification Progress Stepper (Not Boring!) -->
             <div class="section-card p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-                        <i data-lucide="layers" class="w-4 h-4 text-indigo-600"></i>
+                    <h3 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                         <span>Statutory Verification Progress Stepper</span>
                     </h3>
-                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
+                    <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/80 px-2.5 py-0.5 rounded-full">
                         <?= $isVerified ? '4 of 4 Steps Complete (100%)' : '2 of 4 Steps Pending' ?>
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <!-- Step 1: Founder Identity -->
-                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200' ?> space-y-1 relative">
+                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60' : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800' ?> space-y-1 relative">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step 1</span>
-                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-indigo-600' ?>"></i>
+                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400' ?>">Step 1</span>
+                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400' ?>"></i>
                         </div>
-                        <div class="text-xs font-bold text-slate-900">Founder Aadhaar / ID</div>
-                        <p class="text-[11px] text-slate-500">UIDAI cryptographic consent via DigiLocker</p>
+                        <div class="text-xs font-bold text-slate-900 dark:text-white">Founder Aadhaar / ID</div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">UIDAI cryptographic consent via DigiLocker</p>
                     </div>
 
                     <!-- Step 2: Tax PAN -->
-                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200' ?> space-y-1 relative">
+                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60' : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800' ?> space-y-1 relative">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step 2</span>
-                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-indigo-600' ?>"></i>
+                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400' ?>">Step 2</span>
+                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-indigo-600 dark:text-indigo-400' ?>"></i>
                         </div>
-                        <div class="text-xs font-bold text-slate-900">Income Tax PAN</div>
-                        <p class="text-[11px] text-slate-500">Permanent Account Number cross-check</p>
+                        <div class="text-xs font-bold text-slate-900 dark:text-white">Income Tax PAN</div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Permanent Account Number cross-check</p>
                     </div>
 
                     <!-- Step 3: MCA Corporate CIN -->
-                    <div class="p-4 rounded-xl border <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200' ?> space-y-1 relative">
+                    <div class="p-4 rounded-xl border <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60' : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800' ?> space-y-1 relative">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step 3</span>
-                            <i data-lucide="<?= ($company && !empty($company['cin_number'])) || $isVerified ? 'check-circle' : 'clock' ?>" class="w-4 h-4 <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'text-emerald-600' : 'text-amber-500' ?>"></i>
+                            <span class="text-[11px] font-bold <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400' ?>">Step 3</span>
+                            <i data-lucide="<?= ($company && !empty($company['cin_number'])) || $isVerified ? 'check-circle' : 'clock' ?>" class="w-4 h-4 <?= ($company && !empty($company['cin_number'])) || $isVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-500 dark:text-amber-400' ?>"></i>
                         </div>
-                        <div class="text-xs font-bold text-slate-900">MCA Corporate CIN</div>
-                        <p class="text-[11px] text-slate-500">Ministry of Corporate Affairs registry</p>
+                        <div class="text-xs font-bold text-slate-900 dark:text-white">MCA Corporate CIN</div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Ministry of Corporate Affairs registry</p>
                     </div>
 
                     <!-- Step 4: Certified Trust Seal -->
-                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200' ?> space-y-1 relative">
+                    <div class="p-4 rounded-xl border <?= $isVerified ? 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60' : 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800' ?> space-y-1 relative">
                         <div class="flex items-center justify-between">
-                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step 4</span>
-                            <i data-lucide="<?= $isVerified ? 'shield-check' : 'lock' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-slate-400' ?>"></i>
+                            <span class="text-[11px] font-bold <?= $isVerified ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400' ?>">Step 4</span>
+                            <i data-lucide="<?= $isVerified ? 'shield-check' : 'lock' ?>" class="w-4 h-4 <?= $isVerified ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500' ?>"></i>
                         </div>
-                        <div class="text-xs font-bold text-slate-900">Platform Trust Seal</div>
-                        <p class="text-[11px] text-slate-500">Unlocks investor syndicates & wire custody</p>
+                        <div class="text-xs font-bold text-slate-900 dark:text-white">Platform Trust Seal</div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Unlocks investor syndicates & wire custody</p>
                     </div>
                 </div>
             </div>

@@ -18,10 +18,13 @@ if ($db) {
     $cStmt->execute([$currentUser['id']]);
     $unreadCount = (int)$cStmt->fetchColumn();
 }
+
+// Ensure Founder Dark & Light Theme Controller is loaded
+require_once __DIR__ . '/theme.php';
 ?>
 <style>
     .founder-navbar, .founder-navbar * {
-        font-family: "Vay Portal", Sans-serif;
+        font-family: "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
@@ -29,14 +32,12 @@ if ($db) {
         position: sticky !important;
         top: 0 !important;
         z-index: 40 !important;
-        background-color: rgba(255, 255, 255, 0.96) !important;
         backdrop-filter: blur(12px) !important;
         -webkit-backdrop-filter: blur(12px) !important;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02) !important;
     }
 </style>
-<header class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-40" style="font-family: 'Vay Portal', Sans-serif;">
-    <!-- Left Section: Mobile Menu + Quick Search (Founder Command Center removed) -->
+<header class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-40">
+    <!-- Left Section: Mobile Menu + Quick Search -->
     <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0 border border-slate-200" aria-label="Open sidebar menu">
@@ -51,7 +52,7 @@ if ($db) {
         </form>
     </div>
 
-    <!-- Right Section: Verification Badge + Actions + Large Profile Card -->
+    <!-- Right Section: Verification Badge + Actions + Theme Toggle + Notifs + Profile Card -->
     <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
         <!-- Verification Status Indicator -->
         <div class="hidden sm:flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs">
@@ -64,6 +65,23 @@ if ($db) {
             <i data-lucide="plus" class="w-4 h-4"></i>
             <span>New Round</span>
         </a>
+
+        <!-- Dark / Light Theme Toggle Switcher -->
+        <button id="founder-theme-toggle-btn" 
+                onclick="toggleFounderTheme()" 
+                type="button" 
+                class="relative p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition flex items-center justify-center cursor-pointer shadow-xs group" 
+                title="Toggle Dark / Light Theme" 
+                aria-label="Toggle Dark / Light Theme">
+            <!-- Sun Icon Wrapper (Active in Dark Mode) -->
+            <span id="theme-sun-wrap" class="hidden flex items-center justify-center">
+                <i data-lucide="sun" class="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform duration-300"></i>
+            </span>
+            <!-- Moon Icon Wrapper (Active in Light Mode) -->
+            <span id="theme-moon-wrap" class="flex items-center justify-center">
+                <i data-lucide="moon" class="w-4 h-4 text-slate-600 group-hover:-rotate-12 transition-transform duration-300"></i>
+            </span>
+        </button>
 
         <!-- Notifications Bell -->
         <div class="relative" id="notif-dropdown-wrapper">
@@ -123,7 +141,54 @@ if ($db) {
 <script>
     function toggleNotifs() {
         const menu = document.getElementById('notif-menu');
-        menu.classList.toggle('hidden');
+        if (menu) menu.classList.toggle('hidden');
     }
+
+    function toggleFounderTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        const themeName = isDark ? 'dark' : 'light';
+        try {
+            localStorage.setItem('startup_portal_theme', themeName);
+            document.cookie = "startup_portal_theme=" + themeName + ";path=/;max-age=31536000";
+        } catch (e) {}
+        syncFounderThemeIcons(isDark);
+        window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: themeName } }));
+    }
+
+    function syncFounderThemeIcons(isDark) {
+        const sun = document.getElementById('theme-sun-wrap');
+        const moon = document.getElementById('theme-moon-wrap');
+        const btn = document.getElementById('founder-theme-toggle-btn');
+        if (sun && moon) {
+            if (isDark) {
+                sun.classList.remove('hidden');
+                moon.classList.add('hidden');
+                if (btn) {
+                    btn.setAttribute('title', 'Switch to Light Theme');
+                    btn.setAttribute('aria-label', 'Switch to Light Theme');
+                }
+            } else {
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+                if (btn) {
+                    btn.setAttribute('title', 'Switch to Dark Theme');
+                    btn.setAttribute('aria-label', 'Switch to Dark Theme');
+                }
+            }
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
+    }
+
+    // Sync icon state on page load
+    (function () {
+        const isDark = document.documentElement.classList.contains('dark');
+        syncFounderThemeIcons(isDark);
+    })();
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDark = document.documentElement.classList.contains('dark');
+        syncFounderThemeIcons(isDark);
+    });
 </script>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
