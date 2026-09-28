@@ -34,7 +34,7 @@ if ($db) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STARTUP × INVESTOR • Verified Early-Stage Deal Flow & Capital</title>
+    <title>STARTUP × INVESTOR • Portal</title>
     <meta name="description" content="A secure two-sided startup ecosystem connecting verified founders and accredited investors through structured profiles, DigiLocker verification, and funding workflows.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
