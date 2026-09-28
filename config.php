@@ -4,8 +4,38 @@
  * Automatically loads .env and defines standard constants & session setup
  */
 
+// 1. Secure Session Cookie Configuration
 if (session_status() === PHP_SESSION_NONE) {
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_trans_sid', '0');
+    ini_set('session.cookie_httponly', '1');
+
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => $isSecure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+
     session_start();
+}
+
+// 2. Global HTTP Security Headers
+if (!headers_sent()) {
+    header('X-Frame-Options: SAMEORIGIN');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('X-XSS-Protection: 1; mode=block');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
 }
 
 // Helper to load .env

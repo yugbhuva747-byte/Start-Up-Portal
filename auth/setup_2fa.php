@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($res['success']) {
                 // Finalize authenticated session
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $userId;
                 $_SESSION['user_role'] = $userRole;
                 $_SESSION['user_name'] = $userName;

@@ -72,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($res['success']) {
                 // Finalize authenticated session
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $userId;
                 $_SESSION['user_role'] = $userRole;
                 $_SESSION['user_name'] = $userName;
@@ -105,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $res = verify_2fa_backup_code($userId, $backupCode);
 
             if ($res['success']) {
+                session_regenerate_id(true);
                 $_SESSION['user_id'] = $userId;
                 $_SESSION['user_role'] = $userRole;
                 $_SESSION['user_name'] = $userName;

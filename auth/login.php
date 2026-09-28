@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: ' . url('auth/verify_2fa.php'));
                         exit;
                     } else {
+                        session_regenerate_id(true);
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['user_role'] = $user['role'];
                         $_SESSION['user_name'] = $user['name'];
