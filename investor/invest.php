@@ -70,17 +70,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ioStmt->execute([$roundId, $user['id'], $amount]);
                 $orderId = $db->lastInsertId();
 
-                // 2. Calculate Equity Allotted
-                // Formula: (Amount / Valuation) * 100
+                // 2. Calculate Equity & Share Allotment Parameters
                 $equityPercent = $round['valuation'] > 0 ? round(($amount / $round['valuation']) * 100, 3) : 0.00;
-                $certNumber = 'CERT-' . strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $round['company_name']), 0, 3)) . '-' . date('Y') . '-' . rand(100, 999);
+                
+                // Get company face value
+                $cQuery = $db->prepare("SELECT face_value_per_share FROM companies WHERE id = ?");
+                $cQuery->execute([$round['company_id']]);
+                $faceVal = (float)($cQuery->fetchColumn() ?: 10.00);
+                
+                // Issue price per share: FV with standard premium
+                $pricePerShare = max(10.0, round($faceVal * 10.0, 2));
+                $numShares = max(1, (int)round($amount / $pricePerShare));
 
-                // 3. Create Confirmed Investment Record
+                // Distinctive share range sequence for this company
+                $maxDistinctiveStmt = $db->prepare("SELECT COALESCE(MAX(distinctive_to), 10000) FROM investments WHERE company_id = ?");
+                $maxDistinctiveStmt->execute([$round['company_id']]);
+                $maxDistinctive = (int)$maxDistinctiveStmt->fetchColumn();
+                $distinctiveFrom = $maxDistinctive + 1;
+                $distinctiveTo = $distinctiveFrom + $numShares - 1;
+
+                $compCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $round['company_name']), 0, 3));
+                $certNumber = 'SHA-' . date('Y') . '-' . $compCode . '-' . rand(100, 999);
+                $folioNumber = 'FOLIO-' . str_pad($user['id'], 4, '0', STR_PAD_LEFT);
+                $verificationToken = bin2hex(random_bytes(16));
+                $shareClass = 'Series ' . ($round['round_name'] ?: 'Seed') . ' Compulsorily Convertible Preference Shares (CCPS)';
+
+                // 3. Create Confirmed Investment Record with Full Statutory Fields
                 $invStmt = $db->prepare("
-                    INSERT INTO investments (order_id, funding_round_id, investor_user_id, company_id, amount_invested, equity_allotted_percent, certificate_number, confirmed_at, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                    INSERT INTO investments (
+                        order_id, funding_round_id, investor_user_id, company_id, 
+                        amount_invested, equity_allotted_percent, number_of_shares, price_per_share, 
+                        distinctive_from, distinctive_to, share_class, folio_number, 
+                        certificate_number, verification_token, allotment_status, confirmed_at, created_at
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'certificate_issued', NOW(), NOW())
                 ");
-                $invStmt->execute([$orderId, $roundId, $user['id'], $round['company_id'], $amount, $equityPercent, $certNumber]);
+                $invStmt->execute([
+                    $orderId, $roundId, $user['id'], $round['company_id'],
+                    $amount, $equityPercent, $numShares, $pricePerShare,
+                    $distinctiveFrom, $distinctiveTo, $shareClass, $folioNumber,
+                    $certNumber, $verificationToken
+                ]);
                 $investmentId = $db->lastInsertId();
 
                 // 4. Create Transaction / Escrow Record
