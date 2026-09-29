@@ -496,12 +496,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Bottom Helper Link -->
                 <div class="mt-5 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-xs text-slate-500">
+                    <p class="text-xs text-slate-500 mb-2">
                         New to the platform? 
                         <a href="<?= url('auth/register.php') ?>" class="text-indigo-600 hover:text-indigo-800 font-bold ml-1 transition">
                             Create Account
                         </a>
                     </p>
+                    <div class="flex items-center justify-center gap-2 text-[11px]">
+                        <a href="<?= url('auth/register.php?role=founder') ?>" class="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition flex items-center gap-1">
+                            <i data-lucide="rocket" class="w-3 h-3"></i>
+                            <span>Register as Founder</span>
+                        </a>
+                        <a href="<?= url('auth/register.php?role=investor') ?>" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold transition flex items-center gap-1">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i>
+                            <span>Register as Investor</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
