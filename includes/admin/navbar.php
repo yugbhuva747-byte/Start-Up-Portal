@@ -24,7 +24,18 @@ require_once __DIR__ . '/theme.php';
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center space-x-2 truncate">
+        <?php if (($currentPage ?? basename($_SERVER['PHP_SELF'])) !== 'dashboard.php'): ?>
+        <!-- Clean & Bold Back Icon Button -->
+        <button type="button" onclick="adminGoBack(this)"
+                id="admin-back-btn"
+                title="Go Back" aria-label="Go Back"
+                class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-blue-600 dark:bg-slate-800 dark:hover:bg-blue-600 border border-slate-200/90 dark:border-slate-700 hover:border-blue-600 dark:hover:border-blue-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white shadow-xs hover:shadow-md hover:shadow-blue-500/25 transition-all duration-200 flex items-center justify-center group cursor-pointer active:scale-95">
+            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200"></i>
+        </button>
+        <?php endif; ?>
+
+
+        <h2 class="text-xs font-bold text-slate-800 dark:text-slate-100 tracking-tight flex items-center space-x-2 truncate">
             <span class="truncate"><?= $pageTitle ?? 'Admin & Compliance Center' ?></span>
         </h2>
     </div>
@@ -77,4 +88,19 @@ require_once __DIR__ . '/theme.php';
     </div>
 </header>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
+<script>
+    function adminGoBack(btn) {
+        if (btn) {
+            btn.style.transform = 'scale(0.92)';
+            setTimeout(() => { btn.style.transform = ''; }, 120);
+        }
+        setTimeout(() => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '<?= url('admin/dashboard.php') ?>';
+            }
+        }, 80);
+    }
+</script>
 

@@ -157,10 +157,20 @@
         font-size: 1rem !important;
     }
 
-    /* Badges & Pills */
-    .badge, [class*="rounded-full"] {
-        letter-spacing: 0.02em;
-        font-weight: 600;
+    /* Badges, Pills & Action Headers - Strictly single-line everywhere */
+    .badge, 
+    [class*="rounded-full"], 
+    .whitespace-nowrap, 
+    [class*="whitespace-nowrap"] {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+        word-break: keep-all !important;
+    }
+
+    .card-clean .card-header-actions,
+    .card-clean .card-header-actions * {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
 
     /* ----------------------------------------------------

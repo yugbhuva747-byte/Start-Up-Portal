@@ -151,8 +151,8 @@ $activeTemplate = $_GET['template'] ?? 'investor';
                     </h1>
                     <p class="text-xs text-slate-500 mt-0.5">Live preview, test dispatch, and automated delivery records for Investor & Founder notifications</p>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap flex-shrink-0">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
                         Automated Direct Dispatch Active
                     </span>

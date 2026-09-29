@@ -87,7 +87,7 @@ if ($db) {
                 <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-center space-x-2">
                         <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Immutable Activity Log Records</h2>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 whitespace-nowrap flex-shrink-0">
                             <?= count($logs) ?> Events
                         </span>
                     </div>
