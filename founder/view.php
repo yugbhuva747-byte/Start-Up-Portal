@@ -103,7 +103,7 @@ $flash = get_flash();
         }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Sidebar Navigation based on current user role -->
     <?php 

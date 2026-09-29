@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: "Vay Portal", Sans-serif;
         }
 
         .card-clean {
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>

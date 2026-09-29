@@ -71,7 +71,7 @@ $flash = get_flash();
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: "Vay Portal", Sans-serif;
         }
 
         .card-clean {
@@ -144,7 +144,7 @@ $flash = get_flash();
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
@@ -154,7 +154,8 @@ $flash = get_flash();
         <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="portfolio-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
+                <div
+                    class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
@@ -164,16 +165,21 @@ $flash = get_flash();
             <section class="border-b border-[#E4E8EF] dark:border-slate-800 pb-8">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div>
-                        <div class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1.5 flex items-center gap-2">
+                        <div
+                            class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1.5 flex items-center gap-2">
                             <span>VENTURE CAPITAL ALLOCATIONS</span>
                             <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-beacon"></span>
-                            <span class="text-[#667085] dark:text-slate-400 font-semibold">Active Institutional Holdings</span>
+                            <span class="text-[#667085] dark:text-slate-400 font-semibold">Active Institutional
+                                Holdings</span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        <h1
+                            class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
                             Portfolio Holdings & Allotments
                         </h1>
-                        <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
-                            Verified equity stakes, share allotment records, institutional cap table positions, and escrow transactions across your backed companies.
+                        <p
+                            class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
+                            Verified equity stakes, share allotment records, institutional cap table positions, and
+                            escrow transactions across your backed companies.
                         </p>
                     </div>
 
@@ -188,28 +194,49 @@ $flash = get_flash();
 
                 <!-- Executive Portfolio Metric Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-8">
-                    <div class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
-                        <span class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Total Capital Deployed</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight"><?= format_inr($totalInvested) ?></div>
-                        <div class="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <div
+                        class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+                        <span
+                            class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Total
+                            Capital Deployed</span>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                            <?= format_inr($totalInvested) ?></div>
+                        <div
+                            class="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                             <span>Escrow Confirmed</span>
                         </div>
                     </div>
-                    <div class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
-                        <span class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Backed Ventures</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight"><?= $totalStartups ?> <span class="text-base font-bold text-[#667085] dark:text-slate-400">Companies</span></div>
-                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Active Cap Table Equity</div>
+                    <div
+                        class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+                        <span
+                            class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Backed
+                            Ventures</span>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                            <?= $totalStartups ?> <span
+                                class="text-base font-bold text-[#667085] dark:text-slate-400">Companies</span></div>
+                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Active Cap Table Equity
+                        </div>
                     </div>
-                    <div class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
-                        <span class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Combined Ownership</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#123B7A] dark:text-blue-400 tracking-tight"><?= number_format($totalEquity, 2) ?>%</div>
-                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Allotted Share Equity</div>
+                    <div
+                        class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+                        <span
+                            class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Combined
+                            Ownership</span>
+                        <div class="text-2xl sm:text-3xl font-black text-[#123B7A] dark:text-blue-400 tracking-tight">
+                            <?= number_format($totalEquity, 2) ?>%</div>
+                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Allotted Share Equity
+                        </div>
                     </div>
-                    <div class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
-                        <span class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Average Check Size</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight"><?= format_inr($avgTicket) ?></div>
-                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Per Syndicate Allocation</div>
+                    <div
+                        class="dashboard-card bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+                        <span
+                            class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Average
+                            Check Size</span>
+                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                            <?= format_inr($avgTicket) ?></div>
+                        <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Per Syndicate
+                            Allocation</div>
                     </div>
                 </div>
             </section>
@@ -220,31 +247,40 @@ $flash = get_flash();
             <section class="space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-base font-bold text-[#0B1F3A] dark:text-white">Portfolio Holdings & Allotments</h2>
-                        <p class="text-xs text-[#667085] dark:text-slate-400">Detailed share allotment contracts and cap table records</p>
+                        <h2 class="text-base font-bold text-[#0B1F3A] dark:text-white">Portfolio Holdings & Allotments
+                        </h2>
+                        <p class="text-xs text-[#667085] dark:text-slate-400">Detailed share allotment contracts and cap
+                            table records</p>
                     </div>
-                    <span class="text-xs text-[#667085] dark:text-slate-400 font-semibold"><?= count($investments) ?> Total Entries</span>
+                    <span class="text-xs text-[#667085] dark:text-slate-400 font-semibold"><?= count($investments) ?>
+                        Total Entries</span>
                 </div>
 
                 <?php if (empty($investments)): ?>
-                    <div class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl p-12 text-center text-xs text-[#667085] dark:text-slate-400">
-                        <div class="w-12 h-12 rounded-full bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400 flex items-center justify-center mx-auto mb-3">
+                    <div
+                        class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl p-12 text-center text-xs text-[#667085] dark:text-slate-400">
+                        <div
+                            class="w-12 h-12 rounded-full bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400 flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="briefcase" class="w-6 h-6"></i>
                         </div>
                         <div class="text-sm font-bold text-[#0B1F3A] dark:text-white mb-1">No venture investments yet</div>
                         <p class="max-w-md mx-auto text-[#667085] dark:text-slate-400 leading-relaxed">
-                            Start building your startup investment portfolio. Browse live opportunities, review comprehensive diligence rooms, and commit early-stage capital.
+                            Start building your startup investment portfolio. Browse live opportunities, review
+                            comprehensive diligence rooms, and commit early-stage capital.
                         </p>
-                        <a href="<?= url('investor/discover.php') ?>" class="inline-block mt-4 px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-bold text-xs transition">
+                        <a href="<?= url('investor/discover.php') ?>"
+                            class="inline-block mt-4 px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-bold text-xs transition">
                             Explore Active Rounds
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl divide-y divide-[#E4E8EF] dark:divide-slate-800">
-                        <?php foreach ($investments as $inv): 
+                    <div
+                        class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-xl divide-y divide-[#E4E8EF] dark:divide-slate-800">
+                        <?php foreach ($investments as $inv):
                             $encCompId = encode_id($inv['comp_id']);
-                        ?>
-                            <div class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-[#FAFBFD] dark:hover:bg-slate-800/80 transition">
+                            ?>
+                            <div
+                                class="p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-[#FAFBFD] dark:hover:bg-slate-800/80 transition">
                                 <!-- Startup Identity -->
                                 <div class="flex items-start space-x-4 min-w-0 flex-1">
                                     <img src="<?= $inv['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>"
@@ -255,36 +291,46 @@ $flash = get_flash();
                                                 class="text-sm font-bold text-[#0B1F3A] dark:text-white hover:text-[#123B7A] dark:hover:text-blue-400 transition truncate">
                                                 <?= htmlspecialchars($inv['company_name']) ?>
                                             </a>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] dark:bg-slate-800 text-[#667085] dark:text-slate-300 border border-[#E4E8EF] dark:border-slate-700">
+                                            <span
+                                                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] dark:bg-slate-800 text-[#667085] dark:text-slate-300 border border-[#E4E8EF] dark:border-slate-700">
                                                 <?= htmlspecialchars($inv['industry']) ?>
                                             </span>
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400">
+                                            <span
+                                                class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#EAF2FF] dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400">
                                                 <?= htmlspecialchars($inv['round_name']) ?>
                                             </span>
                                         </div>
-                                        <div class="text-xs text-[#667085] dark:text-slate-400 mt-1 flex flex-wrap items-center gap-3">
+                                        <div
+                                            class="text-xs text-[#667085] dark:text-slate-400 mt-1 flex flex-wrap items-center gap-3">
                                             <span>CIN: <?= htmlspecialchars($inv['cin_number'] ?? 'Verified') ?></span>
                                             <span>•</span>
                                             <span>Confirmed: <?= date('d M Y', strtotime($inv['confirmed_at'])) ?></span>
                                             <span>•</span>
-                                            <span class="font-mono text-[10.5px]">Certificate: <?= htmlspecialchars($inv['certificate_number'] ?? 'CONFIRMED') ?></span>
+                                            <span class="font-mono text-[10.5px]">Certificate:
+                                                <?= htmlspecialchars($inv['certificate_number'] ?? 'CONFIRMED') ?></span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Financial Metrics & Action -->
-                                <div class="flex items-center justify-between lg:justify-end gap-6 text-xs flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#E4E8EF] dark:border-slate-800">
+                                <div
+                                    class="flex items-center justify-between lg:justify-end gap-6 text-xs flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-[#E4E8EF] dark:border-slate-800">
                                     <div>
-                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Committed Capital</span>
-                                        <span class="font-extrabold text-[#0B1F3A] dark:text-white text-sm"><?= format_inr($inv['amount_invested']) ?></span>
+                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Committed
+                                            Capital</span>
+                                        <span
+                                            class="font-extrabold text-[#0B1F3A] dark:text-white text-sm"><?= format_inr($inv['amount_invested']) ?></span>
                                     </div>
                                     <div>
                                         <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Equity Stake</span>
-                                        <span class="font-extrabold text-[#123B7A] dark:text-blue-400 text-sm"><?= $inv['equity_allotted_percent'] ?>%</span>
+                                        <span
+                                            class="font-extrabold text-[#123B7A] dark:text-blue-400 text-sm"><?= $inv['equity_allotted_percent'] ?>%</span>
                                     </div>
                                     <div>
-                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Round Valuation</span>
-                                        <span class="font-semibold text-[#111827] dark:text-slate-200"><?= format_inr($inv['valuation'] ?? 0) ?></span>
+                                        <span class="text-[10px] text-[#667085] dark:text-slate-400 block">Round
+                                            Valuation</span>
+                                        <span
+                                            class="font-semibold text-[#111827] dark:text-slate-200"><?= format_inr($inv['valuation'] ?? 0) ?></span>
                                     </div>
 
                                     <div class="flex items-center space-x-2">
@@ -319,7 +365,7 @@ $flash = get_flash();
                         arsort($industryBreakdown);
                         foreach ($industryBreakdown as $indName => $indAmount):
                             $indPct = $totalInvested > 0 ? round(($indAmount / $totalInvested) * 100) : 0;
-                        ?>
+                            ?>
                             <div class="p-4 flex items-center justify-between gap-4">
                                 <div class="flex items-center space-x-3 w-1/3">
                                     <span class="font-bold text-[#0B1F3A]"><?= htmlspecialchars($indName) ?></span>
@@ -347,4 +393,5 @@ $flash = get_flash();
         gsap.from("#portfolio-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
+
 </html>

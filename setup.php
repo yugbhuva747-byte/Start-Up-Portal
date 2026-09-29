@@ -284,7 +284,7 @@ if (php_sapi_name() === 'cli') {
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen flex items-center justify-center p-6 selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex items-center justify-center p-6 selection:bg-indigo-500 selection:text-white">
     <div class="max-w-xl w-full card-clean rounded-2xl p-6 md:p-8 relative" id="setup-card">
         
         <div class="flex items-center space-x-3 mb-5">

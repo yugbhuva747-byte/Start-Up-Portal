@@ -78,7 +78,7 @@ $unread = (int)$unreadCount->fetchColumn();
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -86,7 +86,7 @@ $unread = (int)$unreadCount->fetchColumn();
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
     <!-- Role-Adapted Sidebar -->
     <?php if ($role === 'founder'): ?>

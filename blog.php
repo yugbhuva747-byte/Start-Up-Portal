@@ -235,7 +235,7 @@ function render_article_html(?string $content): string {
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- Top Reading Progress Indicator -->
     <div id="reading-progress" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 w-full z-50 transform scale-x-0 transition-transform duration-75"></div>

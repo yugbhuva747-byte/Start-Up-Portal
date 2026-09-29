@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: "Vay Portal", Sans-serif;
         }
 
         .card-clean {
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
@@ -70,22 +70,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="watchlist-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
+                <div
+                    class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <!-- Identity Header -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E4E8EF] dark:border-slate-800 pb-6">
+            <div
+                class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E4E8EF] dark:border-slate-800 pb-6">
                 <div>
-                    <div class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1 flex items-center gap-2">
+                    <div
+                        class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1 flex items-center gap-2">
                         <span>Portfolio Tracking</span>
                         <span class="w-1.5 h-1.5 rounded-full bg-amber-500 pulse-beacon"></span>
                         <span class="text-[#667085] dark:text-slate-400 font-semibold">Shortlisted Deals</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">Saved Companies & Deals</h1>
-                    <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5">Startups and live syndicates you are actively monitoring and evaluating.</p>
+                    <h1
+                        class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        Saved Companies & Deals</h1>
+                    <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5">Startups and live
+                        syndicates you are actively monitoring and evaluating.</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="<?= url('investor/discover.php') ?>"
@@ -99,14 +105,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <!-- Saved Companies List (Horizontal Rows, Minimal Borders, Strong Typography) -->
             <?php if (empty($watchlist)): ?>
                 <div class="bg-white border border-[#E4E8EF] rounded-xl p-12 text-center text-xs text-[#667085]">
-                    <div class="w-12 h-12 rounded-full bg-[#FAFBFD] border border-[#E4E8EF] text-[#667085] flex items-center justify-center mx-auto mb-3">
+                    <div
+                        class="w-12 h-12 rounded-full bg-[#FAFBFD] border border-[#E4E8EF] text-[#667085] flex items-center justify-center mx-auto mb-3">
                         <i data-lucide="bookmark" class="w-5 h-5"></i>
                     </div>
                     <div class="text-sm font-bold text-[#0B1F3A] mb-1">Your saved list is empty</div>
                     <p class="max-w-md mx-auto text-[#667085] leading-relaxed">
-                        Pin interesting deals while browsing the discovery marketplace to evaluate their metrics, traction, and data room here.
+                        Pin interesting deals while browsing the discovery marketplace to evaluate their metrics, traction,
+                        and data room here.
                     </p>
-                    <a href="<?= url('investor/discover.php') ?>" class="inline-block mt-4 text-[#123B7A] font-bold hover:underline">
+                    <a href="<?= url('investor/discover.php') ?>"
+                        class="inline-block mt-4 text-[#123B7A] font-bold hover:underline">
                         Explore Startups →
                     </a>
                 </div>
@@ -115,8 +124,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <?php foreach ($watchlist as $s):
                         $pct = ($s['target_amount'] ?? 0) > 0 ? round(($s['amount_raised'] / $s['target_amount']) * 100) : 0;
                         $hashId = hash_id_encode($s['id']);
-                    ?>
-                        <div class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
+                        ?>
+                        <div
+                            class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
                             <!-- Startup Identity & Pitch -->
                             <div class="flex items-start space-x-4 min-w-0 flex-1">
                                 <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>"
@@ -127,10 +137,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                             class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
                                             <?= htmlspecialchars($s['name']) ?>
                                         </a>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
                                             <?= htmlspecialchars($s['industry']) ?>
                                         </span>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
                                             <?= htmlspecialchars($s['stage']) ?>
                                         </span>
                                     </div>
@@ -144,7 +156,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             </div>
 
                             <!-- Financial Metrics & Actions -->
-                            <div class="flex items-center justify-between md:justify-end gap-6 text-xs flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E4E8EF]">
+                            <div
+                                class="flex items-center justify-between md:justify-end gap-6 text-xs flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E4E8EF]">
                                 <?php if (!empty($s['target_amount'])): ?>
                                     <div class="text-left md:text-right">
                                         <span class="text-[10px] text-[#667085] block">Target</span>
@@ -187,4 +200,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         gsap.from("#watchlist-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
+
 </html>

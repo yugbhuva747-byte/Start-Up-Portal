@@ -49,7 +49,7 @@ require_once __DIR__ . '/theme.php';
     table,
     th,
     td {
-        font-family: 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+        font-family: "Vay Portal", Sans-serif;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
     }
@@ -186,18 +186,22 @@ require_once __DIR__ . '/theme.php';
                         Discovery & Overview</div>
                     <a href="<?= url('investor/dashboard.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'dashboard.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="home" class="w-4 h-4 <?= $currentPage === 'dashboard.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="home"
+                            class="w-4 h-4 <?= $currentPage === 'dashboard.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Investor Home</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Workspace dashboard</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Workspace dashboard
+                            </div>
                         </div>
                     </a>
                     <a href="<?= url('investor/discover.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php']) ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="sparkles" class="w-4 h-4 <?= in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php']) ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="sparkles"
+                            class="w-4 h-4 <?= in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php']) ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Discover Opportunities</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Explore verified startups</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Explore verified
+                                startups</div>
                         </div>
                     </a>
 
@@ -206,26 +210,32 @@ require_once __DIR__ . '/theme.php';
                         Investments & Network</div>
                     <a href="<?= url('investor/portfolio.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'portfolio.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="briefcase" class="w-4 h-4 <?= $currentPage === 'portfolio.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="briefcase"
+                            class="w-4 h-4 <?= $currentPage === 'portfolio.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Portfolio Holdings</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Active equity stakes</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Active equity stakes
+                            </div>
                         </div>
                     </a>
                     <a href="<?= url('investor/watchlist.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'watchlist.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="bookmark" class="w-4 h-4 <?= $currentPage === 'watchlist.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="bookmark"
+                            class="w-4 h-4 <?= $currentPage === 'watchlist.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Saved Companies</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Monitored pipeline</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Monitored pipeline
+                            </div>
                         </div>
                     </a>
                     <a href="<?= url('investor/messages.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'messages.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="message-circle" class="w-4 h-4 <?= $currentPage === 'messages.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="message-circle"
+                            class="w-4 h-4 <?= $currentPage === 'messages.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Deal Conversations</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Direct founder chats</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Direct founder chats
+                            </div>
                         </div>
                     </a>
 
@@ -234,26 +244,32 @@ require_once __DIR__ . '/theme.php';
                         Account & Compliance</div>
                     <a href="<?= url('investor/view.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'view.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="user-check" class="w-4 h-4 <?= $currentPage === 'view.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="user-check"
+                            class="w-4 h-4 <?= $currentPage === 'view.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Public Profile</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Investor network presence</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Investor network
+                                presence</div>
                         </div>
                     </a>
                     <a href="<?= url('investor/profile.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'profile.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="sliders-horizontal" class="w-4 h-4 <?= $currentPage === 'profile.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="sliders-horizontal"
+                            class="w-4 h-4 <?= $currentPage === 'profile.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Thesis & Settings</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Investment preferences</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Investment
+                                preferences</div>
                         </div>
                     </a>
                     <a href="<?= url('investor/verification.php') ?>"
                         class="flex items-center space-x-3 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition <?= $currentPage === 'verification.php' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 font-bold' : 'text-[#111827] dark:text-slate-200 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 hover:text-[#123B7A] dark:hover:text-blue-400' ?>">
-                        <i data-lucide="shield-check" class="w-4 h-4 <?= $currentPage === 'verification.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
+                        <i data-lucide="shield-check"
+                            class="w-4 h-4 <?= $currentPage === 'verification.php' ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400' ?>"></i>
                         <div class="flex-1">
                             <div class="leading-tight">Verification Center</div>
-                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Accreditation status</div>
+                            <div class="text-[11px] text-[#667085] dark:text-slate-400 font-normal">Accreditation status
+                            </div>
                         </div>
                     </a>
                 </div>

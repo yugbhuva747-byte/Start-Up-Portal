@@ -81,31 +81,34 @@ $flash = get_flash();
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         @font-face {
-            font-family: 'Vay Portal - Regular';
+            font-family: "Vay Portal", Sans-serif;
             src: local('Vay Portal - Regular'), local('Vay Portal'), local('Plus Jakarta Sans');
         }
+
         :root {
             --inv-primary: #123B7A;
             --inv-navy: #0B1F3A;
             --inv-secondary: #315F9F;
             --inv-light-blue: #EAF2FF;
-            --inv-bg: #FAFBFD;
+            --inv-bg: #F4F2EE;
             --inv-text: #111827;
             --inv-text-sec: #667085;
             --inv-border: #E4E8EF;
         }
+
         body {
             font-family: 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
             background-color: var(--inv-bg);
             color: var(--inv-text);
         }
+
         .profile-row-hover:hover {
             background-color: #FAFBFD;
         }
     </style>
 </head>
 
-<body class="bg-[#FAFBFD] text-[#111827] flex min-h-screen antialiased">
+<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen antialiased">
 
     <!-- Sidebar Navigation based on current user role -->
     <?php
@@ -132,7 +135,8 @@ $flash = get_flash();
         <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="investor-view-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
+                <div
+                    class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
@@ -142,12 +146,14 @@ $flash = get_flash();
             <div class="flex items-center justify-between text-xs text-[#667085] pb-2 border-b border-[#E4E8EF]">
                 <div class="flex items-center space-x-2">
                     <?php if ($currentUser['role'] === 'investor'): ?>
-                        <a href="<?= url('investor/dashboard.php') ?>" class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
+                        <a href="<?= url('investor/dashboard.php') ?>"
+                            class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
                             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                             <span>Workspace</span>
                         </a>
                     <?php else: ?>
-                        <a href="<?= url('founder/dashboard.php') ?>" class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
+                        <a href="<?= url('founder/dashboard.php') ?>"
+                            class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
                             <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                             <span>Founder Workspace</span>
                         </a>
@@ -158,11 +164,13 @@ $flash = get_flash();
 
                 <?php if ($isSelf): ?>
                     <div class="flex items-center space-x-3">
-                        <a href="<?= url('investor/verification.php') ?>" class="text-[11px] font-semibold text-[#667085] hover:text-[#123B7A] transition flex items-center space-x-1">
+                        <a href="<?= url('investor/verification.php') ?>"
+                            class="text-[11px] font-semibold text-[#667085] hover:text-[#123B7A] transition flex items-center space-x-1">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                             <span>Accreditation Hub</span>
                         </a>
-                        <a href="<?= url('investor/profile.php') ?>" class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#EAF2FF] hover:bg-[#123B7A] text-[#123B7A] hover:text-white rounded-lg font-bold text-xs transition duration-200">
+                        <a href="<?= url('investor/profile.php') ?>"
+                            class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#EAF2FF] hover:bg-[#123B7A] text-[#123B7A] hover:text-white rounded-lg font-bold text-xs transition duration-200">
                             <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                             <span>Edit Thesis & Profile</span>
                         </a>
@@ -174,9 +182,12 @@ $flash = get_flash();
             <div class="bg-white border border-[#E4E8EF] rounded-2xl overflow-hidden shadow-sm">
                 <!-- Cover Banner Strip -->
                 <div class="h-36 sm:h-44 bg-gradient-to-r from-[#0B1F3A] via-[#123B7A] to-[#315F9F] relative">
-                    <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#FFFFFF_1px,transparent_1px)] [background-size:20px_20px]"></div>
+                    <div
+                        class="absolute inset-0 opacity-15 bg-[radial-gradient(#FFFFFF_1px,transparent_1px)] [background-size:20px_20px]">
+                    </div>
                     <div class="absolute top-4 right-4 flex items-center space-x-2">
-                        <span class="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[10.5px] font-semibold border border-white/20 uppercase tracking-wider">
+                        <span
+                            class="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[10.5px] font-semibold border border-white/20 uppercase tracking-wider">
                             SEBI Accredited Syndicate
                         </span>
                     </div>
@@ -184,7 +195,8 @@ $flash = get_flash();
 
                 <!-- Profile Identity Bar -->
                 <div class="px-6 sm:px-8 pb-8 pt-0 relative">
-                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#E4E8EF]">
+                    <div
+                        class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#E4E8EF]">
                         <div class="flex flex-col sm:flex-row sm:items-end gap-5">
                             <div class="relative -mt-16 sm:-mt-20 flex-shrink-0">
                                 <img src="<?= $investor['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' ?>"
@@ -202,7 +214,8 @@ $flash = get_flash();
                                     <h1 class="text-2xl sm:text-3xl font-black text-[#0B1F3A] tracking-tight">
                                         <?= htmlspecialchars($investor['name']) ?>
                                     </h1>
-                                    <span class="px-2.5 py-0.5 rounded-full bg-[#EAF2FF] text-[#123B7A] text-[11px] font-bold tracking-wide">
+                                    <span
+                                        class="px-2.5 py-0.5 rounded-full bg-[#EAF2FF] text-[#123B7A] text-[11px] font-bold tracking-wide">
                                         <?= strtoupper($profile['investor_type'] ?? 'ANGEL INVESTOR') ?>
                                     </span>
                                 </div>
@@ -213,13 +226,15 @@ $flash = get_flash();
                                         <span>SEBI Compliant Accredited Investor</span>
                                     </span>
                                     <span class="text-[#E4E8EF]">•</span>
-                                    <span class="text-[#667085] font-normal"><?= $profile['experience_years'] ?? 5 ?>+ Years Venture Experience</span>
+                                    <span class="text-[#667085] font-normal"><?= $profile['experience_years'] ?? 5 ?>+
+                                        Years Venture Experience</span>
                                 </div>
 
                                 <div class="flex flex-wrap items-center gap-4 text-xs text-[#667085] pt-1">
                                     <span class="flex items-center space-x-1.5">
                                         <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#667085]"></i>
-                                        <span><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>, <?= htmlspecialchars($investor['country'] ?? 'India') ?></span>
+                                        <span><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>,
+                                            <?= htmlspecialchars($investor['country'] ?? 'India') ?></span>
                                     </span>
                                     <span>•</span>
                                     <span class="flex items-center space-x-1.5">
@@ -251,24 +266,29 @@ $flash = get_flash();
                     <!-- Clean Horizontal Highlights Strip (Editorial Rows, NOT KPI Cards) -->
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
                         <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Capital Deployed</span>
+                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Capital
+                                Deployed</span>
                             <div class="text-lg font-black text-[#0B1F3A]"><?= format_inr($totalDeployed) ?></div>
                             <span class="text-[10.5px] text-[#667085]">Confirmed escrow</span>
                         </div>
                         <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Portfolio Ventures</span>
+                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Portfolio
+                                Ventures</span>
                             <div class="text-lg font-black text-[#0B1F3A]"><?= count($portfolio) ?></div>
                             <span class="text-[10.5px] text-[#667085]">Active syndicate backed</span>
                         </div>
                         <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Check Size Range</span>
+                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Check Size
+                                Range</span>
                             <div class="text-sm font-black text-[#0B1F3A]">
-                                <?= format_inr($preferences['min_ticket'] ?? 250000) ?> - <?= format_inr($preferences['max_ticket'] ?? 5000000) ?>
+                                <?= format_inr($preferences['min_ticket'] ?? 250000) ?> -
+                                <?= format_inr($preferences['max_ticket'] ?? 5000000) ?>
                             </div>
                             <span class="text-[10.5px] text-[#667085]">Per company round</span>
                         </div>
                         <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Accreditation</span>
+                            <span
+                                class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Accreditation</span>
                             <div class="text-sm font-black text-emerald-700 flex items-center space-x-1.5">
                                 <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
                                 <span>Verified Active</span>
@@ -290,7 +310,8 @@ $flash = get_flash();
                         <?= nl2br(htmlspecialchars($preferences['investment_thesis'] ?: 'Backing high-conviction founders solving massive infrastructure and B2B workflow challenges across India and emerging markets.')) ?>
                     </p>
                     <p class="text-xs text-[#667085] leading-relaxed">
-                        Evaluates deals based on strong founder-market fit, unit economics defensibility, product velocity, and clear regulatory compliance under SEBI angel syndicate guidelines.
+                        Evaluates deals based on strong founder-market fit, unit economics defensibility, product
+                        velocity, and clear regulatory compliance under SEBI angel syndicate guidelines.
                     </p>
                 </div>
             </section>
@@ -299,18 +320,21 @@ $flash = get_flash();
             <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
                 <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
                     <i data-lucide="layers" class="w-4 h-4 text-[#123B7A]"></i>
-                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Investment Focus & Criteria</h2>
+                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Investment Focus & Criteria
+                    </h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Target Sectors & Industries</span>
+                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Target Sectors
+                            & Industries</span>
                         <div class="flex flex-wrap gap-2">
                             <?php
                             $sectors = array_map('trim', explode(',', $preferences['preferred_industries'] ?? 'AI/SaaS, FinTech, DeepTech, B2B Commerce'));
                             foreach ($sectors as $s):
                                 ?>
-                                <span class="px-3 py-1 rounded-lg bg-[#EAF2FF] text-[#123B7A] text-xs font-semibold border border-[#123B7A]/10">
+                                <span
+                                    class="px-3 py-1 rounded-lg bg-[#EAF2FF] text-[#123B7A] text-xs font-semibold border border-[#123B7A]/10">
                                     <?= htmlspecialchars($s) ?>
                                 </span>
                             <?php endforeach; ?>
@@ -318,13 +342,15 @@ $flash = get_flash();
                     </div>
 
                     <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Preferred Investment Stages</span>
+                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Preferred
+                            Investment Stages</span>
                         <div class="flex flex-wrap gap-2">
                             <?php
                             $stages = array_map('trim', explode(',', $preferences['preferred_stages'] ?? 'Pre-Seed, Seed, Pre-Series A'));
                             foreach ($stages as $st):
                                 ?>
-                                <span class="px-3 py-1 rounded-lg bg-[#FAFBFD] text-[#0B1F3A] text-xs font-semibold border border-[#E4E8EF]">
+                                <span
+                                    class="px-3 py-1 rounded-lg bg-[#FAFBFD] text-[#0B1F3A] text-xs font-semibold border border-[#E4E8EF]">
                                     <?= htmlspecialchars($st) ?>
                                 </span>
                             <?php endforeach; ?>
@@ -335,15 +361,18 @@ $flash = get_flash();
                 <div class="pt-4 border-t border-[#E4E8EF] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                     <div>
                         <span class="text-[#667085] text-[11px] block">Typical Check Size</span>
-                        <strong class="text-[#0B1F3A] text-sm"><?= format_inr($preferences['min_ticket'] ?? 250000) ?> - <?= format_inr($preferences['max_ticket'] ?? 5000000) ?></strong>
+                        <strong class="text-[#0B1F3A] text-sm"><?= format_inr($preferences['min_ticket'] ?? 250000) ?> -
+                            <?= format_inr($preferences['max_ticket'] ?? 5000000) ?></strong>
                     </div>
                     <div>
                         <span class="text-[#667085] text-[11px] block">Investment Role</span>
-                        <strong class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($profile['investor_type'] ?? 'Angel Syndicate / Lead') ?></strong>
+                        <strong
+                            class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($profile['investor_type'] ?? 'Angel Syndicate / Lead') ?></strong>
                     </div>
                     <div>
                         <span class="text-[#667085] text-[11px] block">Primary Geography</span>
-                        <strong class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>, India</strong>
+                        <strong class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>,
+                            India</strong>
                     </div>
                 </div>
             </section>
@@ -353,7 +382,8 @@ $flash = get_flash();
                 <div class="flex items-center justify-between pb-3 border-b border-[#E4E8EF]">
                     <div class="flex items-center space-x-2">
                         <i data-lucide="briefcase" class="w-4 h-4 text-[#123B7A]"></i>
-                        <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Backed Portfolio Ventures (<?= count($portfolio) ?>)</h2>
+                        <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Backed Portfolio Ventures
+                            (<?= count($portfolio) ?>)</h2>
                     </div>
                     <span class="text-xs text-[#667085]">Confirmed Cap Table Entries</span>
                 </div>
@@ -367,7 +397,8 @@ $flash = get_flash();
                 <?php else: ?>
                     <div class="divide-y divide-[#E4E8EF]">
                         <?php foreach ($portfolio as $p): ?>
-                            <div class="py-4 profile-row-hover rounded-xl px-3 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div
+                                class="py-4 profile-row-hover rounded-xl px-3 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div class="flex items-center space-x-4">
                                     <img src="<?= $p['company_logo'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>"
                                         class="w-12 h-12 rounded-xl object-cover border border-[#E4E8EF] bg-white flex-shrink-0">
@@ -380,20 +411,25 @@ $flash = get_flash();
                                             <span class="text-[#E4E8EF]">•</span>
                                             <span><?= htmlspecialchars($p['company_stage']) ?> Stage</span>
                                             <span class="text-[#E4E8EF]">•</span>
-                                            <span class="text-[#123B7A] font-semibold"><?= htmlspecialchars($p['round_name']) ?></span>
+                                            <span
+                                                class="text-[#123B7A] font-semibold"><?= htmlspecialchars($p['round_name']) ?></span>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center justify-between md:justify-end gap-6 text-xs">
                                     <div class="text-left md:text-right">
-                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Capital Backed</span>
-                                        <span class="font-bold text-[#0B1F3A] text-sm"><?= format_inr($p['amount_invested']) ?></span>
+                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Capital
+                                            Backed</span>
+                                        <span
+                                            class="font-bold text-[#0B1F3A] text-sm"><?= format_inr($p['amount_invested']) ?></span>
                                     </div>
 
                                     <div class="text-left md:text-right">
-                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Equity Stake</span>
-                                        <span class="font-bold text-[#123B7A] text-sm"><?= $p['equity_allotted_percent'] ?>%</span>
+                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Equity
+                                            Stake</span>
+                                        <span
+                                            class="font-bold text-[#123B7A] text-sm"><?= $p['equity_allotted_percent'] ?>%</span>
                                     </div>
 
                                     <a href="<?= url('investor/startup_detail.php?id=' . encode_id($p['company_id'])) ?>"
@@ -412,57 +448,72 @@ $flash = get_flash();
             <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
                 <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
                     <i data-lucide="shield-check" class="w-4 h-4 text-[#123B7A]"></i>
-                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Regulatory Compliance & Contact Coordinates</h2>
+                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Regulatory Compliance &
+                        Contact Coordinates</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Compliance details -->
                     <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Regulatory Status</span>
+                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Regulatory
+                            Status</span>
                         <div class="space-y-2 text-xs">
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
+                            <div
+                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
                                 <span class="text-[#0B1F3A] font-semibold flex items-center space-x-2">
                                     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
                                     <span>SEBI Risk Disclosure Declaration</span>
                                 </span>
-                                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">ACCEPTED</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">ACCEPTED</span>
                             </div>
 
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
+                            <div
+                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
                                 <span class="text-[#0B1F3A] font-semibold flex items-center space-x-2">
                                     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
                                     <span>DigiLocker Identity & e-KYC</span>
                                 </span>
-                                <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">VERIFIED</span>
+                                <span
+                                    class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">VERIFIED</span>
                             </div>
 
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
+                            <div
+                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
                                 <span class="text-[#667085] font-medium flex items-center space-x-2">
                                     <i data-lucide="credit-card" class="w-4 h-4 text-[#667085]"></i>
                                     <span>Income Tax PAN Status</span>
                                 </span>
-                                <span class="font-mono text-xs font-bold text-[#0B1F3A]"><?= htmlspecialchars($profile['pan_number'] ?? 'VERIFIED_ON_FILE') ?></span>
+                                <span
+                                    class="font-mono text-xs font-bold text-[#0B1F3A]"><?= htmlspecialchars($profile['pan_number'] ?? 'VERIFIED_ON_FILE') ?></span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Direct contact info -->
                     <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Accredited Network Coordinates</span>
+                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Accredited
+                            Network Coordinates</span>
                         <div class="space-y-2 text-xs">
                             <div class="p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                <span class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Accredited Email</span>
-                                <span class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['email']) ?></span>
+                                <span
+                                    class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Accredited
+                                    Email</span>
+                                <span
+                                    class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['email']) ?></span>
                             </div>
 
                             <?php if (!empty($investor['phone'])): ?>
                                 <div class="p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                    <span class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Direct Telephone</span>
-                                    <span class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['phone']) ?></span>
+                                    <span class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Direct
+                                        Telephone</span>
+                                    <span
+                                        class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['phone']) ?></span>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="p-3 rounded-xl bg-[#EAF2FF]/60 border border-[#123B7A]/15 text-[#123B7A] text-[11px] flex items-center space-x-2">
+                            <div
+                                class="p-3 rounded-xl bg-[#EAF2FF]/60 border border-[#123B7A]/15 text-[#123B7A] text-[11px] flex items-center space-x-2">
                                 <i data-lucide="lock" class="w-3.5 h-3.5 flex-shrink-0"></i>
                                 <span>Verified angel communications routed through Nexora Escrow Protocol.</span>
                             </div>

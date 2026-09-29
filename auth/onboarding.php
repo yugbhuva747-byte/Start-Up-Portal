@@ -132,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F4F2EE;
         }
 
         .card-clean {
@@ -142,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen p-4 md:p-8 flex items-center justify-center">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen p-4 md:p-8 flex items-center justify-center">
 
     <div class="max-w-2xl w-full" id="onboarding-card">
 

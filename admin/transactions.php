@@ -47,7 +47,7 @@ if ($db) {
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
     
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>

@@ -145,7 +145,7 @@ $flash = get_flash();
         .progress-ring { transition: stroke-dashoffset 1.2s ease; }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 

@@ -134,7 +134,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
         .card-clean { background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
     
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 

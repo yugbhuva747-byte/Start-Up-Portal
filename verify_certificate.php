@@ -37,7 +37,7 @@ if ($db && $searched) {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
         .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04); }
     </style>
 </head>

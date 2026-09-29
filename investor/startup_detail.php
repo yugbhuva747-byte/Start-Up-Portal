@@ -81,7 +81,7 @@ $flash = get_flash();
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: "Vay Portal", Sans-serif;
         }
 
         .card-clean {
@@ -92,7 +92,7 @@ $flash = get_flash();
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
@@ -103,7 +103,8 @@ $flash = get_flash();
         <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="deal-room-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
+                <div
+                    class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
@@ -111,7 +112,8 @@ $flash = get_flash();
 
             <!-- Navigation Breadcrumb -->
             <div class="flex items-center space-x-2 text-xs text-[#667085]">
-                <a href="<?= url('investor/discover.php') ?>" class="hover:text-[#123B7A] transition flex items-center space-x-1">
+                <a href="<?= url('investor/discover.php') ?>"
+                    class="hover:text-[#123B7A] transition flex items-center space-x-1">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
                     <span>Deal Discovery</span>
                 </a>
@@ -136,11 +138,13 @@ $flash = get_flash();
                             </div>
 
                             <div class="flex flex-wrap items-center gap-2 text-xs text-[#667085] mt-1.5">
-                                <span class="font-bold text-[#123B7A]"><?= htmlspecialchars($company['industry']) ?></span>
+                                <span
+                                    class="font-bold text-[#123B7A]"><?= htmlspecialchars($company['industry']) ?></span>
                                 <span>•</span>
                                 <span><?= htmlspecialchars($company['stage']) ?></span>
                                 <span>•</span>
-                                <span><?= htmlspecialchars($company['city']) ?>, <?= htmlspecialchars($company['country']) ?></span>
+                                <span><?= htmlspecialchars($company['city']) ?>,
+                                    <?= htmlspecialchars($company['country']) ?></span>
                             </div>
 
                             <p class="text-xs sm:text-sm text-[#111827] mt-3 max-w-2xl font-medium leading-relaxed">
@@ -193,24 +197,31 @@ $flash = get_flash();
                 <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF] text-xs">
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <span class="text-[#667085] font-medium sm:w-1/3">Corporate CIN / Registry</span>
-                        <span class="font-mono font-bold text-[#111827]"><?= htmlspecialchars($company['cin_number'] ?? 'Verified MCA Entity') ?></span>
+                        <span
+                            class="font-mono font-bold text-[#111827]"><?= htmlspecialchars($company['cin_number'] ?? 'Verified MCA Entity') ?></span>
                     </div>
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <span class="text-[#667085] font-medium sm:w-1/3">Business Model</span>
-                        <span class="font-semibold text-[#111827]"><?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS / Enterprise') ?></span>
+                        <span
+                            class="font-semibold text-[#111827]"><?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS / Enterprise') ?></span>
                     </div>
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <span class="text-[#667085] font-medium sm:w-1/3">Team Size</span>
-                        <span class="font-semibold text-[#111827]"><?= htmlspecialchars($company['employee_count'] ?? '10') ?> Full-time Members</span>
+                        <span
+                            class="font-semibold text-[#111827]"><?= htmlspecialchars($company['employee_count'] ?? '10') ?>
+                            Full-time Members</span>
                     </div>
                     <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <span class="text-[#667085] font-medium sm:w-1/3">Headquarters Location</span>
-                        <span class="font-semibold text-[#111827]"><?= htmlspecialchars($company['city']) ?>, <?= htmlspecialchars($company['state'] ?? '') ?> <?= htmlspecialchars($company['country']) ?></span>
+                        <span class="font-semibold text-[#111827]"><?= htmlspecialchars($company['city']) ?>,
+                            <?= htmlspecialchars($company['state'] ?? '') ?>
+                            <?= htmlspecialchars($company['country']) ?></span>
                     </div>
                     <?php if (!empty($company['website_url'])): ?>
                         <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <span class="text-[#667085] font-medium sm:w-1/3">Official Website</span>
-                            <a href="<?= htmlspecialchars($company['website_url']) ?>" target="_blank" class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
+                            <a href="<?= htmlspecialchars($company['website_url']) ?>" target="_blank"
+                                class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
                                 <span><?= htmlspecialchars($company['website_url']) ?></span>
                                 <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>
@@ -225,12 +236,14 @@ $flash = get_flash();
             <?php if ($activeRound):
                 $pct = $activeRound['target_amount'] > 0 ? round(($activeRound['amount_raised'] / $activeRound['target_amount']) * 100) : 0;
                 $remaining = max(0, $activeRound['target_amount'] - $activeRound['amount_raised']);
-            ?>
+                ?>
                 <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">Active Funding Round</div>
-                            <h2 class="text-lg font-bold text-[#0B1F3A]"><?= htmlspecialchars($activeRound['round_name']) ?></h2>
+                            <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">Active Funding Round
+                            </div>
+                            <h2 class="text-lg font-bold text-[#0B1F3A]"><?= htmlspecialchars($activeRound['round_name']) ?>
+                            </h2>
                         </div>
                         <?= render_status_badge($activeRound['status']) ?>
                     </div>
@@ -238,7 +251,8 @@ $flash = get_flash();
                     <div class="bg-white border border-[#E4E8EF] rounded-xl p-6 sm:p-8 space-y-6">
                         <div>
                             <div class="flex justify-between text-xs mb-2 font-bold">
-                                <span class="text-[#667085]">Raised <?= format_inr($activeRound['amount_raised']) ?> of <?= format_inr($activeRound['target_amount']) ?></span>
+                                <span class="text-[#667085]">Raised <?= format_inr($activeRound['amount_raised']) ?> of
+                                    <?= format_inr($activeRound['target_amount']) ?></span>
                                 <span class="text-[#123B7A]"><?= $pct ?>% Committed</span>
                             </div>
                             <div class="w-full h-2.5 bg-[#E4E8EF] rounded-full overflow-hidden">
@@ -248,24 +262,36 @@ $flash = get_flash();
 
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t border-[#E4E8EF] text-xs">
                             <div>
-                                <span class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Pre-Money Valuation</span>
-                                <span class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['valuation']) ?></span>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Pre-Money
+                                    Valuation</span>
+                                <span
+                                    class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['valuation']) ?></span>
                             </div>
                             <div>
-                                <span class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Equity Offered</span>
-                                <span class="font-extrabold text-[#123B7A] text-sm"><?= $activeRound['equity_offered'] ?>%</span>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Equity
+                                    Offered</span>
+                                <span
+                                    class="font-extrabold text-[#123B7A] text-sm"><?= $activeRound['equity_offered'] ?>%</span>
                             </div>
                             <div>
-                                <span class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Min. Check Size</span>
-                                <span class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['min_investment']) ?></span>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Min.
+                                    Check Size</span>
+                                <span
+                                    class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['min_investment']) ?></span>
                             </div>
                             <div>
-                                <span class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Remaining Open Gap</span>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Remaining
+                                    Open Gap</span>
                                 <span class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($remaining) ?></span>
                             </div>
                         </div>
 
-                        <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E4E8EF]">
+                        <div
+                            class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E4E8EF]">
                             <div class="text-xs text-[#667085] flex items-center gap-2">
                                 <i data-lucide="shield-check" class="w-4 h-4 text-[#123B7A]"></i>
                                 <span>All commitments escrowed under SEBI Angel Network regulations.</span>
@@ -290,8 +316,9 @@ $flash = get_flash();
                 <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
                     <?php foreach ($founders as $f):
                         $fId = $f['user_id'] ?? $f['id'] ?? 0;
-                    ?>
-                        <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
+                        ?>
+                        <div
+                            class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
                             <div class="flex items-start space-x-4 min-w-0">
                                 <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>">
                                     <img src="<?= $f['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>"
@@ -299,10 +326,12 @@ $flash = get_flash();
                                 </a>
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-2">
-                                        <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>" class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
+                                        <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>"
+                                            class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
                                             <?= htmlspecialchars($f['name']) ?>
                                         </a>
-                                        <span class="text-[10px] font-semibold text-[#123B7A] px-2 py-0.5 rounded bg-[#EAF2FF]">
+                                        <span
+                                            class="text-[10px] font-semibold text-[#123B7A] px-2 py-0.5 rounded bg-[#EAF2FF]">
                                             <?= htmlspecialchars($f['designation'] ?? 'Founder & CEO') ?>
                                         </span>
                                     </div>
@@ -313,12 +342,14 @@ $flash = get_flash();
                             </div>
 
                             <div class="flex items-center space-x-3 text-xs flex-shrink-0">
-                                <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>" class="text-xs font-bold text-[#123B7A] hover:underline">
+                                <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>"
+                                    class="text-xs font-bold text-[#123B7A] hover:underline">
                                     View Full Profile
                                 </a>
                                 <?php if (!empty($f['linkedin_url'])): ?>
                                     <span class="text-[#E4E8EF]">•</span>
-                                    <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" class="text-xs font-bold text-[#667085] hover:text-[#111827] flex items-center gap-1">
+                                    <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank"
+                                        class="text-xs font-bold text-[#667085] hover:text-[#111827] flex items-center gap-1">
                                         <span>LinkedIn</span>
                                         <i data-lucide="external-link" class="w-3 h-3"></i>
                                     </a>
@@ -396,9 +427,11 @@ $flash = get_flash();
                                         <i data-lucide="file-text" class="w-4 h-4"></i>
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="font-bold text-[#0B1F3A] truncate"><?= htmlspecialchars($doc['title']) ?></div>
+                                        <div class="font-bold text-[#0B1F3A] truncate"><?= htmlspecialchars($doc['title']) ?>
+                                        </div>
                                         <div class="text-[10.5px] text-[#667085]">
-                                            <?= htmlspecialchars($doc['document_type']) ?> • <?= htmlspecialchars($doc['file_size']) ?>
+                                            <?= htmlspecialchars($doc['document_type']) ?> •
+                                            <?= htmlspecialchars($doc['file_size']) ?>
                                         </div>
                                     </div>
                                 </div>
@@ -433,21 +466,25 @@ $flash = get_flash();
                         <?php foreach ($companyBlogs as $cb):
                             $cbCover = str_starts_with($cb['cover_image'], 'http') ? $cb['cover_image'] : url($cb['cover_image']);
                             $cbUrl = url('blog.php?id=' . $cb['id']);
-                        ?>
-                            <div class="bg-white border border-[#E4E8EF] rounded-xl overflow-hidden hover:border-[#123B7A]/40 transition flex flex-col group">
+                            ?>
+                            <div
+                                class="bg-white border border-[#E4E8EF] rounded-xl overflow-hidden hover:border-[#123B7A]/40 transition flex flex-col group">
                                 <div class="h-40 overflow-hidden bg-slate-100 relative">
                                     <img src="<?= htmlspecialchars($cbCover) ?>" alt="<?= htmlspecialchars($cb['title']) ?>"
                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                    <span class="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-white text-[#123B7A] shadow-sm">
+                                    <span
+                                        class="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-white text-[#123B7A] shadow-sm">
                                         <?= htmlspecialchars($cb['category']) ?>
                                     </span>
                                 </div>
                                 <div class="p-5 flex-1 flex flex-col justify-between text-xs">
                                     <div>
                                         <div class="text-[10px] text-[#667085] mb-1">
-                                            <?= date('M d, Y', strtotime($cb['published_at'])) ?> • <?= $cb['read_time_minutes'] ?> min read
+                                            <?= date('M d, Y', strtotime($cb['published_at'])) ?> •
+                                            <?= $cb['read_time_minutes'] ?> min read
                                         </div>
-                                        <h3 class="font-bold text-[#0B1F3A] text-sm group-hover:text-[#123B7A] transition leading-snug line-clamp-2">
+                                        <h3
+                                            class="font-bold text-[#0B1F3A] text-sm group-hover:text-[#123B7A] transition leading-snug line-clamp-2">
                                             <?= htmlspecialchars($cb['title']) ?>
                                         </h3>
                                         <p class="text-[#667085] mt-1.5 line-clamp-2 leading-relaxed">
@@ -455,7 +492,8 @@ $flash = get_flash();
                                         </p>
                                     </div>
                                     <div class="pt-4 mt-4 border-t border-[#E4E8EF] flex items-center justify-between">
-                                        <a href="<?= $cbUrl ?>" target="_blank" class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
+                                        <a href="<?= $cbUrl ?>" target="_blank"
+                                            class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
                                             <span>Read Story</span>
                                             <i data-lucide="arrow-right" class="w-3 h-3"></i>
                                         </a>
@@ -475,4 +513,5 @@ $flash = get_flash();
         gsap.from("#deal-room-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
+
 </html>

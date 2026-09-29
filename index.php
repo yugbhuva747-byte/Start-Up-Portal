@@ -47,7 +47,7 @@ if ($db) {
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #FAFAFB;
+            background-color: #F4F2EE;
             color: #0F172A;
         }
 
@@ -66,7 +66,7 @@ if ($db) {
     </style>
 </head>
 
-<body class="bg-[#FAFAFB] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900 antialiased min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900 antialiased min-h-screen">
 
     <!-- Top Navigation -->
     <header
@@ -327,7 +327,7 @@ if ($db) {
     </section>
 
     <!-- Live Startup Spotlight -->
-    <section id="discovery" class="py-16 px-6 bg-[#FAFAFB] border-t border-slate-200/80">
+    <section id="discovery" class="py-16 px-6 bg-[#F4F2EE] border-t border-slate-200/80">
         <div class="max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-8">
                 <div>

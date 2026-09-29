@@ -82,7 +82,7 @@ if ($hour < 12) {
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            background-color: #FAFBFD;
+            background-color: #F4F2EE;
             color: #111827;
         }
         .network-border {
@@ -91,7 +91,7 @@ if ($hour < 12) {
     </style>
 </head>
 
-<body class="bg-[#FAFBFD] text-[#111827] flex min-h-screen">
+<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen">
 
     <!-- Investor Navigation Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>

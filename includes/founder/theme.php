@@ -139,7 +139,7 @@
        3. LIGHT THEME (Default) Styles
     ---------------------------------------------------- */
     html:not(.dark) body {
-        background-color: #F8FAFC !important;
+        background-color: #F4F2EE !important;
         color: #0F172A !important;
     }
     html:not(.dark) .founder-navbar {
