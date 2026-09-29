@@ -57,12 +57,9 @@ require_once __DIR__ . '/theme.php';
                     <div
                         class="font-black text-[#0B1F3A] dark:text-white text-base tracking-tight leading-tight flex items-center gap-1.5">
                         <span>INVESTOR</span>
-                        <span
-                            class="text-[#123B7A] dark:text-blue-400 font-extrabold text-xs px-2 py-0.5 rounded-md bg-[#EAF2FF] dark:bg-blue-950/60">NETWORK</span>
+
                     </div>
-                    <div
-                        class="text-xs text-[#4B5563] dark:text-slate-400 font-semibold tracking-wide uppercase mt-0.5">
-                        Angel Syndicate Dealflow</div>
+
                 </div>
             </a>
             <button type="button" onclick="toggleMobileSidebar()"
@@ -79,9 +76,11 @@ require_once __DIR__ . '/theme.php';
                     class="w-11 h-11 rounded-full object-cover border-2 border-[#E4E8EF] dark:border-slate-700 shadow-xs">
                 <div class="min-w-0">
                     <div class="text-sm font-black text-[#0B1F3A] dark:text-white truncate">
-                        <?= htmlspecialchars($investorUser['name']) ?></div>
+                        <?= htmlspecialchars($investorUser['name']) ?>
+                    </div>
                     <div class="text-xs text-[#4B5563] dark:text-slate-400 font-medium truncate mt-0.5">
-                        <?= htmlspecialchars($investorUser['email']) ?></div>
+                        <?= htmlspecialchars($investorUser['email']) ?>
+                    </div>
                 </div>
             </div>
             <div class="flex items-center justify-between text-xs mb-1.5">
@@ -130,7 +129,8 @@ require_once __DIR__ . '/theme.php';
                 <div>
                     <div
                         class="text-[11px] font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider px-3.5 mb-2">
-                        <?= $groupTitle ?></div>
+                        <?= $groupTitle ?>
+                    </div>
                     <nav class="space-y-1">
                         <?php foreach ($items as $item): ?>
                             <a href="<?= $item['url'] ?>"

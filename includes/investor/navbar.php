@@ -2,6 +2,7 @@
 /**
  * Investor Top Navigation Bar Component
  * Professional Investor Network Header
+ * Order: Discover (default) -> Dashboard -> Portfolio -> Watchlist -> Messages
  */
 $currentUser = current_user();
 $db = get_db();
@@ -23,6 +24,48 @@ if ($db && !empty($currentUser['id'])) {
         $unreadCount = 0;
     }
 }
+
+// Nav items in display order: Discover is FIRST (default landing page)
+$navActive = 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600';
+$navInactive = 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60';
+
+$navItems = [
+    [
+        'href' => url('investor/discover.php'),
+        'icon' => 'sparkles',
+        'label' => 'Discover',
+        'title' => 'Discover Startups',
+        'active' => in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php'], true),
+    ],
+    [
+        'href' => url('investor/dashboard.php'),
+        'icon' => 'layout-dashboard',
+        'label' => 'Dashboard',
+        'title' => 'Investor Dashboard',
+        'active' => $currentPage === 'dashboard.php',
+    ],
+    [
+        'href' => url('investor/portfolio.php'),
+        'icon' => 'briefcase',
+        'label' => 'Portfolio',
+        'title' => 'Portfolio Holdings',
+        'active' => $currentPage === 'portfolio.php',
+    ],
+    [
+        'href' => url('investor/watchlist.php'),
+        'icon' => 'bookmark',
+        'label' => 'Watchlist',
+        'title' => 'Saved Companies',
+        'active' => $currentPage === 'watchlist.php',
+    ],
+    [
+        'href' => url('investor/messages.php'),
+        'icon' => 'message-circle',
+        'label' => 'Messages',
+        'title' => 'Deal Conversations',
+        'active' => $currentPage === 'messages.php',
+    ],
+];
 
 // Load Investor Dark & Light Theme Controller
 require_once __DIR__ . '/theme.php';
@@ -151,7 +194,7 @@ require_once __DIR__ . '/theme.php';
 
 <header
     class="investor-navbar h-16 sm:h-20 border-b border-[#E4E8EF] dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-6 md:px-8 flex items-center justify-between transition-colors duration-200 shadow-2xs">
-    <!-- Left Section: Hamburger Menu + Section Selector Options -->
+    <!-- Left Section: Hamburger Menu + Search -->
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
@@ -160,63 +203,32 @@ require_once __DIR__ . '/theme.php';
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
 
-        <!-- Search Option Bar (Replaced Sections) -->
+        <!-- Search Option Bar -->
         <form action="<?= url('investor/discover.php') ?>" method="GET" class="relative flex items-center">
             <div class="relative w-44 sm:w-60 md:w-72 lg:w-80">
                 <i data-lucide="search"
                     class="w-4 h-4 text-[#667085] dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                <input type="text" name="search"
-                    value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
+                <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
                     placeholder="Search startups, founders, sector..."
                     class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm rounded-xl bg-[#FAFBFD] dark:bg-slate-800/90 border border-[#E4E8EF] dark:border-slate-700 text-[#111827] dark:text-slate-100 placeholder-[#667085] dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123B7A]/20 dark:focus:ring-blue-500/20 focus:border-[#123B7A] dark:focus:border-blue-400 transition shadow-2xs">
             </div>
         </form>
     </div>
-    <!-- Center Section: Side Nav Bar Important Options -->
+
+    <!-- Center Section: Main Nav (Discover first) -->
     <nav
         class="hidden md:flex items-center space-x-1 lg:space-x-1.5 px-2 py-1 rounded-2xl bg-[#FAFBFD] dark:bg-slate-800/80 border border-[#E4E8EF] dark:border-slate-800">
-        <!-- Home / Dashboard -->
-        <a href="<?= url('investor/dashboard.php') ?>"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $currentPage === 'dashboard.php' ? 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60' ?>"
-            title="Investor Home">
-            <i data-lucide="home" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span>Home</span>
-        </a>
-
-        <!-- Discover Opportunities -->
-        <a href="<?= url('investor/discover.php') ?>"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php']) ? 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60' ?>"
-            title="Discover Startups">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span>Discover</span>
-        </a>
-
-        <!-- Portfolio Holdings -->
-        <a href="<?= url('investor/portfolio.php') ?>"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $currentPage === 'portfolio.php' ? 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60' ?>"
-            title="Portfolio Holdings">
-            <i data-lucide="briefcase" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span>Portfolio</span>
-        </a>
-
-        <!-- Saved Watchlist -->
-        <a href="<?= url('investor/watchlist.php') ?>"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $currentPage === 'watchlist.php' ? 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60' ?>"
-            title="Saved Companies">
-            <i data-lucide="bookmark" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span>Watchlist</span>
-        </a>
-
-        <!-- Deal Conversations -->
-        <a href="<?= url('investor/messages.php') ?>"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $currentPage === 'messages.php' ? 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60' ?>"
-            title="Deal Conversations">
-            <i data-lucide="message-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
-            <span>Messages</span>
-        </a>
+        <?php foreach ($navItems as $item): ?>
+            <a href="<?= $item['href'] ?>"
+                class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $item['active'] ? $navActive : $navInactive ?>"
+                title="<?= htmlspecialchars($item['title']) ?>" <?= $item['active'] ? 'aria-current="page"' : '' ?>>
+                <i data-lucide="<?= $item['icon'] ?>" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <span><?= htmlspecialchars($item['label']) ?></span>
+            </a>
+        <?php endforeach; ?>
     </nav>
 
-    <!-- Right Section: Quick Search + Notifications + Dark/Light Mode Option -->
+    <!-- Right Section: Notifications + Dark/Light Mode -->
     <div class="flex items-center space-x-2.5 sm:space-x-3.5 flex-shrink-0">
 
         <!-- Notifications Bell -->
@@ -267,12 +279,12 @@ require_once __DIR__ . '/theme.php';
             </div>
         </div>
 
-        <!-- Dark / Light Theme Mode Toggle Button (Replaced Profile next to notification) -->
+        <!-- Dark / Light Theme Mode Toggle Button -->
         <button id="investor-theme-toggle-btn" onclick="toggleInvestorTheme()" type="button"
             class="relative p-2.5 rounded-xl bg-[#FAFBFD] dark:bg-slate-800 hover:bg-[#EAF2FF] dark:hover:bg-slate-700 border border-[#E4E8EF] dark:border-slate-700 text-[#4B5563] dark:text-slate-200 transition flex items-center justify-center cursor-pointer shadow-xs group"
             title="Toggle Dark / Light Theme" aria-label="Toggle Dark / Light Theme">
             <!-- Sun Icon (Active in Dark Mode) -->
-            <span id="investor-sun-wrap" class="hidden flex items-center justify-center">
+            <span id="investor-sun-wrap" class="hidden items-center justify-center">
                 <i data-lucide="sun"
                     class="w-4 h-4 sm:w-5 sm:h-5 text-amber-400 group-hover:rotate-45 transition-transform duration-300"></i>
             </span>
@@ -314,14 +326,18 @@ require_once __DIR__ . '/theme.php';
         if (sun && moon) {
             if (isDark) {
                 sun.classList.remove('hidden');
+                sun.classList.add('flex');
                 moon.classList.add('hidden');
+                moon.classList.remove('flex');
                 if (btn) {
                     btn.setAttribute('title', 'Switch to Light Mode');
                     btn.setAttribute('aria-label', 'Switch to Light Mode');
                 }
             } else {
                 sun.classList.add('hidden');
+                sun.classList.remove('flex');
                 moon.classList.remove('hidden');
+                moon.classList.add('flex');
                 if (btn) {
                     btn.setAttribute('title', 'Switch to Dark Mode');
                     btn.setAttribute('aria-label', 'Switch to Dark Mode');
@@ -340,8 +356,6 @@ require_once __DIR__ . '/theme.php';
         if (notifMenu && !notifMenu.contains(e.target) && notifWrap && !notifWrap.contains(e.target)) {
             notifMenu.classList.add('hidden');
         }
-
-
     });
 
     // Initialize Theme Icon State Immediately
