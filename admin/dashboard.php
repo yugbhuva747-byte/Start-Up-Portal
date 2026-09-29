@@ -56,12 +56,9 @@ $flash = get_flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin & Compliance Dashboard • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: "Vay Portal", Sans-serif; }
         .card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -128,7 +125,7 @@ $flash = get_flash();
                 <div class="card-clean rounded-2xl p-5">
                     <div class="flex items-center justify-between text-slate-500 mb-2">
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Companies</span>
-                        <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="building-2" class="w-3.5 h-3.5"></i></div>
+                        <div class="p-1.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="building-2" class="w-3.5 h-3.5"></i></div>
                     </div>
                     <div class="text-xl font-black text-slate-900"><?= $totalCompanies ?></div>
                     <div class="text-[10.5px] text-slate-500 mt-1"><?= $totalFounders ?> Verified Founders</div>

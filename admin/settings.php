@@ -125,12 +125,9 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings & Security • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: "Vay Portal", Sans-serif; }
         .card-clean { background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
     </style>
 </head>
@@ -138,7 +135,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
@@ -252,7 +249,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                     <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
                         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
                         <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
-                            <i data-lucide="key" class="w-3.5 h-3.5 text-purple-600"></i>
+                            <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
                         </div>
                         <div class="text-[10px] text-slate-400 mt-1">Single-use emergency recovery codes</div>
@@ -420,7 +417,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             <!-- Role Overview -->
             <div class="card-clean rounded-2xl p-6">
                 <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                    <i data-lucide="key" class="w-3.5 h-3.5 text-purple-600"></i>
+                    <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
                     <span>Role & Permission Architecture</span>
                 </h3>
                 <div class="overflow-x-auto">
@@ -449,7 +446,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                                 <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
                             </tr>
                             <tr>
-                                <td class="py-3 font-bold text-purple-600">Investor</td>
+                                <td class="py-3 font-bold text-blue-600">Investor</td>
                                 <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
                                 <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
                                 <td class="py-3 text-[10px] text-slate-500">View Only</td>

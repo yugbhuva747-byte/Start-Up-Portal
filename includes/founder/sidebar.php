@@ -17,15 +17,38 @@ require_once __DIR__ . '/theme.php';
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
+    #main-sidebar .overflow-y-auto {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        overscroll-behavior: contain;
+        scroll-behavior: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar {
+        width: 5px;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.35);
+        border-radius: 9999px;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.6);
+    }
 </style>
 <!-- Mobile Drawer Backdrop -->
 <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()"
     class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
 
 <aside id="main-sidebar"
+    data-lenis-prevent="true"
+    data-lenis-prevent-wheel="true"
+    data-lenis-prevent-touch="true"
     class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none"
     style="font-family: 'Vay Portal', Sans-serif;">
-    <div class="p-4 sm:p-5 overflow-y-auto flex-1">
+    <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-4 sm:p-5 overflow-y-auto flex-1">
         <!-- Brand Logo & Mobile Close Button -->
         <div class="flex items-center justify-between mb-6">
             <a href="<?= url('founder/dashboard.php') ?>" class="flex items-center space-x-3 group">
@@ -173,4 +196,20 @@ require_once __DIR__ . '/theme.php';
             document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
         }
     }
+
+    // Direct mouse wheel scroll engine for founder sidebar
+    (function () {
+        const sidebar = document.getElementById('main-sidebar');
+        if (!sidebar) return;
+        const scrollContainer = sidebar.querySelector('.overflow-y-auto');
+        if (!scrollContainer) return;
+
+        sidebar.addEventListener('wheel', function (e) {
+            if (scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+                scrollContainer.scrollTop += e.deltaY;
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, { passive: false });
+    })();
 </script>

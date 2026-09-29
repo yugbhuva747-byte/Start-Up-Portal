@@ -113,12 +113,9 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports & Analytics • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: "Vay Portal", Sans-serif; }
         .card-clean { background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
         .mini-bar { height: 24px; border-radius: 4px; transition: width 0.8s ease; }
         .donut-ring { fill: none; stroke-width: 4; stroke-linecap: round; }
@@ -128,7 +125,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
     
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="reports-main">
@@ -151,7 +148,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                 $kpis = [
                     ['label' => 'Total Users', 'value' => $stats['total_users'], 'icon' => 'users', 'color' => 'indigo', 'fmt' => false],
                     ['label' => 'Founders', 'value' => $stats['founders'], 'icon' => 'rocket', 'color' => 'emerald', 'fmt' => false],
-                    ['label' => 'Investors', 'value' => $stats['investors'], 'icon' => 'briefcase', 'color' => 'purple', 'fmt' => false],
+                    ['label' => 'Investors', 'value' => $stats['investors'], 'icon' => 'briefcase', 'color' => 'blue', 'fmt' => false],
                     ['label' => 'Companies', 'value' => $stats['companies'], 'icon' => 'building-2', 'color' => 'amber', 'fmt' => false],
                     ['label' => 'Total Raised', 'value' => $stats['total_raised'], 'icon' => 'wallet', 'color' => 'teal', 'fmt' => true],
                     ['label' => 'Avg Ticket', 'value' => $stats['avg_ticket'], 'icon' => 'trending-up', 'color' => 'rose', 'fmt' => true],
@@ -194,9 +191,9 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                             <span class="text-xs text-indigo-700 font-medium">Total Invested</span>
                             <span class="text-sm font-black text-indigo-600"><?= format_inr($stats['total_invested']) ?></span>
                         </div>
-                        <div class="flex justify-between items-center p-3 bg-purple-50 rounded-lg border border-purple-100">
-                            <span class="text-xs text-purple-700 font-medium">Transactions</span>
-                            <span class="text-sm font-black text-purple-600"><?= number_format($stats['total_transactions']) ?></span>
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <span class="text-xs text-blue-700 font-medium">Transactions</span>
+                            <span class="text-sm font-black text-blue-600"><?= number_format($stats['total_transactions']) ?></span>
                         </div>
                     </div>
                 </div>
@@ -242,12 +239,12 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                 <!-- Industry Distribution -->
                 <div class="card-clean rounded-2xl p-6">
                     <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                        <i data-lucide="layers" class="w-3.5 h-3.5 text-purple-600"></i>
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i>
                         <span>Industry Distribution</span>
                     </h3>
                     <div class="space-y-2.5">
                         <?php 
-                        $indColors = ['indigo', 'emerald', 'purple', 'amber', 'rose', 'teal', 'blue', 'orange'];
+                        $indColors = ['indigo', 'emerald', 'blue', 'amber', 'rose', 'teal', 'cyan', 'orange'];
                         foreach ($industryStats as $idx => $is): 
                             $color = $indColors[$idx % count($indColors)];
                         ?>
@@ -349,7 +346,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                 <div class="card-clean rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="history" class="w-3.5 h-3.5 text-purple-600"></i>
+                            <i data-lucide="history" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span>Recent Audit Activity</span>
                         </h3>
                         <a href="<?= url('admin/audit_logs.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>

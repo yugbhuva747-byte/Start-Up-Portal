@@ -9,14 +9,19 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
 $unreadCount = 0;
 $notifs = [];
-if ($db) {
-    $nStmt = $db->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
-    $nStmt->execute([$currentUser['id']]);
-    $notifs = $nStmt->fetchAll();
+if ($db && !empty($currentUser['id'])) {
+    try {
+        $nStmt = $db->prepare("SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC LIMIT 5");
+        $nStmt->execute([$currentUser['id']]);
+        $notifs = $nStmt->fetchAll();
 
-    $cStmt = $db->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
-    $cStmt->execute([$currentUser['id']]);
-    $unreadCount = (int) $cStmt->fetchColumn();
+        $cStmt = $db->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+        $cStmt->execute([$currentUser['id']]);
+        $unreadCount = (int) $cStmt->fetchColumn();
+    } catch (\Throwable $e) {
+        $notifs = [];
+        $unreadCount = 0;
+    }
 }
 
 // Load Investor Dark & Light Theme Controller

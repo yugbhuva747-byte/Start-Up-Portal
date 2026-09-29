@@ -97,12 +97,9 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: "Vay Portal", Sans-serif; }
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -115,7 +112,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="comp-main">
@@ -131,7 +128,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center space-x-2.5">
-                        <i data-lucide="building-2" class="w-6 h-6 text-purple-600"></i>
+                        <i data-lucide="building-2" class="w-6 h-6 text-blue-600"></i>
                         <span>Startup Company Management</span>
                     </h1>
                     <p class="text-xs text-slate-500 mt-1">Review legal incorporation CIN references, pitch data, and business eligibility.</p>
@@ -141,7 +138,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
             <!-- KPI Metric Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div class="card-clean rounded-2xl p-5 flex items-center space-x-4">
-                    <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                         <i data-lucide="building" class="w-5 h-5"></i>
                     </div>
                     <div>
@@ -175,7 +172,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
                     <div class="relative flex-1 w-full">
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                         <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search company name, CIN reference, founder or city..."
-                               class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-purple-600 rounded-lg text-xs outline-none">
+                               class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 rounded-lg text-xs outline-none">
                     </div>
                     <div class="flex items-center space-x-2 w-full sm:w-auto">
                         <select name="status" class="px-3 py-2 bg-slate-50 border border-slate-200 focus:bg-white rounded-lg text-xs outline-none" onchange="this.form.submit()">
@@ -184,7 +181,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
                             <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Pending Review</option>
                             <option value="rejected" <?= $statusFilter === 'rejected' ? 'selected' : '' ?>>Rejected</option>
                         </select>
-                        <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg text-xs transition">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs transition">
                             Filter
                         </button>
                     </div>
@@ -244,7 +241,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
                                         </td>
                                         <td class="py-3 px-4 text-right">
                                             <div class="flex items-center justify-end space-x-1.5">
-                                                <a href="<?= url('investor/startup_detail.php?id=' . encode_id($c['id'])) ?>" target="_blank" class="p-1.5 text-slate-400 hover:text-purple-600 rounded-lg hover:bg-slate-100 transition" title="View Public Deal Page">
+                                                <a href="<?= url('investor/startup_detail.php?id=' . encode_id($c['id'])) ?>" target="_blank" class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition" title="View Public Deal Page">
                                                     <i data-lucide="external-link" class="w-4 h-4"></i>
                                                 </a>
                                                 <?php if ($c['verified_status'] !== 'verified'): ?>

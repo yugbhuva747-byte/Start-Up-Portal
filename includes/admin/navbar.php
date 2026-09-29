@@ -6,11 +6,18 @@ $currentUser = current_user();
 $db = get_db();
 $pendingKycCount = 0;
 if ($db) {
-    $kStmt = $db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'");
-    $pendingKycCount = (int)$kStmt->fetchColumn();
+    try {
+        $kStmt = $db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'");
+        $pendingKycCount = (int)$kStmt->fetchColumn();
+    } catch (\Throwable $e) {
+        $pendingKycCount = 0;
+    }
 }
+
+// Load Global Admin "Vay Portal" Typography & Legibility Suite
+require_once __DIR__ . '/theme.php';
 ?>
-<header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+<header id="admin-navbar" class="admin-navbar h-14 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-40 w-full shadow-xs">
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0" aria-label="Open sidebar menu">
@@ -39,6 +46,23 @@ if ($db) {
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
             <span>Platform Secure</span>
         </div>
+
+        <!-- Dark / Light Theme Toggle Switcher -->
+        <button id="admin-theme-toggle-btn" 
+                onclick="toggleAdminTheme()" 
+                type="button" 
+                class="p-2 sm:p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition flex items-center justify-center cursor-pointer shadow-xs group" 
+                title="Toggle Dark / Light Theme" 
+                aria-label="Toggle Dark / Light Theme">
+            <!-- Sun Icon Wrapper (Active in Dark Mode) -->
+            <span id="admin-theme-sun-wrap" class="hidden flex items-center justify-center">
+                <i data-lucide="sun" class="w-4 h-4 text-amber-400 group-hover:rotate-45 transition-transform duration-300"></i>
+            </span>
+            <!-- Moon Icon Wrapper (Active in Light Mode) -->
+            <span id="admin-theme-moon-wrap" class="flex items-center justify-center">
+                <i data-lucide="moon" class="w-4 h-4 text-slate-600 group-hover:-rotate-12 transition-transform duration-300"></i>
+            </span>
+        </button>
     </div>
 </header>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>

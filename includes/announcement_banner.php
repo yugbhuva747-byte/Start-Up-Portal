@@ -14,40 +14,45 @@ if (!isset($user)) {
 
 if ($db && $user):
     $userRole = $user['role'] ?? 'founder';
+    $activeBannersList = [];
 
-    // Check if user has pending KYC
-    $kycStmt = $db->prepare("SELECT status FROM verification_requests WHERE user_id = ? ORDER BY id DESC LIMIT 1");
-    $kycStmt->execute([$user['id']]);
-    $kycStatus = $kycStmt->fetchColumn();
-    $isPendingKyc = (empty($kycStatus) || $kycStatus === 'pending');
+    try {
+        // Check if user has pending KYC
+        $kycStmt = $db->prepare("SELECT status FROM verification_requests WHERE user_id = ? ORDER BY id DESC LIMIT 1");
+        $kycStmt->execute([$user['id']]);
+        $kycStatus = $kycStmt->fetchColumn();
+        $isPendingKyc = (empty($kycStatus) || $kycStatus === 'pending');
 
-    // Fetch active banners for this user (strictly only non-expired, active banners)
-    $bannerQuery = "
-        SELECT * FROM broadcasts 
-        WHERE is_active = 1 
-          AND show_banner = 1 
-          AND (expires_at IS NULL OR expires_at > NOW())
-          AND (
-              target_audience = 'all' 
-              OR target_audience = ?
-    ";
-    $bannerParams = [$userRole];
+        // Fetch active banners for this user (strictly only non-expired, active banners)
+        $bannerQuery = "
+            SELECT * FROM broadcasts 
+            WHERE is_active = 1 
+              AND show_banner = 1 
+              AND (expires_at IS NULL OR expires_at > NOW())
+              AND (
+                  target_audience = 'all' 
+                  OR target_audience = ?
+        ";
+        $bannerParams = [$userRole];
 
-    if ($isPendingKyc) {
-        $bannerQuery .= " OR target_audience = 'pending_kyc'";
+        if ($isPendingKyc) {
+            $bannerQuery .= " OR target_audience = 'pending_kyc'";
+        }
+
+        $bannerQuery .= " ) ORDER BY 
+            CASE priority 
+                WHEN 'urgent' THEN 1 
+                WHEN 'compliance' THEN 2 
+                WHEN 'opportunity' THEN 3 
+                ELSE 4 
+            END ASC, created_at DESC LIMIT 3";
+
+        $bStmt = $db->prepare($bannerQuery);
+        $bStmt->execute($bannerParams);
+        $activeBannersList = $bStmt->fetchAll();
+    } catch (\Throwable $e) {
+        $activeBannersList = [];
     }
-
-    $bannerQuery .= " ) ORDER BY 
-        CASE priority 
-            WHEN 'urgent' THEN 1 
-            WHEN 'compliance' THEN 2 
-            WHEN 'opportunity' THEN 3 
-            ELSE 4 
-        END ASC, created_at DESC LIMIT 3";
-
-    $bStmt = $db->prepare($bannerQuery);
-    $bStmt->execute($bannerParams);
-    $activeBannersList = $bStmt->fetchAll();
 
     if (!empty($activeBannersList)):
 ?>

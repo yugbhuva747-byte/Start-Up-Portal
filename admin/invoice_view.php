@@ -64,11 +64,9 @@ $total = (float)$inv['total_payable'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tax Invoice #<?= htmlspecialchars($inv['invoice_number']) ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0F172A; }
+        body { font-family: "Vay Portal", Sans-serif; background-color: #0F172A; }
         .font-mono-num { font-family: 'Space Grotesk', monospace; }
         
         .invoice-paper {

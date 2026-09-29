@@ -16,10 +16,35 @@ require_once __DIR__ . '/theme.php';
 <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()"
     class="fixed inset-0 bg-[#0B1F3A]/40 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
 
+<style>
+    #main-sidebar .overflow-y-auto {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        overscroll-behavior: contain;
+        scroll-behavior: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar {
+        width: 5px;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.35);
+        border-radius: 9999px;
+    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: rgba(148, 163, 184, 0.6);
+    }
+</style>
 <aside id="main-sidebar"
+    data-lenis-prevent="true"
+    data-lenis-prevent-wheel="true"
+    data-lenis-prevent-touch="true"
     class="fixed inset-y-0 left-0 z-50 w-72 sm:w-68 bg-white dark:bg-slate-900 border-r border-[#E4E8EF] dark:border-slate-800 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-68 flex-shrink-0 transition-transform duration-300 ease-in-out select-none shadow-sm"
     style="font-family: 'Vay Portal - Regular', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
-    <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6">
+    <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6">
         <!-- Brand Identity & Close Button -->
         <div class="flex items-center justify-between pb-5 border-b border-[#E4E8EF] dark:border-slate-800">
             <a href="<?= url('investor/dashboard.php') ?>" class="flex items-center space-x-3.5 group">
@@ -138,4 +163,20 @@ require_once __DIR__ . '/theme.php';
             backdrop.classList.toggle('hidden');
         }
     }
+
+    // Direct mouse wheel scroll engine for investor sidebar
+    (function () {
+        const sidebar = document.getElementById('main-sidebar');
+        if (!sidebar) return;
+        const scrollContainer = sidebar.querySelector('.overflow-y-auto');
+        if (!scrollContainer) return;
+
+        sidebar.addEventListener('wheel', function (e) {
+            if (scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+                scrollContainer.scrollTop += e.deltaY;
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, { passive: false });
+    })();
 </script>

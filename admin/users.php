@@ -44,12 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Users & Entities • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: "Vay Portal", Sans-serif; }
         .card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -62,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="users-admin-main">
@@ -111,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </div>
                                     </td>
                                     <td class="py-3">
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold <?= $u['role'] === 'admin' ? 'bg-purple-50 text-purple-700 border border-purple-200' : ($u['role'] === 'founder' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') ?>">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold <?= $u['role'] === 'admin' ? 'bg-blue-50 text-blue-700 border border-blue-200' : ($u['role'] === 'founder' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200') ?>">
                                             <?= strtoupper($u['role']) ?>
                                         </span>
                                     </td>

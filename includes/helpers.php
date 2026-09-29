@@ -103,9 +103,14 @@ function current_user(): ?array
     $db = get_db();
     if (!$db)
         return null;
-    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch() ?: null;
+    try {
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        return $stmt->fetch() ?: null;
+    } catch (\Throwable $e) {
+        error_log("current_user() DB Error: " . $e->getMessage());
+        return null;
+    }
 }
 
 function require_auth(?string $allowedRole = null): array
