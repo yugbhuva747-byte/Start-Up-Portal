@@ -132,6 +132,52 @@ if ($db) {
     }
 }
 
+/**
+ * Helper to retrieve rich company showcase gallery images
+ */
+function get_company_gallery_images($company) {
+    $industry = strtolower($company['industry'] ?? '');
+    $compName = strtolower($company['name'] ?? '');
+
+    if (strpos($compName, 'techpulse') !== false || strpos($industry, 'ai') !== false || strpos($industry, 'saas') !== false) {
+        return [
+            ['url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&auto=format&fit=crop&q=80', 'title' => 'Enterprise AI Risk & Compliance Platform', 'caption' => 'Multi-agent LLM risk assessment pipeline automated for BFSI enterprises.'],
+            ['url' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&auto=format&fit=crop&q=80', 'title' => 'Core AI Engineering Team', 'caption' => 'Bengaluru engineering hub building neural compliance pipelines.'],
+            ['url' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80', 'title' => 'Scalable Cloud Infrastructure', 'caption' => 'Multi-tenant high-throughput inference cluster running with enterprise-grade SLA.'],
+            ['url' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=80', 'title' => 'Real-Time Financial Dashboard', 'caption' => 'Audit metrics and executive summaries generated in sub-second latency.']
+        ];
+    } elseif (strpos($compName, 'biozenith') !== false || strpos($industry, 'health') !== false || strpos($industry, 'bio') !== false) {
+        return [
+            ['url' => 'https://images.unsplash.com/photo-1576086213369-97a306d36557?w=1200&auto=format&fit=crop&q=80', 'title' => 'Advanced Diagnostics Laboratory', 'caption' => 'Non-invasive micro-spectroscopy clinical diagnostics workstation.'],
+            ['url' => 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&auto=format&fit=crop&q=80', 'title' => 'Point-of-Care Micro-Spectrometer', 'caption' => '3-minute portable blood biomarker detection system.'],
+            ['url' => 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200&auto=format&fit=crop&q=80', 'title' => 'Hospital Trial Validation', 'caption' => 'Active clinical validation underway across top hospital chains in Mumbai.'],
+            ['url' => 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1200&auto=format&fit=crop&q=80', 'title' => 'Instant Cloud Telemetry Sync', 'caption' => 'Encrypted diagnostic reports delivered directly to doctors and patients.']
+        ];
+    } elseif (strpos($compName, 'solaris') !== false || strpos($industry, 'clean') !== false || strpos($industry, 'ev') !== false || strpos($industry, 'mobility') !== false) {
+        return [
+            ['url' => 'https://images.unsplash.com/photo-1508873696983-2df5293cb32f?w=1200&auto=format&fit=crop&q=80', 'title' => 'Automated Solar Swapping Station', 'caption' => 'Rapid 90-second automated battery swap hub designed for commercial delivery fleets.'],
+            ['url' => 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1200&auto=format&fit=crop&q=80', 'title' => 'Commercial EV Fleet Deployment', 'caption' => 'Over 120+ active 2W and 3W electric delivery fleets utilizing our hubs daily.'],
+            ['url' => 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=1200&auto=format&fit=crop&q=80', 'title' => 'Solar Microgrid Architecture', 'caption' => 'Zero-carbon grid-independent energy storage and intelligent charging grid.'],
+            ['url' => 'https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=1200&auto=format&fit=crop&q=80', 'title' => 'IoT Battery Management Telemetry', 'caption' => 'Continuous live health monitoring, thermal safety and cycle-life optimization.']
+        ];
+    } elseif (strpos($industry, 'fintech') !== false) {
+        return [
+            ['url' => 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1200&auto=format&fit=crop&q=80', 'title' => 'Next-Gen Financial Rails', 'caption' => 'Unified payment infrastructure with multi-currency real-time settlements.'],
+            ['url' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&auto=format&fit=crop&q=80', 'title' => 'Algorithmic Risk Management Engine', 'caption' => 'AI-driven automated underwriting and merchant risk scoring.'],
+            ['url' => 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200&auto=format&fit=crop&q=80', 'title' => 'Connected Merchant Terminal', 'caption' => 'Next-generation contactless POS and instant settlement network.'],
+            ['url' => 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&auto=format&fit=crop&q=80', 'title' => 'Institutional Portfolio Reporting', 'caption' => 'Comprehensive analytics suite for angel syndicates and venture funds.']
+        ];
+    } else {
+        $logo = !empty($company['logo_url']) ? $company['logo_url'] : 'https://images.unsplash.com/photo-1551434678-e076c223a692?w=1200&auto=format&fit=crop&q=80';
+        return [
+            ['url' => $logo, 'title' => htmlspecialchars($company['name']) . ' Innovation Showcase', 'caption' => htmlspecialchars($company['pitch'] ?? 'Pioneering innovative solutions.')],
+            ['url' => 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80', 'title' => 'Founding Team Collaboration', 'caption' => 'Agile team executing product milestones with high velocity.'],
+            ['url' => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80', 'title' => 'Technology Architecture', 'caption' => 'Robust, enterprise-grade architecture designed for scale.'],
+            ['url' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&auto=format&fit=crop&q=80', 'title' => 'Market Traction & Milestones', 'caption' => 'Sustainable growth metrics with validated customer demand.']
+        ];
+    }
+}
+
 // Watchlist toggle handler
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'toggle_watchlist') {
     if (verify_csrf($_POST['csrf_token'] ?? '')) {
@@ -397,34 +443,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         $isLiveRound = in_array($s['round_status'] ?? '', ['LIVE', 'PARTIALLY_FUNDED']);
                         ?>
 
-                        <!-- SINGLE VENTURE DEAL POST CARD -->
+                        <!-- SIMPLIFIED VENTURE SHOWCASE CARD -->
                         <article class="linkedin-card rounded-2xl overflow-hidden p-5 sm:p-6 space-y-4 relative">
 
-                            <!-- Card Header: Founder Endorsement & Deal Timing -->
-                            <div
-                                class="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800 text-xs">
-                                <div class="flex items-center space-x-3 min-w-0">
-                                    <img src="<?= $s['founder_avatar'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>"
-                                        class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0"
-                                        alt="<?= htmlspecialchars($s['founder_name'] ?? 'Founder') ?>">
+                            <!-- Company Header: Logo, Name, Verified Badge, Industry, Stage & Bookmark -->
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center space-x-3.5 min-w-0">
+                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="flex-shrink-0 group">
+                                        <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>"
+                                            class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-2xs group-hover:scale-105 transition-transform"
+                                            alt="<?= htmlspecialchars($s['name']) ?>">
+                                    </a>
                                     <div class="min-w-0">
-                                        <div
-                                            class="flex items-center space-x-1.5 font-bold text-slate-900 dark:text-white truncate">
-                                            <span
-                                                class="truncate"><?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?></span>
-                                            <span class="text-slate-400 font-normal">• 2nd</span>
+                                        <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                                            <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
+                                                class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white hover:text-[#0A66C2] dark:hover:text-blue-400 transition tracking-tight truncate">
+                                                <?= htmlspecialchars($s['name']) ?>
+                                            </a>
+                                            <span class="inline-flex items-center text-[#0A66C2] dark:text-blue-400" title="MCA & SEBI Verified">
+                                                <i data-lucide="badge-check" class="w-4.5 h-4.5 fill-[#0A66C2]/15"></i>
+                                            </span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                                <?= htmlspecialchars($s['industry']) ?>
+                                            </span>
+                                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-[#0A66C2] dark:text-blue-300">
+                                                <?= htmlspecialchars($s['stage']) ?>
+                                            </span>
                                         </div>
-                                        <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
-                                            <?= htmlspecialchars($s['founder_designation'] ?? 'Founder & CEO') ?> at
-                                            <?= htmlspecialchars($s['name']) ?>
-                                        </div>
+                                        <p class="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300 line-clamp-1">
+                                            <?= htmlspecialchars($s['pitch']) ?>
+                                        </p>
                                     </div>
                                 </div>
 
                                 <div class="flex items-center space-x-2 flex-shrink-0">
                                     <?php if ($isLiveRound): ?>
-                                        <span
-                                            class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
+                                        <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
                                             ACCEPTING CAPITAL
                                         </span>
@@ -438,145 +492,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                         <button type="submit"
                                             title="<?= $isSaved ? 'Remove from Saved' : 'Save to Watchlist' ?>"
                                             class="p-2 rounded-xl border transition cursor-pointer <?= $isSaved ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700/60 text-amber-600 dark:text-amber-400' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-[#0A66C2] dark:hover:text-blue-400 hover:border-[#0A66C2] dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-slate-700' ?>">
-                                            <i data-lucide="bookmark"
-                                                class="w-4 h-4 <?= $isSaved ? 'fill-amber-500' : '' ?>"></i>
+                                            <i data-lucide="bookmark" class="w-4 h-4 <?= $isSaved ? 'fill-amber-500' : '' ?>"></i>
                                         </button>
                                     </form>
                                 </div>
                             </div>
 
-                            <!-- Company Core Identity Strip -->
-                            <div class="flex items-start space-x-4">
-                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="flex-shrink-0 group">
-                                    <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>"
-                                        class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border border-slate-200 dark:border-slate-700 shadow-2xs group-hover:scale-105 transition-transform duration-200"
-                                        alt="<?= htmlspecialchars($s['name']) ?>">
-                                </a>
-
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center gap-2 mb-1">
-                                        <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
-                                            class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white hover:text-[#0A66C2] dark:hover:text-blue-400 transition tracking-tight">
-                                            <?= htmlspecialchars($s['name']) ?>
-                                        </a>
-                                        <!-- LinkedIn Blue Verified Badge -->
-                                        <span class="inline-flex items-center text-[#0A66C2] dark:text-blue-400"
-                                            title="MCA & SEBI Diligence Verified">
-                                            <i data-lucide="badge-check" class="w-4.5 h-4.5 fill-[#0A66C2]/15"></i>
+                            <!-- Showcase Images Section: Big Image + Beside Thumbnails with 2+ Badge -->
+                            <?php
+                            $gallery = get_company_gallery_images($s);
+                            $galleryJson = htmlspecialchars(json_encode([
+                                'company_name' => $s['name'],
+                                'logo_url' => $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120',
+                                'detail_url' => url('investor/startup_detail.php?id=' . $hashId),
+                                'images' => $gallery
+                            ]), ENT_QUOTES, 'UTF-8');
+                            $bigImg = $gallery[0];
+                            $thumb1 = $gallery[1] ?? null;
+                            $thumb2 = $gallery[2] ?? null;
+                            $remainingCount = count($gallery) - 2;
+                            ?>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 rounded-xl overflow-hidden group/gallery">
+                                <!-- Big Main Image -->
+                                <div class="md:col-span-2 relative h-56 sm:h-64 md:h-72 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
+                                     onclick='openGalleryModal(<?= $galleryJson ?>, 0)'>
+                                    <img src="<?= htmlspecialchars($bigImg['url']) ?>" 
+                                         alt="<?= htmlspecialchars($bigImg['title']) ?>"
+                                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none"></div>
+                                    <div class="absolute bottom-3 left-3 right-3 text-white pointer-events-none">
+                                        <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-[10px] font-bold uppercase tracking-wider text-slate-200 mb-1">
+                                            <i data-lucide="sparkles" class="w-3 h-3 text-amber-400"></i>
+                                            <span>Featured Showcase</span>
                                         </span>
-                                        <span
-                                            class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                                            <?= htmlspecialchars($s['industry']) ?>
-                                        </span>
-                                        <span
-                                            class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-[#0A66C2] dark:text-blue-300">
-                                            <?= htmlspecialchars($s['stage']) ?>
-                                        </span>
-                                        <?php if (!empty($s['city'])): ?>
-                                            <span
-                                                class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
-                                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                                                <?= htmlspecialchars($s['city']) ?>            <?= !empty($s['state']) ? ', ' . htmlspecialchars($s['state']) : '' ?>
-                                            </span>
-                                        <?php endif; ?>
+                                        <h4 class="text-sm sm:text-base font-bold text-white drop-shadow-xs line-clamp-1">
+                                            <?= htmlspecialchars($bigImg['title']) ?>
+                                        </h4>
                                     </div>
+                                    <div class="absolute top-3 right-3 bg-black/60 text-white text-[11px] font-semibold px-2 py-1 rounded-lg backdrop-blur-xs flex items-center space-x-1 pointer-events-none">
+                                        <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                                        <span>Click to View</span>
+                                    </div>
+                                </div>
 
-                                    <p class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 leading-snug">
-                                        <?= htmlspecialchars($s['pitch']) ?>
-                                    </p>
+                                <!-- Beside Side Thumbnails with 2+ Badge -->
+                                <div class="grid grid-cols-2 md:grid-cols-1 gap-2.5">
+                                    <?php if ($thumb1): ?>
+                                        <div class="relative h-28 sm:h-32 md:h-[139px] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
+                                             onclick='openGalleryModal(<?= $galleryJson ?>, 1)'>
+                                            <img src="<?= htmlspecialchars($thumb1['url']) ?>" 
+                                                 alt="<?= htmlspecialchars($thumb1['title']) ?>"
+                                                 class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                                            <div class="absolute inset-0 bg-black/10 hover:bg-transparent transition-colors"></div>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if ($thumb2): ?>
+                                        <div class="relative h-28 sm:h-32 md:h-[139px] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
+                                             onclick='openGalleryModal(<?= $galleryJson ?>, 2)'>
+                                            <img src="<?= htmlspecialchars($thumb2['url']) ?>" 
+                                                 alt="<?= htmlspecialchars($thumb2['title']) ?>"
+                                                 class="w-full h-full object-cover">
+                                            <!-- 2+ Overlay Badge to View All Multi-Pic / Multicap Images -->
+                                            <div class="absolute inset-0 bg-slate-900/70 hover:bg-slate-900/80 transition-all flex flex-col items-center justify-center text-white backdrop-blur-[1px] p-2 text-center">
+                                                <span class="text-2xl sm:text-3xl font-black tracking-tight text-white leading-none">+<?= max(2, $remainingCount) ?></span>
+                                                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1 mt-1">
+                                                    <i data-lucide="images" class="w-3.5 h-3.5 text-blue-400"></i>
+                                                    <span>More Photos</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
-                            <!-- Brief Description Synopsis -->
-                            <?php if (!empty($s['description'])): ?>
-                                <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-                                    <?= htmlspecialchars($s['description']) ?>
-                                </p>
-                            <?php endif; ?>
-
-                            <!-- Deal Metadata & Business Model Tags -->
-                            <div class="flex flex-wrap items-center gap-2 text-xs">
-                                <?php if (!empty($s['business_model'])): ?>
-                                    <span
-                                        class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold flex items-center gap-1">
-                                        <i data-lucide="briefcase" class="w-3 h-3 text-slate-500"></i>
-                                        <?= htmlspecialchars($s['business_model']) ?>
-                                    </span>
-                                <?php endif; ?>
-                                <?php if (!empty($s['cin_number'])): ?>
-                                    <span
-                                        class="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-1">
-                                        <i data-lucide="file-check" class="w-3 h-3 text-emerald-600"></i>
-                                        CIN: <?= htmlspecialchars($s['cin_number']) ?>
-                                    </span>
-                                <?php endif; ?>
-                                <?php if (!empty($s['docs_count']) && $s['docs_count'] > 0): ?>
-                                    <span
-                                        class="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 font-semibold flex items-center gap-1">
-                                        <i data-lucide="files" class="w-3 h-3 text-purple-600"></i>
-                                        <?= $s['docs_count'] ?> Verified Documents
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-
-                            <!-- Financial Metrics Infobox (Clean LinkedIn Financial Grid) -->
-                            <?php if (!empty($targetAmount)): ?>
-                                <div
-                                    class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 rounded-xl p-4 space-y-3">
-                                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                        <div>
-                                            <span
-                                                class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Target
-                                                Round</span>
-                                            <span
-                                                class="text-sm font-black text-slate-900 dark:text-white"><?= format_inr($targetAmount) ?></span>
-                                        </div>
-                                        <div>
-                                            <span
-                                                class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Valuation</span>
-                                            <span
-                                                class="text-sm font-black text-slate-900 dark:text-white"><?= !empty($s['valuation']) ? format_inr($s['valuation']) : 'Confidential' ?></span>
-                                        </div>
-                                        <div>
-                                            <span
-                                                class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Min
-                                                Commitment</span>
-                                            <span
-                                                class="text-sm font-black text-[#0A66C2] dark:text-blue-400"><?= !empty($s['min_investment']) ? format_inr($s['min_investment']) : '₹1,00,000' ?></span>
-                                        </div>
-                                        <div>
-                                            <span
-                                                class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Equity
-                                                Offered</span>
-                                            <span
-                                                class="text-sm font-black text-emerald-600 dark:text-emerald-400"><?= !empty($s['equity_offered']) ? htmlspecialchars($s['equity_offered']) . '%' : 'Direct Safe/CCPS' ?></span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Raised Progress Track -->
-                                    <div>
-                                        <div class="flex justify-between items-center text-xs font-bold mb-1.5">
-                                            <span class="text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                                <?= format_inr($raisedAmount) ?> Committed
-                                            </span>
-                                            <span class="text-[#0A66C2] dark:text-blue-400 font-extrabold"><?= $pct ?>%
-                                                Raised</span>
-                                        </div>
-                                        <div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                                            <div class="h-full bg-gradient-to-r from-[#0A66C2] to-emerald-500 rounded-full transition-all duration-500"
-                                                style="width: <?= min(100, $pct) ?>%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <!-- LinkedIn Action Bar -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-                                <div class="flex items-center space-x-2">
+                            <!-- Simplified Action Buttons -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-slate-100 dark:border-slate-800/80">
+                                <div class="flex items-center space-x-2.5">
+                                    <!-- Read Company Details Button (Opens Full Details page) -->
                                     <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
-                                        class="px-4 sm:px-5 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs sm:text-sm font-bold transition flex items-center space-x-1.5 shadow-sm">
-                                        <span>Review Due Diligence</span>
+                                        class="px-5 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs sm:text-sm font-bold transition flex items-center space-x-2 shadow-sm">
+                                        <span>Read Company Details</span>
                                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                     </a>
 
@@ -592,9 +588,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 <div class="flex items-center space-x-2">
                                     <?php if (!empty($founderHash)): ?>
                                         <a href="<?= url('investor/messages.php?founder=' . $founderHash . '&company=' . $hashId) ?>"
-                                            class="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0A66C2] dark:hover:text-blue-400 hover:border-[#0A66C2]/40 dark:hover:border-blue-500/40 text-xs font-bold transition flex items-center space-x-1.5">
+                                            class="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0A66C2] dark:hover:text-blue-400 text-xs font-bold transition flex items-center space-x-1.5">
                                             <i data-lucide="message-circle" class="w-4 h-4 text-[#0A66C2] dark:text-blue-400"></i>
-                                            <span class="hidden sm:inline">Direct Founder Chat</span>
+                                            <span class="hidden sm:inline">Founder Chat</span>
                                         </a>
                                     <?php endif; ?>
 
@@ -614,6 +610,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             </div>
         </main>
+    </div>
+
+    <!-- Interactive Multi-Photo Lightbox Modal -->
+    <div id="companyGalleryModal" class="fixed inset-0 z-50 hidden items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md transition-opacity duration-200">
+        <div class="relative w-full max-w-4xl bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] border border-slate-700">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-800 bg-slate-950/80">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <img id="galleryModalLogo" src="" class="w-9 h-9 rounded-xl object-cover border border-slate-700 flex-shrink-0" alt="">
+                    <div class="min-w-0">
+                        <h4 id="galleryModalCompany" class="text-sm sm:text-base font-bold text-white truncate"></h4>
+                        <p id="galleryModalCounter" class="text-[11px] text-slate-400 font-medium"></p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2.5 flex-shrink-0">
+                    <a id="galleryModalDetailsLink" href="#" class="px-4 py-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+                        <span>Read Full Details</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                    <button type="button" onclick="closeGalleryModal()" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Active Image Stage -->
+            <div class="relative flex-1 bg-black flex items-center justify-center min-h-[300px] max-h-[58vh] overflow-hidden select-none">
+                <img id="galleryModalMainImg" src="" alt="" class="max-w-full max-h-[58vh] object-contain transition-all duration-300">
+
+                <!-- Previous / Next Navigation Arrows -->
+                <button type="button" onclick="prevGalleryImage()" 
+                    class="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white transition backdrop-blur-xs cursor-pointer shadow-lg">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                </button>
+                <button type="button" onclick="nextGalleryImage()" 
+                    class="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 sm:p-3 rounded-full bg-slate-900/70 hover:bg-slate-900 text-white transition backdrop-blur-xs cursor-pointer shadow-lg">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                </button>
+
+                <!-- Caption / Multicap Info Overlay -->
+                <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 text-white">
+                    <h5 id="galleryModalTitle" class="text-sm sm:text-base font-bold text-white"></h5>
+                    <p id="galleryModalCaption" class="text-xs text-slate-300 mt-0.5 line-clamp-2"></p>
+                </div>
+            </div>
+
+            <!-- Bottom Thumbnails Strip -->
+            <div id="galleryModalThumbs" class="flex items-center space-x-2.5 p-3.5 bg-slate-950 overflow-x-auto border-t border-slate-800/80">
+            </div>
+        </div>
     </div>
 
     <!-- Deal Link Copied Toast -->
@@ -638,6 +684,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 }
             });
         }
+
+        // Gallery Modal Logic
+        let activeGallery = null;
+        let activeGalleryIndex = 0;
+
+        function openGalleryModal(galleryData, startIndex = 0) {
+            activeGallery = galleryData;
+            activeGalleryIndex = startIndex;
+            
+            document.getElementById('galleryModalCompany').textContent = galleryData.company_name;
+            document.getElementById('galleryModalLogo').src = galleryData.logo_url;
+            document.getElementById('galleryModalDetailsLink').href = galleryData.detail_url;
+
+            renderGalleryModalState();
+
+            const modal = document.getElementById('companyGalleryModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            lucide.createIcons();
+        }
+
+        function closeGalleryModal() {
+            const modal = document.getElementById('companyGalleryModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = '';
+            activeGallery = null;
+        }
+
+        function renderGalleryModalState() {
+            if (!activeGallery || !activeGallery.images || !activeGallery.images.length) return;
+            const item = activeGallery.images[activeGalleryIndex];
+            
+            document.getElementById('galleryModalMainImg').src = item.url;
+            document.getElementById('galleryModalTitle').textContent = item.title;
+            document.getElementById('galleryModalCaption').textContent = item.caption;
+            document.getElementById('galleryModalCounter').textContent = `Photo ${activeGalleryIndex + 1} of ${activeGallery.images.length}`;
+
+            // Render Thumbnails
+            const thumbsContainer = document.getElementById('galleryModalThumbs');
+            thumbsContainer.innerHTML = '';
+            activeGallery.images.forEach((img, idx) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition cursor-pointer ${idx === activeGalleryIndex ? 'border-[#0A66C2] scale-105 opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`;
+                btn.onclick = () => {
+                    activeGalleryIndex = idx;
+                    renderGalleryModalState();
+                };
+                btn.innerHTML = `<img src="${img.url}" class="w-full h-full object-cover" alt="">`;
+                thumbsContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function nextGalleryImage() {
+            if (!activeGallery || !activeGallery.images.length) return;
+            activeGalleryIndex = (activeGalleryIndex + 1) % activeGallery.images.length;
+            renderGalleryModalState();
+        }
+
+        function prevGalleryImage() {
+            if (!activeGallery || !activeGallery.images.length) return;
+            activeGalleryIndex = (activeGalleryIndex - 1 + activeGallery.images.length) % activeGallery.images.length;
+            renderGalleryModalState();
+        }
+
+        // Close on backdrop click & Keyboard Navigation
+        document.getElementById('companyGalleryModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'companyGalleryModal') {
+                closeGalleryModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('companyGalleryModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeGalleryModal();
+                if (e.key === 'ArrowRight') nextGalleryImage();
+                if (e.key === 'ArrowLeft') prevGalleryImage();
+            }
+        });
     </script>
 </body>
 
