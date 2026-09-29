@@ -1,12 +1,12 @@
 <?php
 /**
  * Admin Module: Platform Settings & Security Configuration
- * Category/industry CRUD, security overview, platform config
+ * Category/industry taxonomy, 2FA security controls, and security auditing.
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Platform Settings & Security';
+$pageTitle = 'Platform Settings';
 
 $categories = [];
 $securityEvents = [];
@@ -49,14 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
         if ($action === 'generate_backup_codes') {
             $plainCodes = generate_2fa_backup_codes($user['id'], 5);
             $_SESSION['new_backup_codes'] = $plainCodes;
-            set_flash('success', '5 new emergency backup recovery codes generated. Please store them securely!');
+            set_flash('success', '5 new emergency recovery codes generated. Please store them securely!');
             header('Location: ' . url('admin/settings.php'));
             exit;
         }
 
         if ($action === 'reset_totp_qr') {
             reset_admin_totp($user['id']);
-            set_flash('info', 'Mobile Authenticator has been reset. Please scan the new QR code with your mobile app.');
+            set_flash('info', 'Mobile Authenticator has been reset. Please scan the new QR code.');
             header('Location: ' . url('auth/setup_2fa.php'));
             exit;
         }
@@ -113,185 +113,197 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
         }
     }
 }
-
-// Reload categories after POST
-if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    // Already loaded above
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings & Security • <?= APP_NAME ?></title>
+    <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean { background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-slate-50 text-slate-900 flex min-h-screen">
     
+    <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
+        <!-- Standard Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
+        <main class="p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
 
+            <!-- Alerts -->
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
+                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
-                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
-            <!-- Header -->
-            <div>
-                <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Platform Settings & Security</h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage industry categories, platform configuration, and security monitoring.</p>
+            <!-- Page Title -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="admin-page-icon">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Platform Settings & Security</h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Manage authentication security, platform taxonomy, and access architecture.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="admin-badge badge-neutral">
+                        <span class="admin-badge-dot"></span>
+                        PHP <?= phpversion() ?> • <?= DB_NAME ?>
+                    </span>
+                </div>
             </div>
 
-            <!-- Platform Info -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Platform</div>
-                    <div class="text-sm font-bold text-slate-900"><?= APP_NAME ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">Phase 1 — Active</div>
+            <!-- Platform Metrics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Platform Environment</span>
+                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                            <i data-lucide="server" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-sky text-base">Development</div>
+                    <div class="text-[11px] text-slate-500 mt-1"><?= php_uname('s') ?> / Apache</div>
                 </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Environment</div>
-                    <div class="text-sm font-bold text-emerald-600">Development</div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= php_uname('s') ?> / PHP <?= phpversion() ?></div>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Active Sessions</span>
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= $activeSessions ?></div>
+                    <div class="text-[11px] text-slate-500 mt-1">Logged-in during last 60m</div>
                 </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Sessions</div>
-                    <div class="text-sm font-bold text-indigo-600"><?= $activeSessions ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">In last 60 minutes</div>
-                </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Database</div>
-                    <div class="text-sm font-bold text-slate-900"><?= DB_NAME ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= DB_HOST ?>:<?= DB_PORT ?></div>
-                </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Admin 2FA Status</div>
-                    <div class="text-sm font-bold text-emerald-600 flex items-center space-x-1.5">
-                        <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Admin 2FA Policy</span>
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value flex items-center gap-1.5 text-sm <?= !empty($twoFactorRec['is_enabled']) ? 'text-emerald-600' : 'text-amber-600' ?>">
                         <span><?= !empty($twoFactorRec['is_enabled']) ? 'Enforced' : 'Optional' ?></span>
                     </div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= $backupCodesRemaining ?> recovery code<?= $backupCodesRemaining === 1 ? '' : 's' ?> active</div>
+                    <div class="text-[11px] text-slate-500 mt-1"><?= $backupCodesRemaining ?> recovery code<?= $backupCodesRemaining === 1 ? '' : 's' ?> active</div>
+                </div>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Industry Categories</span>
+                        <div class="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+                            <i data-lucide="tags" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-violet"><?= count($categories) ?></div>
+                    <div class="text-[11px] text-slate-500 mt-1">Active startup sectors</div>
                 </div>
             </div>
 
-            <!-- Two-Factor Authentication (2FA) Administration Card -->
-            <div class="card-clean rounded-2xl p-6 border-indigo-100 bg-gradient-to-br from-white via-indigo-50/20 to-white">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-indigo-600/20">
+            <!-- Two-Factor Authentication Security Card -->
+            <div class="admin-card space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+                    <div class="flex items-start gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <div class="flex items-center space-x-2">
-                                <h3 class="text-sm font-bold text-slate-900">Mobile Authenticator (2FA) Security Control</h3>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-bold text-slate-900">Mobile Authenticator (2FA TOTP)</h3>
+                                <span class="admin-badge <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'badge-success' : 'badge-warning' ?>">
+                                    <span class="admin-badge-dot"></span>
                                     <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'Active & Enforced' : 'Setup Required' ?>
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-500 mt-0.5">Time-based One-Time Password (TOTP RFC 6238) paired with Google Authenticator / Microsoft Authenticator on your mobile phone.</p>
+                            <p class="text-xs text-slate-500 mt-0.5">RFC 6238 time-based verification paired with Google Authenticator or Microsoft Authenticator.</p>
                         </div>
                     </div>
 
-                    <!-- Policy Toggle & Re-scan QR -->
-                    <div class="flex items-center space-x-2">
-                        <!-- <form method="POST" class="inline-flex items-center">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="form_action" value="reset_totp_qr">
-                            <button type="submit" class="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition flex items-center space-x-1.5" title="Re-scan QR code on a new phone">
-                                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-                                <span>Re-scan QR Code</span>
-                            </button>
-                        </form> -->
-
-                        <form method="POST" class="inline-flex items-center">
+                    <!-- Policy Action Button -->
+                    <div>
+                        <form method="POST" class="inline">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="toggle_2fa">
                             <input type="hidden" name="enable_2fa" value="<?= !empty($twoFactorRec['is_enabled']) ? '0' : '1' ?>">
-                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' ?>">
-                                <i data-lucide="<?= !empty($twoFactorRec['is_enabled']) ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
+                            <button type="submit" class="admin-btn-secondary text-xs">
+                                <i data-lucide="<?= !empty($twoFactorRec['is_enabled']) ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5 mr-1.5 inline"></i>
                                 <span><?= !empty($twoFactorRec['is_enabled']) ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- 2FA Details & Recovery Codes Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
-                    <!-- Method -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Method</div>
-                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                <!-- 2FA Details Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="admin-stat-label">Primary Method</div>
+                        <div class="text-xs font-semibold text-slate-800 flex items-center gap-1.5 mt-1">
                             <i data-lucide="smartphone" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Google / Microsoft Authenticator</span>
+                            <span>TOTP Authenticator</span>
                         </div>
-                        <div class="text-[10px] text-slate-500 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
+                        <div class="text-[11px] text-slate-500 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Paired with device' : '⚠️ Pending setup' ?></div>
                     </div>
 
-                    <!-- Recovery Status -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
-                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
-                            <i data-lucide="key" class="w-3.5 h-3.5 text-purple-600"></i>
-                            <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <div class="admin-stat-label">Recovery Codes</div>
+                        <div class="text-xs font-semibold text-slate-800 flex items-center gap-1.5 mt-1">
+                            <i data-lucide="key" class="w-3.5 h-3.5 text-slate-600"></i>
+                            <span><?= $backupCodesRemaining ?> of 5 Remaining</span>
                         </div>
-                        <div class="text-[10px] text-slate-400 mt-1">Single-use emergency recovery codes</div>
+                        <div class="text-[11px] text-slate-500 mt-1">Single-use emergency access</div>
                     </div>
 
-                    <!-- Generate Codes Button -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                         <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Backup Codes</div>
-                            <div class="text-[11px] font-semibold text-slate-700">Regenerate 5 new codes</div>
+                            <div class="admin-stat-label">Regenerate Codes</div>
+                            <div class="text-xs font-semibold text-slate-700 mt-0.5">Create 5 new codes</div>
                         </div>
-                        <form method="POST" class="inline" onsubmit="return confirm('Generating new backup codes will invalidate any existing unused codes. Proceed?')">
+                        <form method="POST" onsubmit="return confirm('Generating new recovery codes will invalidate any existing unused codes. Continue?')">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="generate_backup_codes">
-                            <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
-                                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                                <span>Generate</span>
+                            <button type="submit" class="admin-btn-secondary text-[11px] py-1.5 px-3">
+                                <i data-lucide="refresh-cw" class="w-3 h-3 mr-1 inline"></i>
+                                Generate
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Newly Generated Codes Banner (Shown when generated) -->
+                <!-- Newly Generated Codes Banner -->
                 <?php if (!empty($newlyGeneratedCodes)): ?>
-                    <div class="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
+                    <div class="p-4 rounded-xl bg-amber-50 border border-amber-200">
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
                                 <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
                                 <span>Save Your Emergency Recovery Codes</span>
                             </div>
-                            <button type="button" onclick="copyBackupCodes()" class="px-2 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold transition flex items-center space-x-1">
-                                <i data-lucide="copy" class="w-3 h-3"></i>
+                            <button type="button" onclick="copyBackupCodes()" class="admin-btn-secondary text-[10px] py-1 px-2.5 bg-white">
+                                <i data-lucide="copy" class="w-3 h-3 mr-1 inline"></i>
                                 <span id="copyBackupBtnText">Copy All Codes</span>
                             </button>
                         </div>
-                        <p class="text-[11px] text-amber-700 mb-3">Store these single-use codes safely. Each code can be used only once if you cannot access your 6-digit OTP code.</p>
+                        <p class="text-[11px] text-amber-800 mb-3">Store these single-use codes safely. Each code can be used only once if you lose device access.</p>
                         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="backupCodesContainer">
                             <?php foreach ($newlyGeneratedCodes as $code): ?>
-                                <div class="px-3 py-1.5 rounded-lg bg-white border border-amber-200 font-mono text-center text-xs font-bold tracking-wider text-slate-800 shadow-2xs">
+                                <div class="px-3 py-1.5 rounded-lg bg-white border border-amber-200 font-mono text-center text-xs font-bold text-slate-800 shadow-2xs">
                                     <?= htmlspecialchars($code) ?>
                                 </div>
                             <?php endforeach; ?>
@@ -300,30 +312,33 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 <?php endif; ?>
             </div>
 
+            <!-- Two-Column Section: Taxonomy + Security Monitor -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 
-                <!-- Category Management -->
-                <div class="card-clean rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                        <i data-lucide="tags" class="w-3.5 h-3.5 text-indigo-600"></i>
-                        <span>Industry & Category Taxonomy</span>
-                    </h3>
+                <!-- Category Taxonomy Management -->
+                <div class="admin-card space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Industry & Category Taxonomy</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Sectors available for startups during profile creation.</p>
+                        </div>
+                    </div>
 
                     <!-- Add Category Form -->
-                    <form method="POST" class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                    <form method="POST" class="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-2.5">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                         <input type="hidden" name="form_action" value="add_category">
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <input type="text" name="cat_name" required placeholder="Category name" 
-                                   class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
-                            <input type="text" name="cat_icon" placeholder="Icon (e.g. layers)" value="layers"
-                                   class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="text" name="cat_name" required placeholder="Category name (e.g. CleanTech)" 
+                                   class="admin-input">
+                            <input type="text" name="cat_icon" placeholder="Icon name (e.g. zap, layers)" value="layers"
+                                   class="admin-input">
                         </div>
-                        <div class="flex items-center space-x-2">
-                            <input type="text" name="cat_description" placeholder="Description (optional)"
-                                   class="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
-                            <button type="submit" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1">
-                                <i data-lucide="plus" class="w-3 h-3"></i>
+                        <div class="flex items-center gap-2">
+                            <input type="text" name="cat_description" placeholder="Short description (optional)"
+                                   class="admin-input flex-1">
+                            <button type="submit" class="admin-btn-primary py-2 px-3 flex-shrink-0">
+                                <i data-lucide="plus" class="w-3.5 h-3.5 mr-1"></i>
                                 <span>Add</span>
                             </button>
                         </div>
@@ -331,29 +346,29 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
                     <!-- Category List -->
                     <?php if (empty($categories)): ?>
-                        <div class="py-6 text-center text-xs text-slate-400">No categories defined yet.</div>
+                        <div class="py-8 text-center text-xs text-slate-400">No categories defined yet.</div>
                     <?php else: ?>
-                        <div class="space-y-1.5 max-h-80 overflow-y-auto">
+                        <div class="space-y-1.5 max-h-80 overflow-y-auto pr-1">
                             <?php foreach ($categories as $cat): ?>
-                                <div class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition border border-slate-100 group">
-                                    <div class="flex items-center space-x-2.5">
-                                        <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                                <div class="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 hover:border-slate-200 transition bg-white">
+                                    <div class="flex items-center gap-2.5 min-w-0">
+                                        <div class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600 flex-shrink-0">
                                             <i data-lucide="<?= htmlspecialchars($cat['icon'] ?? 'layers') ?>" class="w-3.5 h-3.5"></i>
                                         </div>
-                                        <div>
-                                            <div class="text-xs font-bold text-slate-800"><?= htmlspecialchars($cat['name']) ?></div>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($cat['slug']) ?></div>
+                                        <div class="min-w-0">
+                                            <div class="text-xs font-semibold text-slate-800 truncate"><?= htmlspecialchars($cat['name']) ?></div>
+                                            <div class="text-[10px] text-slate-400 font-mono"><?= htmlspecialchars($cat['slug']) ?></div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center space-x-1.5 opacity-0 group-hover:opacity-100 transition">
+                                    <div class="flex items-center gap-1.5">
                                         <!-- Toggle Active -->
                                         <form method="POST" class="inline">
                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                             <input type="hidden" name="form_action" value="toggle_category">
                                             <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
                                             <input type="hidden" name="new_state" value="<?= $cat['is_active'] ? 0 : 1 ?>">
-                                            <button type="submit" class="p-1.5 rounded-lg <?= $cat['is_active'] ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-400 hover:bg-slate-100' ?> transition" title="<?= $cat['is_active'] ? 'Disable' : 'Enable' ?>">
-                                                <i data-lucide="<?= $cat['is_active'] ? 'toggle-right' : 'toggle-left' ?>" class="w-4 h-4"></i>
+                                            <button type="submit" class="p-1 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="<?= $cat['is_active'] ? 'Disable' : 'Enable' ?>">
+                                                <i data-lucide="<?= $cat['is_active'] ? 'toggle-right' : 'toggle-left' ?>" class="w-4 h-4 <?= $cat['is_active'] ? 'text-emerald-600' : 'text-slate-400' ?>"></i>
                                             </button>
                                         </form>
                                         <!-- Delete -->
@@ -361,7 +376,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                             <input type="hidden" name="form_action" value="delete_category">
                                             <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
-                                            <button type="submit" class="p-1.5 rounded-lg text-rose-400 hover:bg-rose-50 hover:text-rose-600 transition" title="Delete">
+                                            <button type="submit" class="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition" title="Delete">
                                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                             </button>
                                         </form>
@@ -373,43 +388,45 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 </div>
 
                 <!-- Security Events Monitor -->
-                <div class="card-clean rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-500"></i>
-                        <span>Security Event Monitor</span>
-                    </h3>
+                <div class="admin-card space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Security Event Monitor</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Real-time authentication and access events.</p>
+                        </div>
+                    </div>
 
                     <?php if (empty($securityEvents)): ?>
-                        <div class="py-6 text-center">
-                            <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                                <i data-lucide="shield-check" class="w-6 h-6 text-emerald-500"></i>
+                        <div class="py-10 text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400">
+                                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-500"></i>
                             </div>
-                            <div class="text-xs font-bold text-slate-800 mb-0.5">All Clear</div>
-                            <div class="text-[11px] text-slate-400">No security events recorded yet.</div>
+                            <div class="text-xs font-semibold text-slate-800">All Clear</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">No suspicious security events recorded.</div>
                         </div>
                     <?php else: ?>
-                        <div class="space-y-2 max-h-80 overflow-y-auto">
+                        <div class="space-y-2 max-h-80 overflow-y-auto pr-1">
                             <?php foreach ($securityEvents as $se): 
-                                $sevColor = match($se['severity']) {
-                                    'critical' => 'rose', 'high' => 'orange', 'medium' => 'amber', default => 'slate'
+                                $badgeClass = match($se['severity']) {
+                                    'critical', 'high' => 'badge-danger',
+                                    'medium' => 'badge-warning',
+                                    default => 'badge-neutral'
                                 };
                             ?>
-                                <div class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-50 transition">
-                                    <div class="w-6 h-6 rounded-full bg-<?= $sevColor ?>-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                        <span class="w-2 h-2 rounded-full bg-<?= $sevColor ?>-500"></span>
+                                <div class="p-2.5 rounded-lg border border-slate-100 bg-white space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-slate-800"><?= htmlspecialchars($se['event_type']) ?></span>
+                                        <span class="admin-badge <?= $badgeClass ?>">
+                                            <span class="admin-badge-dot"></span>
+                                            <?= strtoupper($se['severity']) ?>
+                                        </span>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[11px] font-bold text-slate-800"><?= htmlspecialchars($se['event_type']) ?></span>
-                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-<?= $sevColor ?>-50 text-<?= $sevColor ?>-600 border border-<?= $sevColor ?>-200"><?= strtoupper($se['severity']) ?></span>
-                                        </div>
-                                        <div class="text-[10px] text-slate-500 mt-0.5">
-                                            <?= htmlspecialchars($se['user_name'] ?? 'Unknown') ?> • <?= htmlspecialchars($se['ip_address']) ?> • <?= date('d M H:i', strtotime($se['created_at'])) ?>
-                                        </div>
-                                        <?php if (!empty($se['details'])): ?>
-                                            <div class="text-[10px] text-slate-400 mt-0.5 truncate"><?= htmlspecialchars(substr($se['details'], 0, 100)) ?></div>
-                                        <?php endif; ?>
+                                    <div class="text-[11px] text-slate-500">
+                                        <?= htmlspecialchars($se['user_name'] ?? 'System') ?> • <span class="font-mono"><?= htmlspecialchars($se['ip_address']) ?></span> • <?= date('d M, h:i A', strtotime($se['created_at'])) ?>
                                     </div>
+                                    <?php if (!empty($se['details'])): ?>
+                                        <div class="text-[11px] text-slate-400 truncate"><?= htmlspecialchars(substr($se['details'], 0, 100)) ?></div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -417,56 +434,56 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 </div>
             </div>
 
-            <!-- Role Overview -->
-            <div class="card-clean rounded-2xl p-6">
-                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                    <i data-lucide="key" class="w-3.5 h-3.5 text-purple-600"></i>
-                    <span>Role & Permission Architecture</span>
-                </h3>
+            <!-- Role & Permission Reference Table -->
+            <div class="admin-table-container">
+                <div class="p-5 border-b border-slate-100">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Role & Permission Architecture</h3>
+                    <p class="text-xs text-slate-500 mt-0.5">Matrix of privileges enforced across platform modules.</p>
+                </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
+                    <table class="admin-table">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <th class="pb-2.5">Role</th>
-                                <th class="pb-2.5">Dashboard</th>
-                                <th class="pb-2.5">Company Mgmt</th>
-                                <th class="pb-2.5">Funding</th>
-                                <th class="pb-2.5">Investment</th>
-                                <th class="pb-2.5">Chat</th>
-                                <th class="pb-2.5">Admin Panel</th>
-                                <th class="pb-2.5">Audit Access</th>
+                            <tr>
+                                <th>Role</th>
+                                <th>Dashboard</th>
+                                <th>Company Registry</th>
+                                <th>Fundraising</th>
+                                <th>Investments</th>
+                                <th>Direct Chat</th>
+                                <th>Admin Desk</th>
+                                <th>Audit Trails</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody>
                             <tr>
-                                <td class="py-3 font-bold text-indigo-600">Founder</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                <td class="font-semibold text-slate-900">Founder</td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><span class="text-slate-300">—</span></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><span class="text-slate-300">—</span></td>
+                                <td><span class="text-slate-300">—</span></td>
                             </tr>
                             <tr>
-                                <td class="py-3 font-bold text-purple-600">Investor</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3 text-[10px] text-slate-500">View Only</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                <td class="font-semibold text-slate-900">Investor</td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><span class="text-[11px] text-slate-500">View Only</span></td>
+                                <td><span class="text-[11px] text-slate-500">View Rounds</span></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><span class="text-slate-300">—</span></td>
+                                <td><span class="text-slate-300">—</span></td>
                             </tr>
                             <tr>
-                                <td class="py-3 font-bold text-rose-600">Admin</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                <td class="font-semibold text-indigo-600">Administrator</td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
+                                <td><i data-lucide="check" class="w-4 h-4 text-emerald-600"></i></td>
                             </tr>
                         </tbody>
                     </table>
@@ -478,7 +495,6 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
 
     <script>
         lucide.createIcons();
-        gsap.from("#settings-main > *", { duration: 0.5, y: 15, opacity: 0, stagger: 0.08, ease: "power2.out" });
 
         function copyBackupCodes() {
             const container = document.getElementById('backupCodesContainer');

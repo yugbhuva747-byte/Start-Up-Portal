@@ -76,3 +76,12 @@ On the login screen ([http://localhost/start%20up%20portal/auth/login.php](http:
 - **User:** `root`
 - **Password:** *(empty)*
 - **Reset/Re-seed URL:** [http://localhost/start%20up%20portal/setup.php](http://localhost/start%20up%20portal/setup.php)
+
+
+back up 2fa code 
+
+709A-3BEC
+16AA-19B3
+6453-C596
+C6D5-151E
+4856-F51F

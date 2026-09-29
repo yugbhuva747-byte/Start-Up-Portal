@@ -51,10 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, ?, ?, ?, 0.00, ?, ?, ?, ?, NOW())
             ");
             $ins->execute([$company['id'], $roundName, $targetAmount, $minInvestment, $maxInvestment, $valuation, $equityOffered, $status, $purpose]);
-            $roundId = $db->lastInsertId();
+            $roundId = (int)$db->lastInsertId();
+
+            // Automatically send dynamic confirmation email to logged-in Founder & alert Admin
+            send_funding_round_submitted_emails($db, $roundId, (int)$user['id']);
 
             log_audit($user['id'], 'CREATE_FUNDING_ROUND', 'funding_rounds', $roundId, "Created {$roundName} with target ₹{$targetAmount}");
-            set_flash('success', "Funding round submitted for compliance review!");
+            set_flash('success', "Funding round submitted! Automated confirmation email dispatched to {$user['email']}.");
             header('Location: ' . url('founder/funding_rounds.php'));
             exit;
 

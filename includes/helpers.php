@@ -215,25 +215,42 @@ function format_inr(float|int $number, bool $includeSymbol = true): string {
 // 9. Status Badges HTML Helper (Crisp, Clean Light Theme)
 function render_status_badge(string $status): string {
     $statusUpper = strtoupper($status);
-    $map = [
-        'DRAFT' => 'bg-slate-100 text-slate-700 border-slate-200',
-        'SUBMITTED' => 'bg-blue-50 text-blue-700 border-blue-200',
-        'UNDER_REVIEW' => 'bg-amber-50 text-amber-800 border-amber-200',
-        'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200',
-        'APPROVED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'LIVE' => 'bg-emerald-50 text-emerald-700 border-emerald-300 font-bold animate-pulse',
-        'VERIFIED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'PARTIALLY_FUNDED' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        'FULLY_FUNDED' => 'bg-purple-50 text-purple-700 border-purple-200',
-        'CLOSED' => 'bg-slate-100 text-slate-600 border-slate-200',
-        'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-200',
-        'CONFIRMED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'ACTIVE' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'COMPLETED' => 'bg-teal-50 text-teal-700 border-teal-200',
+    $dotColors = [
+        'DRAFT' => 'bg-slate-400',
+        'SUBMITTED' => 'bg-blue-500',
+        'UNDER_REVIEW' => 'bg-amber-500',
+        'PENDING' => 'bg-amber-500',
+        'APPROVED' => 'bg-emerald-500',
+        'LIVE' => 'bg-emerald-500',
+        'VERIFIED' => 'bg-emerald-500',
+        'PARTIALLY_FUNDED' => 'bg-indigo-500',
+        'FULLY_FUNDED' => 'bg-purple-500',
+        'CLOSED' => 'bg-slate-400',
+        'REJECTED' => 'bg-rose-500',
+        'CONFIRMED' => 'bg-emerald-500',
+        'ACTIVE' => 'bg-emerald-500',
+        'COMPLETED' => 'bg-teal-500',
     ];
-    $classes = $map[$statusUpper] ?? 'bg-slate-100 text-slate-600 border-slate-200';
+    $map = [
+        'DRAFT' => 'bg-slate-100 text-slate-700 border-slate-200/80',
+        'SUBMITTED' => 'bg-blue-50 text-blue-700 border-blue-200/80',
+        'UNDER_REVIEW' => 'bg-amber-50 text-amber-800 border-amber-200/80',
+        'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200/80',
+        'APPROVED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'LIVE' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'VERIFIED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'PARTIALLY_FUNDED' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+        'FULLY_FUNDED' => 'bg-purple-50 text-purple-700 border-purple-200/80',
+        'CLOSED' => 'bg-slate-100 text-slate-600 border-slate-200/80',
+        'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-200/80',
+        'CONFIRMED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'ACTIVE' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'COMPLETED' => 'bg-teal-50 text-teal-800 border-teal-200/80',
+    ];
+    $classes = $map[$statusUpper] ?? 'bg-slate-100 text-slate-600 border-slate-200/80';
+    $dot = $dotColors[$statusUpper] ?? 'bg-slate-400';
     $label = str_replace('_', ' ', $statusUpper);
-    return "<span class=\"inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border {$classes}\">{$label}</span>";
+    return "<span class=\"inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide border {$classes}\"><span class=\"w-1.5 h-1.5 rounded-full {$dot}\"></span><span>{$label}</span></span>";
 }
 
 // 10. Profile Completion Calculator
@@ -776,3 +793,38 @@ function get_remaining_backup_codes_count(int $userId): int {
     }
     return $unused;
 }
+
+/**
+ * Ensure broadcasts table exists
+ */
+function init_broadcasts_table(PDO $db): void {
+    static $initialized = false;
+    if ($initialized) return;
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `broadcasts` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `admin_user_id` INT NOT NULL,
+                `title` VARCHAR(255) NOT NULL,
+                `message` TEXT NOT NULL,
+                `priority` ENUM('urgent','compliance','update','opportunity') DEFAULT 'update',
+                `target_audience` ENUM('all','founder','investor','pending_kyc') DEFAULT 'all',
+                `show_banner` TINYINT(1) DEFAULT 1,
+                `cta_label` VARCHAR(100) NULL,
+                `cta_url` VARCHAR(255) NULL,
+                `image_url` VARCHAR(255) NULL,
+                `recipients_count` INT DEFAULT 0,
+                `is_active` TINYINT(1) DEFAULT 1,
+                `expires_at` DATETIME NULL,
+                `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX (`admin_user_id`),
+                INDEX (`is_active`),
+                INDEX (`priority`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+        $initialized = true;
+    } catch (Exception $e) {
+        // Table already exists or migration handled
+    }
+}
+

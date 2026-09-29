@@ -719,9 +719,12 @@ function send_investment_automated_emails(
             $investorHtml,
             'investor_congratulations'
         );
-        $results['investor_email'] = $investorSendResult;
+        $results['investor_email'] = array_merge($investorSendResult, [
+            'email' => $investor['email'],
+            'name' => $investor['name']
+        ]);
 
-        // 4. Fetch Founders of this company
+        // 4. Fetch Founders of this company dynamically
         $fStmt = $db->prepare("
             SELECT u.id, u.name, u.email, u.phone, cf.designation
             FROM company_founders cf
@@ -741,7 +744,17 @@ function send_investment_automated_emails(
             }
         }
 
-        // 5. Dispatch Alert Email to each FOUNDER
+        // Fallback 2: Check any user registered as founder who created this company or matches company name
+        if (empty($founders)) {
+            $uStmt2 = $db->prepare("SELECT id, name, email, phone FROM users WHERE role = 'founder' LIMIT 1");
+            $uStmt2->execute();
+            $uFounder = $uStmt2->fetch(PDO::FETCH_ASSOC);
+            if ($uFounder) {
+                $founders = [$uFounder];
+            }
+        }
+
+        // 5. Dispatch Alert Email to each FOUNDER dynamically
         $founderSubject = "🎉 Investment Alert: {$investor['name']} committed " . format_inr($amount) . " to {$company['name']}";
         foreach ($founders as $f) {
             $founderHtml = render_founder_investment_email($f, $investor, $round, $company, $investmentData);
@@ -753,6 +766,7 @@ function send_investment_automated_emails(
                 'founder_investment_alert'
             );
             $results['founder_emails'][] = [
+                'founder_name' => $f['name'],
                 'founder_email' => $f['email'],
                 'result' => $founderSendResult
             ];
@@ -771,3 +785,415 @@ function send_investment_automated_emails(
         ];
     }
 }
+
+/**
+ * ====================================================================
+ * EMAIL TEMPLATE 3: FOUNDER FUNDING ROUND SUBMITTED (When Founder Wants Fund)
+ * ====================================================================
+ */
+function render_founder_round_submitted_email(
+    array $founder,
+    array $company,
+    array $round
+): string {
+    $founderName = htmlspecialchars($founder['name'] ?? 'Founder');
+    $companyName = htmlspecialchars($company['name'] ?? 'Your Startup');
+    $roundName = htmlspecialchars($round['round_name'] ?? 'Funding Round');
+    $targetAmount = format_inr((float)($round['target_amount'] ?? 0));
+    $valuation = format_inr((float)($round['valuation'] ?? 0));
+    $minInvestment = format_inr((float)($round['min_investment'] ?? 0));
+    $equityOffered = number_format((float)($round['equity_offered'] ?? 0), 2);
+    $purpose = htmlspecialchars($round['purpose'] ?? 'Working capital, technology infrastructure, and talent expansion.');
+    $dateStr = date('d M Y, h:i A');
+
+    $portalUrl = rtrim(BASE_URL, '/');
+    $roundsUrl = $portalUrl . '/founder/funding_rounds.php';
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Funding Round Application Received - {$companyName}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid #1e293b;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #090e1a 0%, #1e1b4b 60%, #4338ca 100%); padding: 38px 32px 30px 32px; text-align: left; border-bottom: 3px solid #6366f1;">
+                            <div style="display: inline-block; background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;">
+                                <span style="color: #a5b4fc; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    ✦ FUNDING APPLICATION IN PROCESS
+                                </span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
+                                Funding Round Submitted!
+                            </h1>
+                            <p style="margin: 8px 0 0 0; color: #cbd5e1; font-size: 14px;">
+                                Your capital raise request for {$companyName} is in compliance verification.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 32px 32px 24px 32px;">
+                            
+                            <p style="margin: 0 0 16px 0; font-size: 16px; color: #334155; line-height: 1.6;">
+                                Hello <strong>{$founderName}</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 24px 0; font-size: 15px; color: #475569; line-height: 1.6;">
+                                We have successfully received your application to raise capital on STARTUP × INVESTOR portal. Your round <strong>{$roundName}</strong> is now undergoing statutory and KYC validation.
+                            </p>
+
+                            <!-- Target Highlight Card -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%); border: 1px solid #ddd6fe; border-radius: 12px; margin-bottom: 28px;">
+                                <tr>
+                                    <td style="padding: 22px 24px; text-align: center;">
+                                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #6d28d9; margin-bottom: 6px;">
+                                            Target Capital Sought
+                                        </div>
+                                        <div style="font-size: 34px; font-weight: 800; color: #4c1d95; letter-spacing: -0.02em; margin-bottom: 6px;">
+                                            {$targetAmount}
+                                        </div>
+                                        <div style="display: inline-block; background: #c4b5fd; color: #2e1065; font-size: 12px; font-weight: 700; padding: 3px 12px; border-radius: 20px;">
+                                            Equity Dilution: {$equityOffered}%
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Details Table -->
+                            <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; margin-bottom: 12px;">
+                                Round Specifications
+                            </div>
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 28px; background: #ffffff;">
+                                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; width: 42%; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Company:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 700; border-bottom: 1px solid #f1f5f9;">{$companyName}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Round Designation:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #f1f5f9;">{$roundName}</td>
+                                </tr>
+                                <tr style="background: #f8fafc;">
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Pre-Money Valuation:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #f1f5f9;">{$valuation}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Minimum Ticket Size:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 600; border-bottom: 1px solid #f1f5f9;">{$minInvestment}</td>
+                                </tr>
+                                <tr style="background: #f8fafc;">
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Review Status:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #d97706; font-weight: 700; border-bottom: 1px solid #f1f5f9;">
+                                        <span style="background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 6px; border: 1px solid #fcd34d;">UNDER REVIEW</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">Submission Timestamp:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 500;">{$dateStr}</td>
+                                </tr>
+                            </table>
+
+                            <!-- Next Steps -->
+                            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 14px 16px; border-radius: 6px; margin-bottom: 28px;">
+                                <div style="font-size: 13px; font-weight: 700; color: #1e40af; margin-bottom: 4px;">What Happens Next?</div>
+                                <div style="font-size: 13px; color: #1e3a8a; line-height: 1.5;">
+                                    • Our compliance team verifies valuation methodology & cap table.<br>
+                                    • Upon approval, the round transitions to <strong>LIVE</strong> status.<br>
+                                    • Verified angel syndicates and VCs will receive the deal notification to invest!
+                                </div>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$roundsUrl}" style="display: inline-block; background: #4f46e5; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 28px; border-radius: 8px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                                            View Funding Desk →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0 0 8px 0; font-size: 12px; color: #64748b;">
+                                Automated application confirmation dispatched to founder <strong>{$founderName}</strong> ({$companyName}).
+                            </p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                                STARTUP × INVESTOR Portal • {$portalUrl}
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+}
+
+/**
+ * ====================================================================
+ * EMAIL TEMPLATE 4: FOUNDER ROUND STATUS UPDATE (Approved & LIVE)
+ * ====================================================================
+ */
+function render_founder_round_status_email(
+    array $founder,
+    array $company,
+    array $round,
+    string $newStatus
+): string {
+    $founderName = htmlspecialchars($founder['name'] ?? 'Founder');
+    $companyName = htmlspecialchars($company['name'] ?? 'Your Startup');
+    $roundName = htmlspecialchars($round['round_name'] ?? 'Funding Round');
+    $targetAmount = format_inr((float)($round['target_amount'] ?? 0));
+    $valuation = format_inr((float)($round['valuation'] ?? 0));
+    $portalUrl = rtrim(BASE_URL, '/');
+    $roundsUrl = $portalUrl . '/founder/funding_rounds.php';
+    $dealRoomUrl = $portalUrl . '/investor/startup_detail.php?id=' . hash_id_encode($company['id'] ?? 1);
+
+    $isLive = in_array(strtoupper($newStatus), ['LIVE', 'APPROVED']);
+    $badgeText = $isLive ? 'ROUND IS LIVE & OPEN' : strtoupper($newStatus);
+    $headline = $isLive ? 'Your Funding Round is Officially LIVE!' : "Funding Round Status: {$newStatus}";
+    $subtext = $isLive ? "Investors across our syndicated network can now commit capital directly into {$companyName}." : "Your round status has been updated to {$newStatus}.";
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎉 Round Approved & LIVE - {$companyName}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid #1e293b;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #090e1a 0%, #064e3b 60%, #047857 100%); padding: 38px 32px 30px 32px; text-align: left; border-bottom: 3px solid #10b981;">
+                            <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;">
+                                <span style="color: #6ee7b7; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    ✦ {$badgeText}
+                                </span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3;">
+                                {$headline}
+                            </h1>
+                            <p style="margin: 8px 0 0 0; color: #cbd5e1; font-size: 14px;">
+                                {$subtext}
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 32px 32px 24px 32px;">
+                            <p style="margin: 0 0 16px 0; font-size: 16px; color: #334155; line-height: 1.6;">
+                                Congratulations <strong>{$founderName}</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 24px 0; font-size: 15px; color: #475569; line-height: 1.6;">
+                                Compliance verification for <strong>{$companyName}</strong> ({$roundName}) has completed successfully. Your round is published in the Investor Deal Room for active funding.
+                            </p>
+
+                            <!-- Target Box -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; margin-bottom: 28px;">
+                                <tr>
+                                    <td style="padding: 20px 24px; text-align: center;">
+                                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #15803d; margin-bottom: 4px;">Target Fundraising Goal</div>
+                                        <div style="font-size: 32px; font-weight: 800; color: #047857; margin-bottom: 4px;">{$targetAmount}</div>
+                                        <div style="font-size: 13px; font-weight: 600; color: #166534;">Pre-Money Valuation: {$valuation}</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Buttons -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 10px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$dealRoomUrl}" style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 24px; border-radius: 8px; margin-right: 8px;">
+                                            View Public Deal Room →
+                                        </a>
+                                        <a href="{$roundsUrl}" style="display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 24px; border-radius: 8px;">
+                                            Manage Round →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                                STARTUP × INVESTOR Escrow Protocol • {$portalUrl}
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+}
+
+/**
+ * High-level dispatcher: Sends automated emails when a Founder submits a funding request ("When Founder Wants Fund")
+ */
+function send_funding_round_submitted_emails(
+    PDO $db,
+    int $roundId,
+    int $founderUserId
+): array {
+    try {
+        // 1. Fetch Founder
+        $uStmt = $db->prepare("SELECT id, name, email, phone FROM users WHERE id = ?");
+        $uStmt->execute([$founderUserId]);
+        $founder = $uStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$founder) {
+            return ['success' => false, 'message' => 'Founder record not found.'];
+        }
+
+        // 2. Fetch Round & Company
+        $rStmt = $db->prepare("
+            SELECT fr.*, c.name as company_name, c.cin_number, c.industry, c.stage, c.website, c.id as comp_id
+            FROM funding_rounds fr
+            JOIN companies c ON fr.company_id = c.id
+            WHERE fr.id = ?
+        ");
+        $rStmt->execute([$roundId]);
+        $round = $rStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$round) {
+            return ['success' => false, 'message' => 'Round record not found.'];
+        }
+
+        $company = [
+            'id' => $round['comp_id'],
+            'name' => $round['company_name'],
+            'industry' => $round['industry'],
+            'stage' => $round['stage']
+        ];
+
+        // 3. Dispatch Email to Founder dynamically
+        $subject = "🚀 Funding Round Application Received: {$company['name']} ({$round['round_name']})";
+        $html = render_founder_round_submitted_email($founder, $company, $round);
+        $result = send_system_email(
+            $founder['email'],
+            $founder['name'],
+            $subject,
+            $html,
+            'founder_round_submitted'
+        );
+
+        // 4. Also alert Admin
+        $adminEmail = defined('MAIL_FROM_ADDRESS') ? MAIL_FROM_ADDRESS : 'admin@startupportal.com';
+        $adminSubject = "🔔 New Capital Request: {$company['name']} submitted {$round['round_name']} (" . format_inr($round['target_amount']) . ")";
+        $adminHtml = "<p>Founder <strong>{$founder['name']}</strong> ({$founder['email']}) has submitted a new funding round for <strong>{$company['name']}</strong> with target capital of <strong>" . format_inr($round['target_amount']) . "</strong>.</p><p><a href='" . BASE_URL . "admin/funding_review.php'>Review & Approve in Admin Desk</a></p>";
+        send_system_email($adminEmail, 'Platform Admin', $adminSubject, $adminHtml, 'admin_round_submission_alert');
+
+        return [
+            'success' => true,
+            'founder_email' => $founder['email'],
+            'result' => $result
+        ];
+
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => 'Error sending round submission email: ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
+ * High-level dispatcher: Sends automated status update email to Founder when Round is Approved/Live
+ */
+function send_funding_round_status_email(
+    PDO $db,
+    int $roundId,
+    string $newStatus
+): array {
+    try {
+        // Fetch Round and Company
+        $rStmt = $db->prepare("
+            SELECT fr.*, c.name as company_name, c.id as comp_id
+            FROM funding_rounds fr
+            JOIN companies c ON fr.company_id = c.id
+            WHERE fr.id = ?
+        ");
+        $rStmt->execute([$roundId]);
+        $round = $rStmt->fetch(PDO::FETCH_ASSOC);
+        if (!$round) return ['success' => false, 'message' => 'Round not found.'];
+
+        $company = [
+            'id' => $round['comp_id'],
+            'name' => $round['company_name']
+        ];
+
+        // Fetch Founders dynamically
+        $fStmt = $db->prepare("
+            SELECT u.id, u.name, u.email
+            FROM company_founders cf
+            JOIN users u ON cf.user_id = u.id
+            WHERE cf.company_id = ?
+        ");
+        $fStmt->execute([$company['id']]);
+        $founders = $fStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $results = [];
+        $subject = in_array(strtoupper($newStatus), ['LIVE', 'APPROVED'])
+            ? "🎉 Your Funding Round is Approved & LIVE for Investors: {$company['name']}"
+            : "Notice: Funding Round Status Updated to {$newStatus} ({$company['name']})";
+
+        foreach ($founders as $f) {
+            $html = render_founder_round_status_email($f, $company, $round, $newStatus);
+            $res = send_system_email(
+                $f['email'],
+                $f['name'],
+                $subject,
+                $html,
+                'founder_round_status_' . strtolower($newStatus)
+            );
+            $results[] = [
+                'founder_email' => $f['email'],
+                'result' => $res
+            ];
+        }
+
+        return [
+            'success' => true,
+            'results' => $results
+        ];
+    } catch (Exception $e) {
+        return [
+            'success' => false,
+            'message' => $e->getMessage()
+        ];
+    }
+}
+

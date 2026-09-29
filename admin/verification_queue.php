@@ -1,12 +1,12 @@
 <?php
 /**
  * Admin Module: Verification Queue & KYC Document Review
- * Clean White / Light Theme, Small Crisp Typography, Professional Compliance Workflow
+ * Clean, Minimalist Compliance & Document Review Desk
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'KYC & DigiLocker Verification Queue';
+$pageTitle = 'KYC Verification Queue';
 
 $error = '';
 $flash = get_flash();
@@ -118,53 +118,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['form_action'])) {
                     send_notification(
                         $targetReq['user_id'], 
                         'KYC & Documents Approved!', 
-                        'Compliance Administration has verified your identity and submitted documents. Your account is now fully verified with all platform features unlocked.', 
+                        "Congratulations! Your platform KYC credentials and corporate data have been verified by Compliance.", 
                         'success', 
                         $destUrl
                     );
 
-                    log_audit($user['id'], 'APPROVE_VERIFICATION_REQUEST', 'verification_requests', $reqId, "Admin verified KYC & documents for {$targetReq['applicant_name']}. Remarks: {$remarks}");
-                    set_flash('success', "Application for {$targetReq['applicant_name']} has been APPROVED & VERIFIED. Documents marked verified and notification dispatched.");
-
+                    log_audit($user['id'], 'APPROVE_VERIFICATION_REQUEST', 'verification_requests', $reqId, "Admin verified KYC for user #{$targetReq['user_id']}. Remarks: {$remarks}");
+                    set_flash('success', "Application for {$targetReq['applicant_name']} successfully approved and verified!");
                 } elseif ($decision === 'rejected') {
-                    $db->prepare("UPDATE users SET is_verified = 0 WHERE id = ?")->execute([$targetReq['user_id']]);
-                    $db->prepare("UPDATE verification_documents SET status = 'rejected' WHERE user_id = ? OR verification_request_id = ?")
-                       ->execute([$targetReq['user_id'], $reqId]);
-
-                    $reapplyUrl = ($targetReq['applicant_role'] === 'founder') ? 'founder/verification.php' : 'investor/verification.php';
                     send_notification(
                         $targetReq['user_id'], 
                         'KYC Verification Rejected', 
-                        'Compliance review remarks: ' . ($remarks ?: 'Documents could not be authenticated. Please re-submit valid credentials.'), 
+                        "Your verification submission was rejected: " . ($remarks ?: 'Documents failed regulatory standards.'), 
                         'error', 
-                        $reapplyUrl
+                        $destUrl
                     );
-
-                    log_audit($user['id'], 'REJECT_VERIFICATION_REQUEST', 'verification_requests', $reqId, "Admin rejected request for {$targetReq['applicant_name']}. Reason: {$remarks}");
-                    set_flash('success', "Application for {$targetReq['applicant_name']} marked REJECTED. Notification sent with remarks.");
-
-                } elseif ($decision === 'additional_info') {
-                    $reapplyUrl = ($targetReq['applicant_role'] === 'founder') ? 'founder/verification.php' : 'investor/verification.php';
+                    log_audit($user['id'], 'REJECT_VERIFICATION_REQUEST', 'verification_requests', $reqId, "Admin rejected KYC for user #{$targetReq['user_id']}. Remarks: {$remarks}");
+                    set_flash('warning', "Application for {$targetReq['applicant_name']} was rejected.");
+                } else {
                     send_notification(
                         $targetReq['user_id'], 
-                        'Additional Compliance Documents Required', 
-                        'Compliance notice: ' . ($remarks ?: 'Please upload updated identity and financial verification files.'), 
-                        'info', 
-                        $reapplyUrl
+                        'Additional Information Required', 
+                        "Compliance requires updates for your KYC application: " . ($remarks ?: 'Please re-submit required files.'), 
+                        'warning', 
+                        $destUrl
                     );
-
-                    log_audit($user['id'], 'REQUEST_ADDITIONAL_INFO', 'verification_requests', $reqId, "Admin requested more info from {$targetReq['applicant_name']}. Remarks: {$remarks}");
-                    set_flash('success', "Requested additional information from {$targetReq['applicant_name']}.");
+                    log_audit($user['id'], 'FLAG_VERIFICATION_REQUEST', 'verification_requests', $reqId, "Admin requested more info for user #{$targetReq['user_id']}. Remarks: {$remarks}");
+                    set_flash('info', "Requested additional information from {$targetReq['applicant_name']}.");
                 }
-
-                header('Location: ' . url('admin/verification_queue.php'));
-                exit;
             }
+            header('Location: ' . url('admin/verification_queue.php?tab=' . urlencode($_POST['active_tab'] ?? 'queue')));
+            exit;
         }
     }
 }
 
-// Fetch Verification Requests
+// Fetch requests & documents
 $requests = [];
 $allVerificationDocs = [];
 $allCompanyDocs = [];
@@ -231,122 +220,126 @@ foreach ($allCompanyDocs as $cdoc) {
     }
 }
 
-$activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
+$activeTab = $_GET['tab'] ?? 'queue';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verification Queue & Document Review • <?= APP_NAME ?></title>
+    <title>Verification Queue • <?= APP_NAME ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-        }
-    </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen">
     
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="queue-main">
+        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="queue-main">
             
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
                     <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle' : 'alert-circle' ?>" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
-            <!-- Page Header & Key Metrics -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">KYC & Document Review Center</h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Inspect applicant identification documents, download files, and enforce compliance verification.</p>
+            <!-- Page Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="admin-page-icon">
+                        <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                            KYC & Document Review
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Review applicant identity credentials, verify corporate attachments, and manage compliance.</p>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                    <button onclick="switchTab('queue')" id="tab-btn-queue" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeTab === 'queue' ? 'bg-slate-900 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                        <span>Verification Requests (<?= count($requests) ?>)</span>
+                <div class="admin-filter-bar">
+                    <button onclick="switchTab('queue')" id="tab-btn-queue" class="admin-filter-pill <?= $activeTab === 'queue' ? 'active' : '' ?>">
+                        Applications (<?= count($requests) ?>)
                     </button>
-                    <button onclick="switchTab('documents')" id="tab-btn-documents" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeTab === 'documents' ? 'bg-slate-900 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
-                        <i data-lucide="files" class="w-3.5 h-3.5"></i>
-                        <span>All Uploaded Documents (<?= $stats['total_docs'] ?>)</span>
+                    <button onclick="switchTab('documents')" id="tab-btn-documents" class="admin-filter-pill <?= $activeTab === 'documents' ? 'active' : '' ?>">
+                        All Documents (<?= $stats['total_docs'] ?>)
                     </button>
                 </div>
             </div>
 
-            <!-- Stats Bar -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pending KYC Queue</div>
-                    <div class="text-xl font-extrabold text-amber-600 mt-1 flex items-center justify-between">
-                        <span><?= $stats['pending_reqs'] ?></span>
-                        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Pending Reviews</span>
+                        <div class="w-8 h-8 rounded-lg <?= $stats['pending_reqs'] > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
                     </div>
+                    <div class="admin-stat-value <?= $stats['pending_reqs'] > 0 ? 'stat-value-amber' : '' ?>"><?= $stats['pending_reqs'] ?></div>
+                    <div class="admin-stat-sub">Awaiting verification</div>
                 </div>
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total KYC Requests</div>
-                    <div class="text-xl font-extrabold text-slate-900 mt-1 flex items-center justify-between">
-                        <span><?= $stats['total_reqs'] ?></span>
-                        <i data-lucide="user-check" class="w-4 h-4 text-slate-400"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Total Applications</span>
+                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                            <i data-lucide="user-check" class="w-4 h-4"></i>
+                        </div>
                     </div>
+                    <div class="admin-stat-value stat-value-sky"><?= $stats['total_reqs'] ?></div>
+                    <div class="admin-stat-sub">Founders & Angels</div>
                 </div>
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Documents Uploaded</div>
-                    <div class="text-xl font-extrabold text-indigo-600 mt-1 flex items-center justify-between">
-                        <span><?= $stats['total_docs'] ?></span>
-                        <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Total Files</span>
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                        </div>
                     </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= $stats['total_docs'] ?></div>
+                    <div class="admin-stat-sub">Uploaded attachments</div>
                 </div>
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Docs Awaiting Review</div>
-                    <div class="text-xl font-extrabold text-rose-600 mt-1 flex items-center justify-between">
-                        <span><?= $stats['pending_docs'] ?></span>
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Docs Needing Action</span>
+                        <div class="w-8 h-8 rounded-lg <?= $stats['pending_docs'] > 0 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        </div>
                     </div>
+                    <div class="admin-stat-value <?= $stats['pending_docs'] > 0 ? 'stat-value-rose' : '' ?>"><?= $stats['pending_docs'] ?></div>
+                    <div class="admin-stat-sub">Unverified files</div>
                 </div>
             </div>
 
             <!-- TAB 1: VERIFICATION APPLICATIONS QUEUE -->
             <div id="tab-content-queue" class="<?= $activeTab === 'queue' ? '' : 'hidden' ?> space-y-4">
-                <div class="card-clean rounded-2xl p-5 md:p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="inbox" class="w-4 h-4 text-indigo-600"></i>
-                            <span>Applicant KYC Applications</span>
-                        </h2>
-                        <span class="text-[11px] text-slate-400">Click 'Inspect & Review' to check uploaded files and approve</span>
-                    </div>
-
+                <div class="admin-table-container">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
+                        <table class="admin-table">
                             <thead>
-                                <tr class="border-b border-slate-100 text-slate-400 uppercase tracking-wider text-[10.5px]">
-                                    <th class="pb-3 font-semibold">Applicant</th>
-                                    <th class="pb-3 font-semibold">Role / Entity</th>
-                                    <th class="pb-3 font-semibold">Attached Docs</th>
-                                    <th class="pb-3 font-semibold">Gateway / Ref</th>
-                                    <th class="pb-3 font-semibold">Current Status</th>
-                                    <th class="pb-3 font-semibold">Submitted</th>
-                                    <th class="pb-3 font-semibold text-right">Compliance Action</th>
+                                <tr>
+                                    <th>Applicant</th>
+                                    <th>Role / Entity</th>
+                                    <th>Attached Files</th>
+                                    <th>Provider Ref</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th class="text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
+                            <tbody>
                                 <?php if (empty($requests)): ?>
                                     <tr>
-                                        <td colspan="7" class="py-8 text-center text-xs text-slate-400">No verification applications found in the queue.</td>
+                                        <td colspan="7" class="py-12 text-center text-slate-400">No verification applications found in the queue.</td>
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($requests as $r): 
@@ -359,42 +352,43 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                             'compDocs' => $compDocs
                                         ];
                                     ?>
-                                        <tr class="hover:bg-slate-50/60 transition">
-                                            <td class="py-3.5">
-                                                <div class="font-bold text-slate-900 text-xs"><?= htmlspecialchars($r['applicant_name']) ?></div>
-                                                <div class="text-[11px] text-slate-500"><?= htmlspecialchars($r['applicant_email']) ?> • <?= htmlspecialchars($r['applicant_phone']) ?></div>
+                                        <tr>
+                                            <td>
+                                                <div class="font-semibold text-slate-900 text-xs"><?= htmlspecialchars($r['applicant_name']) ?></div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5"><?= htmlspecialchars($r['applicant_email']) ?></div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold <?= $r['applicant_role'] === 'founder' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' ?>">
+                                            <td>
+                                                <span class="admin-badge <?= $r['applicant_role'] === 'founder' ? 'admin-badge-primary' : 'admin-badge-success' ?> text-[10px]">
                                                     <?= ucfirst($r['applicant_role']) ?>
                                                 </span>
                                                 <?php if ($r['company_name']): ?>
-                                                    <div class="text-slate-800 font-semibold text-xs mt-1"><?= htmlspecialchars($r['company_name']) ?></div>
-                                                    <div class="text-[10px] font-mono text-slate-500"><?= htmlspecialchars($r['cin_number'] ?? '') ?></div>
+                                                    <div class="text-slate-800 text-xs mt-1 font-medium"><?= htmlspecialchars($r['company_name']) ?></div>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="py-3.5">
+                                            <td>
                                                 <?php if ($totalAttached > 0): ?>
-                                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold text-[10.5px]">
+                                                    <span class="admin-badge admin-badge-primary">
                                                         <i data-lucide="paperclip" class="w-3 h-3"></i>
                                                         <span><?= $totalAttached ?> File<?= $totalAttached > 1 ? 's' : '' ?></span>
                                                     </span>
                                                 <?php else: ?>
-                                                    <span class="text-slate-400 text-[11px]">No docs attached</span>
+                                                    <span class="text-slate-400 text-xs">No files</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="py-3.5">
-                                                <div class="font-mono text-xs text-slate-700 font-medium"><?= htmlspecialchars($r['provider_ref_id'] ?? 'MANUAL_KYC') ?></div>
-                                                <div class="text-[10.5px] text-slate-400"><?= htmlspecialchars($r['provider_name']) ?></div>
+                                            <td>
+                                                <div class="font-mono text-xs text-slate-700"><?= htmlspecialchars($r['provider_ref_id'] ?? 'MANUAL_KYC') ?></div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5"><?= htmlspecialchars($r['provider_name']) ?></div>
                                             </td>
-                                            <td class="py-3.5">
+                                            <td>
                                                 <?= render_status_badge($r['status']) ?>
                                             </td>
-                                            <td class="py-3.5 text-slate-500 text-xs"><?= date('d M Y', strtotime($r['created_at'])) ?></td>
-                                            <td class="py-3.5 text-right">
-                                                <button onclick="openReviewModal(<?= htmlspecialchars(json_encode($payload), ENT_QUOTES, 'UTF-8') ?>)" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition flex items-center space-x-1.5 ml-auto">
+                                            <td class="text-slate-500 text-xs">
+                                                <?= date('d M Y', strtotime($r['created_at'])) ?>
+                                            </td>
+                                            <td class="text-right">
+                                                <button onclick="openReviewModal(<?= htmlspecialchars(json_encode($payload), ENT_QUOTES, 'UTF-8') ?>)" class="admin-btn-secondary text-[11px] py-1 px-2.5 ml-auto">
                                                     <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                    <span>Inspect & Review</span>
+                                                    <span>Inspect</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -408,79 +402,60 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
 
             <!-- TAB 2: ALL UPLOADED DOCUMENTS REPOSITORY -->
             <div id="tab-content-documents" class="<?= $activeTab === 'documents' ? '' : 'hidden' ?> space-y-4">
-                <div class="card-clean rounded-2xl p-5 md:p-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                        <div>
-                            <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                                <i data-lucide="files" class="w-4 h-4 text-indigo-600"></i>
-                                <span>All Uploaded Platform Documents (KYC & Data Room)</span>
-                            </h2>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Directly download, inspect, and approve or reject any uploaded file.</p>
-                        </div>
-                    </div>
-
+                <div class="admin-table-container">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
+                        <table class="admin-table">
                             <thead>
-                                <tr class="border-b border-slate-100 text-slate-400 uppercase tracking-wider text-[10.5px]">
-                                    <th class="pb-3 font-semibold">Document Title / Type</th>
-                                    <th class="pb-3 font-semibold">Uploader / Entity</th>
-                                    <th class="pb-3 font-semibold">File Size & Uploaded</th>
-                                    <th class="pb-3 font-semibold">Status</th>
-                                    <th class="pb-3 font-semibold text-right">Actions</th>
+                                <tr>
+                                    <th>Document Title</th>
+                                    <th>Uploader / Company</th>
+                                    <th>Size & Date</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100">
+                            <tbody>
                                 <?php if (empty($allVerificationDocs) && empty($allCompanyDocs)): ?>
                                     <tr>
-                                        <td colspan="5" class="py-8 text-center text-xs text-slate-400">No documents have been uploaded to the platform yet.</td>
+                                        <td colspan="5" class="py-12 text-center text-slate-400">No documents have been uploaded to the platform yet.</td>
                                     </tr>
                                 <?php else: ?>
                                     <!-- 1. Verification Documents -->
                                     <?php foreach ($allVerificationDocs as $doc): ?>
-                                        <tr class="hover:bg-slate-50/60 transition">
-                                            <td class="py-3.5">
+                                        <tr>
+                                            <td>
                                                 <div class="flex items-center space-x-2.5">
-                                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center flex-shrink-0">
-                                                        <i data-lucide="<?= str_contains(strtolower($doc['file_path']), '.pdf') ? 'file-text' : 'image' ?>" class="w-4 h-4"></i>
+                                                    <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
+                                                        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="font-bold text-slate-900 text-xs"><?= htmlspecialchars($doc['document_type']) ?></div>
+                                                        <div class="font-semibold text-slate-900 text-xs"><?= htmlspecialchars($doc['document_type']) ?></div>
                                                         <div class="text-[10px] text-slate-400 font-mono"><?= htmlspecialchars(basename($doc['file_path'])) ?></div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <div class="font-bold text-slate-800 text-xs"><?= htmlspecialchars($doc['applicant_name']) ?></div>
-                                                <div class="text-[10.5px] text-slate-500">
-                                                    <span class="font-semibold text-slate-700"><?= ucfirst($doc['applicant_role']) ?></span>
-                                                    <?= $doc['company_name'] ? ' • ' . htmlspecialchars($doc['company_name']) : '' ?>
-                                                </div>
+                                            <td>
+                                                <div class="font-semibold text-slate-800 text-xs"><?= htmlspecialchars($doc['applicant_name']) ?></div>
+                                                <div class="text-[11px] text-slate-400"><?= ucfirst($doc['applicant_role']) ?></div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <div class="text-slate-800 font-medium"><?= htmlspecialchars($doc['file_size']) ?></div>
-                                                <div class="text-[10.5px] text-slate-400"><?= date('d M Y, h:i A', strtotime($doc['created_at'])) ?></div>
+                                            <td>
+                                                <div class="text-slate-800 text-xs"><?= htmlspecialchars($doc['file_size']) ?></div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5"><?= date('d M Y', strtotime($doc['created_at'])) ?></div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <?= $doc['status'] === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($doc['status'] === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') ?>">
-                                                    <?= strtoupper($doc['status']) ?>
+                                            <td>
+                                                <span class="admin-badge <?= $doc['status'] === 'verified' ? 'admin-badge-success' : ($doc['status'] === 'rejected' ? 'admin-badge-danger' : 'admin-badge-warning') ?>">
+                                                    <span class="admin-badge-dot"></span>
+                                                    <span><?= ucfirst($doc['status']) ?></span>
                                                 </span>
                                             </td>
-                                            <td class="py-3.5 text-right">
+                                            <td class="text-right">
                                                 <div class="flex items-center justify-end space-x-1.5">
-                                                    <!-- View Link -->
-                                                    <a href="<?= url($doc['file_path']) ?>" target="_blank" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="View in New Tab">
+                                                    <a href="<?= url($doc['file_path']) ?>" target="_blank" class="admin-btn-ghost p-1" title="View in New Tab">
                                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                        <span>View</span>
                                                     </a>
-
-                                                    <!-- Download Link -->
-                                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="Download File">
+                                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="admin-btn-ghost p-1" title="Download File">
                                                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                                        <span>Download</span>
                                                     </a>
-
-                                                    <!-- Quick Approve Button -->
                                                     <?php if ($doc['status'] !== 'verified'): ?>
                                                         <form action="<?= url('admin/verification_queue.php') ?>" method="POST" class="inline">
                                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -489,24 +464,8 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                                             <input type="hidden" name="doc_scope" value="verification">
                                                             <input type="hidden" name="new_status" value="verified">
                                                             <input type="hidden" name="active_tab" value="documents">
-                                                            <button type="submit" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition" title="Mark Verified">
-                                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                                            </button>
-                                                        </form>
-                                                    <?php endif; ?>
-
-                                                    <!-- Quick Reject Button -->
-                                                    <?php if ($doc['status'] !== 'rejected'): ?>
-                                                        <form action="<?= url('admin/verification_queue.php') ?>" method="POST" class="inline" onsubmit="return confirm('Reject this document?');">
-                                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                                            <input type="hidden" name="form_action" value="update_doc_status">
-                                                            <input type="hidden" name="doc_id" value="<?= $doc['id'] ?>">
-                                                            <input type="hidden" name="doc_scope" value="verification">
-                                                            <input type="hidden" name="new_status" value="rejected">
-                                                            <input type="hidden" name="doc_remarks" value="Document rejected during administrative review.">
-                                                            <input type="hidden" name="active_tab" value="documents">
-                                                            <button type="submit" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition" title="Reject Document">
-                                                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                                                            <button type="submit" class="admin-btn-secondary text-[11px] py-1 px-2 text-emerald-700 hover:text-emerald-800" title="Mark Verified">
+                                                                Approve
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>
@@ -517,46 +476,40 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
 
                                     <!-- 2. Company Data Room Documents -->
                                     <?php foreach ($allCompanyDocs as $cdoc): ?>
-                                        <tr class="hover:bg-slate-50/60 transition">
-                                            <td class="py-3.5">
+                                        <tr>
+                                            <td>
                                                 <div class="flex items-center space-x-2.5">
-                                                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center flex-shrink-0">
-                                                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                                    <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0">
+                                                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="font-bold text-slate-900 text-xs"><?= htmlspecialchars($cdoc['title']) ?></div>
+                                                        <div class="font-semibold text-slate-900 text-xs"><?= htmlspecialchars($cdoc['title']) ?></div>
                                                         <div class="text-[10px] text-slate-400 font-mono"><?= htmlspecialchars($cdoc['document_type']) ?></div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <div class="font-bold text-slate-800 text-xs"><?= htmlspecialchars($cdoc['company_name']) ?></div>
-                                                <div class="text-[10.5px] text-slate-500">Founder: <?= htmlspecialchars($cdoc['founder_name'] ?? 'N/A') ?></div>
+                                            <td>
+                                                <div class="font-semibold text-slate-800 text-xs"><?= htmlspecialchars($cdoc['company_name']) ?></div>
+                                                <div class="text-[11px] text-slate-400">Founder: <?= htmlspecialchars($cdoc['founder_name'] ?? 'N/A') ?></div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <div class="text-slate-800 font-medium"><?= htmlspecialchars($cdoc['file_size']) ?></div>
-                                                <div class="text-[10.5px] text-slate-400"><?= date('d M Y, h:i A', strtotime($cdoc['uploaded_at'])) ?></div>
+                                            <td>
+                                                <div class="text-slate-800 text-xs"><?= htmlspecialchars($cdoc['file_size']) ?></div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5"><?= date('d M Y', strtotime($cdoc['uploaded_at'])) ?></div>
                                             </td>
-                                            <td class="py-3.5">
-                                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <?= $cdoc['is_verified'] ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">
-                                                    <?= $cdoc['is_verified'] ? 'VERIFIED' : 'PENDING' ?>
+                                            <td>
+                                                <span class="admin-badge <?= $cdoc['is_verified'] ? 'admin-badge-success' : 'admin-badge-warning' ?>">
+                                                    <span class="admin-badge-dot"></span>
+                                                    <span><?= $cdoc['is_verified'] ? 'Verified' : 'Pending' ?></span>
                                                 </span>
                                             </td>
-                                            <td class="py-3.5 text-right">
+                                            <td class="text-right">
                                                 <div class="flex items-center justify-end space-x-1.5">
-                                                    <!-- View Link -->
-                                                    <a href="<?= url($cdoc['file_path']) ?>" target="_blank" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="View in New Tab">
+                                                    <a href="<?= url($cdoc['file_path']) ?>" target="_blank" class="admin-btn-ghost p-1" title="View in New Tab">
                                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                        <span>View</span>
                                                     </a>
-
-                                                    <!-- Download Link -->
-                                                    <a href="<?= url('download.php?id=' . $cdoc['id'] . '&type=company') ?>" class="px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="Download File">
+                                                    <a href="<?= url('download.php?id=' . $cdoc['id'] . '&type=company') ?>" class="admin-btn-ghost p-1" title="Download File">
                                                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                                        <span>Download</span>
                                                     </a>
-
-                                                    <!-- Quick Approve Button -->
                                                     <?php if (!$cdoc['is_verified']): ?>
                                                         <form action="<?= url('admin/verification_queue.php') ?>" method="POST" class="inline">
                                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -565,8 +518,8 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                                             <input type="hidden" name="doc_scope" value="company">
                                                             <input type="hidden" name="new_status" value="verified">
                                                             <input type="hidden" name="active_tab" value="documents">
-                                                            <button type="submit" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 transition" title="Mark Verified">
-                                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                            <button type="submit" class="admin-btn-secondary text-[11px] py-1 px-2 text-emerald-700 hover:text-emerald-800" title="Mark Verified">
+                                                                Approve
                                                             </button>
                                                         </form>
                                                     <?php endif; ?>
@@ -581,17 +534,17 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                 </div>
             </div>
 
-            <!-- Comprehensive Inspection & Review Evaluation Modal -->
-            <div id="review-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <!-- Inspection & Review Evaluation Modal -->
+            <div id="review-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto">
                 <div class="bg-white border border-slate-200 max-w-2xl w-full rounded-2xl p-6 shadow-2xl relative my-8">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-white"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 text-sm">KYC & Compliance Evaluation</h3>
-                                <p class="text-[11px] text-slate-500">Examine applicant credentials, download attachments, and issue compliance verdict.</p>
+                                <h3 class="font-bold text-slate-900 text-sm">Review KYC Application</h3>
+                                <p class="text-[11px] text-slate-400">Examine applicant credentials, verify documents, and submit decision.</p>
                             </div>
                         </div>
                         <button onclick="document.getElementById('review-modal').classList.add('hidden')" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
@@ -600,15 +553,15 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                     </div>
 
                     <!-- Applicant Profile Card -->
-                    <div id="modal-applicant-info" class="mb-5 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs"></div>
+                    <div id="modal-applicant-info" class="mb-4 p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-xs"></div>
 
                     <!-- Uploaded Documents Preview & Download Box -->
                     <div class="mb-5">
                         <div class="flex items-center justify-between mb-2">
-                            <label class="block font-bold text-slate-800 text-[11px] uppercase tracking-wider">
-                                Attached Compliance Documents (<span id="modal-doc-count">0</span>)
+                            <label class="block font-semibold text-slate-700 text-xs">
+                                Attached Documents (<span id="modal-doc-count">0</span>)
                             </label>
-                            <span class="text-[10px] text-slate-400">Download or open files before approving</span>
+                            <span class="text-[11px] text-slate-400">Review files before deciding</span>
                         </div>
 
                         <div id="modal-docs-list" class="border border-slate-200 rounded-xl divide-y divide-slate-100 max-h-56 overflow-y-auto bg-white p-1">
@@ -622,30 +575,27 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                         <input type="hidden" name="request_id" id="modal-req-id">
 
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1 text-[11px] uppercase tracking-wider">Compliance Verdict</label>
-                            <select name="decision" id="modal-decision-select" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none">
-                                <option value="verified">Approve & Verify (Grant Verified Badge, Unlock Platform Privileges)</option>
+                            <label class="block font-semibold text-slate-700 mb-1 text-xs">Compliance Decision</label>
+                            <select name="decision" id="modal-decision-select" required class="admin-input w-full">
+                                <option value="verified">Approve & Grant Verified Status</option>
                                 <option value="additional_info">Request Additional Documents / Corrections</option>
                                 <option value="rejected">Reject Application</option>
                             </select>
-                            <div class="mt-1 text-[10.5px] text-slate-500">
-                                Approving this application will mark all submitted documents as verified, unlock platform features, and dispatch an instant user notification.
-                            </div>
                         </div>
 
                         <div>
-                            <label class="block font-semibold text-slate-700 mb-1 text-[11px] uppercase tracking-wider">Compliance Remarks & Audit Notes</label>
-                            <textarea name="remarks" id="modal-remarks-input" rows="3" required placeholder="State regulatory review remarks, MCA verification notes, or reason for decision..."
-                                      class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none"></textarea>
+                            <label class="block font-semibold text-slate-700 mb-1 text-xs">Remarks / Notes</label>
+                            <textarea name="remarks" id="modal-remarks-input" rows="3" required placeholder="State review remarks or feedback for applicant..."
+                                      class="admin-input w-full"></textarea>
                         </div>
 
                         <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
-                            <button type="button" onclick="document.getElementById('review-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold">
+                            <button type="button" onclick="document.getElementById('review-modal').classList.add('hidden')" class="admin-btn-secondary">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                            <button type="submit" class="admin-btn-primary">
                                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                <span>Submit Compliance Verdict</span>
+                                <span>Submit Verdict</span>
                             </button>
                         </div>
                     </form>
@@ -657,7 +607,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
 
     <script>
         lucide.createIcons();
-        gsap.from("#queue-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#queue-main", { duration: 0.3, y: 8, opacity: 0, ease: "power2.out" });
 
         function switchTab(tab) {
             document.getElementById('tab-content-queue').classList.toggle('hidden', tab !== 'queue');
@@ -667,11 +617,11 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
             const btnDocs = document.getElementById('tab-btn-documents');
 
             if (tab === 'queue') {
-                btnQueue.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-slate-900 text-white shadow-sm";
-                btnDocs.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50";
+                btnQueue.classList.add('active');
+                btnDocs.classList.remove('active');
             } else {
-                btnDocs.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-slate-900 text-white shadow-sm";
-                btnQueue.className = "px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 bg-white border border-slate-200 text-slate-600 hover:bg-slate-50";
+                btnDocs.classList.add('active');
+                btnQueue.classList.remove('active');
             }
             lucide.createIcons();
         }
@@ -688,7 +638,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
             document.getElementById('modal-doc-count').innerText = totalDocs;
 
             // Pre-fill remarks if existing
-            document.getElementById('modal-remarks-input').value = req.remarks || 'Identity credentials, PAN, and corporate documents inspected and confirmed.';
+            document.getElementById('modal-remarks-input').value = req.remarks || 'Identity credentials and submitted documentation verified.';
             if (req.status) {
                 const sel = document.getElementById('modal-decision-select');
                 if (['verified', 'rejected', 'additional_info'].includes(req.status)) {
@@ -700,14 +650,14 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
             document.getElementById('modal-applicant-info').innerHTML = `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <div class="font-bold text-slate-900 text-xs">${escapeHtml(req.applicant_name)} <span class="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-700 uppercase font-semibold">${escapeHtml(req.applicant_role)}</span></div>
+                        <div class="font-semibold text-slate-900 text-xs">${escapeHtml(req.applicant_name)} <span class="admin-badge admin-badge-neutral text-[10px] ml-1">${escapeHtml(req.applicant_role)}</span></div>
                         <div class="text-slate-500 text-[11px] mt-0.5">${escapeHtml(req.applicant_email)} • ${escapeHtml(req.applicant_phone || 'No phone')}</div>
-                        <div class="text-slate-500 text-[11px]">Location: ${escapeHtml(req.applicant_city || 'India')}</div>
+                        <div class="text-slate-400 text-[11px]">Location: ${escapeHtml(req.applicant_city || 'India')}</div>
                     </div>
                     <div>
-                        <div class="font-bold text-slate-800 text-xs">Entity: ${escapeHtml(req.company_name || 'Individual Profile')}</div>
-                        <div class="text-slate-500 text-[11px]">CIN: <span class="font-mono text-slate-700">${escapeHtml(req.cin_number || 'N/A')}</span></div>
-                        <div class="text-indigo-600 font-mono text-[10.5px] mt-0.5">Gateway Ref: ${escapeHtml(req.provider_ref_id || 'MANUAL_KYC')}</div>
+                        <div class="font-semibold text-slate-800 text-xs">Entity: ${escapeHtml(req.company_name || 'Individual Profile')}</div>
+                        <div class="text-slate-400 text-[11px] mt-0.5">CIN: <span class="font-mono text-slate-700">${escapeHtml(req.cin_number || 'N/A')}</span></div>
+                        <div class="text-indigo-600 font-mono text-[11px] mt-0.5">Ref: ${escapeHtml(req.provider_ref_id || 'MANUAL_KYC')}</div>
                     </div>
                 </div>
             `;
@@ -723,29 +673,28 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
             } else {
                 let html = '';
 
-                // User KYC Documents
                 userDocs.forEach(d => {
-                    const statusClass = d.status === 'verified' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (d.status === 'rejected' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+                    const statusClass = d.status === 'verified' ? 'admin-badge-success' : (d.status === 'rejected' ? 'admin-badge-danger' : 'admin-badge-warning');
                     const cleanPath = d.file_path.replace(/^\//, '');
                     html += `
-                        <div class="p-3 flex items-center justify-between text-xs hover:bg-slate-50/80 transition">
+                        <div class="p-3 flex items-center justify-between text-xs hover:bg-slate-50/70 transition">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <div class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                                    <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
                                 </div>
                                 <div>
-                                    <div class="font-bold text-slate-900">${escapeHtml(d.document_type)}</div>
+                                    <div class="font-semibold text-slate-900">${escapeHtml(d.document_type)}</div>
                                     <div class="text-[10px] text-slate-400">${escapeHtml(d.file_size)} • Uploaded ${d.created_at}</div>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-1.5">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${d.status.toUpperCase()}</span>
-                                <a href="${escapeHtml(APP_URL + '/' + cleanPath)}" target="_blank" class="px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                <span class="admin-badge ${statusClass} text-[10px]">${d.status.toUpperCase()}</span>
+                                <a href="${escapeHtml(APP_URL + '/' + cleanPath)}" target="_blank" class="admin-btn-secondary text-[11px] py-1 px-2">
+                                    <i data-lucide="eye" class="w-3 h-3"></i>
                                     <span>View</span>
                                 </a>
-                                <a href="${escapeHtml(APP_URL + '/download.php?id=' + d.id + '&type=verification')}" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <a href="${escapeHtml(APP_URL + '/download.php?id=' + d.id + '&type=verification')}" class="admin-btn-secondary text-[11px] py-1 px-2">
+                                    <i data-lucide="download" class="w-3 h-3"></i>
                                     <span>Download</span>
                                 </a>
                             </div>
@@ -753,30 +702,29 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                     `;
                 });
 
-                // Company Data Room Documents
                 compDocs.forEach(cd => {
-                    const statusClass = cd.is_verified ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200';
+                    const statusClass = cd.is_verified ? 'admin-badge-success' : 'admin-badge-warning';
                     const statusText = cd.is_verified ? 'VERIFIED' : 'PENDING';
                     const cleanPath = cd.file_path.replace(/^\//, '');
                     html += `
-                        <div class="p-3 flex items-center justify-between text-xs hover:bg-slate-50/80 transition">
+                        <div class="p-3 flex items-center justify-between text-xs hover:bg-slate-50/70 transition">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                                    <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
                                 </div>
                                 <div>
-                                    <div class="font-bold text-slate-900">${escapeHtml(cd.title)} (${escapeHtml(cd.document_type)})</div>
+                                    <div class="font-semibold text-slate-900">${escapeHtml(cd.title)} (${escapeHtml(cd.document_type)})</div>
                                     <div class="text-[10px] text-slate-400">${escapeHtml(cd.file_size)} • Data Room</div>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-1.5">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${statusClass}">${statusText}</span>
-                                <a href="${escapeHtml(APP_URL + '/' + cleanPath)}" target="_blank" class="px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                <span class="admin-badge ${statusClass} text-[10px]">${statusText}</span>
+                                <a href="${escapeHtml(APP_URL + '/' + cleanPath)}" target="_blank" class="admin-btn-secondary text-[11px] py-1 px-2">
+                                    <i data-lucide="eye" class="w-3 h-3"></i>
                                     <span>View</span>
                                 </a>
-                                <a href="${escapeHtml(APP_URL + '/download.php?id=' + cd.id + '&type=company')}" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm">
-                                    <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                <a href="${escapeHtml(APP_URL + '/download.php?id=' + cd.id + '&type=company')}" class="admin-btn-secondary text-[11px] py-1 px-2">
+                                    <i data-lucide="download" class="w-3 h-3"></i>
                                     <span>Download</span>
                                 </a>
                             </div>
