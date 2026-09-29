@@ -138,7 +138,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="settings-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="settings-main">
 
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -193,39 +193,30 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             </div>
 
             <!-- Two-Factor Authentication (2FA) Administration Card -->
-            <div class="card-clean rounded-2xl p-6 border-indigo-100 bg-gradient-to-br from-white via-indigo-50/20 to-white">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+            <div class="card-clean rounded-2xl p-6 border-indigo-100 dark:border-slate-800">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
                     <div class="flex items-start space-x-3.5">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-indigo-600/20">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-blue-600/20">
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
                         </div>
                         <div>
                             <div class="flex items-center space-x-2">
-                                <h3 class="text-sm font-bold text-slate-900">Mobile Authenticator (2FA) Security Control</h3>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">Mobile Authenticator (2FA) Security Control</h3>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800' ?>">
                                     <?= !empty($twoFactorRec['is_enabled']) && is_admin_totp_setup($user['id']) ? 'Active & Enforced' : 'Setup Required' ?>
                                 </span>
                             </div>
-                            <p class="text-xs text-slate-500 mt-0.5">Time-based One-Time Password (TOTP RFC 6238) paired with Google Authenticator / Microsoft Authenticator on your mobile phone.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Time-based One-Time Password (TOTP RFC 6238) paired with Google Authenticator / Microsoft Authenticator on your mobile phone.</p>
                         </div>
                     </div>
 
                     <!-- Policy Toggle & Re-scan QR -->
                     <div class="flex items-center space-x-2">
-                        <!-- <form method="POST" class="inline-flex items-center">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="form_action" value="reset_totp_qr">
-                            <button type="submit" class="px-3 py-1.5 rounded-lg border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-xs font-semibold transition flex items-center space-x-1.5" title="Re-scan QR code on a new phone">
-                                <i data-lucide="qr-code" class="w-3.5 h-3.5"></i>
-                                <span>Re-scan QR Code</span>
-                            </button>
-                        </form> -->
-
                         <form method="POST" class="inline-flex items-center">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="toggle_2fa">
                             <input type="hidden" name="enable_2fa" value="<?= !empty($twoFactorRec['is_enabled']) ? '0' : '1' ?>">
-                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50' : 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700' ?>">
+                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' ?>">
                                 <i data-lucide="<?= !empty($twoFactorRec['is_enabled']) ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= !empty($twoFactorRec['is_enabled']) ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
                             </button>
@@ -236,19 +227,19 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 <!-- 2FA Details & Recovery Codes Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
                     <!-- Method -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Method</div>
-                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
-                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
+                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span>Google / Microsoft Authenticator</span>
                         </div>
-                        <div class="text-[10px] text-slate-500 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
+                        <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
                     </div>
 
                     <!-- Recovery Status -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
                         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
-                        <div class="text-xs font-bold text-slate-800 flex items-center space-x-1.5">
+                        <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
                             <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
                         </div>
@@ -256,15 +247,15 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                     </div>
 
                     <!-- Generate Codes Button -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
                         <div>
                             <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Backup Codes</div>
-                            <div class="text-[11px] font-semibold text-slate-700">Regenerate 5 new codes</div>
+                            <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Regenerate 5 new codes</div>
                         </div>
                         <form method="POST" class="inline" onsubmit="return confirm('Generating new backup codes will invalidate any existing unused codes. Proceed?')">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="generate_backup_codes">
-                            <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
+                            <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
                                 <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                                 <span>Generate</span>
                             </button>

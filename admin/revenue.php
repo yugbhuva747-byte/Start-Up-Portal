@@ -151,7 +151,7 @@ if ($db) {
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="revenue-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="revenue-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">

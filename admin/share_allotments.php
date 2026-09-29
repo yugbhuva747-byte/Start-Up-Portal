@@ -188,7 +188,7 @@ if ($db) {
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="allotment-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="allotment-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -280,7 +280,7 @@ if ($db) {
                 $esop = (float)($selectedCompany['esop_pool_percent'] ?: 10.00);
                 $unallocated = max(0, 100 - ($foundersEquity + $investorsEquity + $esop));
             ?>
-            <div class="card-clean rounded-2xl p-6 border-indigo-200 bg-gradient-to-br from-white to-indigo-50/20">
+            <div class="card-clean rounded-2xl p-6 border-indigo-200 dark:border-slate-800">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div>
                         <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Company Cap Table Inspector</div>

@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="rounds-admin-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="rounds-admin-main">
             
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-medium border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?>">

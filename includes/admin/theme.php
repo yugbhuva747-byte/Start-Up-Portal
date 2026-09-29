@@ -215,6 +215,24 @@
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55) !important;
     }
 
+    /* Admin Sidebar Sizing & Layout */
+    #main-sidebar,
+    aside#main-sidebar {
+        width: 18rem !important; /* 288px - prevents navigation items from wrapping */
+        min-width: 18rem !important;
+        max-width: 18rem !important;
+    }
+
+    #main-sidebar nav a {
+        font-size: 0.875rem !important; /* ~14px - crisp & legible */
+        line-height: 1.4 !important;
+        font-weight: 600 !important;
+    }
+
+    #main-sidebar nav a span {
+        white-space: nowrap !important;
+    }
+
     /* Dark Sidebar */
     html.dark #main-sidebar {
         background-color: #0F172A !important;
@@ -230,6 +248,20 @@
     html.dark #main-sidebar .bg-slate-50\/50,
     html.dark #main-sidebar .bg-slate-50 {
         background-color: #0F172A !important;
+    }
+
+    /* Admin Badge in Dark Mode */
+    html.dark #main-sidebar .bg-blue-50:not(a) {
+        background-color: rgba(30, 58, 138, 0.4) !important;
+        border-color: rgba(59, 130, 246, 0.3) !important;
+    }
+
+    html.dark #main-sidebar .text-blue-900 {
+        color: #BFDBFE !important; /* High contrast bright blue */
+    }
+
+    html.dark #main-sidebar .text-blue-700 {
+        color: #93C5FD !important; /* High contrast soft blue */
     }
 
     html.dark #main-sidebar .text-slate-900,
@@ -262,6 +294,42 @@
         -webkit-backdrop-filter: blur(12px) !important;
     }
 
+    /* ----------------------------------------------------
+       LIGHT MODE (WHITE) SIDEBAR & NAVBAR (DARK MODE OFF ONLY)
+    ---------------------------------------------------- */
+    html:not(.dark) header,
+    html:not(.dark) #admin-navbar,
+    html:not(.dark) .admin-navbar,
+    html:not(.dark) body > div > header {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+
+    html:not(.dark) #main-sidebar,
+    html:not(.dark) aside#main-sidebar {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+
+    html:not(.dark) #main-sidebar .bg-slate-50\/50,
+    html:not(.dark) #main-sidebar .bg-slate-50 {
+        background-color: #F8FAFC !important;
+    }
+
+    /* ----------------------------------------------------
+       RESPONSIVE FULL-SCREEN ADMIN CONTENT FIT
+    ---------------------------------------------------- */
+    body > div > main,
+    main#comp-main,
+    main#admin-main,
+    main[id$="-main"] {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
     /* Active link in dark sidebar */
     html.dark #main-sidebar a.bg-blue-50 {
         background-color: rgba(37, 99, 235, 0.25) !important;
@@ -278,11 +346,23 @@
     html.dark .dashboard-card,
     html.dark .stat-card {
         background-color: #111827 !important;
+        background-image: none !important;
         border-color: #1E293B !important;
     }
 
     html.dark .card-clean {
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    /* Sub-card and inset surfaces in Dark Mode */
+    html.dark .bg-slate-50\/80,
+    html.dark .bg-slate-50\/70,
+    html.dark .bg-slate-50\/60,
+    html.dark .bg-slate-50\/50,
+    html.dark .bg-slate-50,
+    html.dark .bg-slate-100 {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
     }
 
     /* Dark Borders & Dividers */
@@ -423,17 +503,149 @@
         transform: scale(0.92);
     }
 
-    /* Dark Mode Hover Overrides to prevent light flash */
+    /* ====================================================
+       COMPREHENSIVE DARK MODE HOVER SYSTEM
+       Ensures all text & surfaces remain 100% visible on hover
+       ==================================================== */
+
+    /* 1. All Light Backgrounds on Hover -> Dark Slate Surfaces */
     html.dark .hover\:bg-slate-50:hover,
+    html.dark .hover\:bg-slate-50\/40:hover,
+    html.dark .hover\:bg-slate-50\/50:hover,
+    html.dark .hover\:bg-slate-50\/60:hover,
+    html.dark .hover\:bg-slate-50\/70:hover,
+    html.dark .hover\:bg-slate-50\/80:hover,
+    html.dark .hover\:bg-slate-50\/90:hover,
     html.dark .hover\:bg-slate-100:hover,
+    html.dark .hover\:bg-slate-100\/50:hover,
+    html.dark .hover\:bg-slate-100\/70:hover,
+    html.dark .hover\:bg-slate-100\/80:hover,
+    html.dark .hover\:bg-slate-200:hover,
     html.dark .hover\:bg-gray-50:hover,
-    html.dark .hover\:bg-gray-100:hover {
+    html.dark .hover\:bg-gray-100:hover,
+    html.dark .hover\:bg-gray-200:hover,
+    html.dark tr.hover\:bg-slate-50\/50:hover,
+    html.dark tr.hover\:bg-slate-50\/60:hover,
+    html.dark tr.hover\:bg-slate-50\/70:hover,
+    html.dark tr.hover\:bg-slate-50:hover,
+    html.dark div.hover\:bg-slate-50\/60:hover,
+    html.dark div.hover\:bg-slate-50\/70:hover,
+    html.dark div.hover\:bg-slate-50\/80:hover,
+    html.dark div.hover\:bg-slate-50:hover {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
+    }
+
+    /* 2. Soft Colored Light Accents on Hover -> Translucent Dark Accents */
+    html.dark .hover\:bg-indigo-50:hover,
+    html.dark .hover\:bg-blue-50:hover {
+        background-color: rgba(37, 99, 235, 0.25) !important;
+        border-color: rgba(59, 130, 246, 0.4) !important;
+    }
+
+    html.dark .hover\:bg-emerald-50:hover,
+    html.dark .hover\:bg-emerald-100:hover {
+        background-color: rgba(16, 185, 129, 0.25) !important;
+        border-color: rgba(16, 185, 129, 0.4) !important;
+    }
+
+    html.dark .hover\:bg-rose-50:hover,
+    html.dark .hover\:bg-rose-100:hover {
+        background-color: rgba(244, 63, 94, 0.25) !important;
+        border-color: rgba(244, 63, 94, 0.4) !important;
+    }
+
+    html.dark .hover\:bg-amber-50:hover,
+    html.dark .hover\:bg-amber-100:hover {
+        background-color: rgba(245, 158, 11, 0.25) !important;
+        border-color: rgba(245, 158, 11, 0.4) !important;
+    }
+
+    /* 3. Dark Text Colors on Hover -> Bright White / High Contrast */
+    html.dark .hover\:text-slate-900:hover,
+    html.dark .hover\:text-slate-800:hover,
+    html.dark .hover\:text-slate-700:hover,
+    html.dark .hover\:text-slate-600:hover,
+    html.dark .hover\:text-slate-500:hover,
+    html.dark .hover\:text-gray-900:hover,
+    html.dark .hover\:text-gray-800:hover,
+    html.dark .hover\:text-gray-700:hover,
+    html.dark .hover\:text-gray-600:hover,
+    html.dark .hover\:text-black:hover {
+        color: #FFFFFF !important;
+    }
+
+    /* 4. Indigo / Blue / Colored Text on Hover */
+    html.dark .hover\:text-indigo-600:hover,
+    html.dark .hover\:text-indigo-700:hover,
+    html.dark .hover\:text-blue-600:hover,
+    html.dark .hover\:text-blue-700:hover {
+        color: #93C5FD !important;
+    }
+
+    html.dark .hover\:text-emerald-600:hover,
+    html.dark .hover\:text-emerald-700:hover {
+        color: #6EE7B7 !important;
+    }
+
+    html.dark .hover\:text-rose-600:hover,
+    html.dark .hover\:text-rose-700:hover {
+        color: #FDA4AF !important;
+    }
+
+    html.dark .hover\:text-amber-600:hover,
+    html.dark .hover\:text-amber-700:hover {
+        color: #FCD34D !important;
+    }
+
+    /* 5. Hovering Over Table Rows Keeps All Row Text Crystal Clear */
+    html.dark table tbody tr:hover,
+    html.dark table tbody tr:hover td {
         background-color: #1E293B !important;
     }
 
-    html.dark .hover\:text-slate-900:hover,
-    html.dark .hover\:text-slate-800:hover,
-    html.dark .hover\:text-gray-900:hover {
+    html.dark table tbody tr:hover td {
+        color: #F8FAFC !important;
+    }
+
+    html.dark table tbody tr:hover td .text-slate-900,
+    html.dark table tbody tr:hover td .text-slate-800,
+    html.dark table tbody tr:hover td .text-slate-700 {
+        color: #FFFFFF !important;
+    }
+
+    html.dark table tbody tr:hover td .text-slate-600,
+    html.dark table tbody tr:hover td .text-slate-500,
+    html.dark table tbody tr:hover td .text-slate-400 {
+        color: #CBD5E1 !important;
+    }
+
+    /* 6. Hovering Over List & Audit Trail Divs */
+    html.dark div.hover\:bg-slate-50\/60:hover .text-slate-900,
+    html.dark div.hover\:bg-slate-50\/60:hover .text-slate-800,
+    html.dark div.hover\:bg-slate-50\/70:hover .text-slate-900,
+    html.dark div.hover\:bg-slate-50\/70:hover .text-slate-800,
+    html.dark div.hover\:bg-slate-50\/80:hover .text-slate-900,
+    html.dark div.hover\:bg-slate-50\/80:hover .text-slate-800,
+    html.dark div.hover\:bg-slate-50:hover .text-slate-900,
+    html.dark div.hover\:bg-slate-50:hover .text-slate-800 {
+        color: #FFFFFF !important;
+    }
+
+    html.dark div.hover\:bg-slate-50\/60:hover .text-slate-500,
+    html.dark div.hover\:bg-slate-50\/60:hover .text-slate-400,
+    html.dark div.hover\:bg-slate-50\/70:hover .text-slate-500,
+    html.dark div.hover\:bg-slate-50\/70:hover .text-slate-400,
+    html.dark div.hover\:bg-slate-50\/80:hover .text-slate-500,
+    html.dark div.hover\:bg-slate-50\/80:hover .text-slate-400,
+    html.dark div.hover\:bg-slate-50:hover .text-slate-500,
+    html.dark div.hover\:bg-slate-50:hover .text-slate-400 {
+        color: #CBD5E1 !important;
+    }
+
+    /* 7. Action Icons on Hover */
+    html.dark .hover\:bg-slate-50:hover i,
+    html.dark .hover\:bg-slate-100:hover i {
         color: #FFFFFF !important;
     }
 </style>

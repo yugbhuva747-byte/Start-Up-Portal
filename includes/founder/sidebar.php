@@ -17,6 +17,7 @@ require_once __DIR__ . '/theme.php';
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
+
     #main-sidebar .overflow-y-auto {
         scrollbar-width: thin;
         scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
@@ -24,16 +25,20 @@ require_once __DIR__ . '/theme.php';
         scroll-behavior: auto !important;
         -webkit-overflow-scrolling: touch;
     }
+
     #main-sidebar .overflow-y-auto::-webkit-scrollbar {
         width: 5px;
     }
+
     #main-sidebar .overflow-y-auto::-webkit-scrollbar-track {
         background: transparent;
     }
+
     #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb {
         background: rgba(148, 163, 184, 0.35);
         border-radius: 9999px;
     }
+
     #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
         background: rgba(148, 163, 184, 0.6);
     }
@@ -42,10 +47,7 @@ require_once __DIR__ . '/theme.php';
 <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()"
     class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
 
-<aside id="main-sidebar"
-    data-lenis-prevent="true"
-    data-lenis-prevent-wheel="true"
-    data-lenis-prevent-touch="true"
+<aside id="main-sidebar" data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
     class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none"
     style="font-family: 'Vay Portal', Sans-serif;">
     <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-4 sm:p-5 overflow-y-auto flex-1">
@@ -166,7 +168,8 @@ require_once __DIR__ . '/theme.php';
                     class="w-9 h-9 rounded-full object-cover border border-slate-200 group-hover:ring-2 group-hover:ring-indigo-500 transition">
                 <div class="truncate">
                     <div class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition">
-                        <?= htmlspecialchars($founderUser['name']) ?></div>
+                        <?= htmlspecialchars($founderUser['name']) ?>
+                    </div>
                     <div class="text-xs text-slate-500 truncate flex items-center space-x-1">
                         <span>Founder Profile</span>
                         <i data-lucide="chevron-right" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition"></i>

@@ -333,6 +333,28 @@
         background-color: #0B0F19 !important;
     }
 
+    /* ----------------------------------------------------
+       LIGHT MODE (WHITE) SIDEBAR & NAVBAR (DARK MODE OFF ONLY)
+    ---------------------------------------------------- */
+    html:not(.dark) .investor-navbar,
+    html:not(.dark) header {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+
+    html:not(.dark) #main-sidebar,
+    html:not(.dark) aside#main-sidebar {
+        background-color: #FFFFFF !important;
+        background: #FFFFFF !important;
+        border-color: #E2E8F0 !important;
+    }
+
+    html:not(.dark) #main-sidebar .bg-\[\#FAFBFD\],
+    html:not(.dark) #main-sidebar .bg-slate-50 {
+        background-color: #F8FAFC !important;
+    }
+
     /* Dark Header */
     html.dark header {
         background-color: #0F172A !important;

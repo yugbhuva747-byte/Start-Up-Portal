@@ -151,10 +151,13 @@ $activeTemplate = $_GET['template'] ?? 'investor';
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
                     Automated Direct Dispatch Active
                 </span>
+                <a href="<?= url('admin/settings.php') ?>" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-600 transition flex items-center justify-center shadow-xs group" title="Platform Settings">
+                    <i data-lucide="settings" class="w-4 h-4 group-hover:rotate-45 transition-transform duration-300"></i>
+                </a>
             </div>
         </header>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
             <?php if (!empty($successMsg)): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-2">
