@@ -134,12 +134,6 @@ require_once __DIR__ . '/theme.php';
                 <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'broadcasts.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
                 <span class="whitespace-nowrap">Platform Broadcasts</span>
             </a>
-
-            <a href="<?= url('admin/email_templates.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'email_templates.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="mail-check" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'email_templates.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Email Templates & Logs</span>
-            </a>
         </nav>
     </div>
 

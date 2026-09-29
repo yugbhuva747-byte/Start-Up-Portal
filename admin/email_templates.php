@@ -137,27 +137,27 @@ $activeTemplate = $_GET['template'] ?? 'investor';
 
     <div class="flex-1 flex flex-col min-w-0">
         
-        <!-- Header -->
-        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20">
-            <div>
-                <h1 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                    <i data-lucide="mail-check" class="w-5 h-5 text-indigo-600"></i>
-                    <span>Automated Investment Email Templates</span>
-                </h1>
-                <p class="text-xs text-slate-500">Live preview, test dispatch, and automated delivery records for Investor & Founder notifications</p>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-                    Automated Direct Dispatch Active
-                </span>
-                <a href="<?= url('admin/settings.php') ?>" class="p-2 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-600 transition flex items-center justify-center shadow-xs group" title="Platform Settings">
-                    <i data-lucide="settings" class="w-4 h-4 group-hover:rotate-45 transition-transform duration-300"></i>
-                </a>
-            </div>
-        </header>
+        <!-- Admin Navbar -->
+        <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            
+            <!-- Page Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                        <i data-lucide="mail-check" class="w-6 h-6 text-blue-600"></i>
+                        <span>Automated Investment Email Templates</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 mt-0.5">Live preview, test dispatch, and automated delivery records for Investor & Founder notifications</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                        Automated Direct Dispatch Active
+                    </span>
+                </div>
+            </div>
             
             <?php if (!empty($successMsg)): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center space-x-2">

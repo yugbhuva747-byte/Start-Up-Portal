@@ -302,9 +302,9 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                 </div>
                 <div class="card-clean rounded-2xl p-4">
                     <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Documents Uploaded</div>
-                    <div class="text-xl font-extrabold text-indigo-600 mt-1 flex items-center justify-between">
+                    <div class="text-xl font-extrabold text-blue-600 mt-1 flex items-center justify-between">
                         <span><?= $stats['total_docs'] ?></span>
-                        <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+                        <i data-lucide="file-text" class="w-4 h-4 text-blue-400"></i>
                     </div>
                 </div>
                 <div class="card-clean rounded-2xl p-4">
@@ -321,7 +321,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                 <div class="card-clean rounded-2xl p-5 md:p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="inbox" class="w-4 h-4 text-indigo-600"></i>
+                            <i data-lucide="inbox" class="w-4 h-4 text-blue-600"></i>
                             <span>Applicant KYC Applications</span>
                         </h2>
                         <span class="text-[11px] text-slate-400">Click 'Inspect & Review' to check uploaded files and approve</span>
@@ -362,7 +362,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                                 <div class="text-[11px] text-slate-500"><?= htmlspecialchars($r['applicant_email']) ?> • <?= htmlspecialchars($r['applicant_phone']) ?></div>
                                             </td>
                                             <td class="py-3.5">
-                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold <?= $r['applicant_role'] === 'founder' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' ?>">
+                                                <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold <?= $r['applicant_role'] === 'founder' ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' ?>">
                                                     <?= ucfirst($r['applicant_role']) ?>
                                                 </span>
                                                 <?php if ($r['company_name']): ?>
@@ -372,9 +372,9 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                             </td>
                                             <td class="py-3.5">
                                                 <?php if ($totalAttached > 0): ?>
-                                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-200 font-bold text-[10.5px]">
-                                                        <i data-lucide="paperclip" class="w-3 h-3"></i>
-                                                        <span><?= $totalAttached ?> File<?= $totalAttached > 1 ? 's' : '' ?></span>
+                                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[10.5px]">
+                                                         <i data-lucide="paperclip" class="w-3 h-3"></i>
+                                                         <span><?= $totalAttached ?> File<?= $totalAttached > 1 ? 's' : '' ?></span>
                                                     </span>
                                                 <?php else: ?>
                                                     <span class="text-slate-400 text-[11px]">No docs attached</span>
@@ -389,7 +389,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                             </td>
                                             <td class="py-3.5 text-slate-500 text-xs"><?= date('d M Y', strtotime($r['created_at'])) ?></td>
                                             <td class="py-3.5 text-right">
-                                                <button onclick="openReviewModal(<?= htmlspecialchars(json_encode($payload), ENT_QUOTES, 'UTF-8') ?>)" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition flex items-center space-x-1.5 ml-auto">
+                                                <button onclick="openReviewModal(<?= htmlspecialchars(json_encode($payload), ENT_QUOTES, 'UTF-8') ?>)" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-sm transition flex items-center space-x-1.5 ml-auto">
                                                     <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                                     <span>Inspect & Review</span>
                                                 </button>
@@ -409,7 +409,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                         <div>
                             <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                                <i data-lucide="files" class="w-4 h-4 text-indigo-600"></i>
+                                <i data-lucide="files" class="w-4 h-4 text-blue-600"></i>
                                 <span>All Uploaded Platform Documents (KYC & Data Room)</span>
                             </h2>
                             <p class="text-[11px] text-slate-500 mt-0.5">Directly download, inspect, and approve or reject any uploaded file.</p>
@@ -438,7 +438,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                                         <tr class="hover:bg-slate-50/60 transition">
                                             <td class="py-3.5">
                                                 <div class="flex items-center space-x-2.5">
-                                                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center flex-shrink-0">
+                                                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center flex-shrink-0">
                                                         <i data-lucide="<?= str_contains(strtolower($doc['file_path']), '.pdf') ? 'file-text' : 'image' ?>" class="w-4 h-4"></i>
                                                     </div>
                                                     <div>
@@ -583,7 +583,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                 <div class="bg-white border border-slate-200 max-w-2xl w-full rounded-2xl p-6 shadow-2xl relative my-8">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                         <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                                 <i data-lucide="shield-check" class="w-4 h-4"></i>
                             </div>
                             <div>
@@ -620,7 +620,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
 
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1 text-[11px] uppercase tracking-wider">Compliance Verdict</label>
-                            <select name="decision" id="modal-decision-select" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none">
+                            <select name="decision" id="modal-decision-select" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 text-xs outline-none">
                                 <option value="verified">Approve & Verify (Grant Verified Badge, Unlock Platform Privileges)</option>
                                 <option value="additional_info">Request Additional Documents / Corrections</option>
                                 <option value="rejected">Reject Application</option>
@@ -633,14 +633,14 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                         <div>
                             <label class="block font-semibold text-slate-700 mb-1 text-[11px] uppercase tracking-wider">Compliance Remarks & Audit Notes</label>
                             <textarea name="remarks" id="modal-remarks-input" rows="3" required placeholder="State regulatory review remarks, MCA verification notes, or reason for decision..."
-                                      class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none"></textarea>
+                                      class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 text-xs outline-none"></textarea>
                         </div>
 
                         <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
                             <button type="button" onclick="document.getElementById('review-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold">
                                 Cancel
                             </button>
-                            <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
+                            <button type="submit" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
                                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
                                 <span>Submit Compliance Verdict</span>
                             </button>
@@ -704,7 +704,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                     <div>
                         <div class="font-bold text-slate-800 text-xs">Entity: ${escapeHtml(req.company_name || 'Individual Profile')}</div>
                         <div class="text-slate-500 text-[11px]">CIN: <span class="font-mono text-slate-700">${escapeHtml(req.cin_number || 'N/A')}</span></div>
-                        <div class="text-indigo-600 font-mono text-[10.5px] mt-0.5">Gateway Ref: ${escapeHtml(req.provider_ref_id || 'MANUAL_KYC')}</div>
+                        <div class="text-blue-600 font-mono text-[10.5px] mt-0.5">Gateway Ref: ${escapeHtml(req.provider_ref_id || 'MANUAL_KYC')}</div>
                     </div>
                 </div>
             `;
@@ -727,7 +727,7 @@ $activeTab = $_GET['tab'] ?? 'queue'; // 'queue' or 'documents'
                     html += `
                         <div class="p-3 flex items-center justify-between text-xs hover:bg-slate-50/80 transition">
                             <div class="flex items-center space-x-2.5">
-                                <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
                                     <i data-lucide="file-text" class="w-4 h-4"></i>
                                 </div>
                                 <div>

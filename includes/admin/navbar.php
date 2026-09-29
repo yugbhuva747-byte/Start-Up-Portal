@@ -42,10 +42,13 @@ require_once __DIR__ . '/theme.php';
             <span class="hidden sm:inline">2FA Verified</span>
         </div>
 
-        <div class="hidden md:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-[10.5px] text-slate-600 font-medium">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Platform Secure</span>
-        </div>
+        <!-- Email Templates & Logs Button -->
+        <a href="<?= url('admin/email_templates.php') ?>" 
+           class="p-2 sm:p-2.5 rounded-xl <?= (basename($_SERVER['PHP_SELF']) === 'email_templates.php') ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-200 text-slate-700 hover:text-blue-600' ?> transition flex items-center justify-center shadow-xs group" 
+           title="Email Templates & Logs" 
+           aria-label="Email Templates & Logs">
+            <i data-lucide="mail" class="w-4 h-4 group-hover:scale-110 transition-transform duration-200"></i>
+        </a>
 
         <!-- Platform Settings Button -->
         <a href="<?= url('admin/settings.php') ?>" 

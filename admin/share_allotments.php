@@ -212,7 +212,7 @@ if ($db) {
                 </div>
                 <div class="flex items-center space-x-2.5">
                     <button onclick="document.getElementById('issueModal').classList.remove('hidden')" 
-                            class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 shadow-sm shadow-indigo-600/20">
+                            class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 shadow-sm shadow-blue-600/20">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
                         <span>Issue Share Certificate</span>
                     </button>
@@ -235,7 +235,7 @@ if ($db) {
 
                 <div class="card-clean rounded-2xl p-4">
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Certificates Issued</div>
-                    <div class="text-lg font-black text-indigo-600"><?= $totalCertificatesCount ?></div>
+                    <div class="text-lg font-black text-blue-600"><?= $totalCertificatesCount ?></div>
                     <div class="text-[10.5px] text-slate-500 mt-0.5">Digitally signed & verified</div>
                 </div>
 
@@ -251,7 +251,7 @@ if ($db) {
                 <form action="<?= url('admin/share_allotments.php') ?>" method="GET" class="flex flex-wrap items-center gap-3 text-xs w-full md:w-auto">
                     <span class="font-bold text-slate-700">Filter by Startup:</span>
                     <select name="company_filter" onchange="this.form.submit()" 
-                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none focus:border-indigo-600 focus:bg-white">
+                            class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none focus:border-blue-600 focus:bg-white">
                         <option value="0">All Startups (<?= count($allotments) ?> records)</option>
                         <?php foreach ($companiesList as $c): ?>
                             <option value="<?= $c['id'] ?>" <?= $selectedCompanyId == $c['id'] ? 'selected' : '' ?>>
@@ -260,7 +260,7 @@ if ($db) {
                         <?php endforeach; ?>
                     </select>
                     <?php if ($selectedCompanyId > 0): ?>
-                        <a href="<?= url('admin/share_allotments.php') ?>" class="text-indigo-600 font-bold hover:underline">
+                        <a href="<?= url('admin/share_allotments.php') ?>" class="text-blue-600 font-bold hover:underline">
                             Clear Filter
                         </a>
                     <?php endif; ?>
@@ -280,87 +280,97 @@ if ($db) {
                 $esop = (float)($selectedCompany['esop_pool_percent'] ?: 10.00);
                 $unallocated = max(0, 100 - ($foundersEquity + $investorsEquity + $esop));
             ?>
-            <div class="card-clean rounded-2xl p-6 border-indigo-200 dark:border-slate-800">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <div>
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Company Cap Table Inspector</div>
-                        <h2 class="text-base font-black text-slate-900"><?= htmlspecialchars($selectedCompany['name']) ?> — Equity Architecture</h2>
+            <div class="card-clean rounded-2xl border-blue-200 dark:border-slate-800 overflow-hidden">
+                <button type="button" onclick="toggleCapTable()" class="w-full p-5 md:p-6 flex items-center justify-between text-left hover:bg-slate-50/80 transition">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                            <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Company Cap Table Inspector</div>
+                            <h2 class="text-sm md:text-base font-black text-slate-900"><?= htmlspecialchars($selectedCompany['name']) ?> — Equity Architecture</h2>
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-2 text-xs">
-                        <span class="px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800 font-bold">
-                            Authorized Cap: <?= format_inr($selectedCompany['authorized_capital'] ?: 10000000) ?>
+                    <div class="flex items-center space-x-3">
+                        <span class="hidden sm:inline-block px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs">
+                            Authorized: <?= format_inr($selectedCompany['authorized_capital'] ?: 10000000) ?>
                         </span>
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500">
+                            <i id="cap-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200 rotate-180"></i>
+                        </div>
                     </div>
-                </div>
+                </button>
 
-                <!-- Visual Stacked Bar -->
-                <div class="mb-4">
-                    <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
-                        <div style="width: <?= min(100, $foundersEquity) ?>%" class="bg-indigo-600" title="Founders: <?= $foundersEquity ?>%"></div>
-                        <div style="width: <?= min(100, $investorsEquity) ?>%" class="bg-emerald-500" title="Investors: <?= $investorsEquity ?>%"></div>
-                        <div style="width: <?= min(100, $esop) ?>%" class="bg-amber-400" title="ESOP: <?= $esop ?>%"></div>
-                        <?php if ($unallocated > 0): ?>
-                            <div style="width: <?= min(100, $unallocated) ?>%" class="bg-slate-300" title="Unallocated: <?= $unallocated ?>%"></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-4 text-[11px] mt-2 font-medium">
-                        <span class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                            <span class="text-slate-600">Founders (<?= number_format($foundersEquity, 2) ?>%)</span>
-                        </span>
-                        <span class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span class="text-slate-600">Investors (<?= number_format($investorsEquity, 2) ?>%)</span>
-                        </span>
-                        <span class="flex items-center space-x-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                            <span class="text-slate-600">ESOP Pool (<?= number_format($esop, 2) ?>%)</span>
-                        </span>
-                        <?php if ($unallocated > 0): ?>
+                <div id="cap-table-body" class="px-6 pb-6 pt-2 border-t border-slate-100">
+                    <!-- Visual Stacked Bar -->
+                    <div class="mb-4 pt-2">
+                        <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+                            <div style="width: <?= min(100, $foundersEquity) ?>%" class="bg-blue-600" title="Founders: <?= $foundersEquity ?>%"></div>
+                            <div style="width: <?= min(100, $investorsEquity) ?>%" class="bg-emerald-500" title="Investors: <?= $investorsEquity ?>%"></div>
+                            <div style="width: <?= min(100, $esop) ?>%" class="bg-amber-400" title="ESOP: <?= $esop ?>%"></div>
+                            <?php if ($unallocated > 0): ?>
+                                <div style="width: <?= min(100, $unallocated) ?>%" class="bg-slate-300" title="Unallocated: <?= $unallocated ?>%"></div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 text-[11px] mt-2 font-medium">
                             <span class="flex items-center space-x-1.5">
-                                <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
-                                <span class="text-slate-400">Unallocated Treasury (<?= number_format($unallocated, 2) ?>%)</span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+                                <span class="text-slate-600">Founders (<?= number_format($foundersEquity, 2) ?>%)</span>
                             </span>
-                        <?php endif; ?>
+                            <span class="flex items-center space-x-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                <span class="text-slate-600">Investors (<?= number_format($investorsEquity, 2) ?>%)</span>
+                            </span>
+                            <span class="flex items-center space-x-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                                <span class="text-slate-600">ESOP Pool (<?= number_format($esop, 2) ?>%)</span>
+                            </span>
+                            <?php if ($unallocated > 0): ?>
+                                <span class="flex items-center space-x-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                                    <span class="text-slate-400">Unallocated Treasury (<?= number_format($unallocated, 2) ?>%)</span>
+                                </span>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Cap Table Breakdown Mini-Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs font-sans">
-                        <thead>
-                            <tr class="border-b border-slate-200/80 text-[10px] uppercase font-bold text-slate-400">
-                                <th class="pb-2">Stakeholder</th>
-                                <th class="pb-2">Role / Class</th>
-                                <th class="pb-2">Shares / Stake</th>
-                                <th class="pb-2">Ownership %</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <?php foreach ($capTableBreakdown['founders'] as $f): ?>
-                                <tr>
-                                    <td class="py-2 font-bold text-slate-800"><?= htmlspecialchars($f['founder_name']) ?></td>
-                                    <td class="py-2 text-slate-500"><?= htmlspecialchars($f['designation']) ?></td>
-                                    <td class="py-2 font-mono text-slate-700">Common Stock</td>
-                                    <td class="py-2 font-bold text-indigo-600"><?= $f['equity_percent'] ?>%</td>
+                    <!-- Cap Table Breakdown Mini-Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs font-sans">
+                            <thead>
+                                <tr class="border-b border-slate-200/80 text-[10px] uppercase font-bold text-slate-400">
+                                    <th class="pb-2">Stakeholder</th>
+                                    <th class="pb-2">Role / Class</th>
+                                    <th class="pb-2">Shares / Stake</th>
+                                    <th class="pb-2">Ownership %</th>
                                 </tr>
-                            <?php endforeach; ?>
-                            <?php foreach ($capTableBreakdown['investors'] as $i): ?>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <?php foreach ($capTableBreakdown['founders'] as $f): ?>
+                                    <tr>
+                                        <td class="py-2 font-bold text-slate-800"><?= htmlspecialchars($f['founder_name']) ?></td>
+                                        <td class="py-2 text-slate-500"><?= htmlspecialchars($f['designation']) ?></td>
+                                        <td class="py-2 font-mono text-slate-700">Common Stock</td>
+                                        <td class="py-2 font-bold text-blue-600"><?= $f['equity_percent'] ?>%</td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <?php foreach ($capTableBreakdown['investors'] as $i): ?>
+                                    <tr>
+                                        <td class="py-2 font-bold text-slate-800"><?= htmlspecialchars($i['investor_name']) ?></td>
+                                        <td class="py-2 text-slate-500"><?= htmlspecialchars($i['round_name']) ?> (<?= htmlspecialchars($i['share_class']) ?>)</td>
+                                        <td class="py-2 font-mono text-emerald-600"><?= number_format($i['number_of_shares']) ?> Shares</td>
+                                        <td class="py-2 font-bold text-emerald-600"><?= $i['equity_allotted_percent'] ?>%</td>
+                                    </tr>
+                                <?php endforeach; ?>
                                 <tr>
-                                    <td class="py-2 font-bold text-slate-800"><?= htmlspecialchars($i['investor_name']) ?></td>
-                                    <td class="py-2 text-slate-500"><?= htmlspecialchars($i['round_name']) ?> (<?= htmlspecialchars($i['share_class']) ?>)</td>
-                                    <td class="py-2 font-mono text-emerald-600"><?= number_format($i['number_of_shares']) ?> Shares</td>
-                                    <td class="py-2 font-bold text-emerald-600"><?= $i['equity_allotted_percent'] ?>%</td>
+                                    <td class="py-2 font-bold text-amber-700">Employee Stock Option Plan</td>
+                                    <td class="py-2 text-slate-500">Talent Pool Reserve</td>
+                                    <td class="py-2 font-mono text-slate-600">Reserved Options</td>
+                                    <td class="py-2 font-bold text-amber-600"><?= number_format($esop, 2) ?>%</td>
                                 </tr>
-                            <?php endforeach; ?>
-                            <tr>
-                                <td class="py-2 font-bold text-amber-700">Employee Stock Option Plan</td>
-                                <td class="py-2 text-slate-500">Talent Pool Reserve</td>
-                                <td class="py-2 font-mono text-slate-600">Reserved Options</td>
-                                <td class="py-2 font-bold text-amber-600"><?= number_format($esop, 2) ?>%</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             <?php endif; ?>
@@ -391,7 +401,7 @@ if ($db) {
                             <?php else: ?>
                                 <?php foreach ($allotments as $a): ?>
                                     <tr class="hover:bg-slate-50/70 transition">
-                                        <td class="py-3.5 font-mono font-bold text-indigo-600">
+                                        <td class="py-3.5 font-mono font-bold text-blue-600">
                                             <?= htmlspecialchars($a['certificate_number']) ?>
                                             <div class="text-[9.5px] text-slate-400 font-sans"><?= htmlspecialchars($a['folio_number']) ?></div>
                                         </td>
@@ -414,14 +424,14 @@ if ($db) {
                                         </td>
                                         <td class="py-3.5">
                                             <div class="font-black text-emerald-600 font-mono"><?= format_inr($a['amount_invested']) ?></div>
-                                            <div class="text-[10px] text-indigo-600 font-bold"><?= $a['equity_allotted_percent'] ?>% equity</div>
+                                            <div class="text-[10px] text-blue-600 font-bold"><?= $a['equity_allotted_percent'] ?>% equity</div>
                                         </td>
                                         <td class="py-3.5 text-slate-500 text-[11px]">
                                             <?= date('d M Y', strtotime($a['confirmed_at'])) ?>
                                         </td>
                                         <td class="py-3.5 text-right">
                                             <a href="<?= url('certificate.php?id=' . $a['id']) ?>" target="_blank"
-                                               class="inline-flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-xs font-semibold rounded-lg transition border border-slate-200">
+                                               class="inline-flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-xs font-semibold rounded-lg transition border border-slate-200">
                                                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                                 <span>View Certificate</span>
                                             </a>
@@ -446,7 +456,7 @@ if ($db) {
             </button>
 
             <div class="flex items-center space-x-2.5 mb-4">
-                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                     <i data-lucide="award" class="w-5 h-5"></i>
                 </div>
                 <div>
@@ -462,7 +472,7 @@ if ($db) {
                 <div>
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Startup Company</label>
                     <select name="company_id" required 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                         <option value="">Select Startup...</option>
                         <?php foreach ($companiesList as $c): ?>
                             <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?> (<?= htmlspecialchars($c['industry']) ?>)</option>
@@ -473,7 +483,7 @@ if ($db) {
                 <div>
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Funding Round</label>
                     <select name="funding_round_id" required 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                         <option value="">Select Funding Round...</option>
                         <?php foreach ($fundingRoundsList as $fr): ?>
                             <option value="<?= $fr['id'] ?>"><?= htmlspecialchars($fr['company_name']) ?> — <?= htmlspecialchars($fr['round_name']) ?></option>
@@ -484,7 +494,7 @@ if ($db) {
                 <div>
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Allottee Investor</label>
                     <select name="investor_user_id" required 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                         <option value="">Select Investor...</option>
                         <?php foreach ($investorsList as $inv): ?>
                             <option value="<?= $inv['id'] ?>"><?= htmlspecialchars($inv['name']) ?> (<?= htmlspecialchars($inv['email']) ?>)</option>
@@ -496,12 +506,12 @@ if ($db) {
                     <div>
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Capital Invested (INR)</label>
                         <input type="number" step="0.01" name="amount_invested" required placeholder="e.g. 500000" 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                     </div>
                     <div>
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Equity Allotted (%)</label>
                         <input type="number" step="0.001" name="equity_allotted_percent" required placeholder="e.g. 1.250" 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                     </div>
                 </div>
 
@@ -509,12 +519,12 @@ if ($db) {
                     <div>
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Number of Shares</label>
                         <input type="number" name="number_of_shares" required placeholder="e.g. 2000" 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                     </div>
                     <div>
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Share Class</label>
                         <input type="text" name="share_class" value="Series Seed CCPS" required 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-600">
                     </div>
                 </div>
 
@@ -524,7 +534,7 @@ if ($db) {
                         Cancel
                     </button>
                     <button type="submit" 
-                            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition shadow-sm">
+                            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-sm">
                         Generate & Dispatch Certificate
                     </button>
                 </div>
@@ -535,6 +545,18 @@ if ($db) {
     <script>
         lucide.createIcons();
         gsap.from("#allotment-main > *", { duration: 0.4, y: 12, opacity: 0, stagger: 0.06, ease: "power2.out" });
+
+        function toggleCapTable() {
+            const body = document.getElementById('cap-table-body');
+            const chev = document.getElementById('cap-chevron');
+            if (!body || !chev) return;
+            const isHidden = body.classList.toggle('hidden');
+            if (isHidden) {
+                chev.classList.remove('rotate-180');
+            } else {
+                chev.classList.add('rotate-180');
+            }
+        }
     </script>
 </body>
 </html>

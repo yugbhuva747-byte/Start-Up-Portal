@@ -174,7 +174,7 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                 </div>
                 <div class="card-clean rounded-xl p-4">
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Sessions</div>
-                    <div class="text-sm font-bold text-indigo-600"><?= $activeSessions ?></div>
+                    <div class="text-sm font-bold text-blue-600"><?= $activeSessions ?></div>
                     <div class="text-[10px] text-slate-500 mt-0.5">In last 60 minutes</div>
                 </div>
                 <div class="card-clean rounded-xl p-4">
@@ -193,8 +193,9 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
             </div>
 
             <!-- Two-Factor Authentication (2FA) Administration Card -->
-            <div class="card-clean rounded-2xl p-6 border-indigo-100 dark:border-slate-800">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
+            <div class="card-clean rounded-2xl p-6 border-blue-100 dark:border-slate-800 transition-all duration-300">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                     onclick="toggleCollapsibleCard('section-2fa-body', this)" title="Click to expand/collapse 2FA details">
                     <div class="flex items-start space-x-3.5">
                         <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm shadow-blue-600/20">
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
@@ -210,254 +211,353 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
                         </div>
                     </div>
 
-                    <!-- Policy Toggle & Re-scan QR -->
-                    <div class="flex items-center space-x-2">
-                        <form method="POST" class="inline-flex items-center">
+                    <!-- Policy Toggle & Section Arrow -->
+                    <div class="flex items-center space-x-2.5">
+                        <form method="POST" class="inline-flex items-center" onclick="event.stopPropagation()">
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="form_action" value="toggle_2fa">
                             <input type="hidden" name="enable_2fa" value="<?= !empty($twoFactorRec['is_enabled']) ? '0' : '1' ?>">
-                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700' ?>">
+                            <button type="submit" class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 <?= !empty($twoFactorRec['is_enabled']) ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-xs' ?>">
                                 <i data-lucide="<?= !empty($twoFactorRec['is_enabled']) ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= !empty($twoFactorRec['is_enabled']) ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
                             </button>
                         </form>
+                        <button type="button" class="p-1 rounded-lg text-slate-400 group-hover:text-slate-700 transition" aria-label="Toggle 2FA section">
+                            <i data-lucide="chevron-down" data-chevron class="w-4 h-4 transition-transform duration-300"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- 2FA Details & Recovery Codes Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
-                    <!-- Method -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Method</div>
-                        <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
-                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-600"></i>
-                            <span>Google / Microsoft Authenticator</span>
-                        </div>
-                        <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
-                    </div>
-
-                    <!-- Recovery Status -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
-                        <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
-                            <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
-                            <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
-                        </div>
-                        <div class="text-[10px] text-slate-400 mt-1">Single-use emergency recovery codes</div>
-                    </div>
-
-                    <!-- Generate Codes Button -->
-                    <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Backup Codes</div>
-                            <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Regenerate 5 new codes</div>
-                        </div>
-                        <form method="POST" class="inline" onsubmit="return confirm('Generating new backup codes will invalidate any existing unused codes. Proceed?')">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="form_action" value="generate_backup_codes">
-                            <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
-                                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                                <span>Generate</span>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Newly Generated Codes Banner (Shown when generated) -->
-                <?php if (!empty($newlyGeneratedCodes)): ?>
-                    <div class="mt-4 p-4 rounded-xl bg-amber-50 border border-amber-200">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-900">
-                                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
-                                <span>Save Your Emergency Recovery Codes</span>
+                <div id="section-2fa-body" class="transition-all duration-300">
+                    <!-- 2FA Details & Recovery Codes Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-5">
+                        <!-- Method -->
+                        <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Primary Method</div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
+                                <i data-lucide="smartphone" class="w-3.5 h-3.5 text-blue-600"></i>
+                                <span>Google / Microsoft Authenticator</span>
                             </div>
-                            <button type="button" onclick="copyBackupCodes()" class="px-2 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-800 text-[10px] font-bold transition flex items-center space-x-1">
-                                <i data-lucide="copy" class="w-3 h-3"></i>
-                                <span id="copyBackupBtnText">Copy All Codes</span>
-                            </button>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1"><?= is_admin_totp_setup($user['id']) ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval</div>
                         </div>
-                        <p class="text-[11px] text-amber-700 mb-3">Store these single-use codes safely. Each code can be used only once if you cannot access your 6-digit OTP code.</p>
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="backupCodesContainer">
-                            <?php foreach ($newlyGeneratedCodes as $code): ?>
-                                <div class="px-3 py-1.5 rounded-lg bg-white border border-amber-200 font-mono text-center text-xs font-bold tracking-wider text-slate-800 shadow-2xs">
-                                    <?= htmlspecialchars($code) ?>
-                                </div>
-                            <?php endforeach; ?>
+
+                        <!-- Recovery Status -->
+                        <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Emergency Recovery</div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1.5">
+                                <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
+                                <span><?= $backupCodesRemaining ?> of 5 Codes Remaining</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 mt-1">Single-use emergency recovery codes</div>
+                        </div>
+
+                        <!-- Generate Codes Button -->
+                        <div class="p-3.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-0.5">Backup Codes</div>
+                                <div class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">Regenerate 5 new codes</div>
+                            </div>
+                            <form method="POST" class="inline" onsubmit="return confirm('Generating new backup codes will invalidate any existing unused codes. Proceed?')">
+                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                <input type="hidden" name="form_action" value="generate_backup_codes">
+                                <button type="submit" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
+                                    <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                                    <span>Generate</span>
+                                </button>
+                            </form>
                         </div>
                     </div>
-                <?php endif; ?>
+
+                    <!-- Newly Generated Codes Banner -->
+                    <?php if (!empty($newlyGeneratedCodes)): ?>
+                        <div class="mt-4 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-1.5 text-xs font-bold text-amber-900 dark:text-amber-200">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+                                    <span>Save Your Emergency Recovery Codes</span>
+                                </div>
+                                <button type="button" onclick="copyBackupCodes()" class="px-2 py-1 rounded bg-amber-100 dark:bg-amber-900/60 hover:bg-amber-200 text-amber-800 dark:text-amber-200 text-[10px] font-bold transition flex items-center space-x-1">
+                                    <i data-lucide="copy" class="w-3 h-3"></i>
+                                    <span id="copyBackupBtnText">Copy All Codes</span>
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-amber-700 dark:text-amber-300 mb-3">Store these single-use codes safely. Each code can be used only once if you cannot access your 6-digit OTP code.</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="backupCodesContainer">
+                                <?php foreach ($newlyGeneratedCodes as $code): ?>
+                                    <div class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 font-mono text-center text-xs font-bold tracking-wider text-slate-800 dark:text-slate-100 shadow-2xs">
+                                        <?= htmlspecialchars($code) ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Category Management & Security Event Monitor Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                 
-                <!-- Category Management -->
-                <div class="card-clean rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                        <i data-lucide="tags" class="w-3.5 h-3.5 text-indigo-600"></i>
-                        <span>Industry & Category Taxonomy</span>
-                    </h3>
-
-                    <!-- Add Category Form -->
-                    <form method="POST" class="mb-4 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                        <input type="hidden" name="form_action" value="add_category">
-                        <div class="grid grid-cols-2 gap-2 mb-2">
-                            <input type="text" name="cat_name" required placeholder="Category name" 
-                                   class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
-                            <input type="text" name="cat_icon" placeholder="Icon (e.g. layers)" value="layers"
-                                   class="px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
+                <!-- Category Management Collapsible Card -->
+                <div class="card-clean rounded-2xl p-6 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                         onclick="toggleCollapsibleCard('section-categories-body', this)" title="Click to expand/collapse categories">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="tags" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                                    <span>Industry & Category Taxonomy</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
+                                        <?= count($categories) ?> Active
+                                    </span>
+                                </h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Classification tags for venture deals</p>
+                            </div>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <input type="text" name="cat_description" placeholder="Description (optional)"
-                                   class="flex-1 px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
-                            <button type="submit" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1">
+                            <button type="button" 
+                                    onclick="event.stopPropagation(); toggleCollapsibleCard('form-add-cat');"
+                                    class="text-[11px] text-blue-600 hover:text-blue-700 font-semibold px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition flex items-center space-x-1">
                                 <i data-lucide="plus" class="w-3 h-3"></i>
-                                <span>Add</span>
+                                <span>Add New</span>
+                            </button>
+                            <button type="button" class="p-1 rounded-lg text-slate-400 group-hover:text-slate-700 transition" aria-label="Toggle categories section">
+                                <i data-lucide="chevron-down" data-chevron class="w-4 h-4 transition-transform duration-300"></i>
                             </button>
                         </div>
-                    </form>
+                    </div>
 
-                    <!-- Category List -->
-                    <?php if (empty($categories)): ?>
-                        <div class="py-6 text-center text-xs text-slate-400">No categories defined yet.</div>
-                    <?php else: ?>
-                        <div class="space-y-1.5 max-h-80 overflow-y-auto">
-                            <?php foreach ($categories as $cat): ?>
-                                <div class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition border border-slate-100 group">
-                                    <div class="flex items-center space-x-2.5">
-                                        <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                            <i data-lucide="<?= htmlspecialchars($cat['icon'] ?? 'layers') ?>" class="w-3.5 h-3.5"></i>
-                                        </div>
-                                        <div>
-                                            <div class="text-xs font-bold text-slate-800"><?= htmlspecialchars($cat['name']) ?></div>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($cat['slug']) ?></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-1.5 opacity-0 group-hover:opacity-100 transition">
-                                        <!-- Toggle Active -->
-                                        <form method="POST" class="inline">
-                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                            <input type="hidden" name="form_action" value="toggle_category">
-                                            <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
-                                            <input type="hidden" name="new_state" value="<?= $cat['is_active'] ? 0 : 1 ?>">
-                                            <button type="submit" class="p-1.5 rounded-lg <?= $cat['is_active'] ? 'text-emerald-600 hover:bg-emerald-50' : 'text-slate-400 hover:bg-slate-100' ?> transition" title="<?= $cat['is_active'] ? 'Disable' : 'Enable' ?>">
-                                                <i data-lucide="<?= $cat['is_active'] ? 'toggle-right' : 'toggle-left' ?>" class="w-4 h-4"></i>
-                                            </button>
-                                        </form>
-                                        <!-- Delete -->
-                                        <form method="POST" class="inline" onsubmit="return confirm('Delete this category?')">
-                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                            <input type="hidden" name="form_action" value="delete_category">
-                                            <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
-                                            <button type="submit" class="p-1.5 rounded-lg text-rose-400 hover:bg-rose-50 hover:text-rose-600 transition" title="Delete">
-                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Security Events Monitor -->
-                <div class="card-clean rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-500"></i>
-                        <span>Security Event Monitor</span>
-                    </h3>
-
-                    <?php if (empty($securityEvents)): ?>
-                        <div class="py-6 text-center">
-                            <div class="w-12 h-12 mx-auto mb-3 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                                <i data-lucide="shield-check" class="w-6 h-6 text-emerald-500"></i>
+                    <div id="section-categories-body" class="transition-all duration-300">
+                        <!-- Add Category Form (Collapsible) -->
+                        <form method="POST" id="form-add-cat" class="hidden mb-4 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="add_category">
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <input type="text" name="cat_name" required placeholder="Category name (e.g. Fintech)" 
+                                       class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none">
+                                <input type="text" name="cat_icon" placeholder="Icon (e.g. layers, cpu)" value="layers"
+                                       class="px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none">
                             </div>
-                            <div class="text-xs font-bold text-slate-800 mb-0.5">All Clear</div>
-                            <div class="text-[11px] text-slate-400">No security events recorded yet.</div>
-                        </div>
-                    <?php else: ?>
-                        <div class="space-y-2 max-h-80 overflow-y-auto">
-                            <?php foreach ($securityEvents as $se): 
-                                $sevColor = match($se['severity']) {
-                                    'critical' => 'rose', 'high' => 'orange', 'medium' => 'amber', default => 'slate'
-                                };
-                            ?>
-                                <div class="flex items-start space-x-2.5 p-2.5 rounded-lg border border-slate-100 hover:bg-slate-50 transition">
-                                    <div class="w-6 h-6 rounded-full bg-<?= $sevColor ?>-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                        <span class="w-2 h-2 rounded-full bg-<?= $sevColor ?>-500"></span>
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-[11px] font-bold text-slate-800"><?= htmlspecialchars($se['event_type']) ?></span>
-                                            <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-<?= $sevColor ?>-50 text-<?= $sevColor ?>-600 border border-<?= $sevColor ?>-200"><?= strtoupper($se['severity']) ?></span>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" name="cat_description" placeholder="Description (optional)"
+                                       class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none">
+                                <button type="submit" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-xs">
+                                    <i data-lucide="plus" class="w-3 h-3"></i>
+                                    <span>Save</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Category List -->
+                        <?php if (empty($categories)): ?>
+                            <div class="py-6 text-center text-xs text-slate-400">No categories defined yet.</div>
+                        <?php else: ?>
+                            <div class="space-y-1.5" id="category-list-container">
+                                <?php foreach ($categories as $idx => $cat): ?>
+                                    <div class="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50/80 transition border border-slate-100 dark:border-slate-800/80 group <?= $idx >= 4 ? 'cat-extra-item hidden' : '' ?>">
+                                        <div class="flex items-center space-x-2.5">
+                                            <div class="w-7 h-7 rounded-lg bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center text-blue-600">
+                                                <i data-lucide="<?= htmlspecialchars($cat['icon'] ?? 'layers') ?>" class="w-3.5 h-3.5"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-xs font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($cat['name']) ?></div>
+                                                <div class="text-[10px] text-slate-400"><?= htmlspecialchars($cat['slug']) ?></div>
+                                            </div>
                                         </div>
-                                        <div class="text-[10px] text-slate-500 mt-0.5">
-                                            <?= htmlspecialchars($se['user_name'] ?? 'Unknown') ?> • <?= htmlspecialchars($se['ip_address']) ?> • <?= date('d M H:i', strtotime($se['created_at'])) ?>
+                                        <div class="flex items-center space-x-1.5 opacity-80 group-hover:opacity-100 transition">
+                                            <!-- Toggle Active -->
+                                            <form method="POST" class="inline">
+                                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                <input type="hidden" name="form_action" value="toggle_category">
+                                                <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
+                                                <input type="hidden" name="new_state" value="<?= $cat['is_active'] ? 0 : 1 ?>">
+                                                <button type="submit" class="p-1.5 rounded-lg <?= $cat['is_active'] ? 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40' : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' ?> transition" title="<?= $cat['is_active'] ? 'Disable' : 'Enable' ?>">
+                                                    <i data-lucide="<?= $cat['is_active'] ? 'toggle-right' : 'toggle-left' ?>" class="w-4 h-4"></i>
+                                                </button>
+                                            </form>
+                                            <!-- Delete -->
+                                            <form method="POST" class="inline" onsubmit="return confirm('Delete this category?')">
+                                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                <input type="hidden" name="form_action" value="delete_category">
+                                                <input type="hidden" name="cat_id" value="<?= $cat['id'] ?>">
+                                                <button type="submit" class="p-1.5 rounded-lg text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:text-rose-600 transition" title="Delete">
+                                                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                </button>
+                                            </form>
                                         </div>
-                                        <?php if (!empty($se['details'])): ?>
-                                            <div class="text-[10px] text-slate-400 mt-0.5 truncate"><?= htmlspecialchars(substr($se['details'], 0, 100)) ?></div>
-                                        <?php endif; ?>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php if (count($categories) > 4): ?>
+                                <button type="button" 
+                                        id="btn-toggle-cats" 
+                                        onclick="toggleListItems('cat-extra-item', 'btn-toggle-cats', 'Show All Categories (+<?= count($categories) - 4 ?>)', 'Show Less')"
+                                        class="w-full mt-3 py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 text-blue-600 dark:text-blue-400 font-semibold text-xs transition flex items-center justify-center space-x-1.5">
+                                    <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+                                    <span>Show All Categories (+<?= count($categories) - 4 ?>)</span>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
+
+                <!-- Security Events Monitor Collapsible Card -->
+                <div class="card-clean rounded-2xl p-6 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                         onclick="toggleCollapsibleCard('section-events-body', this)" title="Click to expand/collapse security events">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-500 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                                    <span>Security Event Monitor</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800">
+                                        <?= count($securityEvents) ?> Tracked
+                                    </span>
+                                </h3>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Automated intrusion & risk telemetry</p>
+                            </div>
+                        </div>
+                        <button type="button" class="p-1 rounded-lg text-slate-400 group-hover:text-slate-700 transition" aria-label="Toggle events section">
+                            <i data-lucide="chevron-down" data-chevron class="w-4 h-4 transition-transform duration-300"></i>
+                        </button>
+                    </div>
+
+                    <div id="section-events-body" class="transition-all duration-300">
+                        <?php if (empty($securityEvents)): ?>
+                            <div class="py-8 text-center">
+                                <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 flex items-center justify-center">
+                                    <i data-lucide="shield-check" class="w-5 h-5 text-emerald-500"></i>
+                                </div>
+                                <div class="text-xs font-bold text-slate-800 dark:text-slate-200 mb-0.5">All Clear</div>
+                                <div class="text-[11px] text-slate-400">No security events or anomalies recorded.</div>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-2" id="security-events-container">
+                                <?php foreach ($securityEvents as $idx => $se): 
+                                    $sevColor = match($se['severity']) {
+                                        'critical' => 'rose', 'high' => 'orange', 'medium' => 'amber', default => 'slate'
+                                    };
+                                ?>
+                                    <div class="p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-50/80 transition <?= $idx >= 4 ? 'event-extra-item hidden' : '' ?>">
+                                        <div class="flex items-start space-x-2.5 cursor-pointer" onclick="toggleEventDetail('event-detail-<?= $idx ?>', this)" title="Click to view event details">
+                                            <div class="w-6 h-6 rounded-full bg-<?= $sevColor ?>-50 dark:bg-<?= $sevColor ?>-950/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="w-2 h-2 rounded-full bg-<?= $sevColor ?>-500"></span>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-[11px] font-bold text-slate-800 dark:text-slate-200"><?= htmlspecialchars($se['event_type']) ?></span>
+                                                    <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-<?= $sevColor ?>-50 dark:bg-<?= $sevColor ?>-950/40 text-<?= $sevColor ?>-600 dark:text-<?= $sevColor ?>-400 border border-<?= $sevColor ?>-200 dark:border-<?= $sevColor ?>-800"><?= strtoupper($se['severity']) ?></span>
+                                                </div>
+                                                <div class="text-[10px] text-slate-500 mt-0.5 flex items-center justify-between">
+                                                    <span><?= htmlspecialchars($se['user_name'] ?? 'System') ?> • <?= htmlspecialchars($se['ip_address']) ?> • <?= date('d M H:i', strtotime($se['created_at'])) ?></span>
+                                                    <span class="text-blue-600 font-semibold text-[10px] hover:underline flex items-center space-x-0.5">
+                                                        <span>Inspect</span>
+                                                        <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-200"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Expandable Event Detail -->
+                                        <div id="event-detail-<?= $idx ?>" class="hidden mt-2 p-2 rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 text-[10.5px]">
+                                            <div class="font-mono text-[10px] text-slate-600 dark:text-slate-300 break-all bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
+                                                <?= htmlspecialchars($se['details'] ?? 'No extra payload') ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php if (count($securityEvents) > 4): ?>
+                                <button type="button" 
+                                        id="btn-toggle-events" 
+                                        onclick="toggleListItems('event-extra-item', 'btn-toggle-events', 'Show More Events (+<?= count($securityEvents) - 4 ?>)', 'Show Less')"
+                                        class="w-full mt-3 py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 text-blue-600 dark:text-blue-400 font-semibold text-xs transition flex items-center justify-center space-x-1.5">
+                                    <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+                                    <span>Show More Events (+<?= count($securityEvents) - 4 ?>)</span>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Role Overview -->
-            <div class="card-clean rounded-2xl p-6">
-                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
-                    <i data-lucide="key" class="w-3.5 h-3.5 text-blue-600"></i>
-                    <span>Role & Permission Architecture</span>
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <th class="pb-2.5">Role</th>
-                                <th class="pb-2.5">Dashboard</th>
-                                <th class="pb-2.5">Company Mgmt</th>
-                                <th class="pb-2.5">Funding</th>
-                                <th class="pb-2.5">Investment</th>
-                                <th class="pb-2.5">Chat</th>
-                                <th class="pb-2.5">Admin Panel</th>
-                                <th class="pb-2.5">Audit Access</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr>
-                                <td class="py-3 font-bold text-indigo-600">Founder</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3 font-bold text-blue-600">Investor</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3 text-[10px] text-slate-500">View Only</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                                <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
-                            </tr>
-                            <tr>
-                                <td class="py-3 font-bold text-rose-600">Admin</td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                                <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Role & Permission Architecture Collapsible Card -->
+            <div class="card-clean rounded-2xl p-6 transition-all duration-300">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                     onclick="toggleCollapsibleCard('section-roles-body', this)" title="Click to expand/collapse roles matrix">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="key" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                                <span>Role & Permission Architecture</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                                    RBAC Active
+                                </span>
+                            </h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Role-based access matrix for Founders, Investors, and Admins</p>
+                        </div>
+                    </div>
+                    <button type="button" class="p-1 rounded-lg text-slate-400 group-hover:text-slate-700 transition" aria-label="Toggle roles section">
+                        <i data-lucide="chevron-down" data-chevron class="w-4 h-4 transition-transform duration-300"></i>
+                    </button>
+                </div>
+
+                <div id="section-roles-body" class="pt-4 transition-all duration-300">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    <th class="pb-2.5">Role</th>
+                                    <th class="pb-2.5">Dashboard</th>
+                                    <th class="pb-2.5">Company Mgmt</th>
+                                    <th class="pb-2.5">Funding</th>
+                                    <th class="pb-2.5">Investment</th>
+                                    <th class="pb-2.5">Chat</th>
+                                    <th class="pb-2.5">Admin Panel</th>
+                                    <th class="pb-2.5">Audit Access</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr>
+                                    <td class="py-3 font-bold text-blue-600">Founder</td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-bold text-blue-600">Investor</td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                    <td class="py-3 text-[10px] text-slate-500">View Only</td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                    <td class="py-3"><i data-lucide="x" class="w-3.5 h-3.5 text-slate-300"></i></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-bold text-rose-600">Admin</td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                    <td class="py-3"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500"></i></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -467,6 +567,65 @@ if ($db && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     <script>
         lucide.createIcons();
         gsap.from("#settings-main > *", { duration: 0.5, y: 15, opacity: 0, stagger: 0.08, ease: "power2.out" });
+
+        // Universal Section Toggle
+        function toggleCollapsibleCard(contentId, headerEl) {
+            const content = document.getElementById(contentId);
+            if (!content) return;
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) {
+                content.classList.remove('hidden');
+                if (headerEl) {
+                    const icon = headerEl.querySelector('[data-chevron]');
+                    if (icon) icon.classList.remove('rotate-180');
+                }
+            } else {
+                content.classList.add('hidden');
+                if (headerEl) {
+                    const icon = headerEl.querySelector('[data-chevron]');
+                    if (icon) icon.classList.add('rotate-180');
+                }
+            }
+        }
+
+        // Show More / Show Less Items
+        function toggleListItems(itemClass, btnId, moreText, lessText) {
+            const items = document.querySelectorAll('.' + itemClass);
+            const btn = document.getElementById(btnId);
+            if (!items.length || !btn) return;
+            const isExpanded = !items[0].classList.contains('hidden');
+            items.forEach(el => {
+                if (isExpanded) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            btn.innerHTML = isExpanded 
+                ? `<i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i><span>${moreText}</span>` 
+                : `<i data-lucide="chevrons-up" class="w-3.5 h-3.5"></i><span>${lessText}</span>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Event Detail Expansion
+        function toggleEventDetail(detailId, rowEl) {
+            const detailBox = document.getElementById(detailId);
+            if (!detailBox) return;
+            const isHidden = detailBox.classList.contains('hidden');
+            if (isHidden) {
+                detailBox.classList.remove('hidden');
+                if (rowEl) {
+                    const arrow = rowEl.querySelector('.lucide-chevron-down');
+                    if (arrow) arrow.classList.add('rotate-180');
+                }
+            } else {
+                detailBox.classList.add('hidden');
+                if (rowEl) {
+                    const arrow = rowEl.querySelector('.lucide-chevron-down');
+                    if (arrow) arrow.classList.remove('rotate-180');
+                }
+            }
+        }
 
         function copyBackupCodes() {
             const container = document.getElementById('backupCodesContainer');

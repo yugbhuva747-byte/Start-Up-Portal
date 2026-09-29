@@ -270,7 +270,10 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                         <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i>
                         <span>Top Startups by Capital Raised</span>
                     </h3>
-                    <a href="<?= url('admin/companies.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>
+                    <a href="<?= url('admin/companies.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                        <span>View All</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
                 </div>
                 <?php if (empty($topStartups)): ?>
                     <div class="py-8 text-center text-xs text-slate-400">No startup data available yet.</div>
@@ -318,10 +321,13 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                 <div class="card-clean rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span>Recent Registrations</span>
                         </h3>
-                        <a href="<?= url('admin/users.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>
+                        <a href="<?= url('admin/users.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                            <span>View All</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
                     </div>
                     <div class="space-y-2.5">
                         <?php foreach ($recentUsers as $ru): ?>
@@ -349,7 +355,10 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                             <i data-lucide="history" class="w-3.5 h-3.5 text-blue-600"></i>
                             <span>Recent Audit Activity</span>
                         </h3>
-                        <a href="<?= url('admin/audit_logs.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>
+                        <a href="<?= url('admin/audit_logs.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                            <span>View All</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
                     </div>
                     <div class="space-y-2">
                         <?php foreach ($recentAudit as $al): ?>
@@ -361,7 +370,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                                     <div class="text-[11px] text-slate-700">
                                         <strong class="text-slate-900"><?= htmlspecialchars($al['actor_name'] ?? 'System') ?></strong>
                                         <span class="text-slate-500"><?= htmlspecialchars($al['action']) ?></span>
-                                        <span class="text-indigo-600 font-medium"><?= htmlspecialchars($al['entity_type']) ?></span>
+                                        <span class="text-blue-600 font-medium"><?= htmlspecialchars($al['entity_type']) ?></span>
                                     </div>
                                     <div class="text-[10px] text-slate-400"><?= date('d M Y, H:i', strtotime($al['created_at'])) ?></div>
                                 </div>
