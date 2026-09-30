@@ -183,25 +183,25 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="founder-cap-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
+                <div class="p-4 rounded-xl text-sm font-bold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if ($error): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border bg-rose-50 text-rose-700 border-rose-200 flex items-center space-x-2">
-                    <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
+                <div class="p-4 rounded-xl text-sm font-bold border bg-rose-50 text-rose-800 border-rose-200 flex items-center space-x-2.5">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!$company): ?>
                 <div class="card-clean rounded-2xl p-12 text-center">
-                    <i data-lucide="building" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                    <h2 class="text-base font-bold text-slate-900">No Company Profile Linked</h2>
-                    <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Please create and register your startup company profile before accessing the equity Cap Table.</p>
-                    <a href="<?= url('founder/company.php') ?>" class="inline-flex items-center space-x-1.5 mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm">
+                    <i data-lucide="building" class="w-14 h-14 text-slate-300 mx-auto mb-3"></i>
+                    <h2 class="text-lg font-bold text-slate-900">No Company Profile Linked</h2>
+                    <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">Please create and register your startup company profile before accessing the equity Cap Table.</p>
+                    <a href="<?= url('founder/company.php') ?>" class="inline-flex items-center space-x-2 mt-4 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-sm">
                         <span>Setup Company Profile</span>
                     </a>
                 </div>
@@ -210,67 +210,67 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <div class="flex items-center space-x-2">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-full">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-0.5 rounded-full">
                             Statutory MCA Register
                         </span>
-                        <span class="text-xs text-slate-400 font-mono">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verified') ?></span>
+                        <span class="text-xs sm:text-sm text-slate-500 font-mono font-medium">CIN: <?= htmlspecialchars($company['cin_number'] ?: 'Verified') ?></span>
                     </div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight mt-1">
                         <?= htmlspecialchars($company['name']) ?> — Master Cap Table
                     </h1>
-                    <p class="text-xs text-slate-500">Live ownership register, share certificate tracking, and dilution modeling.</p>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-0.5">Live ownership register, share certificate tracking, and dilution modeling.</p>
                 </div>
-                <div class="flex items-center flex-wrap gap-2" id="founder-cap-actions">
-                    <a href="<?= url('founder/cap_table.php?export=csv') ?>" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs transition">
-                        <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
+                <div class="flex items-center flex-wrap gap-2.5" id="founder-cap-actions">
+                    <a href="<?= url('founder/cap_table.php?export=csv') ?>" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-xs transition">
+                        <i data-lucide="download" class="w-4 h-4 text-slate-500"></i>
                         <span>Export CSV</span>
                     </a>
-                    <button type="button" onclick="window.print()" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
-                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                    <button type="button" onclick="window.print()" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm transition">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
                         <span>Print Register</span>
                     </button>
                 </div>
             </div>
 
             <!-- Capital Structure Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Authorized Share Capital</div>
-                    <div class="text-lg font-black text-slate-900"><?= format_inr($authorizedCapital) ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5 font-mono"><?= number_format($totalAuthorizedShares) ?> Max Shares @ ₹<?= number_format($faceValue, 2) ?> FV</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Authorized Share Capital</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= format_inr($authorizedCapital) ?></div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-mono font-medium"><?= number_format($totalAuthorizedShares) ?> Max Shares @ ₹<?= number_format($faceValue, 2) ?> FV</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Capital Subscribed</div>
-                    <div class="text-lg font-black text-emerald-600"><?= format_inr($totalCapitalRaised) ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Raised across <?= count($investments) ?> allotment<?= count($investments) !== 1 ? 's' : '' ?></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Capital Subscribed</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-emerald-600"><?= format_inr($totalCapitalRaised) ?></div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Raised across <?= count($investments) ?> allotment<?= count($investments) !== 1 ? 's' : '' ?></div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Founder Equity Holdings</div>
-                    <div class="text-lg font-black text-indigo-600"><?= number_format($foundersTotalEquity, 2) ?>%</div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Common voting stock</div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Founder Equity Holdings</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-indigo-600"><?= number_format($foundersTotalEquity, 2) ?>%</div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Common voting stock</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">ESOP Pool Allocated</div>
-                    <div class="text-lg font-black text-amber-600"><?= number_format($esopPercent, 2) ?>%</div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Talent incentive reserve</div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ESOP Pool Allocated</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-amber-600"><?= number_format($esopPercent, 2) ?>%</div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Talent incentive reserve</div>
                 </div>
             </div>
 
             <!-- Visual Equity Breakdown Bar -->
-            <div class="card-clean rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                        <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-indigo-600"></i>
+            <div class="card-clean rounded-2xl p-5 sm:p-6">
+                <div class="flex items-center justify-between mb-3.5">
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600"></i>
                         <span>Equity Dilution & Stake Distribution</span>
                     </h2>
-                    <span class="text-xs font-bold text-slate-400">Total 100.00%</span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-500">Total 100.00%</span>
                 </div>
 
-                <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden flex shadow-inner mb-3">
+                <div class="w-full h-5 bg-slate-100 rounded-full overflow-hidden flex shadow-inner mb-3.5 border border-slate-200">
                     <div style="width: <?= min(100, max(0, $foundersTotalEquity)) ?>%" class="bg-indigo-600 transition-all duration-700" title="Founders: <?= $foundersTotalEquity ?>%"></div>
                     <div style="width: <?= min(100, max(0, $investorsTotalEquity)) ?>%" class="bg-emerald-500 transition-all duration-700" title="Investors: <?= $investorsTotalEquity ?>%"></div>
                     <div style="width: <?= min(100, max(0, $esopPercent)) ?>%" class="bg-amber-400 transition-all duration-700" title="ESOP: <?= $esopPercent ?>%"></div>
@@ -279,90 +279,90 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
                     <?php endif; ?>
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
-                    <div class="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100">
-                        <div class="flex items-center space-x-1.5 mb-0.5">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
+                    <div class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100">
+                        <div class="flex items-center space-x-2 mb-1">
                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-                            <span class="text-[11px] font-bold text-indigo-950">Founders</span>
+                            <span class="text-xs font-bold text-indigo-950 uppercase tracking-wider">Founders</span>
                         </div>
-                        <div class="text-base font-black text-indigo-600"><?= number_format($foundersTotalEquity, 2) ?>%</div>
-                        <div class="text-[10px] text-slate-500"><?= count($founders) ?> Founder Co-owners</div>
+                        <div class="text-base sm:text-lg font-bold text-indigo-600"><?= number_format($foundersTotalEquity, 2) ?>%</div>
+                        <div class="text-xs text-slate-500 font-medium mt-0.5"><?= count($founders) ?> Founder Co-owners</div>
                     </div>
 
-                    <div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                        <div class="flex items-center space-x-1.5 mb-0.5">
+                    <div class="p-3 rounded-xl bg-emerald-50/60 border border-emerald-100">
+                        <div class="flex items-center space-x-2 mb-1">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                            <span class="text-[11px] font-bold text-emerald-950">Investors</span>
+                            <span class="text-xs font-bold text-emerald-950 uppercase tracking-wider">Investors</span>
                         </div>
-                        <div class="text-base font-black text-emerald-600"><?= number_format($investorsTotalEquity, 2) ?>%</div>
-                        <div class="text-[10px] text-slate-500"><?= count($investments) ?> Allottee Investors</div>
+                        <div class="text-base sm:text-lg font-bold text-emerald-600"><?= number_format($investorsTotalEquity, 2) ?>%</div>
+                        <div class="text-xs text-slate-500 font-medium mt-0.5"><?= count($investments) ?> Allottee Investors</div>
                     </div>
 
-                    <div class="p-2.5 rounded-xl bg-amber-50/60 border border-amber-100">
-                        <div class="flex items-center space-x-1.5 mb-0.5">
+                    <div class="p-3 rounded-xl bg-amber-50/60 border border-amber-100">
+                        <div class="flex items-center space-x-2 mb-1">
                             <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
-                            <span class="text-[11px] font-bold text-amber-950">ESOP Pool</span>
+                            <span class="text-xs font-bold text-amber-950 uppercase tracking-wider">ESOP Pool</span>
                         </div>
-                        <div class="text-base font-black text-amber-600"><?= number_format($esopPercent, 2) ?>%</div>
-                        <div class="text-[10px] text-slate-500">Employee Options</div>
+                        <div class="text-base sm:text-lg font-bold text-amber-600"><?= number_format($esopPercent, 2) ?>%</div>
+                        <div class="text-xs text-slate-500 font-medium mt-0.5">Employee Options</div>
                     </div>
 
-                    <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-                        <div class="flex items-center space-x-1.5 mb-0.5">
+                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <div class="flex items-center space-x-2 mb-1">
                             <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-                            <span class="text-[11px] font-bold text-slate-700">Treasury Unallocated</span>
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Treasury Unallocated</span>
                         </div>
-                        <div class="text-base font-black text-slate-700"><?= number_format($unallocatedPercent, 2) ?>%</div>
-                        <div class="text-[10px] text-slate-400">Future Funding Buffer</div>
+                        <div class="text-base sm:text-lg font-bold text-slate-800"><?= number_format($unallocatedPercent, 2) ?>%</div>
+                        <div class="text-xs text-slate-500 font-medium mt-0.5">Future Funding Buffer</div>
                     </div>
                 </div>
             </div>
 
             <!-- Shareholder Register & Allotment Certificates Table -->
-            <div class="card-clean rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-4">
+            <div class="card-clean rounded-2xl p-6 sm:p-7">
+                <div class="flex items-center justify-between mb-5">
                     <div>
-                        <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="award" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <h2 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i data-lucide="award" class="w-4.5 h-4.5 text-indigo-600"></i>
                             <span>Statutory Shareholder Register & Issued Certificates</span>
                         </h2>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Formal certificates issued under SEBI & Indian Companies Act electronic custody.</p>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Formal certificates issued under SEBI & Indian Companies Act electronic custody.</p>
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
+                    <table class="w-full text-left text-sm">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <th class="pb-3">Certificate & Folio</th>
-                                <th class="pb-3">Shareholder Name</th>
-                                <th class="pb-3">Class of Shares</th>
-                                <th class="pb-3">Number of Shares</th>
-                                <th class="pb-3">Distinctive Range</th>
-                                <th class="pb-3">Capital Subscribed</th>
-                                <th class="pb-3">Equity Stake</th>
-                                <th class="pb-3 text-right no-print">Certificate</th>
+                            <tr class="border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
+                                <th class="pb-3.5">Certificate & Folio</th>
+                                <th class="pb-3.5">Shareholder Name</th>
+                                <th class="pb-3.5">Class of Shares</th>
+                                <th class="pb-3.5">Number of Shares</th>
+                                <th class="pb-3.5">Distinctive Range</th>
+                                <th class="pb-3.5">Capital Subscribed</th>
+                                <th class="pb-3.5">Equity Stake</th>
+                                <th class="pb-3.5 text-right no-print">Certificate</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <!-- Founder Stakes First -->
                             <?php foreach ($founders as $f): ?>
-                                <tr class="bg-indigo-50/20">
-                                    <td class="py-3.5 font-mono text-indigo-700 font-bold">
+                                <tr class="bg-indigo-50/20 hover:bg-indigo-50/40 transition">
+                                    <td class="py-4 font-mono text-indigo-700 font-bold text-sm">
                                         FOUNDER-ORIG
-                                        <div class="text-[9.5px] text-slate-400 font-sans">FOLIO-0001</div>
+                                        <div class="text-xs text-slate-500 font-sans font-medium">FOLIO-0001</div>
                                     </td>
-                                    <td class="py-3.5">
-                                        <div class="font-bold text-slate-900"><?= htmlspecialchars($f['founder_name']) ?></div>
-                                        <div class="text-[10px] text-indigo-600 font-semibold"><?= htmlspecialchars($f['designation'] ?? 'Co-Founder') ?></div>
+                                    <td class="py-4">
+                                        <div class="font-bold text-slate-900 text-sm sm:text-base"><?= htmlspecialchars($f['founder_name']) ?></div>
+                                        <div class="text-xs text-indigo-600 font-bold"><?= htmlspecialchars($f['designation'] ?? 'Co-Founder') ?></div>
                                     </td>
-                                    <td class="py-3.5 text-slate-600">Common Equity Shares</td>
-                                    <td class="py-3.5 font-mono text-slate-700 font-bold">— Common Core —</td>
-                                    <td class="py-3.5 font-mono text-slate-400 text-[11px]">000001 – 010000</td>
-                                    <td class="py-3.5 font-mono text-slate-700">Initial Subscription</td>
-                                    <td class="py-3.5 font-bold text-indigo-600"><?= number_format((float)($f['equity_percent'] ?? 0), 2) ?>%</td>
-                                    <td class="py-3.5 text-right no-print">
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800">
+                                    <td class="py-4 text-slate-700 font-medium">Common Equity Shares</td>
+                                    <td class="py-4 font-mono text-slate-800 font-bold text-sm">— Common Core —</td>
+                                    <td class="py-4 font-mono text-slate-600 text-xs sm:text-sm">000001 – 010000</td>
+                                    <td class="py-4 font-mono text-slate-700 font-medium">Initial Subscription</td>
+                                    <td class="py-4 font-black text-indigo-600 text-base"><?= number_format((float)($f['equity_percent'] ?? 0), 2) ?>%</td>
+                                    <td class="py-4 text-right no-print">
+                                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
                                             Founding Stake
                                         </span>
                                     </td>
@@ -372,42 +372,42 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
                             <!-- Investor Allotments -->
                             <?php if (empty($investments)): ?>
                                 <tr>
-                                    <td colspan="8" class="py-6 text-center text-xs text-slate-400">
+                                    <td colspan="8" class="py-10 text-center text-sm text-slate-500 font-medium">
                                         No external investor share certificates issued yet. When a funding round completes, allottee certificates will appear here.
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($investments as $inv): ?>
-                                    <tr class="hover:bg-slate-50/60 transition">
-                                        <td class="py-3.5 font-mono text-indigo-600 font-bold">
+                                    <tr class="hover:bg-slate-50/80 transition">
+                                        <td class="py-4 font-mono text-indigo-600 font-bold text-sm">
                                             <?= htmlspecialchars($inv['certificate_number'] ?? 'CERT-PENDING') ?>
-                                            <div class="text-[9.5px] text-slate-400 font-sans"><?= htmlspecialchars($inv['folio_number'] ?? 'FOLIO-001') ?></div>
+                                            <div class="text-xs text-slate-500 font-sans font-medium"><?= htmlspecialchars($inv['folio_number'] ?? 'FOLIO-001') ?></div>
                                         </td>
-                                        <td class="py-3.5">
-                                            <div class="font-bold text-slate-900"><?= htmlspecialchars($inv['investor_name'] ?? 'Investor') ?></div>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($inv['investor_email'] ?? '') ?></div>
+                                        <td class="py-4">
+                                            <div class="font-bold text-slate-900 text-sm sm:text-base"><?= htmlspecialchars($inv['investor_name'] ?? 'Investor') ?></div>
+                                            <div class="text-xs text-slate-500 font-medium"><?= htmlspecialchars($inv['investor_email'] ?? '') ?></div>
                                         </td>
-                                        <td class="py-3.5 text-slate-600">
-                                            <span class="text-xs"><?= htmlspecialchars($inv['share_class'] ?? 'CCPS') ?></span>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($inv['round_name'] ?? '') ?></div>
+                                        <td class="py-4 text-slate-700 font-medium">
+                                            <span class="text-sm font-semibold"><?= htmlspecialchars($inv['share_class'] ?? 'CCPS') ?></span>
+                                            <div class="text-xs text-slate-500"><?= htmlspecialchars($inv['round_name'] ?? '') ?></div>
                                         </td>
-                                        <td class="py-3.5 font-mono font-bold text-slate-900">
+                                        <td class="py-4 font-mono font-bold text-slate-900 text-sm">
                                             <?= number_format((int)($inv['number_of_shares'] ?? 0)) ?> Shares
-                                            <div class="text-[10px] text-slate-400 font-normal">@ ₹<?= number_format((float)($inv['price_per_share'] ?? 0), 2) ?>/sh</div>
+                                            <div class="text-xs text-slate-500 font-normal">@ ₹<?= number_format((float)($inv['price_per_share'] ?? 0), 2) ?>/sh</div>
                                         </td>
-                                        <td class="py-3.5 font-mono text-slate-600 text-[11px]">
+                                        <td class="py-4 font-mono text-slate-700 text-xs sm:text-sm font-medium">
                                             <?= str_pad((string)($inv['distinctive_from'] ?? 1), 6, '0', STR_PAD_LEFT) ?> – <?= str_pad((string)($inv['distinctive_to'] ?? 1), 6, '0', STR_PAD_LEFT) ?>
                                         </td>
-                                        <td class="py-3.5 font-black text-emerald-600 font-mono">
+                                        <td class="py-4 font-black text-emerald-600 font-mono text-sm sm:text-base">
                                             <?= format_inr((float)($inv['amount_invested'] ?? 0)) ?>
                                         </td>
-                                        <td class="py-3.5 font-bold text-emerald-600">
+                                        <td class="py-4 font-black text-emerald-600 text-base">
                                             <?= number_format((float)($inv['equity_allotted_percent'] ?? 0), 3) ?>%
                                         </td>
-                                        <td class="py-3.5 text-right no-print">
+                                        <td class="py-4 text-right no-print">
                                             <a href="<?= url('certificate.php?id=' . $inv['id']) ?>" target="_blank"
-                                               class="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-xs font-semibold transition border border-slate-200">
-                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                               class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-xs sm:text-sm font-bold transition border border-slate-200">
+                                                <i data-lucide="eye" class="w-4 h-4"></i>
                                                 <span>View Certificate</span>
                                             </a>
                                         </td>

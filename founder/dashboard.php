@@ -122,10 +122,10 @@ $flash = get_flash();
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; color: #0F172A; }
-        .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; color: #0F172A; -webkit-font-smoothing: antialiased; }
+        .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); }
         .progress-ring { transition: stroke-dashoffset 1.2s ease; }
     </style>
 </head>
@@ -136,12 +136,12 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="dashboard-content">
+        <main class="p-4 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="dashboard-content">
             
             <!-- Flash notification -->
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div class="p-4 rounded-xl text-sm font-bold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5">
+                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
@@ -150,23 +150,24 @@ $flash = get_flash();
             <?php include __DIR__ . '/../includes/announcement_banner.php'; ?>
 
             <!-- Welcome Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
                         <span>Welcome, <?= htmlspecialchars($user['name']) ?></span>
                     </h1>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Here is a live summary of your startup's capital rounds and investor traction.</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="<?= url('founder/cap_table.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <a href="<?= url('founder/cap_table.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-2xs transition flex items-center space-x-2">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-indigo-600"></i>
                         <span>Cap Table</span>
                     </a>
-                    <a href="<?= url('founder/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
+                    <a href="<?= url('founder/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-2xs transition flex items-center space-x-2">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-500"></i>
                         <span>View Profile</span>
                     </a>
-                    <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <i data-lucide="plus" class="w-3 h-3"></i>
+                    <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-sm transition flex items-center space-x-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
                         <span>Launch Round</span>
                     </a>
                 </div>
@@ -174,65 +175,65 @@ $flash = get_flash();
 
             <!-- Profile Incomplete Alert -->
             <?php if (!$progress['is_complete']): ?>
-                <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-start space-x-2.5">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                <div class="p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
                         <div>
-                            <div class="text-xs font-bold text-amber-900">Profile Readiness: <?= $progress['percentage'] ?>% Complete</div>
-                            <div class="text-[11px] text-amber-700 mt-0.5">Missing: <?= implode(', ', $progress['missing']) ?>. Complete KYC to attract verified investors.</div>
+                            <div class="text-sm font-bold text-amber-950">Profile Readiness: <?= $progress['percentage'] ?>% Complete</div>
+                            <div class="text-xs text-amber-800 font-medium mt-0.5">Missing: <?= implode(', ', $progress['missing']) ?>. Complete KYC to attract verified investors.</div>
                         </div>
                     </div>
-                    <a href="<?= url('founder/verification.php') ?>" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs whitespace-nowrap transition flex items-center space-x-1">
+                    <a href="<?= url('founder/verification.php') ?>" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs sm:text-sm whitespace-nowrap transition flex items-center space-x-1.5 shadow-2xs">
                         <span>Verify Now</span>
-                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
             <?php endif; ?>
 
             <!-- Key Metrics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Total Raised</span>
-                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4" id="stats-grid">
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Total Raised</span>
+                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="wallet" class="w-4 h-4"></i></div>
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= format_inr($stats['total_raised']) ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Across <?= $stats['total_rounds'] ?> round<?= $stats['total_rounds'] !== 1 ? 's' : '' ?></div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= format_inr($stats['total_raised']) ?></div>
+                    <div class="text-xs text-slate-500 font-medium mt-0.5">Across <?= $stats['total_rounds'] ?> round<?= $stats['total_rounds'] !== 1 ? 's' : '' ?></div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Round Status</span>
-                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="activity" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Round Status</span>
+                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="activity" class="w-4 h-4"></i></div>
                     </div>
                     <div class="mt-1">
-                        <?= $activeRound ? render_status_badge($activeRound['status']) : '<span class="text-xs text-slate-400 font-semibold">No active round</span>' ?>
+                        <?= $activeRound ? render_status_badge($activeRound['status']) : '<span class="text-sm text-slate-400 font-bold">No active round</span>' ?>
                     </div>
-                    <div class="text-[10.5px] text-slate-500 mt-1.5 truncate"><?= $activeRound ? htmlspecialchars($activeRound['round_name']) : 'Create round to raise' ?></div>
+                    <div class="text-xs text-slate-600 font-medium mt-1 truncate"><?= $activeRound ? htmlspecialchars($activeRound['round_name']) : 'Create round to raise' ?></div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Active Investors</span>
-                        <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="users" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Active Investors</span>
+                        <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="users" class="w-4 h-4"></i></div>
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $stats['investors_count'] ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Unique investors committed</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $stats['investors_count'] ?></div>
+                    <div class="text-xs text-slate-500 font-medium mt-0.5">Unique investors committed</div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">KYC Status</span>
-                        <div class="p-1.5 rounded-lg bg-teal-50 text-teal-600"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">KYC Status</span>
+                        <div class="p-1.5 rounded-lg bg-teal-50 text-teal-600"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
                     </div>
                     <div class="mt-1">
                         <?= $company ? render_status_badge($company['verified_status']) : render_status_badge('UNVERIFIED') ?>
                     </div>
-                    <div class="text-[10.5px] text-slate-500 mt-1.5">
+                    <div class="text-xs text-slate-600 font-medium mt-1">
                         <?php if ($pendingDocs > 0): ?>
-                            <span class="text-amber-600 font-semibold"><?= $pendingDocs ?> document<?= $pendingDocs > 1 ? 's' : '' ?> pending review</span>
+                            <span class="text-amber-700 font-bold"><?= $pendingDocs ?> document<?= $pendingDocs > 1 ? 's' : '' ?> pending</span>
                         <?php else: ?>
-                            MCA & DigiLocker Gateway
+                           
                         <?php endif; ?>
                     </div>
                 </div>
@@ -240,24 +241,24 @@ $flash = get_flash();
 
             <!-- Active Round Live Progress Bar Card -->
             <?php if ($activeRound): ?>
-                <div class="card-clean rounded-2xl p-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                <div class="card-clean rounded-2xl p-5 sm:p-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3.5">
                         <div>
                             <div class="flex items-center space-x-2.5">
-                                <h2 class="text-base font-bold text-slate-900"><?= htmlspecialchars($activeRound['round_name']) ?></h2>
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900"><?= htmlspecialchars($activeRound['round_name']) ?></h2>
                                 <?= render_status_badge($activeRound['status']) ?>
                             </div>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Valuation: <strong class="text-slate-800"><?= format_inr($activeRound['valuation']) ?></strong> • Equity Offered: <strong class="text-slate-800"><?= $activeRound['equity_offered'] ?>%</strong></p>
+                            <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Valuation: <strong class="text-slate-900 font-bold"><?= format_inr($activeRound['valuation']) ?></strong> • Equity Offered: <strong class="text-slate-900 font-bold"><?= $activeRound['equity_offered'] ?>%</strong></p>
                         </div>
                         <div class="text-right">
-                            <span class="text-xl font-black text-emerald-600"><?= $stats['round_progress'] ?>%</span>
-                            <span class="text-[11px] text-slate-500 block">funded of <?= format_inr($activeRound['target_amount']) ?></span>
+                            <span class="text-xl sm:text-2xl font-extrabold text-emerald-600"><?= $stats['round_progress'] ?>%</span>
+                            <span class="text-xs text-slate-500 font-medium block">funded of <?= format_inr($activeRound['target_amount']) ?></span>
                         </div>
                     </div>
 
                     <!-- Progress bar with milestone markers -->
-                    <div class="relative w-full mb-2.5">
-                        <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div class="relative w-full mb-3">
+                        <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                             <div class="h-full rounded-full transition-all duration-1000 <?= $stats['round_progress'] >= 100 ? 'bg-emerald-500' : ($stats['round_progress'] >= 50 ? 'bg-indigo-600' : 'bg-indigo-500') ?>" 
                                  style="width: <?= min(100, $stats['round_progress']) ?>%"></div>
                         </div>
@@ -267,10 +268,10 @@ $flash = get_flash();
                         <div class="absolute top-0 left-3/4 w-px h-2.5 bg-slate-300 opacity-50"></div>
                     </div>
 
-                    <div class="flex justify-between text-xs text-slate-600 font-medium">
-                        <span>Raised: <strong class="text-slate-900"><?= format_inr($activeRound['amount_raised']) ?></strong></span>
-                        <span>Min ticket: <strong class="text-slate-900"><?= format_inr($activeRound['min_investment']) ?></strong></span>
-                        <span>Remaining: <strong class="text-slate-900"><?= format_inr(max(0, $activeRound['target_amount'] - $activeRound['amount_raised'])) ?></strong></span>
+                    <div class="flex justify-between text-xs sm:text-sm text-slate-600 font-semibold">
+                        <span>Raised: <strong class="text-slate-900 font-bold"><?= format_inr($activeRound['amount_raised']) ?></strong></span>
+                        <span>Min ticket: <strong class="text-slate-900 font-bold"><?= format_inr($activeRound['min_investment']) ?></strong></span>
+                        <span>Remaining: <strong class="text-slate-900 font-bold"><?= format_inr(max(0, $activeRound['target_amount'] - $activeRound['amount_raised'])) ?></strong></span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -279,51 +280,51 @@ $flash = get_flash();
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 <!-- Recent Investment Commitments -->
-                <div class="lg:col-span-2 card-clean rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="handshake" class="w-4 h-4 text-indigo-600"></i>
+                <div class="lg:col-span-2 card-clean rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i data-lucide="handshake" class="w-5 h-5 text-indigo-600"></i>
                             <span>Investor Activity Feed</span>
                         </h3>
-                        <a href="<?= url('founder/funding_rounds.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>
+                        <a href="<?= url('founder/funding_rounds.php') ?>" class="text-sm text-indigo-600 hover:text-indigo-700 font-bold">View All →</a>
                     </div>
 
                     <?php if (empty($recentOrders)): ?>
-                        <div class="py-10 text-center text-slate-400 text-xs">
-                            <i data-lucide="inbox" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
-                            <div class="font-bold text-slate-700 mb-0.5">No investor commitments yet</div>
-                            <div class="text-[11px]">Once accredited investors review your pitch, investments will appear here.</div>
+                        <div class="py-12 text-center text-slate-500 text-sm">
+                            <i data-lucide="inbox" class="w-10 h-10 text-slate-400 mx-auto mb-3"></i>
+                            <div class="font-bold text-slate-800 text-base mb-1">No investor commitments yet</div>
+                            <div class="text-xs sm:text-sm text-slate-500">Once accredited investors review your pitch, investments will appear here.</div>
                         </div>
                     <?php else: ?>
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left text-xs">
+                            <table class="w-full text-left text-sm">
                                 <thead>
-                                    <tr class="border-b border-slate-100 text-slate-400 uppercase tracking-wider text-[10px]">
-                                        <th class="pb-2.5 font-semibold">Investor</th>
-                                        <th class="pb-2.5 font-semibold">Type</th>
-                                        <th class="pb-2.5 font-semibold">Amount</th>
-                                        <th class="pb-2.5 font-semibold">Status</th>
-                                        <th class="pb-2.5 font-semibold">Date</th>
+                                    <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-xs font-bold">
+                                        <th class="pb-3">Investor</th>
+                                        <th class="pb-3">Type</th>
+                                        <th class="pb-3">Amount</th>
+                                        <th class="pb-3">Status</th>
+                                        <th class="pb-3">Date</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
                                     <?php foreach ($recentOrders as $ord): ?>
                                         <tr class="hover:bg-slate-50/70 transition">
-                                            <td class="py-3">
-                                                <a href="<?= url('investor/view.php?id=' . encode_id($ord['investor_user_id'])) ?>" class="flex items-center space-x-2 hover:text-indigo-600 transition group" title="View Investor Profile">
-                                                    <img src="<?= $ord['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-6 h-6 rounded-full object-cover border border-slate-200 group-hover:ring-1 group-hover:ring-indigo-500 transition">
+                                            <td class="py-3.5">
+                                                <a href="<?= url('investor/view.php?id=' . encode_id($ord['investor_user_id'])) ?>" class="flex items-center space-x-3 hover:text-indigo-600 transition group" title="View Investor Profile">
+                                                    <img src="<?= $ord['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-8 h-8 rounded-full object-cover border border-slate-200 group-hover:ring-2 group-hover:ring-indigo-500 transition">
                                                     <div>
-                                                        <span class="font-bold text-slate-800 group-hover:text-indigo-600 transition"><?= htmlspecialchars($ord['investor_name']) ?></span>
+                                                        <span class="font-bold text-slate-900 text-sm group-hover:text-indigo-600 transition block"><?= htmlspecialchars($ord['investor_name']) ?></span>
                                                         <?php if (!empty($ord['experience_years'])): ?>
-                                                            <span class="text-[10px] text-slate-400 block"><?= $ord['experience_years'] ?>+ yrs exp.</span>
+                                                            <span class="text-xs text-slate-500 font-medium block"><?= $ord['experience_years'] ?>+ yrs exp.</span>
                                                         <?php endif; ?>
                                                     </div>
                                                 </a>
                                             </td>
-                                            <td class="py-3 text-slate-500 text-[11px]"><?= htmlspecialchars($ord['investor_type'] ?? 'Angel') ?></td>
-                                            <td class="py-3 font-bold text-slate-900"><?= format_inr($ord['amount']) ?></td>
-                                            <td class="py-3"><?= render_status_badge($ord['status']) ?></td>
-                                            <td class="py-3 text-slate-400 text-[11px]"><?= date('d M Y', strtotime($ord['created_at'])) ?></td>
+                                            <td class="py-3.5 text-slate-600 text-xs sm:text-sm font-medium"><?= htmlspecialchars($ord['investor_type'] ?? 'Angel') ?></td>
+                                            <td class="py-3.5 font-bold text-slate-900 text-sm"><?= format_inr($ord['amount']) ?></td>
+                                            <td class="py-3.5"><?= render_status_badge($ord['status']) ?></td>
+                                            <td class="py-3.5 text-slate-500 text-xs sm:text-sm font-medium"><?= date('d M Y', strtotime($ord['created_at'])) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>
@@ -333,29 +334,29 @@ $flash = get_flash();
                 </div>
 
                 <!-- Right Column: Messages + Quick Actions -->
-                <div class="space-y-4">
+                <div class="space-y-5">
                     
                     <!-- Recent Messages -->
-                    <div class="card-clean rounded-2xl p-5">
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center justify-between">
-                            <span class="flex items-center space-x-1.5">
-                                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <div class="card-clean rounded-2xl p-6">
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider mb-4 flex items-center justify-between">
+                            <span class="flex items-center space-x-2">
+                                <i data-lucide="message-circle" class="w-4 h-4 text-indigo-600"></i>
                                 <span>Recent Messages</span>
                             </span>
-                            <a href="<?= url('founder/messages.php') ?>" class="text-indigo-600 font-semibold hover:text-indigo-700">All →</a>
+                            <a href="<?= url('founder/messages.php') ?>" class="text-sm text-indigo-600 font-bold hover:text-indigo-700">All →</a>
                         </h3>
                         <?php if (empty($recentMessages)): ?>
-                            <p class="text-[11px] text-slate-400 py-3 text-center">No messages yet</p>
+                            <p class="text-xs sm:text-sm text-slate-500 py-4 text-center font-medium">No messages yet</p>
                         <?php else: ?>
-                            <div class="space-y-2">
+                            <div class="space-y-3">
                                 <?php foreach ($recentMessages as $msg): ?>
-                                    <a href="<?= url('founder/messages.php') ?>" class="flex items-start space-x-2 p-2 rounded-lg hover:bg-slate-50 transition">
-                                        <img src="<?= $msg['sender_avatar'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-6 h-6 rounded-full object-cover border border-slate-200 flex-shrink-0 mt-0.5">
+                                    <a href="<?= url('founder/messages.php') ?>" class="flex items-start space-x-3 p-2.5 rounded-xl hover:bg-slate-50 transition border border-transparent hover:border-slate-200">
+                                        <img src="<?= $msg['sender_avatar'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0 mt-0.5">
                                         <div class="min-w-0 flex-1">
-                                            <div class="text-[11px] font-bold text-slate-800 truncate"><?= htmlspecialchars($msg['sender_name']) ?></div>
-                                            <div class="text-[10px] text-slate-500 truncate"><?= htmlspecialchars(substr($msg['message_text'], 0, 60)) ?></div>
+                                            <div class="text-xs sm:text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($msg['sender_name']) ?></div>
+                                            <div class="text-xs text-slate-600 truncate mt-0.5"><?= htmlspecialchars(substr($msg['message_text'], 0, 60)) ?></div>
                                         </div>
-                                        <span class="text-[9px] text-slate-400 flex-shrink-0"><?= date('d M', strtotime($msg['created_at'])) ?></span>
+                                        <span class="text-xs font-semibold text-slate-400 flex-shrink-0"><?= date('d M', strtotime($msg['created_at'])) ?></span>
                                     </a>
                                 <?php endforeach; ?>
                             </div>
@@ -363,9 +364,9 @@ $flash = get_flash();
                     </div>
 
                     <!-- Compliance Disclaimer -->
-                    <div class="p-4 rounded-2xl bg-white border border-slate-200 text-[11px] text-slate-500 leading-relaxed shadow-sm">
-                        <div class="font-bold text-slate-800 mb-1 flex items-center space-x-1">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+                    <div class="p-4 rounded-2xl bg-white border border-slate-200 text-xs sm:text-sm text-slate-600 leading-relaxed shadow-sm">
+                        <div class="font-bold text-slate-900 mb-1 flex items-center space-x-1.5 text-xs sm:text-sm">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
                             <span>Regulatory Safeguards</span>
                         </div>
                         Funds committed are maintained in escrow compliance workflows subject to MCA and legal instrument execution.
@@ -375,23 +376,23 @@ $flash = get_flash();
 
             <!-- Recent Notifications -->
             <?php if (!empty($recentNotifs)): ?>
-                <div class="card-clean rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="bell" class="w-3.5 h-3.5 text-amber-500"></i>
+                <div class="card-clean rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i data-lucide="bell" class="w-4 h-4 text-amber-500"></i>
                             <span>Latest Notifications</span>
                         </h3>
-                        <a href="<?= url('notifications.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-700 font-semibold">View All →</a>
+                        <a href="<?= url('notifications.php') ?>" class="text-sm text-indigo-600 hover:text-indigo-700 font-bold">View All →</a>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <?php foreach ($recentNotifs as $n): ?>
-                            <div class="flex items-start space-x-2.5 p-2.5 rounded-lg hover:bg-slate-50 transition border border-slate-100">
-                                <div class="w-7 h-7 rounded-lg bg-<?= $n['type'] === 'success' ? 'emerald' : ($n['type'] === 'warning' ? 'amber' : 'indigo') ?>-50 flex items-center justify-center flex-shrink-0">
-                                    <i data-lucide="<?= $n['type'] === 'success' ? 'check-circle' : ($n['type'] === 'warning' ? 'alert-triangle' : 'bell') ?>" class="w-3.5 h-3.5 text-<?= $n['type'] === 'success' ? 'emerald' : ($n['type'] === 'warning' ? 'amber' : 'indigo') ?>-600"></i>
+                            <div class="flex items-start space-x-3 p-3 rounded-xl hover:bg-slate-50 transition border border-slate-100">
+                                <div class="w-8 h-8 rounded-lg bg-<?= $n['type'] === 'success' ? 'emerald' : ($n['type'] === 'warning' ? 'amber' : 'indigo') ?>-50 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="<?= $n['type'] === 'success' ? 'check-circle' : ($n['type'] === 'warning' ? 'alert-triangle' : 'bell') ?>" class="w-4 h-4 text-<?= $n['type'] === 'success' ? 'emerald' : ($n['type'] === 'warning' ? 'amber' : 'indigo') ?>-600"></i>
                                 </div>
                                 <div class="min-w-0 flex-1">
-                                    <div class="text-[11px] font-bold text-slate-800 truncate"><?= htmlspecialchars($n['title']) ?></div>
-                                    <div class="text-[10px] text-slate-500 truncate"><?= htmlspecialchars(substr($n['message'], 0, 80)) ?></div>
+                                    <div class="text-xs sm:text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($n['title']) ?></div>
+                                    <div class="text-xs text-slate-600 truncate mt-0.5"><?= htmlspecialchars(substr($n['message'], 0, 80)) ?></div>
                                 </div>
                             </div>
                         <?php endforeach; ?>

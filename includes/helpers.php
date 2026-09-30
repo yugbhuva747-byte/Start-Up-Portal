@@ -832,3 +832,37 @@ function init_broadcasts_table(PDO $db): void {
     }
 }
 
+/**
+ * Return human-readable relative time string (e.g. '5 mins ago', '2 hours ago', 'yesterday')
+ */
+function time_elapsed_string($datetime, $full = false) {
+    if (empty($datetime)) return '';
+    try {
+        $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
+        if (!$timestamp) return '';
+        $diff = time() - $timestamp;
+
+        if ($diff < 5) return 'just now';
+        if ($diff < 60) return $diff . ' secs ago';
+        if ($diff < 3600) {
+            $mins = max(1, floor($diff / 60));
+            return $mins . ' min' . ($mins > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return $hours . ' hr' . ($hours > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 604800) {
+            $days = floor($diff / 86400);
+            return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 2592000) {
+            $weeks = floor($diff / 604800);
+            return $weeks . ' wk' . ($weeks > 1 ? 's' : '') . ' ago';
+        }
+        return date('M d, Y', $timestamp);
+    } catch (Exception $e) {
+        return date('M d, Y', strtotime($datetime));
+    }
+}
+

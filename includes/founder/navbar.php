@@ -1,7 +1,7 @@
 <?php
 /**
  * Founder Top Navigation Bar Component
- * Clean White / Light Theme, Small Crisp Typography
+ * High-Legibility Typography with Strong Visual Hierarchy
  */
 $currentUser = current_user();
 $db = get_db();
@@ -18,79 +18,153 @@ if ($db) {
     $unreadCount = (int)$cStmt->fetchColumn();
 }
 ?>
-<header class="h-14 border-b border-slate-200 bg-white/95 backdrop-blur-md px-3 sm:px-6 flex items-center justify-between sticky top-0 z-20">
-    <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+<header class="h-16 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20">
+    <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
-        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 sm:p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0" aria-label="Open sidebar menu">
+        <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0" aria-label="Open sidebar menu">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <h2 class="text-xs font-bold text-slate-800 tracking-tight flex items-center space-x-2 truncate">
+        <h2 class="text-sm sm:text-base font-extrabold text-slate-900 tracking-tight flex items-center space-x-2 truncate">
             <span class="truncate"><?= $pageTitle ?? 'Founder Workspace' ?></span>
         </h2>
     </div>
 
-    <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+    <div class="flex items-center space-x-3 sm:space-x-4 flex-shrink-0">
         <!-- Status Indicator -->
-        <div class="hidden sm:flex items-center space-x-2 px-2.5 py-1 rounded-full bg-slate-50 border border-slate-200 text-xs">
-            <span class="w-1.5 h-1.5 rounded-full <?= $currentUser['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>
-            <span class="text-slate-600 font-medium text-[10.5px]"><?= $currentUser['is_verified'] ? 'MCA & DigiLocker Verified' : 'KYC Under Review' ?></span>
+        <div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-xs shadow-2xs">
+            <span class="w-2 h-2 rounded-full <?= $currentUser['is_verified'] ? 'bg-emerald-500 ring-2 ring-emerald-100' : 'bg-amber-500 ring-2 ring-amber-100' ?>"></span>
+            <span class="text-slate-700 font-bold text-xs"><?= $currentUser['is_verified'] ? 'MCA & DigiLocker Verified' : 'KYC Under Review' ?></span>
         </div>
 
         <!-- Create Round Quick Action -->
-        <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition">
-            <i data-lucide="plus" class="w-3 h-3"></i>
+        <a href="<?= url('founder/funding_rounds.php?action=new') ?>" class="hidden md:flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+            <i data-lucide="plus" class="w-4 h-4"></i>
             <span>New Round</span>
         </a>
 
         <!-- Notifications Bell -->
         <div class="relative" id="notif-dropdown-wrapper">
-            <button onclick="toggleNotifs()" class="relative p-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 transition">
-                <i data-lucide="bell" class="w-3.5 h-3.5"></i>
+            <button onclick="toggleNotifs()" type="button" class="relative w-10 h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition cursor-pointer flex items-center justify-center flex-shrink-0" aria-label="Notifications">
+                <i data-lucide="bell" class="w-4.5 h-4.5"></i>
                 <?php if ($unreadCount > 0): ?>
-                    <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-indigo-600 text-white text-[8px] font-black flex items-center justify-center">
+                    <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center ring-2 ring-white">
                         <?= $unreadCount ?>
                     </span>
                 <?php endif; ?>
             </button>
 
             <!-- Dropdown Menu -->
-            <div id="notif-menu" class="hidden absolute right-0 mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-lg p-3 z-50">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100 text-xs font-bold text-slate-900">
+            <div id="notif-menu" class="hidden absolute right-0 mt-2 w-84 sm:w-92 bg-white border border-slate-200 rounded-2xl shadow-xl p-4 z-50">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 text-sm font-bold text-slate-900">
                     <span>Notifications</span>
-                    <span class="text-indigo-600 font-normal text-[10.5px]"><?= count($notifs) ?> recent</span>
+                    <a href="<?= url('notifications.php') ?>" class="text-xs text-indigo-600 hover:underline font-bold">View all</a>
                 </div>
-                <div class="divide-y divide-slate-100 max-h-60 overflow-y-auto">
+                <div class="divide-y divide-slate-100 max-h-72 overflow-y-auto mt-1">
                     <?php if (empty($notifs)): ?>
-                        <div class="py-5 text-center text-xs text-slate-400">No notifications yet</div>
+                        <div class="py-5 text-center text-sm text-slate-500 font-medium">No new notifications</div>
                     <?php else: ?>
                         <?php foreach ($notifs as $n): ?>
-                            <div class="py-2.5 text-xs <?= $n['is_read'] ? 'opacity-70' : 'font-semibold' ?>">
-                                <div class="text-slate-800 text-[11px]"><?= htmlspecialchars($n['title']) ?></div>
-                                <div class="text-slate-500 text-[10px] mt-0.5"><?= htmlspecialchars($n['message']) ?></div>
-                                <div class="text-[9px] text-slate-400 mt-0.5"><?= date('M d, H:i', strtotime($n['created_at'])) ?></div>
-                            </div>
+                            <a href="<?= !empty($n['action_url']) ? url($n['action_url']) : url('notifications.php') ?>" class="block py-3 px-2.5 hover:bg-slate-50 rounded-xl transition">
+                                <div class="text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($n['title']) ?></div>
+                                <div class="text-xs sm:text-sm text-slate-600 line-clamp-2 mt-0.5"><?= htmlspecialchars($n['message']) ?></div>
+                                <div class="text-xs text-slate-500 font-medium mt-1"><?= time_elapsed_string($n['created_at']) ?></div>
+                            </a>
                         <?php endforeach; ?>
                     <?php endif; ?>
-                </div>
-                <div class="pt-2 mt-1 border-t border-slate-100 text-center">
-                    <a href="<?= url('notifications.php') ?>" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-700">View all notifications →</a>
                 </div>
             </div>
         </div>
 
-        <!-- Founder User Profile Link -->
-        <a href="<?= url('founder/view.php') ?>" title="View My Profile" class="flex items-center space-x-2 pl-2 pr-2.5 py-1 rounded-lg border border-slate-200 hover:border-indigo-300 hover:bg-slate-50 transition group">
-            <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>" class="w-6 h-6 rounded-full object-cover border border-slate-200">
-            <span class="text-xs font-semibold text-slate-700 group-hover:text-indigo-600 hidden md:inline"><?= htmlspecialchars(explode(' ', $currentUser['name'])[0]) ?></span>
-        </a>
+        <!-- User Profile Dropdown (Side-by-side with Notification Bell) -->
+        <div class="relative" id="user-profile-wrapper">
+            <button onclick="toggleUserProfile()" type="button" class="flex items-center space-x-2.5 h-10 pl-1.5 pr-3 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition bg-white shadow-2xs group cursor-pointer flex-shrink-0" aria-label="Founder Profile Menu">
+                <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>" 
+                     alt="<?= htmlspecialchars($currentUser['name']) ?>" 
+                     style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; border-radius: 9999px; object-fit: cover;"
+                     class="w-8 h-8 rounded-full object-cover border border-slate-200 flex-shrink-0">
+                <div class="hidden sm:flex flex-col text-left">
+                    <span class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition truncate max-w-[120px] leading-tight"><?= htmlspecialchars(explode(' ', $currentUser['name'])[0]) ?></span>
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">Founder</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition flex-shrink-0"></i>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="user-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-50">
+                <!-- User Header Summary -->
+                <div class="p-3 border-b border-slate-100 flex items-center space-x-3 bg-slate-50/70 rounded-xl mb-1">
+                    <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>" 
+                         alt="<?= htmlspecialchars($currentUser['name']) ?>"
+                         style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 9999px; object-fit: cover;"
+                         class="w-10 h-10 rounded-full object-cover border border-slate-200 flex-shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-bold text-slate-900 truncate leading-tight"><?= htmlspecialchars($currentUser['name']) ?></div>
+                        <div class="text-xs text-slate-500 truncate mt-0.5"><?= htmlspecialchars($currentUser['email']) ?></div>
+                        <span class="inline-flex items-center px-1.5 py-0.5 mt-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100">Founder</span>
+                    </div>
+                </div>
+
+                <div class="py-1 space-y-0.5 text-sm">
+                    <a href="<?= url('founder/profile.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 font-bold transition">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                        <span>Founder Profile & Settings</span>
+                    </a>
+                    <a href="<?= url('founder/view.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 font-bold transition">
+                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
+                        <span>Public Profile Preview</span>
+                    </a>
+                    <a href="<?= url('founder/company.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 font-bold transition">
+                        <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>
+                        <span>Company Profile</span>
+                    </a>
+                </div>
+
+                <div class="pt-1.5 mt-1 border-t border-slate-100">
+                    <a href="<?= url('auth/logout.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 font-bold text-sm transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 <script>
     function toggleNotifs() {
-        const menu = document.getElementById('notif-menu');
-        menu.classList.toggle('hidden');
+        const notifMenu = document.getElementById('notif-menu');
+        const profileMenu = document.getElementById('user-profile-menu');
+        if (profileMenu) profileMenu.classList.add('hidden');
+        if (notifMenu) {
+            notifMenu.classList.toggle('hidden');
+            if (!notifMenu.classList.contains('hidden') && window.lucide) {
+                lucide.createIcons();
+            }
+        }
     }
+    function toggleUserProfile() {
+        const profileMenu = document.getElementById('user-profile-menu');
+        const notifMenu = document.getElementById('notif-menu');
+        if (notifMenu) notifMenu.classList.add('hidden');
+        if (profileMenu) {
+            profileMenu.classList.toggle('hidden');
+            if (!profileMenu.classList.contains('hidden') && window.lucide) {
+                lucide.createIcons();
+            }
+        }
+    }
+    document.addEventListener('click', function(e) {
+        const notifWrapper = document.getElementById('notif-dropdown-wrapper');
+        const notifMenu = document.getElementById('notif-menu');
+        if (notifWrapper && notifMenu && !notifWrapper.contains(e.target)) {
+            notifMenu.classList.add('hidden');
+        }
+
+        const profileWrapper = document.getElementById('user-profile-wrapper');
+        const profileMenu = document.getElementById('user-profile-menu');
+        if (profileWrapper && profileMenu && !profileWrapper.contains(e.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
 </script>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
-
