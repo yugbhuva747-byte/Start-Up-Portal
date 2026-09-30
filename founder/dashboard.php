@@ -362,32 +362,6 @@ $flash = get_flash();
                         <?php endif; ?>
                     </div>
 
-                    <!-- Quick Founder Tools -->
-                    <div class="card-clean rounded-2xl p-5">
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
-                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                            <span>Quick Tools</span>
-                        </h3>
-                        <div class="space-y-1.5 text-xs">
-                            <a href="<?= url('founder/company.php') ?>" class="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition">
-                                <span class="text-slate-700 font-medium">Update Pitch Deck & Data Room</span>
-                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-                            </a>
-                            <a href="<?= url('founder/blogs.php') ?>" class="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition">
-                                <span class="text-slate-700 font-medium">Manage Company Blog (<?= $stats['blog_count'] ?>)</span>
-                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-                            </a>
-                            <a href="<?= url('founder/verification.php') ?>" class="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition">
-                                <span class="text-slate-700 font-medium">DigiLocker Verification</span>
-                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-                            </a>
-                            <a href="<?= url('founder/updates.php') ?>" class="p-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200/80 flex items-center justify-between transition">
-                                <span class="text-slate-700 font-medium">Post Investor Update</span>
-                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
-                            </a>
-                        </div>
-                    </div>
-
                     <!-- Compliance Disclaimer -->
                     <div class="p-4 rounded-2xl bg-white border border-slate-200 text-[11px] text-slate-500 leading-relaxed shadow-sm">
                         <div class="font-bold text-slate-800 mb-1 flex items-center space-x-1">

@@ -149,62 +149,92 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             </div>
 
             <!-- New Update Composer Form -->
-            <div id="new-update-box" class="card-clean rounded-2xl p-6">
-                <div class="flex items-center space-x-2 pb-4 border-b border-slate-100">
-                    <i data-lucide="send" class="w-4 h-4 text-indigo-600"></i>
-                    <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Publish Stakeholder Update</h2>
+            <div id="new-update-box" class="clean-card rounded-2xl p-6 sm:p-7">
+                <div class="flex items-center space-x-2.5 pb-4 border-b border-slate-100 mb-5">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Publish Investor Traction Update</h2>
+                        <p class="text-[11px] text-slate-400">Share monthly ARR velocity, customer milestones, and asks with syndicate angels</p>
+                    </div>
                 </div>
 
                 <?php if (!$company): ?>
-                    <div class="p-6 text-center text-xs text-slate-500">
+                    <div class="p-8 text-center text-xs text-slate-500 bg-slate-50 rounded-xl">
                         Please set up your company profile first to publish investor updates.
                     </div>
                 <?php else: ?>
-                    <form action="<?= url('founder/updates.php') ?>" method="POST" class="mt-4 space-y-4 text-xs">
+                    <form action="<?= url('founder/updates.php') ?>" method="POST" class="space-y-4 text-xs">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                         <input type="hidden" name="form_action" value="create_update">
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                             <div class="sm:col-span-2">
-                                <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Headline / Title</label>
-                                <input type="text" name="title" required placeholder="e.g. Q3 2026 Growth: ARR crossed ₹2.5 Cr with 140% YoY expansion"
-                                       class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 rounded-lg text-xs text-slate-900 outline-none transition">
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5">
+                                    <span>Update Headline / Subject</span>
+                                    <span class="text-rose-500">*</span>
+                                </label>
+                                <input type="text" name="title" required placeholder="e.g. Q3 2026 Milestone: ARR crossed ₹2.5 Cr with 140% YoY expansion"
+                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-xs text-slate-900 outline-none font-semibold">
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Category</label>
-                                <select name="category" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 rounded-lg text-xs text-slate-900 outline-none transition">
-                                    <option value="Traction & Revenue">Traction & Revenue</option>
-                                    <option value="Milestone">Milestone</option>
-                                    <option value="Product Launch">Product Launch</option>
-                                    <option value="Team & Hiring">Team & Hiring</option>
-                                    <option value="Financials">Financials</option>
-                                </select>
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5">Category *</label>
+                                <div class="relative border border-slate-200 rounded-xl bg-slate-50 transition">
+                                    <select name="category" class="w-full px-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 font-medium outline-none cursor-pointer">
+                                        <option value="Traction & Revenue">Traction & Revenue</option>
+                                        <option value="Milestone">Milestone Achieved</option>
+                                        <option value="Product Launch">Product Release</option>
+                                        <option value="Team & Hiring">Executive Hiring</option>
+                                        <option value="Financials">Financial Audit</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                             <div>
-                                <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Key Metrics Highlights (Badge String)</label>
-                                <input type="text" name="metrics_summary" placeholder="e.g. +140% YoY • ₹2.5 Cr ARR • 98% Net Retention"
-                                       class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 rounded-lg text-xs text-slate-900 outline-none transition">
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5 flex items-center justify-between">
+                                    <span>Key Metric Tags / Badges</span>
+                                    <span class="text-[10px] text-slate-400">Click below to auto-add</span>
+                                </label>
+                                <input type="text" id="metrics-summary-input" name="metrics_summary" placeholder="e.g. +140% YoY • ₹2.5 Cr ARR • 98% Net Retention"
+                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-xs text-slate-900 outline-none font-medium mb-1.5">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <button type="button" onclick="addMetricChip('+140% YoY')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-[10px] text-slate-600 font-bold transition">+140% YoY</button>
+                                    <button type="button" onclick="addMetricChip('₹2.5 Cr ARR')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-[10px] text-slate-600 font-bold transition">₹2.5 Cr ARR</button>
+                                    <button type="button" onclick="addMetricChip('45 B2B Clients')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-[10px] text-slate-600 font-bold transition">45 B2B Clients</button>
+                                    <button type="button" onclick="addMetricChip('Break-even')" class="px-2 py-0.5 rounded-md bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-[10px] text-slate-600 font-bold transition">Break-even</button>
+                                </div>
                             </div>
                             <div>
-                                <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Audience Visibility</label>
-                                <select name="visibility" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 rounded-lg text-xs text-slate-900 outline-none transition">
-                                    <option value="all_investors">All Registered Investors & Discover Page</option>
-                                    <option value="portfolio_only">Confirmed Portfolio Investors Only</option>
-                                </select>
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5">Audience Visibility</label>
+                                <div class="relative border border-slate-200 rounded-xl bg-slate-50 transition">
+                                    <select name="visibility" class="w-full px-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 font-medium outline-none cursor-pointer">
+                                        <option value="all_investors">All Registered Investors & Discover Page (Public)</option>
+                                        <option value="portfolio_only">Confirmed Cap Table Portfolio Investors Only (Private)</option>
+                                    </select>
+                                </div>
+                                <p class="text-[10.5px] text-slate-400 mt-1 pl-1">Private updates will only be readable by verified shareholders.</p>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Detailed Update Body</label>
-                            <textarea name="content" rows="4" required placeholder="Describe key accomplishments, customer wins, product roadmap progress, revenue runway, and areas where investors can help (intros, hiring, advice)..."
-                                      class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 rounded-lg text-xs text-slate-900 outline-none transition leading-relaxed"></textarea>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5 flex items-center justify-between">
+                                <span class="flex items-center space-x-1">
+                                    <span>Detailed Update Narrative</span>
+                                    <span class="text-rose-500">*</span>
+                                </span>
+                                <span class="text-[10.5px] text-slate-400">Structured sections recommended</span>
+                            </label>
+                            <div class="border border-slate-200 focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-500/10 rounded-xl bg-slate-50 transition p-1">
+                                <textarea name="content" rows="4" required placeholder="1. Key Highlights & Revenue: What were your biggest wins this month?&#10;2. Product & Engineering: What major features were deployed?&#10;3. Key Asks: Where can investors help you right now (introductions, hiring, advice)?"
+                                          class="w-full p-2.5 bg-transparent rounded-lg text-xs text-slate-900 outline-none leading-relaxed font-normal placeholder:text-slate-400 resize-y"></textarea>
+                            </div>
                         </div>
 
-                        <div class="flex items-center justify-end pt-2">
-                            <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-xs shadow-sm transition flex items-center space-x-1.5">
+                        <div class="flex items-center justify-end pt-3 border-t border-slate-100">
+                            <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-bold rounded-xl text-xs shadow-md shadow-indigo-100 transition flex items-center space-x-1.5">
                                 <i data-lucide="send" class="w-3.5 h-3.5"></i>
                                 <span>Broadcast Update</span>
                             </button>
@@ -273,6 +303,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <script>
         lucide.createIcons();
         gsap.from("#updates-main", { duration: 0.35, y: 10, opacity: 0, ease: "power2.out" });
+
+        function addMetricChip(text) {
+            const input = document.getElementById('metrics-summary-input');
+            if (input) {
+                if (input.value.trim() === '') {
+                    input.value = text;
+                } else if (!input.value.includes(text)) {
+                    input.value += ' • ' + text;
+                }
+            }
+        }
     </script>
 </body>
 </html>

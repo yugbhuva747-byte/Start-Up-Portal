@@ -200,6 +200,10 @@ function verify_csrf(?string $token): bool {
     return !empty($token) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
+function csrf_field(): string {
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token()) . '">';
+}
+
 // 8. Currency & Number Formatters (Indian Rupee formatting: e.g., ₹25,00,000)
 function format_inr(float|int $number, bool $includeSymbol = true): string {
     $sym = $includeSymbol ? '₹' : '';

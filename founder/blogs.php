@@ -313,108 +313,133 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Create Blog Modal -->
-            <div id="create-blog-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-                <div class="bg-white border border-slate-200 max-w-2xl w-full rounded-2xl p-6 shadow-2xl relative my-8">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                        <div class="flex items-center space-x-2">
+            <div id="create-blog-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+                <div class="bg-white border border-slate-200 max-w-2xl w-full rounded-2xl flex flex-col max-h-[92vh] overflow-hidden shadow-2xl relative my-auto">
+                    <!-- Fixed Header -->
+                    <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between flex-shrink-0 bg-white">
+                        <div class="flex items-center space-x-2.5">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
                                 <i data-lucide="feather" class="w-4 h-4"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-900 text-sm">Publish Company Story / Blog</h3>
-                                <p class="text-[11px] text-slate-500">Upload trust photos, product milestones, or customer validation stories.</p>
+                                <h3 class="font-bold text-slate-900 text-sm">Publish Company Story & Validation</h3>
+                                <p class="text-[11px] text-slate-400">Share office milestones, client wins, or product launches</p>
                             </div>
                         </div>
-                        <button onclick="document.getElementById('create-blog-modal').classList.add('hidden')" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+                        <button type="button" onclick="document.getElementById('create-blog-modal').classList.add('hidden')" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
                             <i data-lucide="x" class="w-4 h-4"></i>
                         </button>
                     </div>
 
-                    <form action="<?= url('founder/blogs.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-4 text-xs">
+                    <!-- Scrollable Form Body -->
+                    <form action="<?= url('founder/blogs.php') ?>" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                         <input type="hidden" name="form_action" value="create_blog">
 
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <div class="sm:col-span-2">
-                                <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Story Title *</label>
-                                <input type="text" name="title" required placeholder="e.g., How TechPulse AI built 100K active user base in 6 months"
-                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none">
+                        <div class="p-4 sm:p-5 overflow-y-auto flex-1 space-y-4 text-xs">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                                <div class="sm:col-span-2">
+                                    <label class="block font-bold text-slate-700 text-xs mb-1.5">
+                                        <span>Story Title</span>
+                                        <span class="text-rose-500">*</span>
+                                    </label>
+                                    <input type="text" name="title" required placeholder="e.g., How we scaled to 100K active users & ₹2.5 Cr ARR"
+                                           class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-slate-900 text-xs outline-none font-medium">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 text-xs mb-1.5">Category *</label>
+                                    <div class="relative border border-slate-200 rounded-xl bg-slate-50 transition">
+                                        <select name="category" required class="w-full px-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 font-medium outline-none cursor-pointer">
+                                            <option value="Company Story">Company Story</option>
+                                            <option value="Product Launch">Product Launch & Demo</option>
+                                            <option value="Customer Story">Customer Case Study</option>
+                                            <option value="Milestone">Growth Milestone</option>
+                                            <option value="Award & Press">Award & Press Mention</option>
+                                            <option value="Culture & Team">Culture & Team Proof</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Cover Image Uploader -->
                             <div>
-                                <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Category *</label>
-                                <select name="category" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none">
-                                    <option value="Company Story">Company Story</option>
-                                    <option value="Product Launch">Product Launch & Demo</option>
-                                    <option value="Customer Story">Customer Case Study</option>
-                                    <option value="Milestone">Growth Milestone</option>
-                                    <option value="Award & Press">Award & Press Mention</option>
-                                    <option value="Culture & Team">Culture & Team Proof</option>
-                                </select>
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5">Cover Image (Team, Product, or Award Proof)</label>
+                                <div class="border-2 border-dashed border-slate-200 hover:border-indigo-500 rounded-2xl p-4 text-center bg-slate-50/60 hover:bg-indigo-50/20 transition cursor-pointer relative" onclick="document.getElementById('blog-cover-input').click()">
+                                    <input type="file" name="cover_image" id="blog-cover-input" accept=".jpg,.jpeg,.png,.webp,.gif" class="hidden" onchange="handleBlogImageSelect(this)">
+                                    <div class="flex items-center justify-center space-x-2 text-indigo-600">
+                                        <i data-lucide="image-plus" class="w-4 h-4"></i>
+                                        <span class="text-xs font-bold" id="blog-img-label">Upload genuine photo (JPG, PNG, WEBP)</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1">If empty, a high-quality curated category visual will be assigned automatically.</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5">Executive Summary / Teaser Hook</label>
+                                <input type="text" name="summary" placeholder="Brief 1-2 sentence preview to engage investors..."
+                                       class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-slate-900 text-xs outline-none font-medium">
+                            </div>
+
+                            <div>
+                                <label class="block font-bold text-slate-700 text-xs mb-1.5 flex items-center justify-between">
+                                    <span class="flex items-center space-x-1">
+                                        <span>Full Story Narrative</span>
+                                        <span class="text-rose-500">*</span>
+                                    </span>
+                                    <span class="text-[10.5px] text-slate-400">Markdown / Paragraphs supported</span>
+                                </label>
+                                <div class="border border-slate-200 focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-500/10 rounded-xl bg-slate-50 transition p-1">
+                                    <textarea name="content" rows="6" required placeholder="Describe key accomplishments, customer testimonials, hard metrics, architecture details, and lessons learned..."
+                                              class="w-full p-2.5 bg-transparent rounded-lg text-xs text-slate-900 outline-none leading-relaxed font-normal placeholder:text-slate-400 resize-y"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="pt-1">
+                                <label class="flex items-center space-x-2.5 cursor-pointer select-none">
+                                    <input type="checkbox" name="is_published" value="1" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
+                                    <span class="text-slate-700 font-bold text-xs">Publish immediately to company profile</span>
+                                </label>
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Cover / Proof Photo (Upload Office, Team, Product, or Award Image)</label>
-                            <input type="file" name="cover_image" accept=".jpg,.jpeg,.png,.webp,.gif" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700">
-                            <p class="text-[10px] text-slate-400 mt-0.5">Upload a genuine photo to maximize trust. If left empty, an AI-curated category visual will be assigned.</p>
-                        </div>
-
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Executive Summary / Hook</label>
-                            <input type="text" name="summary" placeholder="Brief 1-2 sentence preview to engage investors..."
-                                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none">
-                        </div>
-
-                        <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Full Story & Details *</label>
-                            <textarea name="content" rows="6" required placeholder="Write the complete story, key metrics achieved, lessons learned, tech architecture, customer feedback..."
-                                      class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-slate-900 text-xs outline-none leading-relaxed"></textarea>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-                            <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" name="is_published" value="1" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500">
-                                <span class="text-slate-700 font-bold text-xs">Publish immediately to company profile</span>
-                            </label>
-
-                            <div class="flex items-center space-x-2">
-                                <button type="button" onclick="document.getElementById('create-blog-modal').classList.add('hidden')" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold">
-                                    Cancel
-                                </button>
-                                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-sm flex items-center space-x-1.5">
-                                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                    <span>Publish Story</span>
-                                </button>
-                            </div>
+                        <!-- Pinned Footer -->
+                        <div class="p-4 border-t border-slate-100 flex items-center justify-end space-x-2 bg-slate-50/90 flex-shrink-0">
+                            <button type="button" onclick="document.getElementById('create-blog-modal').classList.add('hidden')" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold transition">
+                                Cancel
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-md shadow-indigo-100 flex items-center space-x-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                <span>Publish Story</span>
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
 
             <!-- Share Modal -->
-            <div id="share-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div class="bg-white border border-slate-200 max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
-                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                        <div class="flex items-center space-x-2">
+            <div id="share-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                <div class="bg-white border border-slate-200 max-w-md w-full rounded-2xl p-6 sm:p-7 shadow-2xl relative">
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                        <div class="flex items-center space-x-2.5">
                             <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
                                 <i data-lucide="share-2" class="w-4 h-4"></i>
                             </div>
                             <div>
                                 <h3 class="font-bold text-slate-900 text-sm">Share Company Story</h3>
-                                <p class="text-[11px] text-slate-500">Broadcast your milestone to build network credibility.</p>
+                                <p class="text-[11px] text-slate-400">Broadcast your milestone to build network credibility</p>
                             </div>
                         </div>
-                        <button onclick="document.getElementById('share-modal').classList.add('hidden')" class="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
+                        <button type="button" onclick="document.getElementById('share-modal').classList.add('hidden')" class="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition">
                             <i data-lucide="x" class="w-4 h-4"></i>
                         </button>
                     </div>
 
                     <div class="space-y-4 text-xs">
                         <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Direct Article Link</label>
+                            <label class="block font-bold text-slate-700 text-xs mb-1.5">Direct Article Link</label>
                             <div class="flex items-center space-x-2">
-                                <input type="text" id="share-url-input" readonly class="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs font-mono outline-none">
-                                <button onclick="copyShareUrl()" id="copy-btn" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1">
+                                <input type="text" id="share-url-input" readonly class="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs font-mono outline-none font-semibold">
+                                <button type="button" onclick="copyShareUrl()" id="copy-btn" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition flex items-center space-x-1 shadow-xs">
                                     <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                                     <span id="copy-btn-text">Copy</span>
                                 </button>
@@ -422,17 +447,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-700 text-[11px] mb-2 uppercase tracking-wider">Share To Social Channels</label>
-                            <div class="grid grid-cols-3 gap-2">
-                                <a id="share-wa" href="#" target="_blank" class="p-2.5 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 text-emerald-700 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
+                            <label class="block font-bold text-slate-700 text-xs mb-2">Share To Social Channels</label>
+                            <div class="grid grid-cols-3 gap-2.5">
+                                <a id="share-wa" href="#" target="_blank" class="p-3 rounded-xl border border-emerald-200 bg-emerald-50/50 hover:bg-emerald-100/70 text-emerald-800 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
                                     <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600"></i>
                                     <span>WhatsApp</span>
                                 </a>
-                                <a id="share-li" href="#" target="_blank" class="p-2.5 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-50 text-blue-700 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
+                                <a id="share-li" href="#" target="_blank" class="p-3 rounded-xl border border-blue-200 bg-blue-50/50 hover:bg-blue-100/70 text-blue-800 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
                                     <i data-lucide="linkedin" class="w-4 h-4 text-blue-600"></i>
                                     <span>LinkedIn</span>
                                 </a>
-                                <a id="share-tw" href="#" target="_blank" class="p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
+                                <a id="share-tw" href="#" target="_blank" class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-800 font-bold text-xs flex flex-col items-center justify-center space-y-1 transition">
                                     <i data-lucide="twitter" class="w-4 h-4 text-slate-800"></i>
                                     <span>Twitter / X</span>
                                 </a>
@@ -472,6 +497,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setTimeout(() => {
                 document.getElementById('copy-btn-text').innerText = 'Copy';
             }, 2500);
+        }
+
+        function handleBlogImageSelect(input) {
+            const label = document.getElementById('blog-img-label');
+            if (input.files && input.files[0]) {
+                const f = input.files[0];
+                const sizeMB = (f.size / (1024 * 1024)).toFixed(2);
+                label.innerHTML = `<span class="text-indigo-600 font-bold">${f.name}</span> <span class="text-slate-400 font-normal">(${sizeMB} MB)</span>`;
+            }
         }
     </script>
 </body>

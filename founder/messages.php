@@ -204,14 +204,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                     </div>
 
                     <!-- Input Form -->
-                    <form action="<?= url('founder/messages.php?conv=' . hash_id_encode($selectedConvId)) ?>" method="POST" class="p-3.5 bg-white border-t border-slate-200 flex items-center space-x-2.5">
-                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                        <input type="text" name="message_text" required autocomplete="off" placeholder="Write a message or answer diligence queries..."
-                               class="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-lg text-xs text-slate-900 placeholder-slate-400 outline-none transition">
-                        <button type="submit" class="p-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition">
-                            <i data-lucide="send" class="w-4 h-4"></i>
-                        </button>
-                    </form>
+                    <div class="p-4 bg-white border-t border-slate-200/80">
+                        <!-- Quick Reply Chips -->
+                        <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
+                            <button type="button" onclick="insertMsg('Hi, please find our latest audited financial model attached in the Data Room.')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-[10.5px] text-slate-600 font-semibold transition">
+                                📊 Financial Model link
+                            </button>
+                            <button type="button" onclick="insertMsg('Thanks for connecting! We are available for a founder introduction call this week.')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-[10.5px] text-slate-600 font-semibold transition">
+                                📅 Schedule Intro Call
+                            </button>
+                            <button type="button" onclick="insertMsg('Our Seed Round is currently 70% committed with institutional lead participation.')" class="px-2.5 py-1 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-[10.5px] text-slate-600 font-semibold transition">
+                                🚀 Round Status
+                            </button>
+                        </div>
+
+                        <form action="<?= url('founder/messages.php?conv=' . hash_id_encode($selectedConvId)) ?>" method="POST" class="flex items-center space-x-2.5">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <div class="relative flex-1 flex items-center border border-slate-200 focus-within:border-indigo-600 focus-within:ring-2 focus-within:ring-indigo-500/10 rounded-2xl bg-slate-50 transition">
+                                <input type="text" id="chat-input-field" name="message_text" required autocomplete="off" placeholder="Write an investor response or answer due diligence questions..."
+                                       class="w-full px-4 py-3 bg-transparent text-xs text-slate-900 placeholder-slate-400 outline-none font-medium">
+                            </div>
+                            <button type="submit" class="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl shadow-md shadow-indigo-100 transition flex-shrink-0 flex items-center justify-center">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
+                        </form>
+                    </div>
                 <?php else: ?>
                     <div class="flex-1 flex items-center justify-center p-6 text-center text-slate-400 text-xs">
                         Select a conversation to start chatting.
@@ -227,6 +244,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
         const container = document.getElementById('chat-messages-container');
         if (container) {
             container.scrollTop = container.scrollHeight;
+        }
+
+        function insertMsg(text) {
+            const input = document.getElementById('chat-input-field');
+            if (input) {
+                input.value = text;
+                input.focus();
+            }
         }
     </script>
 </body>

@@ -144,22 +144,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $db->commit();
 
-                // 8. Automatically send Direct Emails to Investor & Founder(s)
-                $emailDispatch = send_investment_automated_emails(
-                    $db,
-                    (int)$investmentId,
-                    (int)$roundId,
-                    (int)$user['id'],
-                    (float)$amount,
-                    (float)$equityPercent,
-                    (string)$certNumber,
-                    (string)$txnRef
-                );
-
-                $dispatchedResults = $emailDispatch['results'] ?? [];
-                $dispatchedInvestor = $dispatchedResults['investor_email'] ?? null;
-                $dispatchedFounders = $dispatchedResults['founder_emails'] ?? [];
-
                 $success = true;
                 $transactionRef = $txnRef;
                 $equityAllotted = $equityPercent;
@@ -242,53 +226,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                                 <span>Secured in Escrow</span>
                             </span>
-                        </div>
-
-                        <!-- DYNAMIC EMAIL AUTO-SEND CONFIRMATION DETAILS -->
-                        <div class="pt-2 border-t border-slate-200/80">
-                            <div class="text-[11px] font-bold uppercase tracking-wider text-indigo-700 mb-2 flex items-center gap-1.5">
-                                <i data-lucide="mail-check" class="w-3.5 h-3.5 text-indigo-600"></i>
-                                <span>Automated Emails Dispatched Dynamically</span>
-                            </div>
-
-                            <!-- Investor dynamic email -->
-                            <div class="bg-indigo-50/70 border border-indigo-100 rounded-lg p-2.5 mb-2 flex items-start justify-between gap-2">
-                                <div class="space-y-0.5">
-                                    <div class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Investor Confirmation Receipt</div>
-                                    <div class="font-semibold text-slate-800 text-[11px]"><?= htmlspecialchars($user['name']) ?></div>
-                                    <div class="text-[11px] text-indigo-700 font-mono flex items-center gap-1">
-                                        <i data-lucide="at-sign" class="w-3 h-3 text-indigo-500"></i>
-                                        <span><?= htmlspecialchars($user['email']) ?></span>
-                                    </div>
-                                </div>
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
-                                    Dispatched
-                                </span>
-                            </div>
-
-                            <!-- Founder dynamic email(s) -->
-                            <?php if (!empty($dispatchedFounders)): ?>
-                                <?php foreach ($dispatchedFounders as $df): ?>
-                                    <div class="bg-emerald-50/70 border border-emerald-100 rounded-lg p-2.5 mb-1.5 flex items-start justify-between gap-2">
-                                        <div class="space-y-0.5">
-                                            <div class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Founder Capital Alert</div>
-                                            <div class="font-semibold text-slate-800 text-[11px]"><?= htmlspecialchars($df['founder_name'] ?? 'Founder') ?></div>
-                                            <div class="text-[11px] text-emerald-700 font-mono flex items-center gap-1">
-                                                <i data-lucide="at-sign" class="w-3 h-3 text-emerald-500"></i>
-                                                <span><?= htmlspecialchars($df['founder_email'] ?? '') ?></span>
-                                            </div>
-                                        </div>
-                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                                            Dispatched
-                                        </span>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="bg-emerald-50/70 border border-emerald-100 rounded-lg p-2.5 flex items-center justify-between text-[11px] text-emerald-800">
-                                    <span>Founder notification dispatched to startup founders.</span>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Dispatched</span>
-                                </div>
-                            <?php endif; ?>
                         </div>
                     </div>
 

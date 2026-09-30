@@ -37,7 +37,7 @@ if ($db) {
         $esopPercent = isset($company['esop_pool_percent']) && $company['esop_pool_percent'] !== '' ? (float)$company['esop_pool_percent'] : 10.00;
 
         // Handle POST: Update Capital Structure
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 $error = 'Security validation failed. Please refresh and try again.';
             } else {
@@ -222,15 +222,7 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
                     <p class="text-xs text-slate-500">Live ownership register, share certificate tracking, and dilution modeling.</p>
                 </div>
                 <div class="flex items-center flex-wrap gap-2" id="founder-cap-actions">
-                    <button type="button" onclick="openSimModal()" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-xs font-bold shadow-sm transition">
-                        <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
-                        <span>Dilution Simulator</span>
-                    </button>
-                    <button type="button" onclick="openCapModal()" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition">
-                        <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-600"></i>
-                        <span>Edit Capital Structure</span>
-                    </button>
-                    <a href="<?= url('founder/cap_table.php?export=csv') ?>" class="inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition">
+                    <a href="<?= url('founder/cap_table.php?export=csv') ?>" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-xs transition">
                         <i data-lucide="download" class="w-3.5 h-3.5 text-slate-500"></i>
                         <span>Export CSV</span>
                     </a>
@@ -427,214 +419,14 @@ $totalAuthorizedShares = $faceValue > 0 ? (int)($authorizedCapital / $faceValue)
                 </div>
             </div>
 
-            <!-- Modal: Edit Capital Structure -->
-            <div id="cap-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-                <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <i data-lucide="sliders" class="w-4 h-4"></i>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-900">Configure Capital Structure</h3>
-                        </div>
-                        <button type="button" onclick="closeCapModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-
-                    <form method="POST" action="<?= url('founder/cap_table.php') ?>" class="space-y-4 mt-4 text-xs">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="form_action" value="update_capital">
-
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Authorized Share Capital (₹ INR)</label>
-                            <input type="number" step="1000" min="10000" name="authorized_capital" value="<?= htmlspecialchars((string)$authorizedCapital) ?>" required
-                                   class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition outline-none font-mono">
-                            <p class="text-[10.5px] text-slate-400 mt-1">Maximum capital company is authorized to raise under MoA.</p>
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1">Face Value Per Share (₹ INR)</label>
-                            <input type="number" step="0.01" min="1" name="face_value_per_share" value="<?= htmlspecialchars((string)$faceValue) ?>" required
-                                   class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition outline-none font-mono">
-                            <p class="text-[10.5px] text-slate-400 mt-1">Nominal statutory value per share (usually ₹10 or ₹100).</p>
-                        </div>
-
-                        <div>
-                            <label class="block font-semibold text-slate-700 mb-1">ESOP Pool Allocation (%)</label>
-                            <input type="number" step="0.1" min="0" max="50" name="esop_pool_percent" value="<?= htmlspecialchars((string)$esopPercent) ?>" required
-                                   class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition outline-none font-mono">
-                            <p class="text-[10.5px] text-slate-400 mt-1">Percentage of total capital reserved for employee option pools.</p>
-                        </div>
-
-                        <div class="pt-2 flex items-center justify-end space-x-2">
-                            <button type="button" onclick="closeCapModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold transition">
-                                Cancel
-                            </button>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-sm">
-                                Save Capital Settings
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Modal: Interactive Dilution Simulator -->
-            <div id="sim-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-                <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 relative max-h-[90vh] overflow-y-auto">
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                        <div class="flex items-center space-x-2">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                                <i data-lucide="calculator" class="w-4 h-4"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-900">Future Round Dilution Simulator</h3>
-                                <p class="text-[11px] text-slate-400">Interactive "What-If" post-money ownership and dilution modeling</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="closeSimModal()" class="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-
-                    <div class="mt-4 space-y-4 text-xs">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-semibold text-slate-700 mb-1">New Capital to Raise (₹)</label>
-                                <input type="number" id="sim-raise" value="10000000" step="500000" min="100000" oninput="calculateDilution()"
-                                       class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition outline-none font-mono">
-                            </div>
-                            <div>
-                                <label class="block font-semibold text-slate-700 mb-1">Pre-Money Valuation (₹)</label>
-                                <input type="number" id="sim-val" value="50000000" step="1000000" min="500000" oninput="calculateDilution()"
-                                       class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 transition outline-none font-mono">
-                            </div>
-                        </div>
-
-                        <!-- Real-time Summary Cards -->
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
-                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                                <div class="text-[10px] font-bold text-slate-400 uppercase">Post-Money Valuation</div>
-                                <div class="text-sm font-black text-slate-900 mt-0.5" id="sim-post-val">₹6,00,00,000</div>
-                            </div>
-                            <div class="p-3 rounded-xl bg-emerald-50/70 border border-emerald-100">
-                                <div class="text-[10px] font-bold text-emerald-800 uppercase">New Investor Dilution</div>
-                                <div class="text-sm font-black text-emerald-600 mt-0.5" id="sim-new-equity">16.67%</div>
-                            </div>
-                            <div class="p-3 rounded-xl bg-indigo-50/70 border border-indigo-100 col-span-2 sm:col-span-1">
-                                <div class="text-[10px] font-bold text-indigo-800 uppercase">Founder Stake (Post)</div>
-                                <div class="text-sm font-black text-indigo-600 mt-0.5" id="sim-founder-post">--%</div>
-                            </div>
-                        </div>
-
-                        <!-- Visual Comparison Bar -->
-                        <div class="pt-2">
-                            <div class="text-[10.5px] font-bold text-slate-500 mb-1.5 flex items-center justify-between">
-                                <span>Simulated Post-Round Ownership Bar</span>
-                                <span class="text-slate-400 font-normal">Includes Founders, Existing, New & ESOP</span>
-                            </div>
-                            <div class="w-full h-4 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
-                                <div id="sim-bar-founder" class="bg-indigo-600 transition-all duration-300" title="Founders"></div>
-                                <div id="sim-bar-existing" class="bg-blue-500 transition-all duration-300" title="Existing Investors"></div>
-                                <div id="sim-bar-new" class="bg-emerald-500 transition-all duration-300" title="New Round"></div>
-                                <div id="sim-bar-esop" class="bg-amber-400 transition-all duration-300" title="ESOP"></div>
-                            </div>
-                        </div>
-
-                        <div class="p-3 rounded-xl bg-slate-50 text-[11px] space-y-1 text-slate-600 border border-slate-200">
-                            <div class="flex items-center justify-between">
-                                <span>Current Founder Stake:</span>
-                                <strong class="text-slate-900"><?= number_format($foundersTotalEquity, 2) ?>%</strong>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span>Estimated Founder Stake After Dilution:</span>
-                                <strong class="text-indigo-600" id="sim-founder-est">--%</strong>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span>Dilution Effect on Founders:</span>
-                                <strong class="text-rose-600 font-mono" id="sim-dilution-drop">--%</strong>
-                            </div>
-                        </div>
-
-                        <div class="pt-1 flex items-center justify-end">
-                            <button type="button" onclick="closeSimModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition shadow-sm">
-                                Close Simulator
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <?php endif; ?>
 
         </main>
     </div>
-
+    
     <script>
         lucide.createIcons();
         gsap.from("#founder-cap-main > *", { duration: 0.4, y: 12, opacity: 0, stagger: 0.06, ease: "power2.out" });
-
-        const baseFoundersEquity = <?= json_encode((float)$foundersTotalEquity) ?>;
-        const baseInvestorsEquity = <?= json_encode((float)$investorsTotalEquity) ?>;
-        const baseEsopPercent = <?= json_encode((float)$esopPercent) ?>;
-
-        function openCapModal() {
-            const modal = document.getElementById('cap-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                lucide.createIcons();
-            }
-        }
-
-        function closeCapModal() {
-            const modal = document.getElementById('cap-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function openSimModal() {
-            const modal = document.getElementById('sim-modal');
-            if (modal) {
-                modal.classList.remove('hidden');
-                calculateDilution();
-                lucide.createIcons();
-            }
-        }
-
-        function closeSimModal() {
-            const modal = document.getElementById('sim-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function formatInrJs(num) {
-            return '₹' + Number(num).toLocaleString('en-IN', { maximumFractionDigits: 0 });
-        }
-
-        function calculateDilution() {
-            const raise = parseFloat(document.getElementById('sim-raise').value) || 0;
-            const preVal = parseFloat(document.getElementById('sim-val').value) || 0;
-            const postVal = preVal + raise;
-
-            if (postVal <= 0 || raise <= 0) return;
-
-            const newInvestorPercent = (raise / postVal) * 100;
-            const retentionFactor = 1 - (newInvestorPercent / 100);
-
-            const postFounderEquity = baseFoundersEquity * retentionFactor;
-            const postExistingInvestors = baseInvestorsEquity * retentionFactor;
-            const postEsop = baseEsopPercent * retentionFactor;
-            const dilutionDrop = baseFoundersEquity - postFounderEquity;
-
-            document.getElementById('sim-post-val').innerText = formatInrJs(postVal);
-            document.getElementById('sim-new-equity').innerText = newInvestorPercent.toFixed(2) + '%';
-            document.getElementById('sim-founder-post').innerText = postFounderEquity.toFixed(2) + '%';
-            document.getElementById('sim-founder-est').innerText = postFounderEquity.toFixed(2) + '%';
-            document.getElementById('sim-dilution-drop').innerText = '-' + dilutionDrop.toFixed(2) + '%';
-
-            document.getElementById('sim-bar-founder').style.width = Math.min(100, Math.max(0, postFounderEquity)) + '%';
-            document.getElementById('sim-bar-existing').style.width = Math.min(100, Math.max(0, postExistingInvestors)) + '%';
-            document.getElementById('sim-bar-new').style.width = Math.min(100, Math.max(0, newInvestorPercent)) + '%';
-            document.getElementById('sim-bar-esop').style.width = Math.min(100, Math.max(0, postEsop)) + '%';
-        }
     </script>
 </body>
 </html>
