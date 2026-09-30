@@ -107,7 +107,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                             $db->prepare("
                                 INSERT INTO verification_documents (verification_request_id, user_id, company_id, document_type, file_path, file_size, status)
-                                VALUES (?, ?, ?, ?, ?, 'pending')
+                                VALUES (?, ?, ?, ?, ?, ?, 'pending')
                             ")->execute([$reqId, $user['id'], $company['id'] ?? null, $docType, $publicPath, $sizeStr]);
 
                             $newDocId = $db->lastInsertId();

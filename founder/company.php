@@ -390,6 +390,23 @@ if ($company) {
                             </div>
                         </div>
 
+                        <!-- Target Market Field -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
+                                <span>Target Addressable Market & Customer Segments</span>
+                                <span class="text-[10px] text-slate-400">B2B / B2C / Enterprise</span>
+                            </label>
+                            <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
+                                <span class="pl-3.5 text-slate-400">
+                                    <i data-lucide="crosshair" class="w-4 h-4"></i>
+                                </span>
+                                <input type="text" name="target_market" value="<?= htmlspecialchars($company['target_market'] ?? '') ?>" 
+                                       placeholder="e.g. Mid to large BFSI and tech enterprises, diagnostic clinics, hospital networks"
+                                       class="w-full pl-2.5 pr-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 outline-none font-medium placeholder:text-slate-400">
+                            </div>
+                            <p class="text-[10.5px] text-slate-400 mt-1 pl-1">Identifies your customer ICP for venture analysts.</p>
+                        </div>
+
                         <!-- One Line Elevator Pitch -->
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center justify-between">
@@ -437,7 +454,7 @@ if ($company) {
                             <span class="text-[10.5px] text-slate-400 font-medium">Step 3 of 3</span>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
                                 <label class="block text-xs font-bold text-slate-700 mb-1.5">Headquarters City</label>
                                 <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
@@ -455,6 +472,16 @@ if ($company) {
                                         <i data-lucide="map" class="w-4 h-4"></i>
                                     </span>
                                     <input type="text" name="state" value="<?= htmlspecialchars($company['state'] ?? 'Karnataka') ?>"
+                                           class="w-full pl-2.5 pr-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 outline-none font-medium">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Country</label>
+                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
+                                    <span class="pl-3.5 text-slate-400">
+                                        <i data-lucide="globe" class="w-4 h-4"></i>
+                                    </span>
+                                    <input type="text" name="country" value="<?= htmlspecialchars($company['country'] ?? 'India') ?>"
                                            class="w-full pl-2.5 pr-3.5 py-2.5 bg-transparent rounded-xl text-xs text-slate-900 outline-none font-medium">
                                 </div>
                             </div>

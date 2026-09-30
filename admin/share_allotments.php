@@ -38,7 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     $pricePerShare = round($amount / $numShares, 2);
 
                     // Fetch company code for certificate serial
-                    $compName = $db->query("SELECT name FROM companies WHERE id = {$companyId}")->fetchColumn() ?: 'PORT';
+                    $compStmt = $db->prepare("SELECT name FROM companies WHERE id = ?");
+                    $compStmt->execute([$companyId]);
+                    $compName = $compStmt->fetchColumn() ?: 'PORT';
                     $compCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $compName), 0, 3));
                     $certNum = 'SHA-2026-' . $compCode . '-' . rand(100, 999);
                     $folio = 'FOLIO-' . str_pad($investorId, 4, '0', STR_PAD_LEFT);
