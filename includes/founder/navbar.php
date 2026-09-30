@@ -6,6 +6,7 @@
  */
 $currentUser = current_user();
 $db = get_db();
+$currentPage = basename($_SERVER['PHP_SELF']);
 
 $unreadCount = 0;
 $notifs = [];
@@ -45,21 +46,37 @@ require_once __DIR__ . '/theme.php';
 </style>
 <header
     class="founder-navbar h-20 border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-40">
-    <!-- Left Section: Mobile Menu + Quick Search -->
-    <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+    <!-- Left Section: Mobile Menu + Back Button + Quick Search -->
+    <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
-            class="lg:hidden p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0 border border-slate-200"
+            class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex-shrink-0 border border-slate-200"
             aria-label="Open sidebar menu">
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
+        <?php if (($currentPage ?? basename($_SERVER['PHP_SELF'])) !== 'dashboard.php'): ?>
+        <!-- Clean & Bold Back Icon Button -->
+        <button type="button" onclick="founderGoBack(this)"
+                id="founder-back-btn"
+                title="Go Back" aria-label="Go Back"
+                class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-indigo-600 dark:bg-slate-800 dark:hover:bg-indigo-600 border border-slate-200 dark:border-slate-700 hover:border-indigo-600 dark:hover:border-indigo-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white shadow-xs hover:shadow-md hover:shadow-indigo-500/25 transition-all duration-200 flex items-center justify-center group cursor-pointer active:scale-95">
+            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200"></i>
+        </button>
+        <?php endif; ?>
+
+        <?php if (!empty($pageTitle)): ?>
+        <h2 class="hidden lg:flex text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 tracking-tight items-center space-x-2 truncate max-w-[200px] xl:max-w-xs">
+            <span class="truncate"><?= htmlspecialchars($pageTitle) ?></span>
+        </h2>
+        <?php endif; ?>
+
         <!-- Quick Platform Search -->
         <form action="<?= url('founder/funding_rounds.php') ?>" method="GET"
-            class="relative hidden sm:block w-72 md:w-84 m-0">
+            class="relative hidden sm:block w-56 md:w-72 lg:w-80 m-0">
             <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
             <input type="text" name="q" placeholder="Search rounds, investors, documents..."
-                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-sm text-slate-800 placeholder-slate-400 outline-none transition" />
+                class="w-full pl-10 pr-4 py-2 bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 rounded-xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 outline-none transition" />
         </form>
     </div>
 
@@ -211,9 +228,18 @@ require_once __DIR__ . '/theme.php';
         const isDark = document.documentElement.classList.contains('dark');
         syncFounderThemeIcons(isDark);
     })();
-    document.addEventListener('DOMContentLoaded', function () {
-        const isDark = document.documentElement.classList.contains('dark');
-        syncFounderThemeIcons(isDark);
-    });
+    function founderGoBack(btn) {
+        if (btn) {
+            btn.style.transform = 'scale(0.92)';
+            setTimeout(() => { btn.style.transform = ''; }, 120);
+        }
+        setTimeout(() => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '<?= url('founder/dashboard.php') ?>';
+            }
+        }, 80);
+    }
 </script>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>

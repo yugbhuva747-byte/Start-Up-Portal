@@ -203,6 +203,16 @@ require_once __DIR__ . '/theme.php';
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
 
+        <?php if (($currentPage ?? basename($_SERVER['PHP_SELF'])) !== 'dashboard.php'): ?>
+        <!-- Clean & Bold Back Icon Button -->
+        <button type="button" onclick="investorGoBack(this)"
+                id="investor-back-btn"
+                title="Go Back" aria-label="Go Back"
+                class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAFBFD] hover:bg-[#123B7A] dark:bg-slate-800 dark:hover:bg-blue-600 border border-[#E4E8EF] dark:border-slate-700 hover:border-[#123B7A] dark:hover:border-blue-600 text-[#4B5563] dark:text-slate-200 hover:text-white dark:hover:text-white shadow-xs hover:shadow-md hover:shadow-blue-900/20 transition-all duration-200 flex items-center justify-center group cursor-pointer active:scale-95">
+            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200"></i>
+        </button>
+        <?php endif; ?>
+
         <!-- Search Option Bar -->
         <form action="<?= url('investor/discover.php') ?>" method="GET" class="relative flex items-center">
             <div class="relative w-44 sm:w-60 md:w-72 lg:w-80">
@@ -363,9 +373,18 @@ require_once __DIR__ . '/theme.php';
         const isDark = document.documentElement.classList.contains('dark');
         syncInvestorThemeIcons(isDark);
     })();
-    document.addEventListener('DOMContentLoaded', function () {
-        const isDark = document.documentElement.classList.contains('dark');
-        syncInvestorThemeIcons(isDark);
-    });
+    function investorGoBack(btn) {
+        if (btn) {
+            btn.style.transform = 'scale(0.92)';
+            setTimeout(() => { btn.style.transform = ''; }, 120);
+        }
+        setTimeout(() => {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '<?= url('investor/dashboard.php') ?>';
+            }
+        }, 80);
+    }
 </script>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
