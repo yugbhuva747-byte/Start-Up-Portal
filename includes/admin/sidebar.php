@@ -1,7 +1,7 @@
 <?php
 /**
  * Admin Sidebar Navigation Component
- * Clean White / Light Theme, Small Crisp Typography
+ * Enhanced – Bigger Fonts, Rich Hover Effects & Premium Aesthetics
  */
 $currentPage = basename($_SERVER['PHP_SELF']);
 $adminUser = current_user();
@@ -13,6 +13,7 @@ require_once __DIR__ . '/theme.php';
 <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden lg:hidden transition-opacity duration-300"></div>
 
 <style>
+    /* ── Scrollbar ── */
     #main-sidebar .overflow-y-auto {
         scrollbar-width: thin;
         scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
@@ -20,12 +21,8 @@ require_once __DIR__ . '/theme.php';
         scroll-behavior: auto !important;
         -webkit-overflow-scrolling: touch;
     }
-    #main-sidebar .overflow-y-auto::-webkit-scrollbar {
-        width: 5px;
-    }
-    #main-sidebar .overflow-y-auto::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar { width: 4px; }
+    #main-sidebar .overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
     #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb {
         background: rgba(148, 163, 184, 0.35);
         border-radius: 9999px;
@@ -33,11 +30,171 @@ require_once __DIR__ . '/theme.php';
     #main-sidebar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
         background: rgba(148, 163, 184, 0.6);
     }
+
+    /* ── Nav link base ── */
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.6rem 0.875rem;
+        border-radius: 0.625rem;
+        font-size: 0.8125rem;      /* 13 px */
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: #475569;
+        border-left: 3px solid transparent;
+        transition:
+            background 0.18s ease,
+            color 0.18s ease,
+            border-color 0.18s ease,
+            box-shadow 0.18s ease,
+            transform 0.14s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Shimmer layer on hover */
+    .sidebar-link::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.06) 50%, transparent 100%);
+        opacity: 0;
+        transition: opacity 0.22s ease;
+        pointer-events: none;
+        border-radius: inherit;
+    }
+
+    /* ── Hover state ── */
+    .sidebar-link:hover {
+        background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+        color: #1d4ed8;
+        border-left-color: #93c5fd;
+        box-shadow: inset 0 1px 0 rgba(59,130,246,0.08), 0 1px 4px rgba(59,130,246,0.08);
+        transform: translateX(3px);
+    }
+    .sidebar-link:hover::before { opacity: 1; }
+    .sidebar-link:hover .nav-icon {
+        color: #2563eb;
+        transform: scale(1.13);
+    }
+
+    /* ── Active state ── */
+    .sidebar-link.is-active {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        color: #1d4ed8;
+        border-left-color: #2563eb;
+        font-weight: 700;
+        box-shadow: inset 0 1px 0 rgba(59,130,246,0.12), 0 2px 8px rgba(59,130,246,0.1);
+    }
+    .sidebar-link.is-active .nav-icon {
+        color: #2563eb;
+        transform: scale(1.1);
+    }
+
+    /* ── Icon base ── */
+    .nav-icon {
+        width: 1.0625rem;
+        height: 1.0625rem;
+        flex-shrink: 0;
+        color: #94a3b8;
+        transition: color 0.18s ease, transform 0.18s ease;
+    }
+
+    /* ── Section label ── */
+    .sidebar-section-label {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: #94a3b8;
+        padding: 0 0.875rem;
+        margin-bottom: 0.25rem;
+        margin-top: 1.1rem;
+    }
+
+    /* ── Brand ── */
+    .brand-title {
+        font-size: 0.875rem;
+        font-weight: 800;
+        color: #0f172a;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+    .brand-sub {
+        font-size: 0.625rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #94a3b8;
+    }
+
+    /* ── Admin badge ── */
+    .admin-badge {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 1px solid #bfdbfe;
+        border-radius: 0.75rem;
+        padding: 0.55rem 0.75rem;
+        margin-bottom: 1.1rem;
+    }
+    .admin-badge-title {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        color: #1e3a8a;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+    .admin-badge-dot {
+        width: 7px; height: 7px;
+        border-radius: 9999px;
+        background: #2563eb;
+        flex-shrink: 0;
+        display: inline-block;
+    }
+    .admin-badge-sub {
+        font-size: 0.625rem;
+        color: #3b82f6;
+        margin-top: 0.125rem;
+        font-weight: 600;
+    }
+
+    /* ── Footer ── */
+    .sidebar-footer {
+        padding: 0.875rem 1rem;
+        border-top: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+    }
+    .footer-name {
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .footer-role {
+        font-size: 0.6875rem;
+        color: #2563eb;
+        font-weight: 600;
+    }
+    .footer-action-btn {
+        padding: 0.375rem;
+        border-radius: 0.5rem;
+        color: #94a3b8;
+        transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+        border: none;
+        background: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    .theme-btn:hover  { color: #2563eb; background: #eff6ff; transform: scale(1.15); }
+    .logout-btn:hover { color: #e11d48; background: #fff1f2; transform: scale(1.15); }
 </style>
-<aside id="main-sidebar" 
-       data-lenis-prevent="true" 
-       data-lenis-prevent-wheel="true" 
-       data-lenis-prevent-touch="true" 
+<aside id="main-sidebar"
+       data-lenis-prevent="true"
+       data-lenis-prevent-wheel="true"
+       data-lenis-prevent-touch="true"
        class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-72 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none">
     <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-4 sm:p-5 overflow-y-auto flex-1">
         <!-- Brand Logo & Mobile Close Button -->
@@ -138,22 +295,26 @@ require_once __DIR__ . '/theme.php';
     </div>
 
     <!-- User Footer Profile & Logout -->
-    <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60">
+    <div class="sidebar-footer">
         <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2.5 overflow-hidden">
-                <img src="<?= $adminUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80' ?>" class="w-8 h-8 rounded-full object-cover border border-blue-200 dark:border-blue-900">
+            <div class="flex items-center gap-2.5 overflow-hidden">
+                <img src="<?= $adminUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80' ?>"
+                     class="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                     style="border:2px solid #bfdbfe;box-shadow:0 1px 4px rgba(37,99,235,0.15);">
                 <div class="truncate">
-                    <div class="text-xs font-bold text-slate-800 dark:text-slate-100 truncate"><?= htmlspecialchars($adminUser['name']) ?></div>
-                    <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold truncate">Compliance Officer</div>
+                    <div class="footer-name truncate"><?= htmlspecialchars($adminUser['name']) ?></div>
+                    <div class="footer-role">Compliance Officer</div>
                 </div>
             </div>
-            <div class="flex items-center space-x-1">
-                <button type="button" onclick="toggleAdminTheme()" title="Toggle Dark/Light Mode" class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 dark:hover:text-blue-400 rounded-lg transition">
-                    <i data-lucide="moon" class="w-3.5 h-3.5 hidden dark:inline"></i>
-                    <i data-lucide="sun" class="w-3.5 h-3.5 inline dark:hidden text-amber-500"></i>
+            <div class="flex items-center gap-1">
+                <button type="button" onclick="toggleAdminTheme()" title="Toggle Dark/Light Mode"
+                        class="footer-action-btn theme-btn">
+                    <i data-lucide="moon" class="w-4 h-4 hidden dark:inline"></i>
+                    <i data-lucide="sun"  class="w-4 h-4 inline dark:hidden" style="color:#f59e0b;"></i>
                 </button>
-                <a href="<?= url('auth/logout.php') ?>" title="Sign Out" class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-800 dark:hover:text-rose-400 rounded-lg transition">
-                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+                <a href="<?= url('auth/logout.php') ?>" title="Sign Out"
+                   class="footer-action-btn logout-btn">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
                 </a>
             </div>
         </div>
