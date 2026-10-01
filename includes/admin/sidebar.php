@@ -1,12 +1,26 @@
 <?php
 /**
  * Admin Sidebar Navigation Component
- * Enhanced – Bigger Fonts, Rich Hover Effects & Premium Aesthetics
+ * Enhanced – Bigger Fonts, Rich Hover Effects, Dark Mode & Premium Aesthetics
  */
-$currentPage = basename($_SERVER['PHP_SELF']);
-$adminUser = current_user();
+if (!defined('APP_NAME')) {
+    exit('Direct access not permitted');
+}
 
-// Load Global Admin "Vay Portal" Typography & Legibility Suite
+$currentPage = basename($_SERVER['PHP_SELF']);
+$adminUser = current_user() ?? ['name' => 'Admin User', 'email' => 'admin@portal.com', 'avatar_url' => ''];
+
+$pendingKycCount = 0;
+$pendingFundingCount = 0;
+
+if (isset($db) && $db instanceof PDO) {
+    try {
+        $pendingKycCount = (int)$db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'")->fetchColumn();
+        $pendingFundingCount = (int)$db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW', 'under_review')")->fetchColumn();
+    } catch (Exception $e) {}
+}
+
+// Load Global Admin Typography & Legibility Suite
 require_once __DIR__ . '/theme.php';
 ?>
 <!-- Mobile Drawer Backdrop -->
@@ -38,35 +52,21 @@ require_once __DIR__ . '/theme.php';
         gap: 0.75rem;
         padding: 0.6rem 0.875rem;
         border-radius: 0.625rem;
-        font-size: 0.8125rem;      /* 13 px */
+        font-size: 0.8125rem;
         font-weight: 600;
         letter-spacing: 0.01em;
         color: #475569;
         border-left: 3px solid transparent;
-        transition:
-            background 0.18s ease,
-            color 0.18s ease,
-            border-color 0.18s ease,
-            box-shadow 0.18s ease,
-            transform 0.14s ease;
+        transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.14s ease;
         text-decoration: none;
         position: relative;
         overflow: hidden;
     }
 
-    /* Shimmer layer on hover */
-    .sidebar-link::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(90deg, transparent 0%, rgba(59,130,246,0.06) 50%, transparent 100%);
-        opacity: 0;
-        transition: opacity 0.22s ease;
-        pointer-events: none;
-        border-radius: inherit;
+    .dark .sidebar-link {
+        color: #94a3b8;
     }
 
-    /* ── Hover state ── */
     .sidebar-link:hover {
         background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
         color: #1d4ed8;
@@ -74,13 +74,12 @@ require_once __DIR__ . '/theme.php';
         box-shadow: inset 0 1px 0 rgba(59,130,246,0.08), 0 1px 4px rgba(59,130,246,0.08);
         transform: translateX(3px);
     }
-    .sidebar-link:hover::before { opacity: 1; }
-    .sidebar-link:hover .nav-icon {
-        color: #2563eb;
-        transform: scale(1.13);
+    .dark .sidebar-link:hover {
+        background: #1e293b;
+        color: #60a5fa;
+        border-left-color: #3b82f6;
     }
 
-    /* ── Active state ── */
     .sidebar-link.is-active {
         background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
         color: #1d4ed8;
@@ -88,114 +87,31 @@ require_once __DIR__ . '/theme.php';
         font-weight: 700;
         box-shadow: inset 0 1px 0 rgba(59,130,246,0.12), 0 2px 8px rgba(59,130,246,0.1);
     }
-    .sidebar-link.is-active .nav-icon {
-        color: #2563eb;
-        transform: scale(1.1);
+    .dark .sidebar-link.is-active {
+        background: rgba(37,99,235,0.2);
+        color: #93c5fd;
+        border-left-color: #3b82f6;
     }
 
-    /* ── Icon base ── */
     .nav-icon {
         width: 1.0625rem;
         height: 1.0625rem;
-        flex-shrink: 0;
-        color: #94a3b8;
-        transition: color 0.18s ease, transform 0.18s ease;
     }
 
-    /* ── Section label ── */
-    .sidebar-section-label {
-        font-size: 0.6875rem;
-        font-weight: 700;
-        letter-spacing: 0.09em;
-        text-transform: uppercase;
-        color: #94a3b8;
-        padding: 0 0.875rem;
-        margin-bottom: 0.25rem;
-        margin-top: 1.1rem;
+    /* Rail collapsed support */
+    #main-sidebar.rail-collapsed {
+        width: 4.5rem !important;
     }
-
-    /* ── Brand ── */
-    .brand-title {
-        font-size: 0.875rem;
-        font-weight: 800;
-        color: #0f172a;
-        letter-spacing: -0.02em;
-        line-height: 1.2;
+    #main-sidebar.rail-collapsed .sidebar-text-item,
+    #main-sidebar.rail-collapsed .sidebar-group-title,
+    #main-sidebar.rail-collapsed .sidebar-badge-item {
+        display: none !important;
     }
-    .brand-sub {
-        font-size: 0.625rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #94a3b8;
-    }
-
-    /* ── Admin badge ── */
-    .admin-badge {
-        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border: 1px solid #bfdbfe;
-        border-radius: 0.75rem;
-        padding: 0.55rem 0.75rem;
-        margin-bottom: 1.1rem;
-    }
-    .admin-badge-title {
-        font-size: 0.6875rem;
-        font-weight: 700;
-        color: #1e3a8a;
-        display: flex;
-        align-items: center;
-        gap: 0.375rem;
-    }
-    .admin-badge-dot {
-        width: 7px; height: 7px;
-        border-radius: 9999px;
-        background: #2563eb;
-        flex-shrink: 0;
-        display: inline-block;
-    }
-    .admin-badge-sub {
-        font-size: 0.625rem;
-        color: #3b82f6;
-        margin-top: 0.125rem;
-        font-weight: 600;
-    }
-
-    /* ── Footer ── */
-    .sidebar-footer {
-        padding: 0.875rem 1rem;
-        border-top: 1px solid #e2e8f0;
-        background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
-    }
-    .footer-name {
-        font-size: 0.8125rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-    .footer-role {
-        font-size: 0.6875rem;
-        color: #2563eb;
-        font-weight: 600;
-    }
-    .footer-action-btn {
-        padding: 0.375rem;
-        border-radius: 0.5rem;
-        color: #94a3b8;
-        transition: color 0.15s ease, background 0.15s ease, transform 0.15s ease;
-        border: none;
-        background: none;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-    }
-    .theme-btn:hover  { color: #2563eb; background: #eff6ff; transform: scale(1.15); }
-    .logout-btn:hover { color: #e11d48; background: #fff1f2; transform: scale(1.15); }
 </style>
-<aside id="main-sidebar"
-       data-lenis-prevent="true"
-       data-lenis-prevent-wheel="true"
-       data-lenis-prevent-touch="true"
-       class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-72 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none">
+
+<aside id="main-sidebar" data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
+    class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none">
+    
     <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-4 sm:p-5 overflow-y-auto flex-1">
         <!-- Brand Logo & Mobile Close Button -->
         <div class="flex items-center justify-between mb-5 sm:mb-6">
@@ -203,20 +119,20 @@ require_once __DIR__ . '/theme.php';
                 <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-600/20 group-hover:scale-105 transition flex-shrink-0">
                     <i data-lucide="shield" class="w-4 h-4"></i>
                 </div>
-                <div class="min-w-0">
-                    <div class="font-extrabold text-slate-900 text-sm tracking-tight leading-tight flex items-center gap-1 whitespace-nowrap">
-                        ADMIN <span class="text-blue-600">CONTROL</span>
+                <div class="min-w-0 sidebar-text-item">
+                    <div class="font-extrabold text-slate-900 dark:text-white text-sm tracking-tight leading-tight flex items-center gap-1 whitespace-nowrap">
+                        ADMIN <span class="text-blue-600 dark:text-blue-400">CONTROL</span>
                     </div>
                     <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">Compliance & Audit</div>
                 </div>
             </a>
-            <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition flex-shrink-0" title="Close navigation">
+            <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0" title="Close navigation">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
 
         <!-- Admin Badge -->
-        <div class="mb-5 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-xs">
+        <div class="mb-5 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-xs sidebar-badge-item">
             <div class="text-blue-900 dark:text-blue-200 font-bold flex items-center space-x-1.5 text-[10.5px]">
                 <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0"></span>
                 <span class="whitespace-nowrap">Governance Access</span>
@@ -227,93 +143,105 @@ require_once __DIR__ . '/theme.php';
         <!-- Navigation Links -->
         <nav class="space-y-1 text-xs font-semibold">
             <a href="<?= url('admin/dashboard.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'dashboard.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="gauge" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'dashboard.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Overview & KPIs</span>
+               class="sidebar-link <?= $currentPage === 'dashboard.php' ? 'is-active' : '' ?>">
+                <i data-lucide="gauge" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Overview & KPIs</span>
             </a>
 
             <a href="<?= url('admin/verification_queue.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'verification_queue.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="check-square" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'verification_queue.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">KYC Queue</span>
+               class="sidebar-link <?= $currentPage === 'verification_queue.php' ? 'is-active' : '' ?>">
+                <i data-lucide="check-square" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">KYC Queue</span>
+                <?php if ($pendingKycCount > 0): ?>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 sidebar-text-item"><?= $pendingKycCount ?></span>
+                <?php endif; ?>
             </a>
 
             <a href="<?= url('admin/funding_review.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'funding_review.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="file-check-2" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'funding_review.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Funding Approvals</span>
+               class="sidebar-link <?= $currentPage === 'funding_review.php' ? 'is-active' : '' ?>">
+                <i data-lucide="file-check-2" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Funding Approvals</span>
+                <?php if ($pendingFundingCount > 0): ?>
+                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 sidebar-text-item"><?= $pendingFundingCount ?></span>
+                <?php endif; ?>
             </a>
 
             <a href="<?= url('admin/users.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'users.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="users" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'users.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Users Directory</span>
+               class="sidebar-link <?= $currentPage === 'users.php' ? 'is-active' : '' ?>">
+                <i data-lucide="users" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Users Directory</span>
             </a>
 
             <a href="<?= url('admin/companies.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'companies.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="building-2" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'companies.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Startup Companies</span>
+               class="sidebar-link <?= $currentPage === 'companies.php' ? 'is-active' : '' ?>">
+                <i data-lucide="building-2" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Startup Companies</span>
             </a>
 
             <a href="<?= url('admin/share_allotments.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'share_allotments.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="award" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'share_allotments.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Share Allotments</span>
+               class="sidebar-link <?= $currentPage === 'share_allotments.php' ? 'is-active' : '' ?>">
+                <i data-lucide="award" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Share Allotments</span>
             </a>
 
             <a href="<?= url('admin/transactions.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'transactions.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="banknote" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'transactions.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Transactions & Escrow</span>
+               class="sidebar-link <?= $currentPage === 'transactions.php' ? 'is-active' : '' ?>">
+                <i data-lucide="banknote" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Transactions & Escrow</span>
             </a>
 
             <a href="<?= url('admin/revenue.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'revenue.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="receipt" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'revenue.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Revenue & Commissions</span>
-            </a>
-
-            <a href="<?= url('admin/audit_logs.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'audit_logs.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="history" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'audit_logs.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Security Audit Trail</span>
+               class="sidebar-link <?= $currentPage === 'revenue.php' ? 'is-active' : '' ?>">
+                <i data-lucide="receipt" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Revenue & Fees</span>
             </a>
 
             <a href="<?= url('admin/reports.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'reports.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="bar-chart-3" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'reports.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Reports & Analytics</span>
+               class="sidebar-link <?= $currentPage === 'reports.php' ? 'is-active' : '' ?>">
+                <i data-lucide="bar-chart-3" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Reports & Stats</span>
+            </a>
+
+            <a href="<?= url('admin/audit_logs.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'audit_logs.php' ? 'is-active' : '' ?>">
+                <i data-lucide="history" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
             </a>
 
             <a href="<?= url('admin/broadcasts.php') ?>" 
-               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition <?= $currentPage === 'broadcasts.php' ? 'bg-blue-50 text-blue-700 font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' ?>">
-                <i data-lucide="megaphone" class="w-4 h-4 flex-shrink-0 <?= $currentPage === 'broadcasts.php' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap">Platform Broadcasts</span>
+               class="sidebar-link <?= $currentPage === 'broadcasts.php' ? 'is-active' : '' ?>">
+                <i data-lucide="megaphone" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Broadcasts</span>
+            </a>
+
+            <a href="<?= url('admin/email_templates.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'email_templates.php' ? 'is-active' : '' ?>">
+                <i data-lucide="mail" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Email Templates</span>
+            </a>
+
+            <a href="<?= url('admin/settings.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'settings.php' ? 'is-active' : '' ?>">
+                <i data-lucide="settings" class="nav-icon flex-shrink-0"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Settings & Security</span>
             </a>
         </nav>
     </div>
 
     <!-- User Footer Profile & Logout -->
-    <div class="sidebar-footer">
+    <div class="p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5 overflow-hidden">
-                <img src="<?= $adminUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80' ?>"
-                     class="w-9 h-9 rounded-full object-cover flex-shrink-0"
-                     style="border:2px solid #bfdbfe;box-shadow:0 1px 4px rgba(37,99,235,0.15);">
-                <div class="truncate">
-                    <div class="footer-name truncate"><?= htmlspecialchars($adminUser['name']) ?></div>
-                    <div class="footer-role">Compliance Officer</div>
+            <div class="flex items-center gap-2.5 overflow-hidden min-w-0">
+                <img src="<?= (!empty($adminUser['avatar_url']) ? htmlspecialchars($adminUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80') ?>"
+                     class="w-8 h-8 rounded-full object-cover flex-shrink-0 border border-indigo-200 dark:border-slate-700">
+                <div class="truncate sidebar-text-item">
+                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate"><?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?></div>
+                    <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold truncate">Administrator</div>
                 </div>
             </div>
-            <div class="flex items-center gap-1">
-                <button type="button" onclick="toggleAdminTheme()" title="Toggle Dark/Light Mode"
-                        class="footer-action-btn theme-btn">
-                    <i data-lucide="moon" class="w-4 h-4 hidden dark:inline"></i>
-                    <i data-lucide="sun"  class="w-4 h-4 inline dark:hidden" style="color:#f59e0b;"></i>
-                </button>
+            <div class="flex items-center gap-1 flex-shrink-0">
                 <a href="<?= url('auth/logout.php') ?>" title="Sign Out"
-                   class="footer-action-btn logout-btn">
+                   class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -336,6 +264,29 @@ require_once __DIR__ . '/theme.php';
             document.body.classList.remove('overflow-hidden', 'lg:overflow-auto');
         }
     }
+
+    // Toggle Desktop Sidebar (Expanded vs Compact Rail)
+    function toggleDesktopSidebar() {
+        const sidebar = document.getElementById('main-sidebar');
+        if (!sidebar) return;
+        const isCollapsed = sidebar.classList.contains('rail-collapsed');
+        if (isCollapsed) {
+            sidebar.classList.remove('rail-collapsed');
+            localStorage.setItem('admin_sidebar_collapsed', '0');
+        } else {
+            sidebar.classList.add('rail-collapsed');
+            localStorage.setItem('admin_sidebar_collapsed', '1');
+        }
+    }
+
+    // Restore desktop sidebar collapsed state
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedState = localStorage.getItem('admin_sidebar_collapsed');
+        const sidebar = document.getElementById('main-sidebar');
+        if (savedState === '1' && sidebar && window.innerWidth >= 1024) {
+            sidebar.classList.add('rail-collapsed');
+        }
+    });
 
     // Direct mouse wheel scroll engine for sidebar
     (function () {

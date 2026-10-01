@@ -39,6 +39,61 @@ if ($db) {
         $faceValue = !empty($company['face_value_per_share']) ? (float)$company['face_value_per_share'] : 10.00;
         $esopPercent = isset($company['esop_pool_percent']) && $company['esop_pool_percent'] !== '' ? (float)$company['esop_pool_percent'] : 10.00;
 
+
+        // Handle POST: Update Capital Structure & Issue Allotment
+        if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                $error = 'Security validation failed. Please refresh and try again.';
+            } else {
+                $action = $_POST['form_action'] ?? '';
+                if ($action === 'update_capital') {
+                    $newAuth = (float)($_POST['authorized_capital'] ?? 10000000);
+                    $newFace = (float)($_POST['face_value'] ?? $_POST['face_value_per_share'] ?? 10);
+                    $newEsop = (float)($_POST['esop_percent'] ?? $_POST['esop_pool_percent'] ?? 10);
+
+                    if ($newAuth <= 0) {
+                        $error = 'Authorized share capital must be greater than zero.';
+                    } elseif ($newFace <= 0) {
+                        $error = 'Face value per share must be greater than zero.';
+                    } elseif ($newEsop < 0 || $newEsop > 50) {
+                        $error = 'ESOP pool allocation must be between 0% and 50%.';
+                    } else {
+                        $upStmt = $db->prepare("UPDATE companies SET authorized_capital = ?, face_value_per_share = ?, esop_pool_percent = ? WHERE id = ?");
+                        $upStmt->execute([$newAuth, $newFace, $newEsop, $compId]);
+
+                        log_audit($user['id'], 'UPDATE_CAP_STRUCTURE', 'companies', $compId, "Updated cap structure: Auth ₹{$newAuth}, FV ₹{$newFace}, ESOP {$newEsop}%");
+                        set_flash('success', 'Capital structure parameters updated successfully.');
+                        header('Location: ' . url('founder/cap_table.php'));
+                        exit;
+                    }
+                } elseif ($action === 'issue_allotment') {
+                    $investorName = trim($_POST['investor_name'] ?? '');
+                    $investorEmail = trim($_POST['investor_email'] ?? '');
+                    $shareClass = trim($_POST['share_class'] ?? 'CCPS');
+                    $amountInvested = (float)($_POST['amount_invested'] ?? 0);
+                    $numShares = (int)($_POST['number_of_shares'] ?? 0);
+                    $equityPercent = (float)($_POST['equity_percent'] ?? 0);
+
+                    if (empty($investorName) || $amountInvested <= 0 || $numShares <= 0) {
+                        $error = 'Please fill all required allotment fields with valid values.';
+                    } else {
+                        $uCheck = $db->prepare("SELECT id FROM users WHERE email = ? LIMIT 1");
+                        $uCheck->execute([$investorEmail]);
+                        $invUserId = $uCheck->fetchColumn() ?: null;
+
+                        $insStmt = $db->prepare("
+                            INSERT INTO investments (investor_user_id, company_id, amount_invested, number_of_shares, equity_allotted_percent, share_class, status, created_at)
+                            VALUES (?, ?, ?, ?, ?, ?, 'confirmed', NOW())
+                        ");
+                        $insStmt->execute([$invUserId, $compId, $amountInvested, $numShares, $equityPercent, $shareClass]);
+                        log_audit($user['id'], 'ISSUE_ALLOTMENT', 'investments', $compId, "Recorded allotment for {$investorName}: {$numShares} shares ({$equityPercent}%)");
+                        set_flash('success', "Share certificate and allotment recorded for {$investorName}.");
+                        header('Location: ' . url('founder/cap_table.php'));
+                        exit;
+                    }
+                }
+            }
+        }
         // 2. Fetch founders & co-founders
         $fStmt = $db->prepare("
             SELECT cf.*, u.name as founder_name, u.email, u.avatar_url
@@ -70,6 +125,51 @@ if ($db) {
         ");
         $invStmt->execute([$compId]);
         $investments = $invStmt->fetchAll();
+
+
+        // Handle CSV Export
+        if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+            $cleanComp = preg_replace('/[^a-zA-Z0-9_-]/', '_', $company['name']);
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=cap_table_' . $cleanComp . '_' . date('Ymd') . '.csv');
+            $output = fopen('php://output', 'w');
+
+            fputcsv($output, ['Certificate / Folio', 'Shareholder Name', 'Designation / Entity', 'Share Class', 'Number of Shares', 'Price Per Share (INR)', 'Distinctive Range', 'Capital Subscribed (INR)', 'Equity Stake (%)']);
+
+            foreach ($founders as $f) {
+                fputcsv($output, [
+                    'FOLIO-0001',
+                    $f['founder_name'] ?? 'Founder',
+                    $f['designation'] ?? 'Co-Founder',
+                    'Common Equity Shares',
+                    'Core Common',
+                    number_format($faceValue, 2),
+                    '000001 - 010000',
+                    'Initial Subscription',
+                    number_format((float)($f['equity_percent'] ?? 0), 2) . '%'
+                ]);
+            }
+
+            foreach ($investments as $inv) {
+                $from = str_pad((string)($inv['distinctive_from'] ?? 1), 6, '0', STR_PAD_LEFT);
+                $to = str_pad((string)($inv['distinctive_to'] ?? 1), 6, '0', STR_PAD_LEFT);
+                fputcsv($output, [
+                    $inv['certificate_number'] ?: ('FOLIO-' . ($inv['folio_number'] ?? '001')),
+                    $inv['investor_name'] ?? 'Investor',
+                    $inv['round_name'] ?? 'Funding Round',
+                    $inv['share_class'] ?? 'CCPS',
+                    (int)($inv['number_of_shares'] ?? 0),
+                    (float)($inv['price_per_share'] ?? 0),
+                    "{$from} - {$to}",
+                    (float)($inv['amount_invested'] ?? 0),
+                    number_format((float)($inv['equity_allotted_percent'] ?? 0), 3) . '%'
+                ]);
+            }
+
+            fclose($output);
+            exit;
+        }
+
     }
 }
 
@@ -162,9 +262,11 @@ $investorsTotalEquity = 0;
 $totalCapitalRaised = 0;
 $totalInvestorShares = 0;
 foreach ($investments as $inv) {
-    $investorsTotalEquity += (float)$inv['equity_allotted_percent'];
-    $totalCapitalRaised += (float)$inv['amount_invested'];
-    $totalInvestorShares += (int)$inv['number_of_shares'];
+
+    $investorsTotalEquity += (float)($inv['equity_allotted_percent'] ?? 0);
+    $totalCapitalRaised += (float)($inv['amount_invested'] ?? 0);
+    $totalInvestorShares += (int)($inv['number_of_shares'] ?? 0);
+
 }
 
 $unallocatedPercent = max(0, round(100 - ($foundersTotalEquity + $investorsTotalEquity + $esopPercent), 2));
@@ -183,6 +285,7 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+
         body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
             font-family: "Vay Portal", Sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -237,6 +340,7 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
             background-color: #FFFFFF;
             border-color: #4F46E5;
             box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+
         }
     </style>
 </head>
@@ -254,6 +358,7 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
 
             <!-- Flash Feedback -->
             <?php if ($flash): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
                         <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-5 h-5 flex-shrink-0 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?>"></i>
@@ -267,19 +372,30 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                 <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-xs">
                     <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
                     <span><?= htmlspecialchars($error) ?></span>
+
+                </div>
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+                <div class="p-4 rounded-xl text-sm font-bold border bg-rose-50 text-rose-800 border-rose-200 flex items-center space-x-2.5">
+                    <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 flex-shrink-0"></i>
+                    <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!$company): ?>
+
                 <div class="section-card p-12 text-center">
                     <i data-lucide="building" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
                     <h2 class="text-base font-bold text-slate-900">No Company Profile Linked</h2>
                     <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Please create and register your startup company profile before accessing the equity Cap Table.</p>
                     <a href="<?= url('founder/company.php') ?>" class="inline-flex items-center space-x-1.5 mt-4 px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm">
+
                         <span>Setup Company Profile</span>
                     </a>
                 </div>
             <?php else: ?>
+
 
             <!-- Statutory Cap Table Hero Banner -->
             <div class="hero-cap-banner p-6 sm:p-8 relative overflow-hidden">
@@ -334,10 +450,12 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                             <span>Print</span>
                         </button>
                     </div>
+
                 </div>
             </div>
 
             <!-- Capital Structure Summary Cards -->
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="section-card p-5">
                     <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Authorized Capital</div>
@@ -420,9 +538,11 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                         </div>
                         <div class="text-lg font-black text-slate-700"><?= number_format($unallocatedPercent, 2) ?>%</div>
                         <div class="text-[11px] text-slate-400">Future Funding Buffer</div>
+
                     </div>
                 </div>
             </div>
+
 
             <!-- Interactive Dilution Modeling Simulator (Live What-If Calculator) -->
             <div class="section-card p-6 sm:p-7 space-y-4">
@@ -487,10 +607,12 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                     <div class="flex items-center space-x-2">
                         <input type="text" id="sh-search" placeholder="Search shareholder or cert..." oninput="filterShareholders()"
                                class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 outline-none focus:bg-white focus:border-indigo-600 transition">
+
                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
+
                     <table class="w-full text-left text-xs" id="sh-table">
                         <thead>
                             <tr class="border-b border-slate-100 text-[10.5px] font-bold uppercase tracking-wider text-slate-400">
@@ -526,10 +648,12 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                                     <td class="py-3.5 text-right">
                                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
                                             Founding Common Core
+
                                         </span>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
+
 
                             <!-- 2. Investor Allotments -->
                             <?php foreach ($investments as $inv): ?>
@@ -613,11 +737,13 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                                         </span>
                                     </td>
                                 </tr>
+
                             <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
+
 
             <!-- Modal 1: Configure Capital Structure -->
             <div id="update-capital-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -737,12 +863,15 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
                 </div>
             </div>
 
+
             <?php endif; ?>
 
         </main>
     </div>
 
+
     <!-- Scripts -->
+
     <script>
         lucide.createIcons();
 

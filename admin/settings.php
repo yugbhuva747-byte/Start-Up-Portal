@@ -1,6 +1,8 @@
 <?php
 /**
  * Admin Module: Platform Settings & Security Configuration
+
+
  */
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
@@ -10,7 +12,7 @@ header("Expires: 0");
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Platform Settings & Security';
+$pageTitle = 'Platform Settings';
 
 $categories = [];
 $securityEvents = [];
@@ -35,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
         if ($action === 'generate_backup_codes') {
             $plainCodes = generate_2fa_backup_codes($user['id'], 5);
             $_SESSION['new_backup_codes'] = $plainCodes;
-            set_flash('success', '5 new emergency backup recovery codes generated. Please store them securely!');
+            set_flash('success', '5 new emergency recovery codes generated. Please store them securely!');
             header('Location: ' . url('admin/settings.php'));
             exit;
         }
 
         if ($action === 'reset_totp_qr') {
             reset_admin_totp($user['id']);
-            set_flash('info', 'Mobile Authenticator has been reset. Please scan the new QR code with your mobile app.');
+            set_flash('info', 'Mobile Authenticator has been reset. Please scan the new QR code.');
             header('Location: ' . url('auth/setup_2fa.php'));
             exit;
         }
@@ -100,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
     }
 }
 
+
 // ---------------------------------------------------------------------------
 // Load page data
 // ---------------------------------------------------------------------------
@@ -131,6 +134,7 @@ $flashClasses = match ($flashType) {
     'info' => 'bg-blue-50 text-blue-700 border-blue-200',
     default => 'bg-rose-50 text-rose-700 border-rose-200',
 };
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -138,6 +142,7 @@ $flashClasses = match ($flashType) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Settings & Security • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
@@ -171,21 +176,28 @@ $flashClasses = match ($flashType) {
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="settings-main">
 
+
+            <!-- Alerts -->
             <?php if ($flash): ?>
+
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flashClasses ?> flex items-center space-x-2">
                     <i data-lucide="<?= $flashType === 'success' ? 'check-circle' : ($flashType === 'info' ? 'info' : 'alert-circle') ?>"
                         class="w-3.5 h-3.5 flex-shrink-0"></i>
+
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
+
                 <div
                     class="p-3.5 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
                     <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
+
 
             <!-- Header -->
             <div>
@@ -193,20 +205,33 @@ $flashClasses = match ($flashType) {
                 </h1>
                 <p class="text-xs text-slate-500 mt-0.5">Manage industry categories, platform configuration, and
                     security monitoring.</p>
+
             </div>
 
-            <!-- Platform Info -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Platform</div>
-                    <div class="text-sm font-bold text-slate-900"><?= APP_NAME ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">Phase 1 — Active</div>
+            <!-- Platform Metrics -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Platform Environment</span>
+                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                            <i data-lucide="server" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-sky text-base">Development</div>
+                    <div class="text-[11px] text-slate-500 mt-1"><?= php_uname('s') ?> / Apache</div>
                 </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Environment</div>
-                    <div class="text-sm font-bold text-emerald-600">Development</div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= php_uname('s') ?> / PHP <?= phpversion() ?></div>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Active Sessions</span>
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= $activeSessions ?></div>
+                    <div class="text-[11px] text-slate-500 mt-1">Logged-in during last 60m</div>
                 </div>
+
                 <div class="card-clean rounded-xl p-4">
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Sessions
                     </div>
@@ -269,6 +294,7 @@ $flashClasses = match ($flashType) {
                                 class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 whitespace-nowrap <?= $is2faEnabled ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-xs' ?>">
                                 <i data-lucide="<?= $is2faEnabled ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= $is2faEnabled ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
+
                             </button>
                         </form>
                         <div
@@ -278,6 +304,7 @@ $flashClasses = match ($flashType) {
                         </div>
                     </div>
                 </div>
+
 
                 <div id="section-2fa-body">
                     <!-- 2FA Details & Recovery Codes Grid -->
@@ -428,6 +455,7 @@ $flashClasses = match ($flashType) {
                                     <span>Save</span>
                                 </button>
                             </div>
+
                         </form>
 
                         <!-- Category List -->
@@ -495,6 +523,7 @@ $flashClasses = match ($flashType) {
                     </div>
                 </div>
 
+
                 <!-- Security Events Monitor Collapsible Card -->
                 <div class="card-clean rounded-2xl p-6">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
@@ -526,8 +555,10 @@ $flashClasses = match ($flashType) {
                                 <i data-lucide="chevron-down" data-chevron
                                     class="w-4 h-4 transition-transform duration-300"></i>
                             </div>
+
                         </div>
                     </div>
+
 
                     <div id="section-events-body">
                         <?php if (empty($securityEvents)): ?>
@@ -598,9 +629,11 @@ $flashClasses = match ($flashType) {
                             <?php endif; ?>
                         <?php endif; ?>
                     </div>
+
                 </div>
 
             </div>
+
 
             <!-- Role & Permission Architecture Collapsible Card -->
             <!-- FIX: removed transition-all / duration-300 here too -->
@@ -701,6 +734,7 @@ $flashClasses = match ($flashType) {
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
 
@@ -708,6 +742,7 @@ $flashClasses = match ($flashType) {
     </div>
 
     <script>
+
         // Render icons first
         if (window.lucide) lucide.createIcons();
 
@@ -779,6 +814,7 @@ $flashClasses = match ($flashType) {
                 if (arrow) arrow.classList.toggle('rotate-180', isHidden);
             }
         }
+
 
         function copyBackupCodes() {
             const container = document.getElementById('backupCodesContainer');

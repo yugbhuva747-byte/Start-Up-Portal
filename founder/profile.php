@@ -1,8 +1,10 @@
 <?php
 /**
+
  * Founder Module: Profile & Account Settings Studio
  * Executive Persona, Credentials, Social Links & Security Management
  * Vay Portal Typography, Clean Visual Contrast, Full Width Layout
+
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('founder');
@@ -32,7 +34,7 @@ if ($db) {
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-        $error = 'Security token invalid.';
+        $error = 'Security token invalid. Please refresh the page.';
     } else {
         $action = $_POST['form_action'] ?? 'update_profile';
 
@@ -74,7 +76,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $updFP->execute([$user['id'], $designation, $bio, $linkedin, $website, $pan]);
 
                 log_audit($user['id'], 'UPDATE_PROFILE', 'users', $user['id'], 'Founder updated personal profile');
+
                 set_flash('success', 'Profile details successfully updated.');
+
                 header('Location: ' . url('founder/profile.php'));
                 exit;
             }
@@ -93,7 +97,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     header('Location: ' . url('founder/profile.php'));
                     exit;
                 } else {
-                    $error = 'New passwords must match and be at least 6 characters.';
+                    $error = 'New passwords must match and be at least 6 characters long.';
                 }
             } else {
                 $error = 'Current password entered is incorrect.';
@@ -113,6 +117,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+
         body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
             font-family: "Vay Portal", Sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -180,6 +185,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </style>
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
     
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
@@ -193,21 +199,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             
             <!-- Flash Feedback -->
             <?php if ($flash): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
                         <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-5 h-5 flex-shrink-0 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?>"></i>
                         <span><?= htmlspecialchars($flash['message']) ?></span>
                     </div>
                     <span class="text-xs font-bold uppercase opacity-75">Notice</span>
+
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-xs">
                     <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
+
 
             <!-- Executive Persona Hero Card -->
             <div class="hero-profile-banner p-6 sm:p-8 relative overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
@@ -256,14 +267,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             <span>View Public Founder Profile</span>
                         </a>
                     </div>
+
                 </div>
             </div>
 
             <!-- Profile Info Edit Form -->
+
             <div class="section-card p-6 sm:p-7 space-y-6">
+
                 <form action="<?= url('founder/profile.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="update_profile">
+
 
                     <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                         <div>
@@ -310,9 +325,20 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                                oninput="previewUrlAvatar(this.value)">
                                     </div>
                                 </details>
+
                             </div>
+
+                            <details class="text-xs text-slate-500 pt-1">
+                                <summary class="hover:text-indigo-600 font-bold cursor-pointer select-none">Or paste an online image web link</summary>
+                                <div class="mt-2 flex items-center gap-2">
+                                    <input type="url" name="avatar_url" id="avatar_url_input" value="<?= htmlspecialchars($user['avatar_url'] ?? '') ?>" placeholder="https://example.com/photo.jpg"
+                                           class="w-full px-4 py-2.5 bg-white border border-slate-200 focus:border-indigo-600 rounded-xl text-sm text-slate-900 outline-none font-medium"
+                                           oninput="previewUrlAvatar(this.value)">
+                                </div>
+                            </details>
                         </div>
                     </div>
+
 
                     <!-- Fields in 2 & 3 Columns -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -391,14 +417,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="pt-3 border-t border-slate-100 flex justify-end">
                         <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition flex items-center space-x-2">
                             <i data-lucide="save" class="w-3.5 h-3.5"></i>
+
                             <span>Save Profile Changes</span>
                         </button>
                     </div>
                 </form>
             </div>
 
-            <!-- Linked Startup Affiliation Card -->
+            <!-- Associated Startup Entity Card -->
             <?php if ($company): ?>
+
                 <div class="section-card p-6">
                     <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
                         <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
@@ -420,10 +448,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div class="text-right">
                             <span class="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Equity Allocation</span>
                             <span class="font-extrabold text-indigo-600 text-sm"><?= !empty($company['equity_percent']) ? $company['equity_percent'] . '%' : 'Founder Stake' ?></span>
+
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
+
 
             <!-- Password Change Security Card -->
             <div class="section-card p-6 sm:p-7 space-y-4">
@@ -440,12 +470,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div>
                             <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Current Password</label>
                             <input type="password" name="current_password" required class="form-input-clean text-xs">
+
                         </div>
+
                         <div>
+
                             <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">New Password</label>
                             <input type="password" name="new_password" required class="form-input-clean text-xs">
+
                         </div>
+
                         <div>
+
                             <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Confirm Password</label>
                             <input type="password" name="confirm_password" required class="form-input-clean text-xs">
                         </div>
@@ -454,6 +490,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="pt-2 flex justify-end">
                         <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs">
                             Update Security Password
+
                         </button>
                     </div>
                 </form>
@@ -468,30 +505,39 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
+
                 const file = input.files[0];
                 const label = document.getElementById('file-chosen-name');
                 if (label) {
                     label.textContent = 'Selected: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
                     label.className = 'text-xs text-emerald-600 font-bold';
                 }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const formImg = document.getElementById('avatar-form-img');
-                    if (formImg) formImg.src = e.target.result;
-                    const topPreviewImg = document.getElementById('avatar-preview-img');
-                    if (topPreviewImg) topPreviewImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                    document.getElementById('avatar-form-img').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+                document.getElementById('file-chosen-name').textContent = input.files[0].name;
             }
         }
 
         function previewUrlAvatar(url) {
-            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-                const formImg = document.getElementById('avatar-form-img');
-                if (formImg) formImg.src = url;
-                const topPreviewImg = document.getElementById('avatar-preview-img');
-                if (topPreviewImg) topPreviewImg.src = url;
+            if (url && url.length > 5) {
+                document.getElementById('avatar-form-img').src = url;
             }
+        }
+
+        function togglePass(inputId, btn) {
+            const el = document.getElementById(inputId);
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4"></i>';
+            } else {
+                el.type = 'password';
+                btn.innerHTML = '<i data-lucide="eye" class="w-4 h-4"></i>';
+            }
+            lucide.createIcons();
         }
     </script>
 </body>

@@ -142,39 +142,31 @@ $flash = get_flash();
                 </div>
             <?php endif; ?>
 
-            <!-- Editorial Breadcrumb Bar -->
-            <div class="flex items-center justify-between text-xs text-[#667085] pb-2 border-b border-[#E4E8EF]">
+
+            <!-- Breadcrumb Navigation -->
+            <div class="flex items-center justify-between text-xs sm:text-sm text-slate-500">
                 <div class="flex items-center space-x-2">
                     <?php if ($currentUser['role'] === 'investor'): ?>
-                        <a href="<?= url('investor/dashboard.php') ?>"
-                            class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
-                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
-                            <span>Workspace</span>
+                        <a href="<?= url('investor/dashboard.php') ?>" class="hover:text-slate-900 transition flex items-center space-x-1">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Dashboard</span>
                         </a>
                     <?php else: ?>
-                        <a href="<?= url('founder/dashboard.php') ?>"
-                            class="hover:text-[#123B7A] transition flex items-center space-x-1.5 font-medium">
-                            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                        <a href="<?= url('founder/dashboard.php') ?>" class="hover:text-slate-900 transition flex items-center space-x-1">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
                             <span>Founder Workspace</span>
                         </a>
                     <?php endif; ?>
-                    <span class="text-[#E4E8EF]">/</span>
-                    <span class="text-[#0B1F3A] font-bold">Investor Profile</span>
+                    <span>/</span>
+                    <span class="text-slate-800 font-bold">Investor Profile</span>
                 </div>
 
                 <?php if ($isSelf): ?>
-                    <div class="flex items-center space-x-3">
-                        <a href="<?= url('investor/verification.php') ?>"
-                            class="text-[11px] font-semibold text-[#667085] hover:text-[#123B7A] transition flex items-center space-x-1">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                            <span>Accreditation Hub</span>
-                        </a>
-                        <a href="<?= url('investor/profile.php') ?>"
-                            class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#EAF2FF] hover:bg-[#123B7A] text-[#123B7A] hover:text-white rounded-lg font-bold text-xs transition duration-200">
-                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                            <span>Edit Thesis & Profile</span>
-                        </a>
-                    </div>
+                    <a href="<?= url('investor/profile.php') ?>" class="flex items-center space-x-1.5 px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl font-bold text-xs sm:text-sm transition">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i>
+                        <span>Edit Thesis & Profile</span>
+                    </a>
+
                 <?php endif; ?>
             </div>
 
@@ -193,14 +185,14 @@ $flash = get_flash();
                     </div>
                 </div>
 
-                <!-- Profile Identity Bar -->
-                <div class="px-6 sm:px-8 pb-8 pt-0 relative">
-                    <div
-                        class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#E4E8EF]">
-                        <div class="flex flex-col sm:flex-row sm:items-end gap-5">
-                            <div class="relative -mt-16 sm:-mt-20 flex-shrink-0">
-                                <img src="<?= $investor['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200' ?>"
-                                    class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl object-cover border-4 border-white shadow-lg bg-white">
+
+                <div class="px-5 sm:px-6 pb-6 pt-0 relative">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="relative -mt-12 flex-shrink-0">
+                                <img src="<?= $investor['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160' ?>" 
+                                     class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md bg-white">
+
                                 <?php if ($investor['is_verified']): ?>
                                     <div class="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-[#123B7A] border-2 border-white flex items-center justify-center text-white shadow-md"
                                         title="SEBI Verified Investor">
@@ -209,37 +201,29 @@ $flash = get_flash();
                                 <?php endif; ?>
                             </div>
 
-                            <div class="pt-2 sm:pt-0 space-y-1.5">
-                                <div class="flex flex-wrap items-center gap-2.5">
-                                    <h1 class="text-2xl sm:text-3xl font-black text-[#0B1F3A] tracking-tight">
-                                        <?= htmlspecialchars($investor['name']) ?>
-                                    </h1>
-                                    <span
-                                        class="px-2.5 py-0.5 rounded-full bg-[#EAF2FF] text-[#123B7A] text-[11px] font-bold tracking-wide">
+                            <div class="pt-2">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($investor['name']) ?></h1>
+                                    <span class="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold">
                                         <?= strtoupper($profile['investor_type'] ?? 'ANGEL INVESTOR') ?>
                                     </span>
                                 </div>
-
-                                <div class="text-xs font-semibold text-[#123B7A] flex flex-wrap items-center gap-2">
-                                    <span class="flex items-center space-x-1">
-                                        <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                                        <span>SEBI Compliant Accredited Investor</span>
-                                    </span>
-                                    <span class="text-[#E4E8EF]">•</span>
-                                    <span class="text-[#667085] font-normal"><?= $profile['experience_years'] ?? 5 ?>+
-                                        Years Venture Experience</span>
+                                <div class="text-xs sm:text-sm font-semibold text-emerald-600 mt-1 flex items-center space-x-1.5">
+                                    <i data-lucide="award" class="w-4 h-4"></i>
+                                    <span>SEBI Compliant Accredited Investor</span>
+                                    <span class="text-slate-300">•</span>
+                                    <span class="text-slate-600 font-medium"><?= $profile['experience_years'] ?? 5 ?>+ Years in Venture</span>
                                 </div>
-
-                                <div class="flex flex-wrap items-center gap-4 text-xs text-[#667085] pt-1">
+                                <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-slate-500 mt-2">
                                     <span class="flex items-center space-x-1.5">
-                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-[#667085]"></i>
-                                        <span><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>,
-                                            <?= htmlspecialchars($investor['country'] ?? 'India') ?></span>
+                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>, <?= htmlspecialchars($investor['country'] ?? 'India') ?></span>
                                     </span>
                                     <span>•</span>
                                     <span class="flex items-center space-x-1.5">
-                                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-[#667085]"></i>
-                                        <span>Member since <?= date('F Y', strtotime($investor['created_at'])) ?></span>
+                                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                                        <span>Member since <?= date('M Y', strtotime($investor['created_at'])) ?></span>
+
                                     </span>
                                 </div>
                             </div>
@@ -248,50 +232,47 @@ $flash = get_flash();
                         <!-- Top Level Action Buttons -->
                         <div class="flex items-center space-x-3 pt-2 md:pt-0">
                             <?php if (!$isSelf): ?>
-                                <a href="<?= url('founder/messages.php') ?>"
-                                    class="px-5 py-2.5 bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center space-x-2">
-                                    <i data-lucide="send" class="w-3.5 h-3.5"></i>
-                                    <span>Pitch Startup / Connect</span>
+
+                                <a href="<?= url('founder/messages.php') ?>" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center space-x-2">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    <span>Pitch Startup / Chat</span>
                                 </a>
                             <?php else: ?>
-                                <a href="<?= url('investor/profile.php') ?>"
-                                    class="px-4 py-2 bg-white hover:bg-[#FAFBFD] text-[#0B1F3A] border border-[#E4E8EF] font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
-                                    <i data-lucide="sliders" class="w-3.5 h-3.5 text-[#123B7A]"></i>
-                                    <span>Manage Thesis</span>
+                                <a href="<?= url('investor/profile.php') ?>" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2">
+                                    <i data-lucide="settings" class="w-4 h-4"></i>
+                                    <span>Thesis & Preferences</span>
+
                                 </a>
                             <?php endif; ?>
                         </div>
                     </div>
 
-                    <!-- Clean Horizontal Highlights Strip (Editorial Rows, NOT KPI Cards) -->
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
-                        <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Capital
-                                Deployed</span>
-                            <div class="text-lg font-black text-[#0B1F3A]"><?= format_inr($totalDeployed) ?></div>
-                            <span class="text-[10.5px] text-[#667085]">Confirmed escrow</span>
+
+                    <!-- Quick Metrics Strip -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-4 text-xs sm:text-sm">
+                        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                            <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Total Deployed Capital</span>
+                            <div class="text-lg sm:text-xl font-extrabold text-emerald-600 mt-1"><?= format_inr($totalDeployed) ?></div>
                         </div>
-                        <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Portfolio
-                                Ventures</span>
-                            <div class="text-lg font-black text-[#0B1F3A]"><?= count($portfolio) ?></div>
-                            <span class="text-[10.5px] text-[#667085]">Active syndicate backed</span>
+                        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                            <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Portfolio Companies</span>
+                            <div class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1"><?= count($portfolio) ?></div>
                         </div>
-                        <div class="space-y-0.5">
-                            <span class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Check Size
-                                Range</span>
-                            <div class="text-sm font-black text-[#0B1F3A]">
-                                <?= format_inr($preferences['min_ticket'] ?? 250000) ?> -
-                                <?= format_inr($preferences['max_ticket'] ?? 5000000) ?>
+                        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                            <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Check Size Range</span>
+                            <div class="text-xs sm:text-sm font-extrabold text-slate-800 mt-1">
+                                <?= format_inr($preferences['min_ticket'] ?? 250000) ?> - <?= format_inr($preferences['max_ticket'] ?? 5000000) ?>
+
                             </div>
                             <span class="text-[10.5px] text-[#667085]">Per company round</span>
                         </div>
-                        <div class="space-y-0.5">
-                            <span
-                                class="text-[10px] font-bold text-[#667085] uppercase tracking-wider block">Accreditation</span>
-                            <div class="text-sm font-black text-emerald-700 flex items-center space-x-1.5">
-                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-                                <span>Verified Active</span>
+
+                        <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                            <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Accreditation</span>
+                            <div class="text-lg sm:text-xl font-extrabold text-emerald-600 mt-1 flex items-center space-x-1.5">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                                <span>Verified</span>
+
                             </div>
                             <span class="text-[10.5px] text-[#667085]">DigiLocker verified</span>
                         </div>
@@ -299,216 +280,113 @@ $flash = get_flash();
                 </div>
             </div>
 
-            <!-- EDITORIAL SECTION 1: ABOUT & INVESTMENT THESIS -->
-            <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-4">
-                <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
-                    <i data-lucide="target" class="w-4 h-4 text-[#123B7A]"></i>
-                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">About & Investment Thesis</h2>
-                </div>
-                <div class="text-sm text-[#111827] leading-relaxed max-w-4xl space-y-3">
-                    <p class="text-base text-[#0B1F3A] font-semibold leading-relaxed">
-                        <?= nl2br(htmlspecialchars($preferences['investment_thesis'] ?: 'Backing high-conviction founders solving massive infrastructure and B2B workflow challenges across India and emerging markets.')) ?>
-                    </p>
-                    <p class="text-xs text-[#667085] leading-relaxed">
-                        Evaluates deals based on strong founder-market fit, unit economics defensibility, product
-                        velocity, and clear regulatory compliance under SEBI angel syndicate guidelines.
-                    </p>
-                </div>
-            </section>
 
-            <!-- EDITORIAL SECTION 2: INVESTMENT FOCUS & CRITERIA -->
-            <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
-                    <i data-lucide="layers" class="w-4 h-4 text-[#123B7A]"></i>
-                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Investment Focus & Criteria
-                    </h2>
-                </div>
+            <!-- Two-Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Left Sidebar Details (1 Col) -->
+                <div class="space-y-6">
+                    
+                    <!-- Investment Thesis Card -->
+                    <div class="card-clean rounded-2xl p-5 sm:p-6">
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
+                            <i data-lucide="target" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Investment Thesis</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                            <?= nl2br(htmlspecialchars($preferences['investment_thesis'] ?: 'Backing high-conviction founders solving massive infrastructure and B2B workflow challenges.')) ?>
+                        </p>
+                    </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Target Sectors
-                            & Industries</span>
-                        <div class="flex flex-wrap gap-2">
-                            <?php
-                            $sectors = array_map('trim', explode(',', $preferences['preferred_industries'] ?? 'AI/SaaS, FinTech, DeepTech, B2B Commerce'));
-                            foreach ($sectors as $s):
+                    <!-- Sector & Stage Focus -->
+                    <div class="card-clean rounded-2xl p-5 sm:p-6 space-y-4">
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
+                                <i data-lucide="layers" class="w-4 h-4 text-indigo-600"></i>
+                                <span>Preferred Sectors</span>
+                            </h2>
+                            <div class="flex flex-wrap gap-2">
+                                <?php 
+                                $sectors = array_map('trim', explode(',', $preferences['preferred_industries'] ?? 'AI/SaaS, FinTech, DeepTech'));
+                                foreach ($sectors as $s): 
                                 ?>
-                                <span
-                                    class="px-3 py-1 rounded-lg bg-[#EAF2FF] text-[#123B7A] text-xs font-semibold border border-[#123B7A]/10">
-                                    <?= htmlspecialchars($s) ?>
-                                </span>
-                            <?php endforeach; ?>
+                                    <span class="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-semibold border border-indigo-100">
+                                        <?= htmlspecialchars($s) ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Preferred
-                            Investment Stages</span>
-                        <div class="flex flex-wrap gap-2">
-                            <?php
-                            $stages = array_map('trim', explode(',', $preferences['preferred_stages'] ?? 'Pre-Seed, Seed, Pre-Series A'));
-                            foreach ($stages as $st):
+                        <div class="pt-3.5 border-t border-slate-100">
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-2.5 flex items-center space-x-2">
+                                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+                                <span>Preferred Stages</span>
+                            </h2>
+                            <div class="flex flex-wrap gap-2">
+                                <?php 
+                                $stages = array_map('trim', explode(',', $preferences['preferred_stages'] ?? 'Seed, Pre-Series A'));
+                                foreach ($stages as $st): 
                                 ?>
-                                <span
-                                    class="px-3 py-1 rounded-lg bg-[#FAFBFD] text-[#0B1F3A] text-xs font-semibold border border-[#E4E8EF]">
-                                    <?= htmlspecialchars($st) ?>
-                                </span>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-[#E4E8EF] grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                    <div>
-                        <span class="text-[#667085] text-[11px] block">Typical Check Size</span>
-                        <strong class="text-[#0B1F3A] text-sm"><?= format_inr($preferences['min_ticket'] ?? 250000) ?> -
-                            <?= format_inr($preferences['max_ticket'] ?? 5000000) ?></strong>
-                    </div>
-                    <div>
-                        <span class="text-[#667085] text-[11px] block">Investment Role</span>
-                        <strong
-                            class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($profile['investor_type'] ?? 'Angel Syndicate / Lead') ?></strong>
-                    </div>
-                    <div>
-                        <span class="text-[#667085] text-[11px] block">Primary Geography</span>
-                        <strong class="text-[#0B1F3A] text-sm"><?= htmlspecialchars($investor['city'] ?? 'Mumbai') ?>,
-                            India</strong>
-                    </div>
-                </div>
-            </section>
-
-            <!-- EDITORIAL SECTION 3: BACKED PORTFOLIO VENTURES -->
-            <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-5">
-                <div class="flex items-center justify-between pb-3 border-b border-[#E4E8EF]">
-                    <div class="flex items-center space-x-2">
-                        <i data-lucide="briefcase" class="w-4 h-4 text-[#123B7A]"></i>
-                        <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Backed Portfolio Ventures
-                            (<?= count($portfolio) ?>)</h2>
-                    </div>
-                    <span class="text-xs text-[#667085]">Confirmed Cap Table Entries</span>
-                </div>
-
-                <?php if (empty($portfolio)): ?>
-                    <div class="py-12 text-center text-xs text-[#667085]">
-                        <i data-lucide="pie-chart" class="w-8 h-8 text-[#667085]/40 mx-auto mb-2"></i>
-                        <div class="font-bold text-[#0B1F3A]">No confirmed portfolio ventures recorded yet.</div>
-                        <div class="text-[11px] text-[#667085] mt-1">Capital deployment in active escrow verification.</div>
-                    </div>
-                <?php else: ?>
-                    <div class="divide-y divide-[#E4E8EF]">
-                        <?php foreach ($portfolio as $p): ?>
-                            <div
-                                class="py-4 profile-row-hover rounded-xl px-3 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div class="flex items-center space-x-4">
-                                    <img src="<?= $p['company_logo'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>"
-                                        class="w-12 h-12 rounded-xl object-cover border border-[#E4E8EF] bg-white flex-shrink-0">
-                                    <div>
-                                        <h3 class="font-bold text-[#0B1F3A] text-sm hover:text-[#123B7A] transition">
-                                            <?= htmlspecialchars($p['company_name']) ?>
-                                        </h3>
-                                        <div class="text-xs text-[#667085] mt-0.5 flex items-center space-x-2">
-                                            <span><?= htmlspecialchars($p['company_industry']) ?></span>
-                                            <span class="text-[#E4E8EF]">•</span>
-                                            <span><?= htmlspecialchars($p['company_stage']) ?> Stage</span>
-                                            <span class="text-[#E4E8EF]">•</span>
-                                            <span
-                                                class="text-[#123B7A] font-semibold"><?= htmlspecialchars($p['round_name']) ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between md:justify-end gap-6 text-xs">
-                                    <div class="text-left md:text-right">
-                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Capital
-                                            Backed</span>
-                                        <span
-                                            class="font-bold text-[#0B1F3A] text-sm"><?= format_inr($p['amount_invested']) ?></span>
-                                    </div>
-
-                                    <div class="text-left md:text-right">
-                                        <span class="text-[10px] text-[#667085] uppercase tracking-wider block">Equity
-                                            Stake</span>
-                                        <span
-                                            class="font-bold text-[#123B7A] text-sm"><?= $p['equity_allotted_percent'] ?>%</span>
-                                    </div>
-
-                                    <a href="<?= url('investor/startup_detail.php?id=' . encode_id($p['company_id'])) ?>"
-                                        class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#FAFBFD] hover:bg-[#EAF2FF] text-[#123B7A] border border-[#E4E8EF] text-xs font-bold transition">
-                                        <span>Deal Room</span>
-                                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </section>
-
-            <!-- EDITORIAL SECTION 4: REGULATORY & DIRECT NETWORK CONTACT -->
-            <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
-                <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-[#123B7A]"></i>
-                    <h2 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Regulatory Compliance &
-                        Contact Coordinates</h2>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Compliance details -->
-                    <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Regulatory
-                            Status</span>
-                        <div class="space-y-2 text-xs">
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                <span class="text-[#0B1F3A] font-semibold flex items-center space-x-2">
-                                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
-                                    <span>SEBI Risk Disclosure Declaration</span>
-                                </span>
-                                <span
-                                    class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">ACCEPTED</span>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                <span class="text-[#0B1F3A] font-semibold flex items-center space-x-2">
-                                    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
-                                    <span>DigiLocker Identity & e-KYC</span>
-                                </span>
-                                <span
-                                    class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-bold">VERIFIED</span>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                <span class="text-[#667085] font-medium flex items-center space-x-2">
-                                    <i data-lucide="credit-card" class="w-4 h-4 text-[#667085]"></i>
-                                    <span>Income Tax PAN Status</span>
-                                </span>
-                                <span
-                                    class="font-mono text-xs font-bold text-[#0B1F3A]"><?= htmlspecialchars($profile['pan_number'] ?? 'VERIFIED_ON_FILE') ?></span>
+                                    <span class="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
+                                        <?= htmlspecialchars($st) ?>
+                                    </span>
+                                <?php endforeach; ?>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Direct contact info -->
-                    <div class="space-y-3">
-                        <span class="text-[11px] font-bold text-[#667085] uppercase tracking-wider block">Accredited
-                            Network Coordinates</span>
-                        <div class="space-y-2 text-xs">
-                            <div class="p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                <span
-                                    class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Accredited
-                                    Email</span>
-                                <span
-                                    class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['email']) ?></span>
+                    <!-- Verified Regulatory & Compliance Credentials -->
+                    <div class="card-clean rounded-2xl p-5 sm:p-6">
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3.5 flex items-center space-x-2">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                            <span>Regulatory & Risk Standing</span>
+                        </h2>
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                                <span class="text-slate-800 font-semibold flex items-center space-x-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                                    <span>SEBI Risk Disclosures</span>
+                                </span>
+                                <span class="text-emerald-700 font-bold text-xs">ACCEPTED</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/50 border border-emerald-100">
+                                <span class="text-slate-800 font-semibold flex items-center space-x-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-emerald-600"></i>
+                                    <span>KYC Status</span>
+                                </span>
+                                <span class="text-emerald-700 font-bold text-xs">VERIFIED</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <span class="text-slate-700 font-medium flex items-center space-x-2">
+                                    <i data-lucide="credit-card" class="w-4 h-4 text-slate-400"></i>
+                                    <span>PAN Verification</span>
+                                </span>
+                                <span class="font-mono text-xs font-bold text-slate-800"><?= htmlspecialchars($profile['pan_number'] ?? 'VERIFIED_ON_FILE') ?></span>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Contact & Web Links -->
+                    <div class="card-clean rounded-2xl p-5 sm:p-6">
+                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3.5 flex items-center space-x-2">
+                            <i data-lucide="mail" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Direct Contact</span>
+                        </h2>
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="p-3 rounded-xl bg-slate-50 text-slate-600">
+                                <span class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Accredited Email</span>
+                                <span class="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 block"><?= htmlspecialchars($investor['email']) ?></span>
                             </div>
 
                             <?php if (!empty($investor['phone'])): ?>
-                                <div class="p-3 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF]">
-                                    <span class="text-[10px] text-[#667085] font-bold block uppercase tracking-wider">Direct
-                                        Telephone</span>
-                                    <span
-                                        class="text-xs font-bold text-[#0B1F3A] mt-0.5 block"><?= htmlspecialchars($investor['phone']) ?></span>
+                                <div class="p-3 rounded-xl bg-slate-50 text-slate-600">
+                                    <span class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Direct Phone</span>
+                                    <span class="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 block"><?= htmlspecialchars($investor['phone']) ?></span>
+
                                 </div>
                             <?php endif; ?>
 
@@ -520,7 +398,69 @@ $flash = get_flash();
                         </div>
                     </div>
                 </div>
-            </section>
+
+
+                <!-- Right Content (2 Cols): Backed Portfolio Companies -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- Portfolio Entities Backed -->
+                    <div class="card-clean rounded-2xl p-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                                <i data-lucide="briefcase" class="w-4 h-4 text-indigo-600"></i>
+                                <span>Backed Portfolio Ventures (<?= count($portfolio) ?>)</span>
+                            </h2>
+                        </div>
+
+                        <?php if (empty($portfolio)): ?>
+                            <div class="py-12 text-center text-slate-500 text-xs sm:text-sm">
+                                <i data-lucide="pie-chart" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
+                                <div class="font-bold text-slate-700">No confirmed portfolio companies recorded yet.</div>
+                                <div class="text-xs text-slate-500 mt-1">Capital deployment in active escrow process.</div>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-4">
+                                <?php foreach ($portfolio as $p): ?>
+                                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/70 border border-slate-200/80 space-y-3">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex items-start space-x-3.5">
+                                                <img src="<?= $p['company_logo'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>" class="w-12 h-12 rounded-xl object-cover border border-slate-200 bg-white flex-shrink-0">
+                                                <div>
+                                                    <h3 class="font-bold text-slate-900 text-sm sm:text-base"><?= htmlspecialchars($p['company_name']) ?></h3>
+                                                    <div class="text-xs text-slate-500 mt-0.5">
+                                                        <?= htmlspecialchars($p['company_industry']) ?> • <?= htmlspecialchars($p['company_stage']) ?> Stage
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="text-right">
+                                                <span class="text-xs text-slate-400 uppercase font-bold block">Capital Invested</span>
+                                                <span class="font-extrabold text-emerald-600 text-xs sm:text-sm"><?= format_inr($p['amount_invested']) ?></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-xs sm:text-sm">
+                                            <div class="flex items-center space-x-2 text-xs text-slate-600">
+                                                <span>Equity Stake: <strong class="text-slate-900 font-bold"><?= $p['equity_allotted_percent'] ?>%</strong></span>
+                                                <span>•</span>
+                                                <span class="font-mono text-xs text-slate-400">Cert: <?= htmlspecialchars($p['certificate_number'] ?? 'ALLOT-PENDING') ?></span>
+                                            </div>
+
+                                            <a href="<?= url('investor/startup_detail.php?id=' . encode_id($p['company_id'])) ?>" class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center space-x-1 text-xs sm:text-sm">
+                                                <span>View Startup Deal Room</span>
+                                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                </div>
+
+            </div>
+
 
         </main>
     </div>

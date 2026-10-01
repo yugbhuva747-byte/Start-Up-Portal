@@ -110,7 +110,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                             $db->prepare("
                                 INSERT INTO verification_documents (verification_request_id, user_id, company_id, document_type, file_path, file_size, status)
-                                VALUES (?, ?, ?, ?, ?, 'pending')
+                                VALUES (?, ?, ?, ?, ?, ?, 'pending')
                             ")->execute([$reqId, $user['id'], $company['id'] ?? null, $docType, $publicPath, $sizeStr]);
 
                             $newDocId = $db->lastInsertId();
@@ -219,6 +219,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
             
             <!-- Flash Feedback -->
             <?php if ($flash): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
                         <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-5 h-5 flex-shrink-0 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?>"></i>
@@ -232,6 +233,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                 <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-xs">
                     <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
                     <span><?= htmlspecialchars($error) ?></span>
+
                 </div>
             <?php endif; ?>
 
@@ -280,6 +282,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                     </div>
                 </div>
             </div>
+
 
             <!-- 4-Step Statutory Verification Progress Stepper (Not Boring!) -->
             <div class="section-card p-6">
@@ -387,10 +390,25 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                         <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
                             <div class="text-slate-400 text-[10px] uppercase font-bold tracking-wider">Certified Timestamp</div>
                             <div class="text-slate-700 mt-1 text-xs font-mono"><?= date('d M Y • H:i:s', strtotime($verificationRequest['verified_at'])) ?></div>
+
                         </div>
                     </div>
                 <?php endif; ?>
             </div>
+
+
+            <!-- Compliance Status Feedback Alert if Rejected or Additional Info Required -->
+            <?php if (!empty($verificationRequest['remarks']) && in_array($verificationRequest['status'] ?? '', ['rejected', 'additional_info'])): ?>
+                <div class="p-5 rounded-2xl border <?= $verificationRequest['status'] === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800' ?> text-sm space-y-1.5">
+                    <div class="font-bold flex items-center space-x-2">
+                        <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+                        <span>Compliance Action Required: <?= htmlspecialchars($verificationRequest['status'] === 'rejected' ? 'Verification Rejected' : 'Additional Information Needed') ?></span>
+                    </div>
+                    <div class="text-xs opacity-90 pl-6 leading-relaxed">
+                        <?= nl2br(htmlspecialchars($verificationRequest['remarks'])) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <!-- Upload Dropzone & Compliance Document Repository -->
             <div class="section-card p-6 sm:p-7 space-y-5">
@@ -401,9 +419,11 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                             <span>Statutory Document Repository & Vault</span>
                         </h3>
                         <p class="text-xs text-slate-500 mt-0.5">Submit supporting documents (MCA Certificate, PAN, GSTIN, Pitch Decks) for compliance audits.</p>
+
                     </div>
                     <span class="text-xs text-slate-400 font-mono">Total Documents: <?= count($verificationDocs) ?></span>
                 </div>
+
 
                 <!-- Modern Document Upload Form -->
                 <form action="<?= url('founder/verification.php') ?>" method="POST" enctype="multipart/form-data" class="bg-slate-50/80 border border-slate-200 rounded-2xl p-5 space-y-4">
@@ -433,6 +453,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                             <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs transition shadow-md shadow-indigo-600/20 flex items-center justify-center space-x-2">
                                 <i data-lucide="upload-cloud" class="w-4 h-4"></i>
                                 <span>Upload to Secure Vault</span>
+
                             </button>
                         </div>
                     </div>
@@ -441,6 +462,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                 <!-- Document List -->
                 <div class="divide-y divide-slate-100">
                     <?php if (empty($verificationDocs)): ?>
+
                         <div class="py-12 text-center text-xs text-slate-400">
                             <i data-lucide="folder-open" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                             <div>No compliance documents stored in the vault yet.</div>
@@ -449,18 +471,22 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                     <?php else: ?>
                         <?php foreach ($verificationDocs as $doc): ?>
                             <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+
                                 <div class="flex items-center space-x-3.5">
                                     <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center flex-shrink-0">
                                         <i data-lucide="<?= str_contains(strtolower($doc['file_path']), '.pdf') ? 'file-text' : 'image' ?>" class="w-5 h-5"></i>
                                     </div>
                                     <div>
+
                                         <div class="font-bold text-slate-900 text-sm"><?= htmlspecialchars($doc['document_type']) ?></div>
                                         <div class="text-[11px] text-slate-500 mt-0.5 font-mono">
                                             <?= htmlspecialchars($doc['file_size']) ?> • Uploaded <?= date('M d, Y • h:i A', strtotime($doc['created_at'])) ?>
+
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2.5">
+
                                     <span class="px-3 py-1 rounded-full text-[10px] font-bold <?= $doc['status'] === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($doc['status'] === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') ?>">
                                         <?= strtoupper($doc['status']) ?>
                                     </span>
@@ -470,6 +496,7 @@ $isVerified = ($verificationRequest['status'] ?? '') === 'verified';
                                     </a>
                                     <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1.5 transition shadow-xs">
                                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
+
                                         <span>Download</span>
                                     </a>
                                 </div>

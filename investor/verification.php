@@ -195,6 +195,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 </div>
             <?php endif; ?>
 
+
             <!-- Editorial Header & Status Badge -->
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#E4E8EF]">
                 <div class="space-y-1">
@@ -210,9 +211,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         class="px-4 py-1.5 rounded-full text-xs font-bold border <?= $user['is_verified'] ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200' ?> flex items-center space-x-1.5 shadow-sm">
                         <i data-lucide="<?= $user['is_verified'] ? 'shield-check' : 'clock' ?>" class="w-3.5 h-3.5"></i>
                         <span><?= $user['is_verified'] ? 'ACCREDITED & VERIFIED' : 'KYC UNDER REVIEW' ?></span>
+
                     </span>
                 </div>
             </div>
+
 
             <!-- SECTION 1: DIGILOCKER NATIONAL IDENTITY GATEWAY -->
             <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
@@ -233,14 +236,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <?php if ($user['is_verified'] && $verificationRequest): ?>
                             <div class="flex flex-wrap items-center gap-4 text-xs pt-1">
                                 <div class="flex items-center space-x-1.5 text-emerald-700 font-bold">
+
                                     <i data-lucide="badge-check" class="w-4 h-4 text-emerald-600"></i>
                                     <span>Ref:
                                         <?= htmlspecialchars($verificationRequest['provider_ref_id'] ?? 'DL-INV-98214') ?></span>
                                 </div>
+
                                 <span class="text-[#E4E8EF]">•</span>
                                 <div class="text-[#667085]">
                                     Verified on
                                     <?= date('M d, Y', strtotime($verificationRequest['verified_at'] ?? 'now')) ?>
+
                                 </div>
                                 <span class="text-[#E4E8EF]">•</span>
                                 <div class="text-[#123B7A] font-semibold">DigiLocker Certificate Linked</div>
@@ -253,22 +259,27 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             <form action="<?= url('investor/verification.php') ?>" method="POST">
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="form_action" value="simulate_digilocker">
+
                                 <button type="submit"
                                     class="px-6 py-3 bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-2">
+
                                     <i data-lucide="fingerprint" class="w-4 h-4"></i>
                                     <span>Authenticate with DigiLocker</span>
                                 </button>
                             </form>
                         <?php else: ?>
+
                             <div
                                 class="px-5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center space-x-2">
                                 <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+
                                 <span>DigiLocker Authenticated</span>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </section>
+
 
             <!-- SECTION 2: ACCREDITATION DOCUMENTS VAULT -->
             <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
@@ -278,9 +289,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <i data-lucide="file-text" class="w-4 h-4 text-[#123B7A]"></i>
                         <h3 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Accreditation Documents
                             Vault</h3>
+
                     </div>
                     <span class="text-xs text-[#667085]">PAN, Net Worth Certificate, Bank Verification</span>
                 </div>
+
 
                 <!-- Clean Horizontal Upload Row -->
                 <form action="<?= url('investor/verification.php') ?>" method="POST" enctype="multipart/form-data"
@@ -295,6 +308,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 Classification</label>
                             <select name="doc_type"
                                 class="w-full px-3 py-2 bg-white border border-[#E4E8EF] focus:border-[#123B7A] rounded-xl text-xs text-[#111827] outline-none">
+
                                 <option value="PAN Card Copy">PAN Card Copy</option>
                                 <option value="CA Net Worth Certificate">CA Net Worth Certificate</option>
                                 <option value="Bank Account Verification">Bank Account Verification</option>
@@ -302,6 +316,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             </select>
                         </div>
                         <div class="sm:col-span-2">
+
                             <label
                                 class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Upload
                                 File (PDF, JPG, PNG - Max 10MB)</label>
@@ -310,6 +325,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     class="flex-1 px-3 py-1.5 bg-white border border-[#E4E8EF] rounded-xl text-xs text-[#667085]">
                                 <button type="submit"
                                     class="px-5 py-2 bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-bold rounded-xl text-xs shadow-sm transition">
+
                                     Upload
                                 </button>
                             </div>
@@ -320,6 +336,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <!-- Document List Rows -->
                 <div class="divide-y divide-[#E4E8EF]">
                     <?php if (empty($verificationDocs)): ?>
+
                         <div class="py-8 text-center text-xs text-[#667085]">
                             <i data-lucide="folder-check" class="w-8 h-8 text-[#667085]/30 mx-auto mb-2"></i>
                             <div>No manual documents uploaded yet.</div>
@@ -356,6 +373,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>"
                                         class="px-3 py-1.5 rounded-lg bg-[#0B1F3A] hover:bg-[#123B7A] text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm"
                                         title="Download Document File">
+
                                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                         <span>Download</span>
                                     </a>
@@ -368,6 +386,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
             <!-- SECTION 3: COMPLIANCE TIMELINE & AUDIT LOG -->
             <?php if (!empty($verificationLogs)): ?>
+
                 <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-4">
                     <div class="flex items-center space-x-2 pb-3 border-b border-[#E4E8EF]">
                         <i data-lucide="history" class="w-4 h-4 text-[#123B7A]"></i>
@@ -385,6 +404,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                         class="text-[#0B1F3A] font-medium"><?= htmlspecialchars($vl['remarks'] ?? 'Status updated') ?></span>
                                 </div>
                                 <div class="text-[11px] text-[#667085] font-mono">
+
                                     <?= date('M d, Y H:i', strtotime($vl['created_at'])) ?>
                                 </div>
                             </div>

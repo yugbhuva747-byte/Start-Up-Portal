@@ -70,17 +70,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $ioStmt->execute([$roundId, $user['id'], $amount]);
                 $orderId = $db->lastInsertId();
 
-                // 2. Calculate Equity Allotted
-                // Formula: (Amount / Valuation) * 100
+                // 2. Calculate Equity & Share Allotment Parameters
                 $equityPercent = $round['valuation'] > 0 ? round(($amount / $round['valuation']) * 100, 3) : 0.00;
-                $certNumber = 'CERT-' . strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $round['company_name']), 0, 3)) . '-' . date('Y') . '-' . rand(100, 999);
+                
+                // Get company face value
+                $cQuery = $db->prepare("SELECT face_value_per_share FROM companies WHERE id = ?");
+                $cQuery->execute([$round['company_id']]);
+                $faceVal = (float)($cQuery->fetchColumn() ?: 10.00);
+                
+                // Issue price per share: FV with standard premium
+                $pricePerShare = max(10.0, round($faceVal * 10.0, 2));
+                $numShares = max(1, (int)round($amount / $pricePerShare));
 
-                // 3. Create Confirmed Investment Record
+                // Distinctive share range sequence for this company
+                $maxDistinctiveStmt = $db->prepare("SELECT COALESCE(MAX(distinctive_to), 10000) FROM investments WHERE company_id = ?");
+                $maxDistinctiveStmt->execute([$round['company_id']]);
+                $maxDistinctive = (int)$maxDistinctiveStmt->fetchColumn();
+                $distinctiveFrom = $maxDistinctive + 1;
+                $distinctiveTo = $distinctiveFrom + $numShares - 1;
+
+                $compCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $round['company_name']), 0, 3));
+                $certNumber = 'SHA-' . date('Y') . '-' . $compCode . '-' . rand(100, 999);
+                $folioNumber = 'FOLIO-' . str_pad($user['id'], 4, '0', STR_PAD_LEFT);
+                $verificationToken = bin2hex(random_bytes(16));
+                $shareClass = 'Series ' . ($round['round_name'] ?: 'Seed') . ' Compulsorily Convertible Preference Shares (CCPS)';
+
+                // 3. Create Confirmed Investment Record with Full Statutory Fields
                 $invStmt = $db->prepare("
-                    INSERT INTO investments (order_id, funding_round_id, investor_user_id, company_id, amount_invested, equity_allotted_percent, certificate_number, confirmed_at, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+                    INSERT INTO investments (
+                        order_id, funding_round_id, investor_user_id, company_id, 
+                        amount_invested, equity_allotted_percent, number_of_shares, price_per_share, 
+                        distinctive_from, distinctive_to, share_class, folio_number, 
+                        certificate_number, verification_token, allotment_status, confirmed_at, created_at
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'certificate_issued', NOW(), NOW())
                 ");
-                $invStmt->execute([$orderId, $roundId, $user['id'], $round['company_id'], $amount, $equityPercent, $certNumber]);
+                $invStmt->execute([
+                    $orderId, $roundId, $user['id'], $round['company_id'],
+                    $amount, $equityPercent, $numShares, $pricePerShare,
+                    $distinctiveFrom, $distinctiveTo, $shareClass, $folioNumber,
+                    $certNumber, $verificationToken
+                ]);
                 $investmentId = $db->lastInsertId();
 
                 // 4. Create Transaction / Escrow Record
@@ -114,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $db->commit();
 
+
                 // 8. Automatically send Direct Emails to Investor & Founder(s)
                 $emailDispatch = send_investment_automated_emails(
                     $db,
@@ -125,6 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     (string) $certNumber,
                     (string) $txnRef
                 );
+
 
                 $success = true;
                 $transactionRef = $txnRef;
@@ -170,18 +202,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-3xl w-full mx-auto" id="invest-main">
 
             <!-- Breadcrumb -->
+
             <div class="flex items-center space-x-2 text-xs text-slate-400">
                 <a href="<?= url('investor/startup_detail.php?id=' . hash_id_encode($round['company_id'])) ?>"
                     class="hover:text-slate-800 transition flex items-center space-x-1">
                     <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+
                     <span>Back to Deal Room</span>
                 </a>
                 <span>/</span>
-                <span class="text-slate-700 font-semibold">Investment Commitment</span>
+                <span class="text-slate-800 font-bold">Investment Commitment</span>
             </div>
 
             <?php if ($success): ?>
                 <!-- SUCCESS CONFIRMATION VIEW -->
+
                 <div class="card-clean rounded-2xl p-8 md:p-10 text-center relative">
                     <div
                         class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4">
@@ -198,6 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <div
                         class="max-w-md mx-auto p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-left space-y-2 mb-6">
+
                         <div class="flex justify-between py-1 border-b border-slate-200/60">
                             <span class="text-slate-500">Transaction Reference:</span>
                             <span class="font-mono font-bold text-slate-900"><?= htmlspecialchars($transactionRef) ?></span>
@@ -212,29 +248,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="flex justify-between py-1 border-b border-slate-200/60">
                             <span class="text-slate-500">Escrow Status:</span>
-                            <span class="text-emerald-700 font-semibold flex items-center space-x-1">
-                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span class="text-emerald-700 font-bold flex items-center space-x-1.5">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
                                 <span>Secured in Escrow</span>
-                            </span>
-                        </div>
-                        <div class="flex justify-between py-1 pt-1.5">
-                            <span class="text-slate-500 flex items-center space-x-1">
-                                <i data-lucide="mail-check" class="w-3.5 h-3.5 text-indigo-600"></i>
-                                <span>Email Confirmations:</span>
-                            </span>
-                            <span class="text-indigo-700 font-bold flex items-center space-x-1">
-                                <span>Sent to You & Founders</span>
                             </span>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+
                         <a href="<?= url('investor/portfolio.php') ?>"
                             class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition">
                             View in Portfolio →
                         </a>
                         <a href="<?= url('investor/discover.php') ?>"
                             class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition">
+
                             Explore More Deals
                         </a>
                     </div>
@@ -243,6 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php else: ?>
 
                 <!-- INVESTMENT ENTRY FORM -->
+
                 <div class="card-clean rounded-2xl p-6">
 
                     <div class="flex items-center space-x-3.5 mb-5 pb-5 border-b border-slate-100">
@@ -254,19 +284,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="text-[11px] text-slate-500"><?= htmlspecialchars($round['round_name']) ?> •
                                 Pre-money Valuation: <strong
                                     class="text-slate-800"><?= format_inr($round['valuation']) ?></strong></div>
+
                         </div>
                     </div>
 
                     <?php if (!empty($error)): ?>
+
                         <div
                             class="mb-5 p-3 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
                             <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+
                             <span><?= htmlspecialchars($error) ?></span>
                         </div>
                     <?php endif; ?>
 
                     <form action="<?= url('investor/invest.php?round=' . $roundHash) ?>" method="POST" class="space-y-5">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+
 
                         <div
                             class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -293,14 +327,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Remaining</span>
                                 <span
                                     class="font-bold text-indigo-600 text-xs"><?= format_inr(max(0, $round['target_amount'] - $round['amount_raised'])) ?></span>
+
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                                 Investment Commitment Amount (₹) *
                             </label>
                             <div class="relative">
+
                                 <span
                                     class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">₹</span>
                                 <input type="number" id="invest-amount" name="amount" required
@@ -314,10 +350,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         class="text-indigo-600 font-bold">0.00%</strong></span>
                                 <span class="text-slate-400">Based on <?= format_inr($round['valuation']) ?>
                                     valuation</span>
+
                             </div>
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 space-y-2">
+
                             <label class="flex items-start space-x-2.5 cursor-pointer">
                                 <input type="checkbox" name="terms_accepted" required
                                     class="mt-0.5 w-3.5 h-3.5 rounded text-indigo-600 border-slate-300">
@@ -325,13 +363,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     I confirm that I am an accredited investor, have completed my KYC, and understand
                                     startup investments carry substantial illiquidity and capital risk. Funds will be
                                     deposited into the regulatory escrow account pending final instrument allotment.
+
                                 </span>
                             </label>
                         </div>
 
+
                         <button type="submit"
                             class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center justify-center space-x-1.5">
                             <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+
                             <span>Confirm & Authorize Escrow Commitment</span>
                         </button>
                     </form>

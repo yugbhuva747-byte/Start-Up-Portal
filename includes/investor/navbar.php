@@ -97,7 +97,7 @@ require_once __DIR__ . '/theme.php';
     table,
     th,
     td {
-        font-family: "Vay Portal", Sans-serif;
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
     }
@@ -109,42 +109,6 @@ require_once __DIR__ . '/theme.php';
         line-height: 1.6;
     }
 
-    /* Elevate small font classes for effortless readability */
-    .text-\[9px\],
-    .text-\[9\.5px\],
-    .text-\[10px\],
-    .text-\[10\.5px\],
-    .text-\[11px\] {
-        font-size: 0.8125rem !important;
-        /* 13px */
-        line-height: 1.45 !important;
-    }
-
-    .text-xs {
-        font-size: 0.875rem !important;
-        /* 14px */
-        line-height: 1.5 !important;
-    }
-
-    .text-sm {
-        font-size: 1rem !important;
-        /* 16px */
-        line-height: 1.6 !important;
-    }
-
-    .text-base {
-        font-size: 1.125rem !important;
-        /* 18px */
-        line-height: 1.65 !important;
-    }
-
-    /* Boost secondary text contrast for high legibility */
-    .text-\[\#667085\],
-    .text-slate-500 {
-        color: #4B5563 !important;
-    }
-
-    /* Clean subtle link underline hover */
     .link-hover-blue {
         position: relative;
         text-decoration: none;
@@ -165,7 +129,6 @@ require_once __DIR__ . '/theme.php';
         width: 100%;
     }
 
-    /* Clean horizontal item rows with smooth hover */
     .network-row {
         background: #FFFFFF;
         border-bottom: 1px solid #E4E8EF;
@@ -176,13 +139,11 @@ require_once __DIR__ . '/theme.php';
         background: #F8FAFD;
     }
 
-    /* Clean section dividers */
     .editorial-divider {
         height: 1px;
         background: #E4E8EF;
     }
 
-    /* Sticky / Fixed Navigation Bar with blur */
     .investor-navbar {
         position: sticky !important;
         top: 0 !important;
@@ -194,7 +155,7 @@ require_once __DIR__ . '/theme.php';
 
 <header
     class="investor-navbar h-16 sm:h-20 border-b border-[#E4E8EF] dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-6 md:px-8 flex items-center justify-between transition-colors duration-200 shadow-2xs">
-    <!-- Left Section: Hamburger Menu + Search -->
+    <!-- Left Section: Hamburger Menu + Back Button + Search -->
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
@@ -238,12 +199,18 @@ require_once __DIR__ . '/theme.php';
         <?php endforeach; ?>
     </nav>
 
-    <!-- Right Section: Notifications + Dark/Light Mode -->
-    <div class="flex items-center space-x-2.5 sm:space-x-3.5 flex-shrink-0">
+    <!-- Right Section: Status + Notifications + Dark Mode + Profile -->
+    <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+
+        <!-- Status Indicator -->
+        <div class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 text-xs shadow-2xs">
+            <span class="w-2 h-2 rounded-full <?= !empty($currentUser['is_verified']) ? 'bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900/30' : 'bg-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' ?>"></span>
+            <span class="text-slate-700 dark:text-slate-300 font-bold text-xs"><?= !empty($currentUser['is_verified']) ? 'SEBI & KYC Verified' : 'Accreditation Pending' ?></span>
+        </div>
 
         <!-- Notifications Bell -->
-        <div class="relative" id="investor-notif-wrapper">
-            <button onclick="toggleInvestorNotifs()"
+        <div class="relative" id="investor-notif-dropdown-wrapper">
+            <button onclick="toggleInvestorNotifs()" type="button"
                 class="relative p-2.5 rounded-xl bg-[#FAFBFD] dark:bg-slate-800 hover:bg-[#EAF2FF] dark:hover:bg-slate-700 border border-[#E4E8EF] dark:border-slate-700 text-[#4B5563] dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-white transition cursor-pointer"
                 aria-label="Notifications">
                 <i data-lucide="bell" class="w-4 h-4 sm:w-5 sm:h-5"></i>
@@ -261,23 +228,24 @@ require_once __DIR__ . '/theme.php';
                 <div
                     class="flex items-center justify-between pb-3 border-b border-[#E4E8EF] dark:border-slate-800 text-sm font-extrabold text-[#0B1F3A] dark:text-white">
                     <span>Deal Alerts & Updates</span>
-                    <span
-                        class="text-[#123B7A] dark:text-blue-400 font-bold text-xs bg-[#EAF2FF] dark:bg-blue-900/40 px-2.5 py-0.5 rounded-full"><?= count($notifs) ?>
-                        recent</span>
+                    <a href="<?= url('notifications.php') ?>" class="text-xs text-[#123B7A] dark:text-blue-400 hover:underline font-bold">View all</a>
                 </div>
                 <div class="divide-y divide-[#E4E8EF] dark:divide-slate-800 max-h-72 overflow-y-auto">
                     <?php if (empty($notifs)): ?>
                         <div class="py-8 text-center text-sm text-[#667085] dark:text-slate-400">No unread alerts</div>
                     <?php else: ?>
                         <?php foreach ($notifs as $n): ?>
-                            <div class="py-3 text-sm <?= $n['is_read'] ? 'opacity-70' : 'font-semibold' ?>">
-                                <div class="text-[#111827] dark:text-slate-100 text-sm font-bold">
+                            <a href="<?= !empty($n['action_url']) ? url($n['action_url']) : url('notifications.php') ?>" class="block py-3 px-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-xl transition <?= $n['is_read'] ? 'opacity-70' : 'font-semibold' ?>">
+                                <div class="text-[#111827] dark:text-slate-100 text-sm font-bold truncate">
                                     <?= htmlspecialchars($n['title']) ?>
                                 </div>
-                                <div class="text-[#4B5563] dark:text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">
+                                <div class="text-[#4B5563] dark:text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed line-clamp-2">
                                     <?= htmlspecialchars($n['message']) ?>
                                 </div>
-                            </div>
+                                <div class="text-[11px] text-slate-400 dark:text-slate-500 font-medium mt-1">
+                                    <?= function_exists('time_elapsed_string') ? time_elapsed_string($n['created_at']) : date('M d, Y', strtotime($n['created_at'])) ?>
+                                </div>
+                            </a>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </div>
@@ -304,6 +272,59 @@ require_once __DIR__ . '/theme.php';
                     class="w-4 h-4 sm:w-5 sm:h-5 text-[#123B7A] dark:text-blue-300 group-hover:-rotate-12 transition-transform duration-300"></i>
             </span>
         </button>
+
+        <!-- User Profile Dropdown -->
+        <div class="relative" id="investor-profile-wrapper">
+            <button onclick="toggleInvestorProfile()" type="button" class="flex items-center space-x-2 h-10 pl-1.5 pr-2.5 rounded-full border border-[#E4E8EF] dark:border-slate-700 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 transition bg-white dark:bg-slate-900 shadow-2xs group cursor-pointer flex-shrink-0" aria-label="Investor Profile Menu">
+                <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>" 
+                     alt="<?= htmlspecialchars($currentUser['name'] ?? 'Investor') ?>" 
+                     style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; border-radius: 9999px; object-fit: cover;"
+                     class="w-8 h-8 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">
+                <div class="hidden sm:flex flex-col text-left">
+                    <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition truncate max-w-[110px] leading-tight"><?= htmlspecialchars(explode(' ', $currentUser['name'] ?? 'Investor')[0]) ?></span>
+                    <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider leading-none">Angel</span>
+                </div>
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition flex-shrink-0"></i>
+            </button>
+
+            <!-- Profile Dropdown Menu -->
+            <div id="investor-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl shadow-xl p-2 z-50">
+                <!-- User Header Summary -->
+                <div class="p-3 border-b border-[#E4E8EF] dark:border-slate-800 flex items-center space-x-3 bg-slate-50/70 dark:bg-slate-800/50 rounded-xl mb-1">
+                    <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>" 
+                         alt="<?= htmlspecialchars($currentUser['name'] ?? 'Investor') ?>"
+                         style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 9999px; object-fit: cover;"
+                         class="w-10 h-10 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate leading-tight"><?= htmlspecialchars($currentUser['name'] ?? 'Investor') ?></div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5"><?= htmlspecialchars($currentUser['email'] ?? '') ?></div>
+                        <span class="inline-flex items-center px-1.5 py-0.5 mt-1 rounded text-[10px] font-extrabold uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800/40">Angel Investor</span>
+                    </div>
+                </div>
+
+                <div class="py-1 space-y-0.5 text-sm">
+                    <a href="<?= url('investor/profile.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 font-bold transition">
+                        <i data-lucide="sliders" class="w-4 h-4 text-slate-400"></i>
+                        <span>Thesis & Settings</span>
+                    </a>
+                    <a href="<?= url('investor/view.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 font-bold transition">
+                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
+                        <span>Public Profile Preview</span>
+                    </a>
+                    <a href="<?= url('investor/portfolio.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 font-bold transition">
+                        <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400"></i>
+                        <span>My Portfolio</span>
+                    </a>
+                </div>
+
+                <div class="pt-1.5 mt-1 border-t border-[#E4E8EF] dark:border-slate-800">
+                    <a href="<?= url('auth/logout.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-bold text-sm transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -311,8 +332,26 @@ require_once __DIR__ . '/theme.php';
     // Toggle Notifications Dropdown
     function toggleInvestorNotifs() {
         const notifMenu = document.getElementById('investor-notif-menu');
+        const profileMenu = document.getElementById('investor-profile-menu');
+        if (profileMenu) profileMenu.classList.add('hidden');
         if (notifMenu) {
             notifMenu.classList.toggle('hidden');
+            if (!notifMenu.classList.contains('hidden') && window.lucide) {
+                lucide.createIcons();
+            }
+        }
+    }
+
+    // Toggle Profile Dropdown
+    function toggleInvestorProfile() {
+        const profileMenu = document.getElementById('investor-profile-menu');
+        const notifMenu = document.getElementById('investor-notif-menu');
+        if (notifMenu) notifMenu.classList.add('hidden');
+        if (profileMenu) {
+            profileMenu.classList.toggle('hidden');
+            if (!profileMenu.classList.contains('hidden') && window.lucide) {
+                lucide.createIcons();
+            }
         }
     }
 
@@ -362,9 +401,15 @@ require_once __DIR__ . '/theme.php';
     // Close Dropdowns on Click Outside
     document.addEventListener('click', function (e) {
         const notifMenu = document.getElementById('investor-notif-menu');
-        const notifWrap = document.getElementById('investor-notif-wrapper');
-        if (notifMenu && !notifMenu.contains(e.target) && notifWrap && !notifWrap.contains(e.target)) {
+        const notifWrapper = document.getElementById('investor-notif-dropdown-wrapper');
+        if (notifMenu && notifWrapper && !notifWrapper.contains(e.target)) {
             notifMenu.classList.add('hidden');
+        }
+
+        const profileWrapper = document.getElementById('investor-profile-wrapper');
+        const profileMenu = document.getElementById('investor-profile-menu');
+        if (profileWrapper && profileMenu && !profileWrapper.contains(e.target)) {
+            profileMenu.classList.add('hidden');
         }
     });
 
@@ -373,6 +418,8 @@ require_once __DIR__ . '/theme.php';
         const isDark = document.documentElement.classList.contains('dark');
         syncInvestorThemeIcons(isDark);
     })();
+
+    // Back Button Functionality with Micro-Animation
     function investorGoBack(btn) {
         if (btn) {
             btn.style.transform = 'scale(0.92)';

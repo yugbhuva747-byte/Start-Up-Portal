@@ -1,12 +1,12 @@
 <?php
 /**
  * Admin Module: Platform Security & Immutable Audit Logs
- * Clean White / Light Theme, Small Crisp Typography
+ * Clean, Minimalist Immutable Audit Trail
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Security & Immutable Audit Trail';
+$pageTitle = 'Security Audit Trail';
 
 $logs = [];
 $filterAction = trim($_GET['action_filter'] ?? '');
@@ -35,6 +35,7 @@ if ($db) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Audit Trail • <?= APP_NAME ?></title>
+
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
         body { font-family: "Vay Portal", Sans-serif; }
@@ -46,6 +47,7 @@ if ($db) {
     </style>
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+
     
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
@@ -53,16 +55,29 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
+
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="audit-admin-main">
+
             
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-lg md:text-xl font-extrabold text-slate-900 tracking-tight">Security & Immutable Audit Trail</h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Full auditability for verification, funding, investment, and account security events.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="admin-page-icon">
+                        <i data-lucide="history" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                            Security Audit Trail
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Immutable administrative audit log for verification, funding, investment, and access events.</p>
+                    </div>
+                </div>
+                <div class="text-xs text-slate-400 font-medium">
+                    Showing latest <span class="font-bold text-indigo-600"><?= count($logs) ?></span> events
                 </div>
             </div>
 
             <!-- Filter -->
+
             <div class="card-clean rounded-2xl p-4">
                 <form action="<?= url('admin/audit_logs.php') ?>" method="GET" class="flex items-center space-x-3 text-xs">
                     <div class="flex-1 relative">
@@ -94,9 +109,11 @@ if ($db) {
                     <span class="text-[11px] text-slate-400">Click any row or 'Details' button to inspect full payload</span>
                 </div>
 
+
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs font-mono">
+                    <table class="admin-table">
                         <thead>
+
                             <tr class="border-b border-slate-100 dark:border-slate-800 text-slate-400 uppercase tracking-wider font-sans text-[10.5px]">
                                 <th class="pb-3 font-semibold">Timestamp</th>
                                 <th class="pb-3 font-semibold">Actor</th>
@@ -165,6 +182,7 @@ if ($db) {
                                                     </div>
                                                 </div>
                                             </div>
+
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -179,6 +197,7 @@ if ($db) {
 
     <script>
         lucide.createIcons();
+
         gsap.from("#audit-admin-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
 
         function toggleAuditRow(detailRowId, triggerRow) {
@@ -199,6 +218,7 @@ if ($db) {
                 }
             }
         }
+
     </script>
 </body>
 </html>

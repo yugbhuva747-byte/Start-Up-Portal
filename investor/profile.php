@@ -163,6 +163,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 </div>
             <?php endif; ?>
 
+
             <!-- Editorial Header & Public View Shortcut -->
             <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-[#E4E8EF]">
                 <div class="space-y-1">
@@ -175,9 +176,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <a href="<?= url('investor/view.php') ?>"
                     class="inline-flex items-center space-x-1.5 px-4 py-2 bg-[#EAF2FF] hover:bg-[#123B7A] text-[#123B7A] hover:text-white rounded-xl font-bold text-xs transition duration-200 shadow-sm self-start sm:self-auto">
                     <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+
                     <span>Preview Public Profile</span>
                 </a>
             </div>
+
 
             <!-- Profile Summary Strip (Clean horizontal, no heavy card) -->
             <div
@@ -205,6 +208,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             <?= htmlspecialchars($user['city'] ?? 'India') ?>
                         </div>
                     </div>
+
                 </div>
                 <a href="<?= url('investor/view.php') ?>"
                     class="text-xs text-[#123B7A] hover:text-[#0B1F3A] font-bold flex items-center space-x-1 self-center sm:self-start">
@@ -214,6 +218,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             </div>
 
             <!-- Profile Info Edit Form -->
+
             <form action="<?= url('investor/profile.php') ?>" method="POST" enctype="multipart/form-data"
                 class="space-y-8">
                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -230,6 +235,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <!-- Profile Photo Picker -->
                     <div
                         class="p-4 rounded-xl bg-[#FAFBFD] border border-[#E4E8EF] flex flex-col sm:flex-row items-center gap-5">
+
                         <div class="relative flex-shrink-0 group">
                             <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160' ?>"
                                 class="w-20 h-20 rounded-2xl object-cover border-2 border-white shadow-md bg-white transition group-hover:brightness-95"
@@ -238,12 +244,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 class="absolute inset-0 bg-[#0B1F3A]/60 rounded-2xl flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition cursor-pointer"
                                 title="Click to choose photo">
                                 <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
-                                <span class="text-[9px] font-bold">Change</span>
+                                <span class="text-xs font-bold">Change</span>
                             </label>
                         </div>
                         <div class="flex-1 text-center sm:text-left space-y-2 w-full">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                                 <div>
+
                                     <div
                                         class="font-bold text-[#0B1F3A] text-xs flex items-center justify-center sm:justify-start space-x-1.5">
                                         <span>Your Profile Photo</span>
@@ -278,11 +285,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                             placeholder="https://example.com/photo.jpg"
                                             class="w-full px-3 py-1.5 bg-white border border-[#E4E8EF] focus:border-[#123B7A] rounded-lg text-xs text-[#111827] outline-none"
                                             oninput="previewUrlAvatar(this.value)">
+
                                     </div>
                                 </details>
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Input Grid -->
                     <div class="space-y-4 text-xs">
@@ -300,6 +309,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     Classification</label>
                                 <select name="investor_type"
                                     class="w-full px-3.5 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] outline-none transition">
+
                                     <option value="Angel Investor" <?= ($investorProfile['investor_type'] ?? '') === 'Angel Investor' ? 'selected' : '' ?>>Angel Investor</option>
                                     <option value="Venture Capital Fund" <?= ($investorProfile['investor_type'] ?? '') === 'Venture Capital Fund' ? 'selected' : '' ?>>Venture Capital Fund</option>
                                     <option value="Family Office" <?= ($investorProfile['investor_type'] ?? '') === 'Family Office' ? 'selected' : '' ?>>Family Office</option>
@@ -307,6 +317,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 </select>
                             </div>
                             <div>
+
                                 <label
                                     class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Years
                                     in Venture</label>
@@ -314,11 +325,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     value="<?= htmlspecialchars($investorProfile['experience_years'] ?? '5') ?>" min="1"
                                     max="50"
                                     class="w-full px-3.5 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] outline-none transition">
+
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <div>
+
                                 <label
                                     class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Email
                                     (Locked)</label>
@@ -347,10 +360,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 <input type="text" name="pan_number"
                                     value="<?= htmlspecialchars($investorProfile['pan_number'] ?? '') ?>"
                                     class="w-full px-3.5 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] uppercase font-mono outline-none transition">
+
                             </div>
                         </div>
                     </div>
                 </section>
+
 
                 <!-- SECTION 2: INVESTMENT THESIS & CRITERIA -->
                 <section class="bg-white border border-[#E4E8EF] rounded-2xl p-6 sm:p-8 space-y-6">
@@ -360,8 +375,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             Criteria</h3>
                     </div>
 
+
                     <div class="space-y-4 text-xs">
                         <div>
+
                             <label
                                 class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Preferred
                                 Sectors (Comma Separated)</label>
@@ -377,10 +394,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             <input type="text" name="preferred_stages"
                                 value="<?= htmlspecialchars($preferences['preferred_stages'] ?? 'Seed, Pre-Series A, Series A') ?>"
                                 class="w-full px-3.5 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] outline-none transition">
+
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
+
                                 <label
                                     class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Minimum
                                     Check Size (₹)</label>
@@ -396,10 +415,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     value="<?= htmlspecialchars($preferences['max_ticket'] ?? '5000000') ?>"
                                     step="100000"
                                     class="w-full px-3.5 py-2.5 bg-[#FAFBFD] border border-[#E4E8EF] focus:bg-white focus:border-[#123B7A] rounded-xl text-xs text-[#111827] outline-none transition">
+
                             </div>
                         </div>
 
                         <div>
+
                             <label
                                 class="block font-bold text-[#667085] text-[11px] mb-1.5 uppercase tracking-wider">Investment
                                 Thesis Statement</label>
@@ -412,6 +433,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="pt-4 border-t border-[#E4E8EF] flex justify-end">
                         <button type="submit"
                             class="px-6 py-2.5 bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-bold text-xs rounded-xl shadow-sm transition">
+
                             Save Investor Settings
                         </button>
                     </div>
@@ -425,6 +447,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <h3 class="text-xs font-bold text-[#0B1F3A] uppercase tracking-wider">Security & Account Password
                     </h3>
                 </div>
+
 
                 <form action="<?= url('investor/profile.php') ?>" method="POST" class="space-y-4 text-xs">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -457,6 +480,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="pt-3 border-t border-[#E4E8EF] flex justify-end">
                         <button type="submit"
                             class="px-5 py-2 bg-[#0B1F3A] hover:bg-[#123B7A] text-white font-bold rounded-xl text-xs transition">
+
                             Update Password
                         </button>
                     </div>
@@ -476,7 +500,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 const label = document.getElementById('file-chosen-name');
                 if (label) {
                     label.textContent = 'Selected: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+
                     label.className = 'text-[11px] text-emerald-700 font-bold';
+
                 }
                 const reader = new FileReader();
                 reader.onload = function (e) {

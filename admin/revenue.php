@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Commission & Platform Revenue Analytics';
+$pageTitle = 'Revenue & Invoices';
 
 $error = '';
 $flash = get_flash();
@@ -87,7 +87,7 @@ $companiesList = [];
 $roundsList = [];
 
 if ($db) {
-    // 1. Gross Transaction Value (Total Escrow / Total Raised)
+    // 1. Gross Transaction Value
     $gtv = (float)$db->query("SELECT COALESCE(SUM(amount_raised), 0) FROM funding_rounds")->fetchColumn();
 
     // 2. Invoice Aggregates
@@ -107,27 +107,25 @@ if ($db) {
     $settledRevenue = (float)($agg['total_settled'] ?? 0);
     $pendingRevenue = (float)($agg['total_pending'] ?? 0);
 
-    // 3. Companies & Rounds for modal
-    $companiesList = $db->query("SELECT id, name, cin_number FROM companies ORDER BY name ASC")->fetchAll();
-    $roundsList = $db->query("SELECT fr.id, fr.company_id, fr.round_name, fr.amount_raised, c.name as company_name FROM funding_rounds fr JOIN companies c ON fr.company_id = c.id ORDER BY fr.id DESC")->fetchAll();
-
-    // 4. Invoices query
-    $query = "
-        SELECT pi.*, c.name as company_name, c.legal_name, c.cin_number, fr.round_name
+    // 3. Invoices List
+    $sql = "
+        SELECT pi.*, c.name as company_name, c.cin_number, fr.round_name
         FROM platform_invoices pi
         JOIN companies c ON pi.company_id = c.id
         JOIN funding_rounds fr ON pi.funding_round_id = fr.id
     ";
-    $params = [];
-    if ($statusFilter !== 'ALL') {
-        $query .= " WHERE pi.settlement_status = ?";
-        $params[] = $statusFilter;
+    if ($statusFilter === 'SETTLED') {
+        $sql .= " WHERE pi.settlement_status = 'SETTLED'";
+    } elseif ($statusFilter === 'UNSETTLED') {
+        $sql .= " WHERE pi.settlement_status IN ('UNSETTLED', 'PROCESSING')";
     }
-    $query .= " ORDER BY pi.created_at DESC";
+    $sql .= " ORDER BY pi.invoice_date DESC, pi.id DESC";
 
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    $invoices = $stmt->fetchAll();
+    $invoices = $db->query($sql)->fetchAll();
+
+    // 4. Fetch list for creation modal
+    $companiesList = $db->query("SELECT id, name, cin_number FROM companies ORDER BY name ASC")->fetchAll();
+    $roundsList = $db->query("SELECT id, company_id, round_name, target_amount, amount_raised FROM funding_rounds ORDER BY id DESC")->fetchAll();
 }
 ?>
 <!DOCTYPE html>
@@ -135,6 +133,7 @@ if ($db) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Revenue & Commission Hub • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
@@ -143,15 +142,18 @@ if ($db) {
     </style>
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+
     
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
+
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="revenue-main">
+
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -169,50 +171,71 @@ if ($db) {
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Commission & Platform Revenue Analytics</h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Monetization tracking, 3% success fees, B2B GST tax invoices, and escrow commission settlements.</p>
+                <div class="flex items-center gap-3">
+                    <div class="admin-page-icon">
+                        <i data-lucide="receipt" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                            Platform Revenue & Invoices
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Platform commissions, B2B GST tax invoices, and escrow fee settlements.</p>
+                    </div>
                 </div>
                 
-                <div class="flex items-center space-x-2.5">
+                <div>
                     <button onclick="document.getElementById('newInvoiceModal').classList.remove('hidden')" 
-                            class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 shadow-sm shadow-indigo-600/20">
-                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                            class="admin-btn-primary">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                         <span>Generate Tax Invoice</span>
                     </button>
                 </div>
             </div>
 
             <!-- Revenue KPI Metric Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Gross Capital Volume (GTV)</div>
-                    <div class="text-lg font-black text-slate-900"><?= format_inr($gtv) ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">Total capital routed</div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Capital Volume (GTV)</span>
+                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-sky"><?= format_inr($gtv) ?></div>
+                    <div class="admin-stat-sub">Total capital routed</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Platform Invoices</div>
-                    <div class="text-lg font-black text-indigo-600"><?= format_inr($totalPlatformRevenue) ?></div>
-                    <div class="text-[10px] text-indigo-600/80 mt-0.5 font-semibold">Gross fees + GST</div>
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Total Invoiced</span>
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                            <i data-lucide="receipt" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= format_inr($totalPlatformRevenue) ?></div>
+                    <div class="admin-stat-sub">Gross fees + GST</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Net Platform Revenue</div>
-                    <div class="text-lg font-black text-emerald-600"><?= format_inr($netRevenue) ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">Retained earnings (Excl. GST)</div>
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Net Retained Revenue</span>
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i data-lucide="wallet" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-emerald"><?= format_inr($netRevenue) ?></div>
+                    <div class="admin-stat-sub">Platform earnings (excl. GST)</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">GST Tax Collected (18%)</div>
-                    <div class="text-lg font-black text-amber-600"><?= format_inr($gstLiability) ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">CGST 9% + SGST 9%</div>
-                </div>
-
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pending Settlements</div>
-                    <div class="text-lg font-black text-rose-600"><?= format_inr($pendingRevenue) ?></div>
-                    <div class="text-[10px] text-rose-500 mt-0.5 font-semibold">Escrow clearance buffer</div>
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Pending Settlements</span>
+                        <div class="w-8 h-8 rounded-lg <?= $pendingRevenue > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value <?= $pendingRevenue > 0 ? 'stat-value-amber' : '' ?>"><?= format_inr($pendingRevenue) ?></div>
+                    <div class="admin-stat-sub">Awaiting tranche settlement</div>
                 </div>
             </div>
 
@@ -220,70 +243,70 @@ if ($db) {
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
                 <!-- Monetization Streams -->
-                <div class="card-clean rounded-2xl p-6 lg:col-span-2">
-                    <div class="flex items-center justify-between mb-4">
+                <div class="admin-card p-5 lg:col-span-2">
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
                         <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
                             <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Platform Monetization Streams</span>
+                            <span>Monetization Fee Streams</span>
                         </h2>
-                        <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                            Automated Escrow Deduction
+                        <span class="admin-badge admin-badge-success text-[10px]">
+                            Auto Escrow Deduction
                         </span>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 text-xs">
                         <div>
-                            <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-bold text-slate-800">Success Carry / Platform Commission (3.00%)</span>
-                                <span class="font-mono font-black text-slate-900"><?= format_inr(max(0, $netRevenue - (count($invoices) * 25000))) ?></span>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-semibold text-slate-800">Success Carry / Platform Commission (3.00%)</span>
+                                <span class="font-mono font-bold text-slate-900"><?= format_inr(max(0, $netRevenue - (count($invoices) * 25000))) ?></span>
                             </div>
                             <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full bg-indigo-600 rounded-full" style="width: 82%"></div>
                             </div>
-                            <div class="text-[10.5px] text-slate-400 mt-1">Calculated on gross escrow amount committed upon round closure.</div>
+                            <div class="text-[11px] text-slate-400 mt-1">Calculated on gross escrow amount committed upon round closure.</div>
                         </div>
 
                         <div>
-                            <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-bold text-slate-800">Technical Diligence & Onboarding Infrastructure Fee</span>
-                                <span class="font-mono font-black text-slate-900"><?= format_inr(count($invoices) * 25000) ?></span>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-semibold text-slate-800">Technical Diligence & Onboarding Infrastructure</span>
+                                <span class="font-mono font-bold text-slate-900"><?= format_inr(count($invoices) * 25000) ?></span>
                             </div>
                             <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full bg-emerald-500 rounded-full" style="width: 18%"></div>
                             </div>
-                            <div class="text-[10.5px] text-slate-400 mt-1">Fixed ₹25,000 per round covering KYC, DigiLocker verification, and digital share demat registry.</div>
+                            <div class="text-[11px] text-slate-400 mt-1">Fixed ₹25,000 per round covering KYC, DigiLocker verification, and digital share demat registry.</div>
                         </div>
 
                         <div>
-                            <div class="flex items-center justify-between text-xs mb-1.5">
-                                <span class="font-bold text-slate-800">Statutory GST (18.00% Indian Tax Remittance)</span>
-                                <span class="font-mono font-black text-amber-600"><?= format_inr($gstLiability) ?></span>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <span class="font-semibold text-slate-800">Statutory GST (18.00% Indian Tax Remittance)</span>
+                                <span class="font-mono font-bold text-amber-600"><?= format_inr($gstLiability) ?></span>
                             </div>
                             <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-full bg-amber-400 rounded-full" style="width: 100%"></div>
                             </div>
-                            <div class="text-[10.5px] text-slate-400 mt-1">Held in tax liability reserve for monthly GSTR-1 & GSTR-3B filings.</div>
+                            <div class="text-[11px] text-slate-400 mt-1">Held in tax liability reserve for monthly GSTR-1 & GSTR-3B filings.</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Settlement Status Card -->
-                <div class="card-clean rounded-2xl p-6">
-                    <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
+                <div class="admin-card p-5">
+                    <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 mb-4 border-b border-slate-100 flex items-center space-x-1.5">
                         <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-                        <span>Settlement Health & Pipeline</span>
+                        <span>Settlement Health</span>
                     </h2>
 
                     <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 mb-4 text-center">
-                        <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Settled & Realized Funds</div>
-                        <div class="text-2xl font-black text-emerald-600 mt-0.5"><?= format_inr($settledRevenue) ?></div>
-                        <div class="text-[10px] text-slate-500 mt-1">
-                            <?= round(($totalPlatformRevenue > 0 ? ($settledRevenue / $totalPlatformRevenue) * 100 : 100)) ?>% of total invoiced revenue realized
+                        <div class="text-[10.5px] uppercase font-bold text-slate-400 tracking-wider">Settled & Realized Funds</div>
+                        <div class="text-2xl font-bold text-emerald-600 mt-0.5"><?= format_inr($settledRevenue) ?></div>
+                        <div class="text-[11px] text-slate-500 mt-1">
+                            <?= round(($totalPlatformRevenue > 0 ? ($settledRevenue / $totalPlatformRevenue) * 100 : 100)) ?>% realized
                         </div>
                     </div>
 
                     <div class="space-y-2 text-xs">
-                        <div class="flex items-center justify-between p-2 rounded-lg bg-emerald-50/60 border border-emerald-100">
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-100">
                             <span class="text-emerald-800 font-semibold flex items-center space-x-1">
                                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
                                 <span>Settled Invoices</span>
@@ -293,141 +316,124 @@ if ($db) {
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-between p-2 rounded-lg bg-rose-50/60 border border-rose-100">
-                            <span class="text-rose-800 font-semibold flex items-center space-x-1">
+                        <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-100 border border-slate-200">
+                            <span class="text-slate-700 font-semibold flex items-center space-x-1">
                                 <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-                                <span>Unsettled / Pending</span>
+                                <span>Pending Tranches</span>
                             </span>
-                            <span class="font-bold text-rose-900 font-mono">
+                            <span class="font-bold text-slate-900 font-mono">
                                 <?= count(array_filter($invoices, fn($x) => $x['settlement_status'] !== 'SETTLED')) ?>
                             </span>
                         </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-400">
-                        Commission is automatically deducted during founder milestone tranche disbursements.
                     </div>
                 </div>
 
             </div>
 
             <!-- Tax Invoices & Settlements Ledger -->
-            <div class="card-clean rounded-2xl p-6">
-                
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                    <div>
-                        <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
-                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>B2B GST Tax Invoices & Settlement Ledger</span>
-                        </h2>
-                        <p class="text-[11px] text-slate-400 mt-0.5">Statutory invoices generated for platform commission and due diligence services.</p>
-                    </div>
+            <div class="space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <h2 class="text-sm font-bold text-slate-900 tracking-tight">
+                        B2B GST Tax Invoices
+                    </h2>
 
                     <!-- Filter Tabs -->
-                    <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                    <div class="admin-filter-bar">
                         <a href="<?= url('admin/revenue.php?status_filter=ALL') ?>" 
-                           class="px-3 py-1 rounded-lg transition <?= $statusFilter === 'ALL' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800' ?>">
+                           class="admin-filter-pill <?= $statusFilter === 'ALL' ? 'active' : '' ?>">
                             All
                         </a>
                         <a href="<?= url('admin/revenue.php?status_filter=SETTLED') ?>" 
-                           class="px-3 py-1 rounded-lg transition <?= $statusFilter === 'SETTLED' ? 'bg-white text-emerald-600 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800' ?>">
+                           class="admin-filter-pill <?= $statusFilter === 'SETTLED' ? 'active' : '' ?>">
                             Settled
                         </a>
                         <a href="<?= url('admin/revenue.php?status_filter=UNSETTLED') ?>" 
-                           class="px-3 py-1 rounded-lg transition <?= $statusFilter === 'UNSETTLED' ? 'bg-white text-rose-600 shadow-sm font-bold' : 'text-slate-500 hover:text-slate-800' ?>">
+                           class="admin-filter-pill <?= $statusFilter === 'UNSETTLED' ? 'active' : '' ?>">
                             Unsettled
                         </a>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <th class="pb-3">Invoice Number</th>
-                                <th class="pb-3">Billed Startup</th>
-                                <th class="pb-3">Round / Gross Raised</th>
-                                <th class="pb-3">Fee Breakdown</th>
-                                <th class="pb-3">GST (18%)</th>
-                                <th class="pb-3">Total Payable</th>
-                                <th class="pb-3">Status</th>
-                                <th class="pb-3 text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <?php if (empty($invoices)): ?>
+                <div class="admin-table-container">
+                    <div class="overflow-x-auto">
+                        <table class="admin-table">
+                            <thead>
                                 <tr>
-                                    <td colspan="8" class="py-8 text-center text-xs text-slate-400">
-                                        No platform invoices found. Click "Generate Tax Invoice" above to create an invoice.
-                                    </td>
+                                    <th>Invoice #</th>
+                                    <th>Startup</th>
+                                    <th>Round / Gross</th>
+                                    <th>Fee Breakdown</th>
+                                    <th>GST (18%)</th>
+                                    <th>Total Payable</th>
+                                    <th>Status</th>
+                                    <th class="text-right">Action</th>
                                 </tr>
-                            <?php else: ?>
-                                <?php foreach ($invoices as $inv): ?>
-                                    <tr class="hover:bg-slate-50/70 transition">
-                                        <td class="py-3.5 font-mono font-bold text-indigo-600">
-                                            <?= htmlspecialchars($inv['invoice_number']) ?>
-                                            <div class="text-[9.5px] text-slate-400 font-sans"><?= date('d M Y', strtotime($inv['invoice_date'])) ?></div>
-                                        </td>
-                                        <td class="py-3.5">
-                                            <div class="font-bold text-slate-900"><?= htmlspecialchars($inv['company_name']) ?></div>
-                                            <div class="text-[10px] text-slate-400 font-mono"><?= htmlspecialchars($inv['cin_number'] ?: 'CIN Verified') ?></div>
-                                        </td>
-                                        <td class="py-3.5">
-                                            <div class="font-bold text-slate-800"><?= htmlspecialchars($inv['round_name']) ?></div>
-                                            <div class="text-[10px] text-emerald-600 font-mono font-semibold">GTV: <?= format_inr($inv['gross_amount_raised']) ?></div>
-                                        </td>
-                                        <td class="py-3.5 font-mono text-[11px]">
-                                            <span class="font-bold text-slate-800"><?= format_inr($inv['commission_amount']) ?></span> 
-                                            <span class="text-[10px] text-slate-400">(<?= $inv['commission_rate_percent'] ?>%)</span>
-                                            <div class="text-[10px] text-slate-400">+ <?= format_inr($inv['tech_fee']) ?> Tech</div>
-                                        </td>
-                                        <td class="py-3.5 font-mono text-amber-600 font-semibold text-[11px]">
-                                            <?= format_inr($inv['gst_amount']) ?>
-                                            <div class="text-[9.5px] text-slate-400 font-sans">9% CGST + 9% SGST</div>
-                                        </td>
-                                        <td class="py-3.5 font-mono font-black text-slate-900 text-xs">
-                                            <?= format_inr($inv['total_payable']) ?>
-                                        </td>
-                                        <td class="py-3.5">
-                                            <?php if ($inv['settlement_status'] === 'SETTLED'): ?>
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                    ✓ Settled
-                                                </span>
-                                            <?php elseif ($inv['settlement_status'] === 'PROCESSING'): ?>
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                                                    Processing
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                                                    Unsettled
-                                                </span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="py-3.5 text-right space-x-1.5 whitespace-nowrap">
-                                            <a href="<?= url('admin/invoice_view.php?id=' . $inv['id']) ?>" target="_blank"
-                                               class="inline-flex items-center space-x-1 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 text-slate-700 text-xs font-semibold transition border border-slate-200">
-                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                <span>View Invoice</span>
-                                            </a>
-
-                                            <!-- Toggle Settlement Form -->
-                                            <form method="POST" class="inline">
-                                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                                <input type="hidden" name="form_action" value="update_settlement">
-                                                <input type="hidden" name="invoice_id" value="<?= $inv['id'] ?>">
-                                                <input type="hidden" name="settlement_status" value="<?= $inv['settlement_status'] === 'SETTLED' ? 'UNSETTLED' : 'SETTLED' ?>">
-                                                <button type="submit" 
-                                                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition inline-flex items-center" 
-                                                        title="<?= $inv['settlement_status'] === 'SETTLED' ? 'Mark as Unsettled' : 'Mark as Settled' ?>">
-                                                    <i data-lucide="<?= $inv['settlement_status'] === 'SETTLED' ? 'rotate-ccw' : 'check-circle' ?>" class="w-3.5 h-3.5"></i>
-                                                </button>
-                                            </form>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($invoices)): ?>
+                                    <tr>
+                                        <td colspan="8" class="py-12 text-center text-slate-400">
+                                            No platform invoices found.
                                         </td>
                                     </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                                <?php else: ?>
+                                    <?php foreach ($invoices as $inv): ?>
+                                        <tr>
+                                            <td class="font-mono font-semibold text-indigo-600">
+                                                <?= htmlspecialchars($inv['invoice_number']) ?>
+                                                <div class="text-[11px] text-slate-400 font-sans mt-0.5"><?= date('d M Y', strtotime($inv['invoice_date'])) ?></div>
+                                            </td>
+                                            <td>
+                                                <div class="font-semibold text-slate-900"><?= htmlspecialchars($inv['company_name']) ?></div>
+                                                <div class="text-[11px] text-slate-400 mt-0.5"><?= htmlspecialchars($inv['cin_number'] ?: 'CIN Verified') ?></div>
+                                            </td>
+                                            <td>
+                                                <div class="font-semibold text-slate-800"><?= htmlspecialchars($inv['round_name']) ?></div>
+                                                <div class="text-[11px] text-emerald-600 font-mono mt-0.5">GTV: <?= format_inr($inv['gross_amount_raised']) ?></div>
+                                            </td>
+                                            <td class="font-mono text-xs">
+                                                <span class="font-semibold text-slate-800"><?= format_inr($inv['commission_amount']) ?></span> 
+                                                <span class="text-slate-400">(<?= $inv['commission_rate_percent'] ?>%)</span>
+                                                <div class="text-[10px] text-slate-400 mt-0.5">+ <?= format_inr($inv['tech_fee']) ?> Tech</div>
+                                            </td>
+                                            <td class="font-mono text-amber-600 text-xs">
+                                                <?= format_inr($inv['gst_amount']) ?>
+                                            </td>
+                                            <td class="font-mono font-bold text-slate-900 text-xs">
+                                                <?= format_inr($inv['total_payable']) ?>
+                                            </td>
+                                            <td>
+                                                <span class="admin-badge <?= $inv['settlement_status'] === 'SETTLED' ? 'admin-badge-success' : 'admin-badge-warning' ?>">
+                                                    <span class="admin-badge-dot"></span>
+                                                    <span><?= ucfirst(strtolower($inv['settlement_status'])) ?></span>
+                                                </span>
+                                            </td>
+                                            <td class="text-right whitespace-nowrap">
+                                                <a href="<?= url('admin/invoice_view.php?id=' . $inv['id']) ?>" target="_blank"
+                                                   class="admin-btn-secondary text-[11px] py-1 px-2.5" title="View Tax Invoice">
+                                                    <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                                    <span>Invoice</span>
+                                                </a>
+
+                                                <!-- Toggle Settlement Form -->
+                                                <form method="POST" class="inline">
+                                                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                    <input type="hidden" name="form_action" value="update_settlement">
+                                                    <input type="hidden" name="invoice_id" value="<?= $inv['id'] ?>">
+                                                    <input type="hidden" name="settlement_status" value="<?= $inv['settlement_status'] === 'SETTLED' ? 'UNSETTLED' : 'SETTLED' ?>">
+                                                    <button type="submit" 
+                                                            class="admin-btn-ghost p-1 ml-1" 
+                                                            title="<?= $inv['settlement_status'] === 'SETTLED' ? 'Mark as Unsettled' : 'Mark as Settled' ?>">
+                                                        <i data-lucide="<?= $inv['settlement_status'] === 'SETTLED' ? 'rotate-ccw' : 'check-circle' ?>" class="w-3.5 h-3.5"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -435,46 +441,44 @@ if ($db) {
     </div>
 
     <!-- Create Tax Invoice Modal -->
-    <div id="newInvoiceModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
+    <div id="newInvoiceModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative">
             <button onclick="document.getElementById('newInvoiceModal').classList.add('hidden')" 
                     class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <div class="flex items-center space-x-2.5 mb-4">
-                <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                    <i data-lucide="receipt" class="w-5 h-5"></i>
+            <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+                    <i data-lucide="receipt" class="w-4 h-4 text-white"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900">Generate B2B GST Platform Invoice</h3>
-                    <p class="text-[11px] text-slate-500">Calculate platform commission, due diligence tech fees, and GST tax.</p>
+                    <h3 class="font-bold text-slate-900 text-sm">Generate B2B Tax Invoice</h3>
+                    <p class="text-[11px] text-slate-400">Generate a statutory GST invoice for round commission.</p>
                 </div>
             </div>
 
-            <form method="POST" action="<?= url('admin/revenue.php') ?>" class="space-y-3.5 text-xs">
+            <form action="<?= url('admin/revenue.php') ?>" method="POST" class="space-y-4 text-xs">
                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                 <input type="hidden" name="form_action" value="create_invoice">
 
                 <div>
-                    <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Select Startup</label>
-                    <select name="company_id" id="modalCompanySelect" required onchange="filterRounds(this.value)"
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
-                        <option value="">Choose Startup...</option>
-                        <?php foreach ($companiesList as $c): ?>
-                            <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Billed Startup Company</label>
+                    <select name="company_id" id="modal-company-select" required onchange="filterRoundsByCompany(this.value)" class="admin-input w-full">
+                        <option value="">Select Company...</option>
+                        <?php foreach ($companiesList as $comp): ?>
+                            <option value="<?= $comp['id'] ?>"><?= htmlspecialchars($comp['name']) ?> (<?= htmlspecialchars($comp['cin_number'] ?: 'Unlisted') ?>)</option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Funding Round</label>
-                    <select name="funding_round_id" id="modalRoundSelect" required 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
-                        <option value="">Select Round...</option>
-                        <?php foreach ($roundsList as $r): ?>
-                            <option value="<?= $r['id'] ?>" data-company="<?= $r['company_id'] ?>" data-raised="<?= $r['amount_raised'] ?>">
-                                <?= htmlspecialchars($r['company_name']) ?> — <?= htmlspecialchars($r['round_name']) ?> (<?= format_inr($r['amount_raised']) ?>)
+                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Funding Round</label>
+                    <select name="funding_round_id" id="modal-round-select" required class="admin-input w-full">
+                        <option value="">Select funding round...</option>
+                        <?php foreach ($roundsList as $rnd): ?>
+                            <option value="<?= $rnd['id'] ?>" data-company="<?= $rnd['company_id'] ?>" data-raised="<?= $rnd['amount_raised'] ?: $rnd['target_amount'] ?>">
+                                <?= htmlspecialchars($rnd['round_name']) ?> (<?= format_inr($rnd['amount_raised'] ?: $rnd['target_amount']) ?>)
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -482,54 +486,46 @@ if ($db) {
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Gross Capital Raised (INR)</label>
-                        <input type="number" step="0.01" name="gross_amount_raised" id="modalGrossRaised" required placeholder="e.g. 5000000" 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Gross Raised (₹)</label>
+                        <input type="number" step="0.01" name="gross_amount_raised" id="modal-gross-amount" required placeholder="5000000" class="admin-input w-full">
                     </div>
                     <div>
-                        <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Commission Rate (%)</label>
-                        <input type="number" step="0.1" name="commission_rate_percent" value="3.0" required 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Commission Rate (%)</label>
+                        <input type="number" step="0.01" name="commission_rate_percent" value="3.00" required class="admin-input w-full">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Tech & DD Fee (INR)</label>
-                        <input type="number" step="0.01" name="tech_fee" value="25000.00" required 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Tech & DD Fee (₹)</label>
+                        <input type="number" step="0.01" name="tech_fee" value="25000.00" required class="admin-input w-full">
                     </div>
                     <div>
-                        <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">GST Tax Rate (%)</label>
-                        <input type="number" step="0.1" name="gst_rate_percent" value="18.0" required 
-                               class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
+                        <label class="block font-semibold text-slate-700 mb-1 text-xs">GST Rate (%)</label>
+                        <input type="number" step="0.01" name="gst_rate_percent" value="18.00" required class="admin-input w-full">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Settlement Status</label>
-                    <select name="settlement_status" 
-                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-600">
-                        <option value="SETTLED">SETTLED (Deducted from Escrow)</option>
-                        <option value="UNSETTLED">UNSETTLED (Awaiting Payout)</option>
-                        <option value="PROCESSING">PROCESSING</option>
+                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Settlement State</label>
+                    <select name="settlement_status" class="admin-input w-full">
+                        <option value="SETTLED">SETTLED (Deducted directly from escrow release)</option>
+                        <option value="UNSETTLED" selected>UNSETTLED (Awaiting milestone disbursement)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Notes / Terms (Optional)</label>
-                    <textarea name="notes" rows="2" placeholder="e.g. Platform success carry on Seed Round completion."
-                              class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 outline-none focus:bg-white focus:border-indigo-600"></textarea>
+                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Internal Notes (Optional)</label>
+                    <input type="text" name="notes" placeholder="e.g., Tranche 1 closing settlement" class="admin-input w-full">
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
-                    <button type="button" onclick="document.getElementById('newInvoiceModal').classList.add('hidden')" 
-                            class="px-3.5 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold transition">
+                <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="document.getElementById('newInvoiceModal').classList.add('hidden')" class="admin-btn-secondary">
                         Cancel
                     </button>
-                    <button type="submit" 
-                            class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition shadow-sm">
-                        Create & Issue Tax Invoice
+                    <button type="submit" class="admin-btn-primary">
+                        <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+                        <span>Generate Invoice</span>
                     </button>
                 </div>
             </form>
@@ -538,29 +534,32 @@ if ($db) {
 
     <script>
         lucide.createIcons();
-        gsap.from("#revenue-main > *", { duration: 0.4, y: 12, opacity: 0, stagger: 0.06, ease: "power2.out" });
+        gsap.from("#revenue-main", { duration: 0.3, y: 8, opacity: 0, ease: "power2.out" });
 
-        function filterRounds(companyId) {
-            const select = document.getElementById('modalRoundSelect');
-            const grossInput = document.getElementById('modalGrossRaised');
-            for (let i = 0; i < select.options.length; i++) {
-                const opt = select.options[i];
-                if (!opt.value) continue;
-                if (!companyId || opt.getAttribute('data-company') === companyId) {
-                    opt.style.display = 'block';
+        function filterRoundsByCompany(companyId) {
+            const select = document.getElementById('modal-round-select');
+            const grossInput = document.getElementById('modal-gross-amount');
+            let firstMatched = null;
+
+            Array.from(select.options).forEach(opt => {
+                if (!opt.value) return;
+                const cId = opt.getAttribute('data-company');
+                if (!companyId || cId === companyId) {
+                    opt.style.display = '';
+                    if (!firstMatched) firstMatched = opt;
                 } else {
                     opt.style.display = 'none';
                 }
+            });
+
+            if (firstMatched) {
+                select.value = firstMatched.value;
+                const rAmount = firstMatched.getAttribute('data-raised');
+                if (rAmount && grossInput) grossInput.value = rAmount;
+            } else {
+                select.value = '';
             }
         }
-
-        document.getElementById('modalRoundSelect')?.addEventListener('change', function() {
-            const opt = this.options[this.selectedIndex];
-            const raised = opt.getAttribute('data-raised');
-            if (raised && parseFloat(raised) > 0) {
-                document.getElementById('modalGrossRaised').value = raised;
-            }
-        });
     </script>
 </body>
 </html>

@@ -44,7 +44,7 @@ require_once __DIR__ . '/theme.php';
 </style>
 <aside id="main-sidebar" data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
     class="fixed inset-y-0 left-0 z-50 w-72 sm:w-68 bg-white dark:bg-slate-900 border-r border-[#E4E8EF] dark:border-slate-800 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-68 flex-shrink-0 transition-transform duration-300 ease-in-out select-none shadow-sm"
-    style="font-family: 'Vay Portal - Regular', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
+    style="font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;">
     <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6">
         <!-- Brand Identity & Close Button -->
         <div class="flex items-center justify-between pb-5 border-b border-[#E4E8EF] dark:border-slate-800">
@@ -57,9 +57,7 @@ require_once __DIR__ . '/theme.php';
                     <div
                         class="font-black text-[#0B1F3A] dark:text-white text-base tracking-tight leading-tight flex items-center gap-1.5">
                         <span>INVESTOR</span>
-
                     </div>
-
                 </div>
             </a>
             <button type="button" onclick="toggleMobileSidebar()"

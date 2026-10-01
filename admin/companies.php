@@ -2,12 +2,12 @@
 /**
  * Admin Module: Startup Company Master Review & Management
  * Implements Section 14 (Company Management & Verification)
- * Clean White / Light Theme, Small Crisp Typography
+ * Clean, Minimalist Startup Registry
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Company Management & Verification';
+$pageTitle = 'Startup Companies';
 
 $flash = get_flash();
 $error = '';
@@ -97,6 +97,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
+
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
         body { font-family: "Vay Portal", Sans-serif; }
@@ -109,16 +110,19 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
+
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
+
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="comp-main">
+
             
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
                     <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle' : 'alert-circle' ?>" class="w-4 h-4"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
@@ -126,16 +130,19 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
                 <div>
                     <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center space-x-2.5">
                         <i data-lucide="building-2" class="w-6 h-6 text-blue-600"></i>
                         <span>Startup Company Management</span>
                     </h1>
                     <p class="text-xs text-slate-500 mt-1">Review legal incorporation CIN references, pitch data, and business eligibility.</p>
+
                 </div>
             </div>
 
             <!-- KPI Metric Cards -->
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                 <div class="card-clean rounded-2xl p-5 flex items-center space-x-4">
                     <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
@@ -144,112 +151,131 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
                     <div>
                         <div class="text-[10.5px] uppercase font-bold text-slate-400">Total Startups</div>
                         <div class="text-lg font-black text-slate-900 mt-0.5"><?= $totalCompanies ?></div>
+
                     </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= $totalCompanies ?></div>
+                    <div class="admin-stat-sub">Registered entities</div>
                 </div>
-                <div class="card-clean rounded-2xl p-5 flex items-center space-x-4">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                        <i data-lucide="badge-check" class="w-5 h-5"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">MCA / CIN Verified</span>
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i data-lucide="badge-check" class="w-4 h-4"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-[10.5px] uppercase font-bold text-slate-400">MCA / CIN Verified</div>
-                        <div class="text-lg font-black text-emerald-600 mt-0.5"><?= $verifiedCompanies ?></div>
-                    </div>
+                    <div class="admin-stat-value stat-value-emerald"><?= $verifiedCompanies ?></div>
+                    <div class="admin-stat-sub">Compliant for funding</div>
                 </div>
-                <div class="card-clean rounded-2xl p-5 flex items-center space-x-4">
-                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-                        <i data-lucide="clock" class="w-5 h-5"></i>
+
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Pending Verification</span>
+                        <div class="w-8 h-8 rounded-lg <?= $pendingCompanies > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-[10.5px] uppercase font-bold text-slate-400">Pending Review</div>
-                        <div class="text-lg font-black text-amber-600 mt-0.5"><?= $pendingCompanies ?></div>
-                    </div>
+                    <div class="admin-stat-value <?= $pendingCompanies > 0 ? 'stat-value-amber' : '' ?>"><?= $pendingCompanies ?></div>
+                    <div class="admin-stat-sub">Requires review</div>
                 </div>
             </div>
 
             <!-- Filter & Search Toolbar -->
-            <div class="card-clean rounded-2xl p-4">
+            <div class="admin-card p-3 sm:p-4">
                 <form action="<?= url('admin/companies.php') ?>" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                    <div class="relative flex-1 w-full">
-                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <div class="admin-search-wrapper w-full flex-1">
+                        <i data-lucide="search"></i>
                         <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search company name, CIN reference, founder or city..."
+
                                class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 focus:bg-white focus:border-blue-600 rounded-lg text-xs outline-none">
+
                     </div>
                     <div class="flex items-center space-x-2 w-full sm:w-auto">
-                        <select name="status" class="px-3 py-2 bg-slate-50 border border-slate-200 focus:bg-white rounded-lg text-xs outline-none" onchange="this.form.submit()">
+                        <select name="status" class="admin-input text-xs" onchange="this.form.submit()">
                             <option value="all" <?= $statusFilter === 'all' ? 'selected' : '' ?>>All Statuses</option>
                             <option value="verified" <?= $statusFilter === 'verified' ? 'selected' : '' ?>>Verified</option>
                             <option value="pending" <?= $statusFilter === 'pending' ? 'selected' : '' ?>>Pending Review</option>
                             <option value="rejected" <?= $statusFilter === 'rejected' ? 'selected' : '' ?>>Rejected</option>
                         </select>
+
                         <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs transition">
+
                             Filter
                         </button>
+                        <?php if (!empty($search) || $statusFilter !== 'all'): ?>
+                            <a href="<?= url('admin/companies.php') ?>" class="admin-btn-secondary" title="Reset filter">
+                                Reset
+                            </a>
+                        <?php endif; ?>
                     </div>
                 </form>
             </div>
 
             <!-- Companies Table -->
-            <div class="card-clean rounded-2xl overflow-hidden">
+            <div class="admin-table-container">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
+                    <table class="admin-table">
                         <thead>
-                            <tr class="border-b border-slate-100 bg-slate-50/50 text-[10.5px] uppercase font-bold text-slate-400 tracking-wider">
-                                <th class="py-3 px-5">Startup</th>
-                                <th class="py-3 px-4">CIN / Identifiers</th>
-                                <th class="py-3 px-4">Primary Founder</th>
-                                <th class="py-3 px-4">Industry & Stage</th>
-                                <th class="py-3 px-4">Status</th>
-                                <th class="py-3 px-4 text-right">Review Action</th>
+                            <tr>
+                                <th>Startup</th>
+                                <th>CIN / Incorporation</th>
+                                <th>Primary Founder</th>
+                                <th>Industry & Stage</th>
+                                <th>Status</th>
+                                <th class="text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody>
                             <?php if (empty($companies)): ?>
                                 <tr>
-                                    <td colspan="6" class="py-10 text-center text-slate-400 text-xs">No companies match your search criteria.</td>
+                                    <td colspan="6" class="py-12 text-center text-slate-400">No companies match your search criteria.</td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($companies as $c): ?>
-                                    <tr class="hover:bg-slate-50/50 transition">
-                                        <td class="py-3 px-5">
+                                    <tr>
+                                        <td>
                                             <div class="flex items-center space-x-3">
                                                 <img src="<?= $c['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=60' ?>" 
-                                                     class="w-9 h-9 rounded-xl object-cover border border-slate-200 bg-white">
+                                                     class="w-8 h-8 rounded-lg object-cover border border-slate-200 bg-white">
                                                 <div>
-                                                    <div class="font-bold text-slate-900"><?= htmlspecialchars($c['name']) ?></div>
-                                                    <div class="text-[10.5px] text-slate-400"><?= htmlspecialchars($c['city'] ?? 'Bengaluru') ?>, <?= htmlspecialchars($c['country'] ?? 'India') ?></div>
+                                                    <div class="font-semibold text-slate-900 text-xs"><?= htmlspecialchars($c['name']) ?></div>
+                                                    <div class="text-[11px] text-slate-400"><?= htmlspecialchars($c['city'] ?? 'Bengaluru') ?>, <?= htmlspecialchars($c['country'] ?? 'India') ?></div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <div class="font-mono text-[11px] text-slate-700 font-semibold"><?= htmlspecialchars($c['cin_number'] ?? 'U72900KA2024PTC123456') ?></div>
-                                            <div class="text-[10px] text-slate-400">Incorp: <?= $c['incorporation_date'] ?: '2023' ?></div>
+                                        <td>
+                                            <div class="font-mono text-xs text-slate-700"><?= htmlspecialchars($c['cin_number'] ?? 'U72900KA2024PTC123456') ?></div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5">Incorp: <?= $c['incorporation_date'] ?: '2023' ?></div>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <div class="font-semibold text-slate-800"><?= htmlspecialchars($c['primary_founder'] ?? 'Lead Founder') ?></div>
-                                            <div class="text-[10.5px] text-slate-400"><?= $c['founder_count'] ?> Founder<?= $c['founder_count'] > 1 ? 's' : '' ?></div>
+                                        <td>
+                                            <div class="font-semibold text-slate-800 text-xs"><?= htmlspecialchars($c['primary_founder'] ?? 'Lead Founder') ?></div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5"><?= $c['founder_count'] ?> Founder<?= $c['founder_count'] > 1 ? 's' : '' ?></div>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10.5px] font-semibold">
+                                        <td>
+                                            <span class="admin-badge admin-badge-neutral text-[10px]">
                                                 <?= htmlspecialchars($c['industry']) ?>
                                             </span>
-                                            <div class="text-[10px] text-slate-400 mt-0.5 font-medium"><?= htmlspecialchars($c['stage']) ?> Stage</div>
+                                            <div class="text-[11px] text-slate-400 mt-1"><?= htmlspecialchars($c['stage']) ?> Stage</div>
                                         </td>
-                                        <td class="py-3 px-4">
-                                            <span class="px-2 py-0.5 rounded text-[10px] font-bold <?= $c['verified_status'] === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($c['verified_status'] === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') ?>">
-                                                <?= strtoupper($c['verified_status']) ?>
+                                        <td>
+                                            <span class="admin-badge <?= $c['verified_status'] === 'verified' ? 'admin-badge-success' : ($c['verified_status'] === 'rejected' ? 'admin-badge-danger' : 'admin-badge-warning') ?>">
+                                                <span class="admin-badge-dot"></span>
+                                                <span><?= ucfirst($c['verified_status']) ?></span>
                                             </span>
                                         </td>
-                                        <td class="py-3 px-4 text-right">
+                                        <td class="text-right">
                                             <div class="flex items-center justify-end space-x-1.5">
+
                                                 <a href="<?= url('investor/startup_detail.php?id=' . encode_id($c['id'])) ?>" target="_blank" class="p-1.5 text-slate-400 hover:text-blue-600 rounded-lg hover:bg-slate-100 transition" title="View Public Deal Page">
                                                     <i data-lucide="external-link" class="w-4 h-4"></i>
+
                                                 </a>
                                                 <?php if ($c['verified_status'] !== 'verified'): ?>
                                                     <form action="<?= url('admin/companies.php?status=' . urlencode($statusFilter) . '&search=' . urlencode($search)) ?>" method="POST" class="inline">
                                                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                                         <input type="hidden" name="form_action" value="verify_company">
                                                         <input type="hidden" name="company_id" value="<?= $c['id'] ?>">
-                                                        <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-[11px] transition">
+                                                        <button type="submit" class="admin-btn-secondary text-[11px] py-1 px-2.5 text-emerald-700 hover:text-emerald-800 hover:border-emerald-300">
                                                             Approve
                                                         </button>
                                                     </form>
@@ -259,7 +285,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
                                                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                                         <input type="hidden" name="form_action" value="reject_company">
                                                         <input type="hidden" name="company_id" value="<?= $c['id'] ?>">
-                                                        <button type="submit" class="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-[11px] transition">
+                                                        <button type="submit" class="admin-btn-secondary text-[11px] py-1 px-2.5 text-rose-700 hover:text-rose-800 hover:border-rose-300">
                                                             Reject
                                                         </button>
                                                     </form>
@@ -279,7 +305,7 @@ $pendingCompanies = (int)$db->query("SELECT COUNT(*) FROM companies WHERE verifi
 
     <script>
         lucide.createIcons();
-        gsap.from("#comp-main", { duration: 0.35, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#comp-main", { duration: 0.3, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
 </html>

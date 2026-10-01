@@ -350,6 +350,7 @@ $roundLabels = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
+
         <main class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6" id="discover-main">
 
             <!-- 1. HERO / MARKET STATUS -->
@@ -435,9 +436,11 @@ $roundLabels = [
                                 <span>Apply</span>
                             </button>
                         </div>
+
                     </div>
                 </form>
             </div>
+
 
             <!-- 3. FEED + RIGHT RAIL -->
             <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
@@ -538,9 +541,11 @@ $roundLabels = [
                                                             class="w-3 h-3 mr-0.5"></i><?= htmlspecialchars($city) ?>
                                                     </span>
                                                 <?php endif; ?>
+
                                             </div>
                                         </div>
                                     </div>
+
 
                                     <div class="flex items-center space-x-2 flex-shrink-0">
                                         <span
@@ -687,6 +692,7 @@ $roundLabels = [
                                             </div>
                                         <?php endif; ?>
                                     </div>
+
                                 </div>
 
                                 <!-- Founder + social proof -->

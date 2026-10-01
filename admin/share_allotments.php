@@ -6,7 +6,7 @@
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Share Allotments & Cap Table Registry';
+$pageTitle = 'Share Allotments';
 
 $error = '';
 $flash = get_flash();
@@ -38,7 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     $pricePerShare = round($amount / $numShares, 2);
 
                     // Fetch company code for certificate serial
-                    $compName = $db->query("SELECT name FROM companies WHERE id = {$companyId}")->fetchColumn() ?: 'PORT';
+                    $compStmt = $db->prepare("SELECT name FROM companies WHERE id = ?");
+                    $compStmt->execute([$companyId]);
+                    $compName = $compStmt->fetchColumn() ?: 'PORT';
                     $compCode = strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', $compName), 0, 3));
                     $certNum = 'SHA-2026-' . $compCode . '-' . rand(100, 999);
                     $folio = 'FOLIO-' . str_pad($investorId, 4, '0', STR_PAD_LEFT);
@@ -70,20 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                     // Send notification to investor
                     send_notification($investorId, 'Share Certificate Issued', "Official Digital Share Certificate #{$certNum} has been issued and credited to your demat portfolio.", 'success', 'certificate.php?id=' . $newInvId);
 
-                    // Auto-dispatch emails to Investor & Founder(s)
-                    send_investment_automated_emails(
-                        $db,
-                        (int)$newInvId,
-                        (int)$roundId,
-                        (int)$investorId,
-                        (float)$amount,
-                        (float)$equityPercent,
-                        (string)$certNum,
-                        (string)$txRef
-                    );
-
                     log_audit($user['id'], 'ISSUE_SHARE_CERTIFICATE', 'investments', $newInvId, "Issued certificate {$certNum} for {$numShares} shares in company #{$companyId}");
-                    set_flash('success', "Digital Share Certificate #{$certNum} generated and automated emails dispatched to Investor & Founders successfully!");
+                    set_flash('success', "Digital Share Certificate #{$certNum} generated successfully!");
                     header('Location: ' . url('admin/share_allotments.php'));
                     exit;
                 } catch (Exception $e) {
@@ -100,70 +90,60 @@ $totalCapitalAllotted = 0;
 $totalCertificatesCount = 0;
 $allotments = [];
 $companiesList = [];
-$investorsList = [];
 $fundingRoundsList = [];
-
-// Selected company for Cap Table Inspector
+$investorsList = [];
 $selectedCompanyId = (int)($_GET['company_filter'] ?? 0);
-$capTableBreakdown = [];
-$selectedCompany = null;
 
 if ($db) {
-    // Metrics
-    $totalSharesAllotted = (int)$db->query("SELECT COALESCE(SUM(number_of_shares), 0) FROM investments")->fetchColumn();
-    $totalCapitalAllotted = (float)$db->query("SELECT COALESCE(SUM(amount_invested), 0) FROM investments")->fetchColumn();
-    $totalCertificatesCount = (int)$db->query("SELECT COUNT(*) FROM investments WHERE certificate_number IS NOT NULL")->fetchColumn();
+    // 1. Overall Metrics
+    $agg = $db->query("
+        SELECT 
+            COALESCE(SUM(number_of_shares), 0) as total_shares,
+            COALESCE(SUM(amount_invested), 0) as total_capital,
+            COUNT(*) as total_certs
+        FROM investments
+        WHERE allotment_status = 'certificate_issued'
+    ")->fetch();
 
-    // Companies & Investors for dropdowns
-    $companiesList = $db->query("SELECT id, name, industry, cin_number FROM companies ORDER BY name ASC")->fetchAll();
-    $investorsList = $db->query("SELECT id, name, email FROM users WHERE role = 'investor' ORDER BY name ASC")->fetchAll();
-    $fundingRoundsList = $db->query("SELECT fr.id, fr.company_id, fr.round_name, c.name as company_name FROM funding_rounds fr JOIN companies c ON fr.company_id = c.id ORDER BY fr.id DESC")->fetchAll();
+    $totalSharesAllotted = (int)($agg['total_shares'] ?? 0);
+    $totalCapitalAllotted = (float)($agg['total_capital'] ?? 0);
+    $totalCertificatesCount = (int)($agg['total_certs'] ?? 0);
 
-    // Query Allotments
-    $query = "
-        SELECT inv.*, c.name as company_name, c.cin_number, c.logo_url,
-               fr.round_name, u.name as investor_name, u.email as investor_email
+    // 2. Fetch allotments with joined data
+    $sql = "
+        SELECT inv.*, 
+               c.name as company_name, c.cin_number,
+               u.name as investor_name, u.email as investor_email,
+               fr.round_name, fr.target_amount, fr.valuation
         FROM investments inv
         JOIN companies c ON inv.company_id = c.id
-        JOIN funding_rounds fr ON inv.funding_round_id = fr.id
         JOIN users u ON inv.investor_user_id = u.id
+        JOIN funding_rounds fr ON inv.funding_round_id = fr.id
     ";
-    $params = [];
     if ($selectedCompanyId > 0) {
-        $query .= " WHERE inv.company_id = ?";
-        $params[] = $selectedCompanyId;
+        $sql .= " WHERE inv.company_id = {$selectedCompanyId}";
     }
-    $query .= " ORDER BY inv.confirmed_at DESC";
-    $stmt = $db->prepare($query);
-    $stmt->execute($params);
-    $allotments = $stmt->fetchAll();
+    $sql .= " ORDER BY inv.confirmed_at DESC, inv.id DESC";
 
-    // If company selected, load master cap table
+    $allotments = $db->query($sql)->fetchAll();
+
+    // 3. Dropdowns for Issue Modal
+    $companiesList = $db->query("SELECT id, name, cin_number, industry FROM companies ORDER BY name ASC")->fetchAll();
+    $fundingRoundsList = $db->query("SELECT fr.id, fr.company_id, fr.round_name, c.name as company_name FROM funding_rounds fr JOIN companies c ON fr.company_id = c.id ORDER BY fr.id DESC")->fetchAll();
+    $investorsList = $db->query("SELECT id, name, email FROM users WHERE role = 'investor' AND status = 'active' ORDER BY name ASC")->fetchAll();
+
+    // 4. Cap Table breakdown for selected company
+    $selectedCompany = null;
+    $capTableBreakdown = ['founders' => [], 'investors' => []];
     if ($selectedCompanyId > 0) {
-        $compStmt = $db->prepare("SELECT * FROM companies WHERE id = ?");
-        $compStmt->execute([$selectedCompanyId]);
-        $selectedCompany = $compStmt->fetch();
+        $selectedCompany = $db->query("SELECT * FROM companies WHERE id = {$selectedCompanyId}")->fetch();
+        if ($selectedCompany) {
+            $fStmt = $db->query("SELECT cf.*, u.name as founder_name FROM company_founders cf JOIN users u ON cf.user_id = u.id WHERE cf.company_id = {$selectedCompanyId}");
+            $capTableBreakdown['founders'] = $fStmt->fetchAll();
 
-        // Founders equity
-        $founders = $db->prepare("
-            SELECT cf.*, u.name as founder_name, u.email 
-            FROM company_founders cf 
-            JOIN users u ON cf.user_id = u.id 
-            WHERE cf.company_id = ?
-        ");
-        $founders->execute([$selectedCompanyId]);
-        $capTableBreakdown['founders'] = $founders->fetchAll();
-
-        // Investors equity
-        $invEquity = $db->prepare("
-            SELECT inv.*, u.name as investor_name, fr.round_name
-            FROM investments inv
-            JOIN users u ON inv.investor_user_id = u.id
-            JOIN funding_rounds fr ON inv.funding_round_id = fr.id
-            WHERE inv.company_id = ?
-        ");
-        $invEquity->execute([$selectedCompanyId]);
-        $capTableBreakdown['investors'] = $invEquity->fetchAll();
+            $iStmt = $db->query("SELECT inv.*, u.name as investor_name, fr.round_name FROM investments inv JOIN users u ON inv.investor_user_id = u.id JOIN funding_rounds fr ON inv.funding_round_id = fr.id WHERE inv.company_id = {$selectedCompanyId} AND inv.allotment_status = 'certificate_issued'");
+            $capTableBreakdown['investors'] = $iStmt->fetchAll();
+        }
     }
 }
 ?>
@@ -172,6 +152,7 @@ if ($db) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Share Allotments & Cap Table Registry • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
@@ -180,15 +161,18 @@ if ($db) {
     </style>
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+
     
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
+
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="allotment-main">
+
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
@@ -206,45 +190,72 @@ if ($db) {
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Share Allotments & Cap Table Registry</h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Dematerialized share certificates, distinct ranges, equity stakes, and statutory Cap Table governance.</p>
+                <div class="flex items-center gap-3">
+                    <div class="admin-page-icon">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                            Share Allotments & Cap Table
+                        </h1>
+                        <p class="text-xs text-slate-500 mt-0.5">Digital share certificates, distinctive share ranges, and statutory Cap Table governance.</p>
+                    </div>
                 </div>
-                <div class="flex items-center space-x-2.5">
+                <div>
                     <button onclick="document.getElementById('issueModal').classList.remove('hidden')" 
+
                             class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 shadow-sm shadow-blue-600/20">
                         <i data-lucide="award" class="w-3.5 h-3.5"></i>
+
                         <span>Issue Share Certificate</span>
                     </button>
                 </div>
             </div>
 
             <!-- Metric Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Shares Allotted</div>
-                    <div class="text-lg font-black text-slate-900"><?= number_format($totalSharesAllotted) ?> Units</div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Dematerialized equity & CCPS</div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Shares Allotted</span>
+                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                            <i data-lucide="layers" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-sky"><?= number_format($totalSharesAllotted) ?></div>
+                    <div class="admin-stat-sub">Units of equity & CCPS</div>
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Allotted Capital Value</div>
-                    <div class="text-lg font-black text-emerald-600"><?= format_inr($totalCapitalAllotted) ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Total investor subscription</div>
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Allotted Capital</span>
+                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-emerald"><?= format_inr($totalCapitalAllotted) ?></div>
+                    <div class="admin-stat-sub">Investor subscriptions</div>
                 </div>
+
 
                 <div class="card-clean rounded-2xl p-4">
                     <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Certificates Issued</div>
                     <div class="text-lg font-black text-blue-600"><?= $totalCertificatesCount ?></div>
                     <div class="text-[10.5px] text-slate-500 mt-0.5">Digitally signed & verified</div>
+
                 </div>
 
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Compliance Standard</div>
-                    <div class="text-lg font-black text-amber-600">SEBI & MCA 2013</div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Sec. 56 Companies Act</div>
+                <div class="admin-stat-card">
+                    <div class="flex items-center justify-between">
+                        <span class="admin-stat-label">Compliance Standard</span>
+                        <div class="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="admin-stat-value stat-value-violet text-lg">SEBI & MCA 2013</div>
+                    <div class="admin-stat-sub">Sec. 56 Companies Act</div>
                 </div>
             </div>
+
 
             <!-- Filter & Cap Table Explorer -->
             <div class="card-clean rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -253,21 +264,24 @@ if ($db) {
                     <select name="company_filter" onchange="this.form.submit()" 
                             class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-800 outline-none focus:border-blue-600 focus:bg-white">
                         <option value="0">All Startups (<?= count($allotments) ?> records)</option>
+
                         <?php foreach ($companiesList as $c): ?>
                             <option value="<?= $c['id'] ?>" <?= $selectedCompanyId == $c['id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($c['name']) ?> (CIN: <?= htmlspecialchars($c['cin_number'] ?? 'N/A') ?>)
+                                <?= htmlspecialchars($c['name']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                     <?php if ($selectedCompanyId > 0): ?>
+
                         <a href="<?= url('admin/share_allotments.php') ?>" class="text-blue-600 font-bold hover:underline">
+
                             Clear Filter
                         </a>
                     <?php endif; ?>
                 </form>
 
                 <div class="text-xs text-slate-400">
-                    Showing <strong class="text-slate-700"><?= count($allotments) ?></strong> share allotment records
+                    Showing <span class="font-semibold text-slate-700"><?= count($allotments) ?></span> certificates
                 </div>
             </div>
 
@@ -280,6 +294,7 @@ if ($db) {
                 $esop = (float)($selectedCompany['esop_pool_percent'] ?: 10.00);
                 $unallocated = max(0, 100 - ($foundersEquity + $investorsEquity + $esop));
             ?>
+
             <div class="card-clean rounded-2xl border-blue-200 dark:border-slate-800 overflow-hidden">
                 <button type="button" onclick="toggleCapTable()" class="w-full p-5 md:p-6 flex items-center justify-between text-left hover:bg-slate-50/80 transition">
                     <div class="flex items-center space-x-3">
@@ -371,69 +386,74 @@ if ($db) {
                             </tbody>
                         </table>
                     </div>
+
                 </div>
             </div>
             <?php endif; ?>
 
             <!-- Share Allotments Master Table -->
-            <div class="card-clean rounded-2xl p-5 md:p-6">
+            <div class="admin-table-container">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
+                    <table class="admin-table">
                         <thead>
-                            <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                <th class="pb-3">Certificate No</th>
-                                <th class="pb-3">Startup Company</th>
-                                <th class="pb-3">Allottee Investor</th>
-                                <th class="pb-3">Shares & Class</th>
-                                <th class="pb-3">Distinctive Range</th>
-                                <th class="pb-3">Capital & Stake</th>
-                                <th class="pb-3">Allotted Date</th>
-                                <th class="pb-3 text-right">Certificate Action</th>
+                            <tr>
+                                <th>Certificate #</th>
+                                <th>Startup Company</th>
+                                <th>Investor</th>
+                                <th>Shares & Class</th>
+                                <th>Distinctive Range</th>
+                                <th>Capital & Stake</th>
+                                <th>Date</th>
+                                <th class="text-right">Action</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody>
                             <?php if (empty($allotments)): ?>
                                 <tr>
-                                    <td colspan="8" class="py-8 text-center text-xs text-slate-400">
+                                    <td colspan="8" class="py-12 text-center text-slate-400">
                                         No share allotments found. Click "Issue Share Certificate" above to create an allotment.
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($allotments as $a): ?>
+
                                     <tr class="hover:bg-slate-50/70 transition">
                                         <td class="py-3.5 font-mono font-bold text-blue-600">
+
                                             <?= htmlspecialchars($a['certificate_number']) ?>
-                                            <div class="text-[9.5px] text-slate-400 font-sans"><?= htmlspecialchars($a['folio_number']) ?></div>
+                                            <div class="text-[11px] text-slate-400 font-sans mt-0.5"><?= htmlspecialchars($a['folio_number']) ?></div>
                                         </td>
-                                        <td class="py-3.5">
-                                            <div class="font-bold text-slate-900"><?= htmlspecialchars($a['company_name']) ?></div>
-                                            <div class="text-[10px] text-slate-400 font-mono"><?= htmlspecialchars($a['cin_number'] ?: 'CIN Verified') ?></div>
+                                        <td>
+                                            <div class="font-semibold text-slate-900"><?= htmlspecialchars($a['company_name']) ?></div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5"><?= htmlspecialchars($a['cin_number'] ?: 'CIN Verified') ?></div>
                                         </td>
-                                        <td class="py-3.5">
-                                            <div class="font-bold text-slate-800"><?= htmlspecialchars($a['investor_name']) ?></div>
-                                            <div class="text-[10px] text-slate-400"><?= htmlspecialchars($a['investor_email']) ?></div>
+                                        <td>
+                                            <div class="font-semibold text-slate-800"><?= htmlspecialchars($a['investor_name']) ?></div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5"><?= htmlspecialchars($a['investor_email']) ?></div>
                                         </td>
-                                        <td class="py-3.5">
+                                        <td>
                                             <div class="font-bold text-slate-900 font-mono"><?= number_format($a['number_of_shares']) ?> Units</div>
-                                            <div class="text-[10px] text-slate-500 truncate max-w-[150px]" title="<?= htmlspecialchars($a['share_class']) ?>">
-                                                <?= htmlspecialchars($a['share_class']) ?>
-                                            </div>
+                                            <div class="text-[11px] text-slate-400 mt-0.5 truncate max-w-[140px]"><?= htmlspecialchars($a['share_class']) ?></div>
                                         </td>
-                                        <td class="py-3.5 font-mono text-slate-600 text-[11px]">
+                                        <td class="font-mono text-slate-600 text-xs">
                                             <?= str_pad($a['distinctive_from'], 6, '0', STR_PAD_LEFT) ?> – <?= str_pad($a['distinctive_to'], 6, '0', STR_PAD_LEFT) ?>
                                         </td>
+
                                         <td class="py-3.5">
                                             <div class="font-black text-emerald-600 font-mono"><?= format_inr($a['amount_invested']) ?></div>
                                             <div class="text-[10px] text-blue-600 font-bold"><?= $a['equity_allotted_percent'] ?>% equity</div>
+
                                         </td>
-                                        <td class="py-3.5 text-slate-500 text-[11px]">
+                                        <td class="text-slate-500 text-xs">
                                             <?= date('d M Y', strtotime($a['confirmed_at'])) ?>
                                         </td>
-                                        <td class="py-3.5 text-right">
+                                        <td class="text-right">
                                             <a href="<?= url('certificate.php?id=' . $a['id']) ?>" target="_blank"
+
                                                class="inline-flex items-center space-x-1 px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 text-xs font-semibold rounded-lg transition border border-slate-200">
+
                                                 <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                <span>View Certificate</span>
+                                                <span>View</span>
                                             </a>
                                         </td>
                                     </tr>
@@ -448,20 +468,22 @@ if ($db) {
     </div>
 
     <!-- Issue Share Certificate Modal -->
-    <div id="issueModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative animate-in fade-in zoom-in-95 duration-200">
+    <div id="issueModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative">
             <button onclick="document.getElementById('issueModal').classList.add('hidden')" 
                     class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
+
             <div class="flex items-center space-x-2.5 mb-4">
                 <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                     <i data-lucide="award" class="w-5 h-5"></i>
+
                 </div>
                 <div>
                     <h3 class="text-sm font-bold text-slate-900">Issue Digital Share Certificate</h3>
-                    <p class="text-[11px] text-slate-500">Allocate formal equity shares and generate verifiable certificates.</p>
+                    <p class="text-[11px] text-slate-400">Allocate formal equity shares and generate certificate.</p>
                 </div>
             </div>
 
@@ -470,9 +492,11 @@ if ($db) {
                 <input type="hidden" name="form_action" value="create_allotment">
 
                 <div>
+
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Startup Company</label>
                     <select name="company_id" required 
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                         <option value="">Select Startup...</option>
                         <?php foreach ($companiesList as $c): ?>
                             <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['name']) ?> (<?= htmlspecialchars($c['industry']) ?>)</option>
@@ -481,9 +505,11 @@ if ($db) {
                 </div>
 
                 <div>
+
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Funding Round</label>
                     <select name="funding_round_id" required 
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                         <option value="">Select Funding Round...</option>
                         <?php foreach ($fundingRoundsList as $fr): ?>
                             <option value="<?= $fr['id'] ?>"><?= htmlspecialchars($fr['company_name']) ?> — <?= htmlspecialchars($fr['round_name']) ?></option>
@@ -492,9 +518,11 @@ if ($db) {
                 </div>
 
                 <div>
+
                     <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Allottee Investor</label>
                     <select name="investor_user_id" required 
                             class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                         <option value="">Select Investor...</option>
                         <?php foreach ($investorsList as $inv): ?>
                             <option value="<?= $inv['id'] ?>"><?= htmlspecialchars($inv['name']) ?> (<?= htmlspecialchars($inv['email']) ?>)</option>
@@ -504,6 +532,7 @@ if ($db) {
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
+
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Capital Invested (INR)</label>
                         <input type="number" step="0.01" name="amount_invested" required placeholder="e.g. 500000" 
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
@@ -512,30 +541,37 @@ if ($db) {
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Equity Allotted (%)</label>
                         <input type="number" step="0.001" name="equity_allotted_percent" required placeholder="e.g. 1.250" 
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
+
                         <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Number of Shares</label>
                         <input type="number" name="number_of_shares" required placeholder="e.g. 2000" 
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                     </div>
                     <div>
-                        <label class="block text-[10.5px] font-bold text-slate-700 uppercase tracking-wider mb-1">Share Class</label>
+                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Share Class</label>
                         <input type="text" name="share_class" value="Series Seed CCPS" required 
+
                                class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 outline-none focus:bg-white focus:border-blue-600">
+
                     </div>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
                     <button type="button" onclick="document.getElementById('issueModal').classList.add('hidden')" 
-                            class="px-3.5 py-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold transition">
+                            class="admin-btn-secondary">
                         Cancel
                     </button>
+
                     <button type="submit" 
                             class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold transition shadow-sm">
                         Generate & Dispatch Certificate
+
                     </button>
                 </div>
             </form>
@@ -544,6 +580,7 @@ if ($db) {
 
     <script>
         lucide.createIcons();
+
         gsap.from("#allotment-main > *", { duration: 0.4, y: 12, opacity: 0, stagger: 0.06, ease: "power2.out" });
 
         function toggleCapTable() {
@@ -557,6 +594,7 @@ if ($db) {
                 chev.classList.add('rotate-180');
             }
         }
+
     </script>
 </body>
 </html>

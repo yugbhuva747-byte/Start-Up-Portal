@@ -57,36 +57,81 @@ if (file_exists($envFile)) {
     }
 }
 
-// Database Constants
-define('DB_HOST', $env['DB_HOST'] ?? '127.0.0.1');
-define('DB_PORT', $env['DB_PORT'] ?? '3306');
-define('DB_NAME', $env['DB_NAME'] ?? 'startup_portal');
-define('DB_USER', $env['DB_USER'] ?? 'root');
-define('DB_PASS', $env['DB_PASS'] ?? '');
+// Support Cloud / Docker DATABASE_URL if present (e.g. mysql://user:pass@host:port/dbname)
+$databaseUrl = $env['DATABASE_URL'] ?? (getenv('DATABASE_URL') ?: '');
+if (!empty($databaseUrl)) {
+    $parsed = parse_url($databaseUrl);
+    if (!empty($parsed['host'])) {
+        $env['DB_HOST'] = $parsed['host'];
+        $env['DB_PORT'] = (string)($parsed['port'] ?? 3306);
+        $env['DB_USER'] = $parsed['user'] ?? 'root';
+        $env['DB_PASS'] = $parsed['pass'] ?? '';
+        $env['DB_NAME'] = ltrim($parsed['path'] ?? '', '/');
+    }
+}
 
-// Security Key for Hash IDs & Encryption
-define('APP_KEY', $env['APP_KEY'] ?? 'sec_key_startup_hub_9876543210_portal');
-define('APP_NAME', $env['APP_NAME'] ?? 'STARTUP × INVESTOR');
+// Database Configuration Constants with Smart Defaults
+define('DB_HOST', $env['DB_HOST'] ?? (getenv('DB_HOST') ?: '127.0.0.1'));
+define('DB_PORT', (string)($env['DB_PORT'] ?? (getenv('DB_PORT') ?: '3306')));
+define('DB_NAME', $env['DB_NAME'] ?? (getenv('DB_NAME') ?: 'startup_portal'));
+define('DB_USER', $env['DB_USER'] ?? (getenv('DB_USER') ?: 'root'));
+define('DB_PASS', $env['DB_PASS'] ?? (getenv('DB_PASS') ?: ''));
+define('DB_SOCKET', $env['DB_SOCKET'] ?? (getenv('DB_SOCKET') ?: ''));
 
-// Calculate dynamic Base URL
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || ($_SERVER['SERVER_PORT'] ?? 80) == 443) ? "https://" : "http://";
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+// Security Key & App Name
+define('APP_KEY', $env['APP_KEY'] ?? (getenv('APP_KEY') ?: 'sec_key_startup_hub_9876543210_portal'));
+define('APP_NAME', $env['APP_NAME'] ?? (getenv('APP_NAME') ?: 'STARTUP × INVESTOR'));
+define('APP_ENV', $env['APP_ENV'] ?? (getenv('APP_ENV') ?: 'development'));
 
-// If within a subfolder like /start up portal/founder, extract root
-$docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT'] ?? '');
-$currentDir = str_replace('\\', '/', __DIR__);
-$relativeAppPath = str_ireplace($docRoot, '', $currentDir);
-$relativeAppPath = '/' . ltrim($relativeAppPath, '/');
+// -----------------------------------------------------------------------------
+// Dynamic Environment & Base URL Resolution
+// -----------------------------------------------------------------------------
+// Determine if running on localhost or on a live production domain
+$httpHost = strtolower(trim($_SERVER['HTTP_HOST'] ?? 'localhost'));
+$hostWithoutPort = explode(':', $httpHost)[0];
+$isLocalhost = in_array($hostWithoutPort, ['localhost', '127.0.0.1', '::1'])
+               || str_starts_with($hostWithoutPort, '192.168.')
+               || str_starts_with($hostWithoutPort, '10.')
+               || str_ends_with($hostWithoutPort, '.local')
+               || str_ends_with($hostWithoutPort, '.test');
 
-if (!empty($env['APP_URL'])) {
-    $baseUrl = rtrim($env['APP_URL'], '/');
+// Protocol detection (supports HTTPS, SSL termination, Cloudflare, AWS ALB)
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+           || (($_SERVER['SERVER_PORT'] ?? 80) == 443)
+           || (strtolower($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https')
+           || (isset($_SERVER['HTTP_CF_VISITOR']) && str_contains($_SERVER['HTTP_CF_VISITOR'], '"https"'));
+$protocol = $isHttps ? "https://" : "http://";
+
+// Calculate relative path from web server DOCUMENT_ROOT
+$docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+$currentDir = str_replace('\\', '/', realpath(__DIR__) ?: __DIR__);
+
+if (!empty($docRoot) && strpos($currentDir, $docRoot) === 0) {
+    $relativeAppPath = substr($currentDir, strlen($docRoot));
 } else {
-    $baseUrl = rtrim($protocol . $host . $relativeAppPath, '/');
+    $relativeAppPath = str_ireplace($docRoot, '', $currentDir);
+}
+$relativeAppPath = '/' . ltrim(str_replace('\\', '/', $relativeAppPath), '/');
+if ($relativeAppPath === '/') {
+    $relativeAppPath = '';
+}
+
+// Calculate final BASE_URL:
+// If APP_URL is specified in .env, check if it's safe to use:
+// If running on a live server, but APP_URL has 'localhost', ignore localhost and auto-adapt to live domain!
+$configuredUrl = trim($env['APP_URL'] ?? (getenv('APP_URL') ?: ''));
+if (!empty($configuredUrl) && (!$isLocalhost && (str_contains($configuredUrl, 'localhost') || str_contains($configuredUrl, '127.0.0.1')))) {
+    // Zero-Touch Live Adaptation: Automatically use the live domain instead of broken localhost
+    $baseUrl = rtrim($protocol . $httpHost . $relativeAppPath, '/');
+} elseif (!empty($configuredUrl)) {
+    $baseUrl = rtrim($configuredUrl, '/');
+} else {
+    $baseUrl = rtrim($protocol . $httpHost . $relativeAppPath, '/');
 }
 
 define('BASE_URL', $baseUrl);
 define('ROOT_PATH', __DIR__);
+define('IS_LOCALHOST', $isLocalhost);
 
 // Mail Configuration
 define('MAIL_MAILER', $env['MAIL_MAILER'] ?? 'mail');

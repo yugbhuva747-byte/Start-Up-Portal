@@ -81,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div
                 class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E4E8EF] dark:border-slate-800 pb-6">
                 <div>
+
                     <div
                         class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1 flex items-center gap-2">
                         <span>Portfolio Tracking</span>
@@ -100,10 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <span>Discover More Deals</span>
                     </a>
                 </div>
+
             </div>
 
             <!-- Saved Companies List (Horizontal Rows, Minimal Borders, Strong Typography) -->
             <?php if (empty($watchlist)): ?>
+
                 <div class="bg-white border border-[#E4E8EF] rounded-xl p-12 text-center text-xs text-[#667085]">
                     <div
                         class="w-12 h-12 rounded-full bg-[#FAFBFD] border border-[#E4E8EF] text-[#667085] flex items-center justify-center mx-auto mb-3">
@@ -186,6 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                         </button>
                                     </form>
                                 </div>
+
                             </div>
                         </div>
                     <?php endforeach; ?>

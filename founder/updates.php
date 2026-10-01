@@ -252,21 +252,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             
             <!-- Toast / Flash Feedback Banner -->
             <?php if ($flash): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-xs">
                     <div class="flex items-center space-x-3">
                         <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-5 h-5 flex-shrink-0 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?>"></i>
                         <span><?= htmlspecialchars($flash['message']) ?></span>
                     </div>
                     <span class="text-xs font-bold uppercase opacity-75">Notice</span>
+
                 </div>
             <?php endif; ?>
 
             <?php if ($error): ?>
+
                 <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-xs">
                     <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
+
 
             <!-- High-Impact Studio Executive Banner -->
             <div class="hero-banner p-6 sm:p-8 relative overflow-hidden">
@@ -485,10 +490,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
                 <?php if (!$company): ?>
+
                     <div class="p-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
                         <i data-lucide="building" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
                         <h3 class="text-sm font-bold text-slate-800">Company Record Required</h3>
@@ -517,7 +524,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                        placeholder="e.g. October 2026: ARR reached ₹3.8 Cr (+145% YoY), launched AI Agent V2" 
                                        oninput="handleLiveSync()"
                                        class="form-input-clean font-semibold text-slate-900">
+
                             </div>
+
 
                             <!-- Category & Audience Scope in 2 Columns -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -568,11 +577,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     <button type="button" onclick="appendMetricTag('Cashflow +ve')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">Cashflow +ve</button>
                                     <button type="button" onclick="appendMetricTag('18 Mo Runway')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">18 Mo Runway</button>
                                     <button type="button" onclick="appendMetricTag('Zero Churn')" class="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-mono transition">Zero Churn</button>
+
                                 </div>
                             </div>
 
                             <!-- Detailed Content Body with Format Helpers -->
                             <div>
+
                                 <div class="form-label-clean">
                                     <span>Detailed Update Narrative <span class="text-rose-500">*</span></span>
                                     <div class="flex items-center space-x-2 text-[11px]">
@@ -856,6 +867,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                         </button>
                                     </div>
                                 </div>
+
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -868,6 +880,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <!-- Interactive Studio Logic -->
     <script>
         lucide.createIcons();
+
         gsap.from("#updates-main", { duration: 0.35, y: 8, opacity: 0, ease: "power2.out" });
 
         // Real-time synchronization between form and preview
@@ -1050,6 +1063,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
         // Initialize preview on load
         handleLiveSync();
+
     </script>
 </body>
 </html>

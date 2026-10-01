@@ -41,6 +41,11 @@ function url(string $path = ''): string
     return BASE_URL . '/' . $cleanPath . $query . $fragment;
 }
 
+// 1.1 Asset URL Generator
+function asset(string $path = ''): string {
+    return BASE_URL . '/assets/' . ltrim($path, '/');
+}
+
 // 2. Hash ID Encoding & Decoding (Reversible, URL-safe, secure obfuscation)
 function hash_id_encode(int|string|null $id): string
 {
@@ -229,6 +234,10 @@ function verify_csrf(?string $token): bool
     return !empty($token) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
+function csrf_field(): string {
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token()) . '">';
+}
+
 // 8. Currency & Number Formatters (Indian Rupee formatting: e.g., ₹25,00,000)
 function format_inr(float|int $number, bool $includeSymbol = true): string
 {
@@ -246,25 +255,42 @@ function format_inr(float|int $number, bool $includeSymbol = true): string
 function render_status_badge(string $status): string
 {
     $statusUpper = strtoupper($status);
-    $map = [
-        'DRAFT' => 'bg-slate-100 text-slate-700 border-slate-200',
-        'SUBMITTED' => 'bg-blue-50 text-blue-700 border-blue-200',
-        'UNDER_REVIEW' => 'bg-amber-50 text-amber-800 border-amber-200',
-        'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200',
-        'APPROVED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'LIVE' => 'bg-emerald-50 text-emerald-700 border-emerald-300 font-bold animate-pulse',
-        'VERIFIED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'PARTIALLY_FUNDED' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-        'FULLY_FUNDED' => 'bg-purple-50 text-purple-700 border-purple-200',
-        'CLOSED' => 'bg-slate-100 text-slate-600 border-slate-200',
-        'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-200',
-        'CONFIRMED' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'ACTIVE' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'COMPLETED' => 'bg-teal-50 text-teal-700 border-teal-200',
+    $dotColors = [
+        'DRAFT' => 'bg-slate-400',
+        'SUBMITTED' => 'bg-blue-500',
+        'UNDER_REVIEW' => 'bg-amber-500',
+        'PENDING' => 'bg-amber-500',
+        'APPROVED' => 'bg-emerald-500',
+        'LIVE' => 'bg-emerald-500',
+        'VERIFIED' => 'bg-emerald-500',
+        'PARTIALLY_FUNDED' => 'bg-indigo-500',
+        'FULLY_FUNDED' => 'bg-purple-500',
+        'CLOSED' => 'bg-slate-400',
+        'REJECTED' => 'bg-rose-500',
+        'CONFIRMED' => 'bg-emerald-500',
+        'ACTIVE' => 'bg-emerald-500',
+        'COMPLETED' => 'bg-teal-500',
     ];
-    $classes = $map[$statusUpper] ?? 'bg-slate-100 text-slate-600 border-slate-200';
+    $map = [
+        'DRAFT' => 'bg-slate-100 text-slate-700 border-slate-200/80',
+        'SUBMITTED' => 'bg-blue-50 text-blue-700 border-blue-200/80',
+        'UNDER_REVIEW' => 'bg-amber-50 text-amber-800 border-amber-200/80',
+        'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200/80',
+        'APPROVED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'LIVE' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'VERIFIED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'PARTIALLY_FUNDED' => 'bg-indigo-50 text-indigo-700 border-indigo-200/80',
+        'FULLY_FUNDED' => 'bg-purple-50 text-purple-700 border-purple-200/80',
+        'CLOSED' => 'bg-slate-100 text-slate-600 border-slate-200/80',
+        'REJECTED' => 'bg-rose-50 text-rose-700 border-rose-200/80',
+        'CONFIRMED' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'ACTIVE' => 'bg-emerald-50 text-emerald-800 border-emerald-200/80',
+        'COMPLETED' => 'bg-teal-50 text-teal-800 border-teal-200/80',
+    ];
+    $classes = $map[$statusUpper] ?? 'bg-slate-100 text-slate-600 border-slate-200/80';
+    $dot = $dotColors[$statusUpper] ?? 'bg-slate-400';
     $label = str_replace('_', ' ', $statusUpper);
-    return "<span class=\"inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide border {$classes}\">{$label}</span>";
+    return "<span class=\"inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide border {$classes}\"><span class=\"w-1.5 h-1.5 rounded-full {$dot}\"></span><span>{$label}</span></span>";
 }
 
 // 10. Profile Completion Calculator
@@ -869,3 +895,328 @@ function get_remaining_backup_codes_count(int $userId): int
     }
     return $unused;
 }
+
+/**
+ * Ensure broadcasts table exists
+ */
+function init_broadcasts_table(PDO $db): void {
+    static $initialized = false;
+    if ($initialized) return;
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `broadcasts` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `admin_user_id` INT NOT NULL,
+                `title` VARCHAR(255) NOT NULL,
+                `message` TEXT NOT NULL,
+                `priority` ENUM('urgent','compliance','update','opportunity') DEFAULT 'update',
+                `target_audience` ENUM('all','founder','investor','pending_kyc') DEFAULT 'all',
+                `show_banner` TINYINT(1) DEFAULT 1,
+                `cta_label` VARCHAR(100) NULL,
+                `cta_url` VARCHAR(255) NULL,
+                `image_url` VARCHAR(255) NULL,
+                `recipients_count` INT DEFAULT 0,
+                `is_active` TINYINT(1) DEFAULT 1,
+                `expires_at` DATETIME NULL,
+                `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                INDEX (`admin_user_id`),
+                INDEX (`is_active`),
+                INDEX (`priority`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+        $initialized = true;
+    } catch (Exception $e) {
+        // Table already exists or migration handled
+    }
+}
+
+/**
+ * Return human-readable relative time string (e.g. '5 mins ago', '2 hours ago', 'yesterday')
+ */
+function time_elapsed_string($datetime, $full = false) {
+    if (empty($datetime)) return '';
+    try {
+        $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime($datetime);
+        if (!$timestamp) return '';
+        $diff = time() - $timestamp;
+
+        if ($diff < 5) return 'just now';
+        if ($diff < 60) return $diff . ' secs ago';
+        if ($diff < 3600) {
+            $mins = max(1, floor($diff / 60));
+            return $mins . ' min' . ($mins > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 86400) {
+            $hours = floor($diff / 3600);
+            return $hours . ' hr' . ($hours > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 604800) {
+            $days = floor($diff / 86400);
+            return $days . ' day' . ($days > 1 ? 's' : '') . ' ago';
+        }
+        if ($diff < 2592000) {
+            $weeks = floor($diff / 604800);
+            return $weeks . ' wk' . ($weeks > 1 ? 's' : '') . ' ago';
+        }
+        return date('M d, Y', $timestamp);
+    } catch (Exception $e) {
+        return date('M d, Y', strtotime($datetime));
+    }
+}
+
+/**
+ * ============================================================================
+ * Subscription & Priority Level Management Helpers
+ * ============================================================================
+ */
+
+/**
+ * Get comprehensive metadata for a plan code and role
+ */
+function get_plan_details(string $planCode, string $role = 'founder'): array {
+    $role = strtolower($role) === 'investor' ? 'investor' : 'founder';
+    
+    $plans = [
+        'founder' => [
+            'free_trial' => [
+                'code' => 'free_trial',
+                'name' => '14-Day Free Trial',
+                'priority_level' => 1,
+                'priority_name' => 'Standard Access',
+                'badge_class' => 'bg-slate-100 text-slate-700 border-slate-300',
+                'price_monthly' => 0,
+                'price_annual' => 0,
+                'duration_days' => 14,
+                'deal_rooms' => 1,
+                'is_featured' => false,
+                'perks' => [
+                    '1 Live Pitch Deck Listing',
+                    'Basic Cap Table Viewer',
+                    'Public Syndicate Directory',
+                    'Standard Community Support'
+                ]
+            ],
+            '1_month' => [
+                'code' => '1_month',
+                'name' => '1 Month Sprint',
+                'priority_level' => 2,
+                'priority_name' => 'Verified Growth',
+                'badge_class' => 'bg-purple-100 text-purple-800 border-purple-300',
+                'price_monthly' => 2499,
+                'price_annual' => 1999,
+                'duration_days' => 30,
+                'deal_rooms' => 3,
+                'is_featured' => false,
+                'perks' => [
+                    '3 Active Deal Rooms',
+                    'Direct Founder-Investor DMs',
+                    'DigiLocker KYC Verified Badge',
+                    'Real-Time Pitch Analytics'
+                ]
+            ],
+            '6_months' => [
+                'code' => '6_months',
+                'name' => '6 Months Dealmaker',
+                'priority_level' => 3,
+                'priority_name' => 'Featured Priority',
+                'badge_class' => 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold',
+                'price_monthly' => 1666,
+                'price_annual' => 1499,
+                'duration_days' => 180,
+                'deal_rooms' => 9999, // unlimited
+                'is_featured' => true,
+                'perks' => [
+                    'Top Featured Dealflow Placement',
+                    'Unlimited Active Deal Rooms',
+                    'Direct WhatsApp Warm Intros',
+                    'SEBI & MCA SAFE Legal Templates',
+                    'Dedicated Venture Scout Manager'
+                ]
+            ],
+            '1_year' => [
+                'code' => '1_year',
+                'name' => '1 Year Scale Pro',
+                'priority_level' => 4,
+                'priority_name' => 'VIP Spotlight Pro',
+                'badge_class' => 'bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 text-white font-extrabold',
+                'price_monthly' => 1499,
+                'price_annual' => 1249,
+                'duration_days' => 365,
+                'deal_rooms' => 9999, // unlimited
+                'is_featured' => true,
+                'perks' => [
+                    '#1 Top Spotlight Placement & Gold Badge',
+                    'SPV Pooling & Syndicate Lead Tools',
+                    'White-Label LP Data Room',
+                    'Full Platform REST API & Webhooks',
+                    'Dedicated Partner Success Director'
+                ]
+            ]
+        ],
+        'investor' => [
+            'free_trial' => [
+                'code' => 'free_trial',
+                'name' => '14-Day Explorer Pass',
+                'priority_level' => 1,
+                'priority_name' => 'Explorer Access',
+                'badge_class' => 'bg-slate-100 text-slate-700 border-slate-300',
+                'price_monthly' => 0,
+                'price_annual' => 0,
+                'duration_days' => 14,
+                'deal_rooms' => 5,
+                'is_featured' => false,
+                'perks' => [
+                    'Browse 300+ Curated Deal Summaries',
+                    'Sector & Stage Filters',
+                    'Weekly Dealflow Newsletter'
+                ]
+            ],
+            '1_month' => [
+                'code' => '1_month',
+                'name' => '1 Month Active Angel',
+                'priority_level' => 2,
+                'priority_name' => 'Verified Angel',
+                'badge_class' => 'bg-purple-100 text-purple-800 border-purple-300',
+                'price_monthly' => 3499,
+                'price_annual' => 2799,
+                'duration_days' => 30,
+                'deal_rooms' => 25,
+                'is_featured' => false,
+                'perks' => [
+                    'Audited MRR & Diligence Cap Tables',
+                    'Direct Founder 1-on-1 DMs',
+                    'Full Pitch Deck Downloads',
+                    'Co-Invest From ₹2 Lakhs'
+                ]
+            ],
+            '6_months' => [
+                'code' => '6_months',
+                'name' => '6 Months Syndicate Lead',
+                'priority_level' => 3,
+                'priority_name' => 'Syndicate Priority',
+                'badge_class' => 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold',
+                'price_monthly' => 2499,
+                'price_annual' => 1999,
+                'duration_days' => 180,
+                'deal_rooms' => 9999,
+                'is_featured' => true,
+                'perks' => [
+                    'Lead Syndicates & SPV Pooling',
+                    'Priority Allocation in Hot Rounds',
+                    'Direct WhatsApp Founder Connect',
+                    'Automated Carry & Distribution CRM',
+                    'Dedicated Venture Scout'
+                ]
+            ],
+            '1_year' => [
+                'code' => '1_year',
+                'name' => '1 Year Institutional Suite',
+                'priority_level' => 4,
+                'priority_name' => 'Institutional VIP',
+                'badge_class' => 'bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 text-white font-extrabold',
+                'price_monthly' => 1999,
+                'price_annual' => 1699,
+                'duration_days' => 365,
+                'deal_rooms' => 9999,
+                'is_featured' => true,
+                'perks' => [
+                    'Custom Institutional Research Reports',
+                    'White-Label LP Deal Portal',
+                    'Full Dealflow REST API & Webhooks',
+                    'Dedicated Partner Relationship Manager'
+                ]
+            ]
+        ]
+    ];
+
+    return $plans[$role][$planCode] ?? $plans[$role]['free_trial'];
+}
+
+/**
+ * Update user subscription, calculate expiry, and update priority rankings across user and company records
+ */
+function activate_user_subscription(int $userId, string $planCode, string $billingCycle = 'monthly', ?float $customAmount = null, ?string $paymentRef = null): array {
+    $db = get_db();
+    if (!$db) {
+        return ['success' => false, 'error' => 'Database connection unavailable'];
+    }
+
+    $uStmt = $db->prepare("SELECT id, name, email, role FROM users WHERE id = ?");
+    $uStmt->execute([$userId]);
+    $user = $uStmt->fetch();
+    if (!$user) {
+        return ['success' => false, 'error' => 'User not found'];
+    }
+
+    $role = $user['role'] ?? 'founder';
+    $planInfo = get_plan_details($planCode, $role);
+    $priorityLevel = (int)$planInfo['priority_level'];
+    $durationDays = (int)$planInfo['duration_days'];
+
+    // If annual, multiply duration if not already 365
+    if ($billingCycle === 'annually' && $planCode !== '1_year' && $planCode !== 'free_trial') {
+        $durationDays = 365;
+    }
+
+    $expiresAt = date('Y-m-d H:i:s', strtotime("+{$durationDays} days"));
+    $amount = $customAmount !== null ? $customAmount : ($billingCycle === 'annually' ? (float)$planInfo['price_annual'] * ($planCode === '6_months' ? 6 : 12) : (float)$planInfo['price_monthly']);
+    if ($planCode === 'free_trial') {
+        $amount = 0.00;
+    }
+
+    $txRef = $paymentRef ?: ('NEX-' . strtoupper(substr($role, 0, 3)) . '-' . strtoupper(bin2hex(random_bytes(4))));
+
+    // 1. Mark existing active subscriptions as expired/replaced
+    $db->prepare("UPDATE subscriptions SET status = 'cancelled' WHERE user_id = ? AND status IN ('active', 'trial')")->execute([$userId]);
+
+    // 2. Insert new subscription record
+    $insStmt = $db->prepare("
+        INSERT INTO subscriptions 
+        (user_id, plan_code, plan_name, billing_cycle, role, amount, priority_level, status, payment_method, payment_status, transaction_ref, starts_at, expires_at, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'active', 'Razorpay / Instant Card Gateway', 'completed', ?, NOW(), ?, NOW())
+    ");
+    $insStmt->execute([
+        $userId,
+        $planCode,
+        $planInfo['name'],
+        $billingCycle,
+        $role,
+        $amount,
+        $priorityLevel,
+        $txRef,
+        $expiresAt
+    ]);
+
+    // 3. Update User table
+    $updUser = $db->prepare("UPDATE users SET current_plan = ?, priority_level = ?, plan_expires_at = ? WHERE id = ?");
+    $updUser->execute([$planCode, $priorityLevel, $expiresAt, $userId]);
+
+    // 4. If Founder, update associated Company priority level as well for dealflow ranking
+    if ($role === 'founder') {
+        $updComp = $db->prepare("
+            UPDATE companies c 
+            JOIN company_founders cf ON cf.company_id = c.id 
+            SET c.priority_level = ? 
+            WHERE cf.user_id = ?
+        ");
+        $updComp->execute([$priorityLevel, $userId]);
+    }
+
+    // 5. Audit log
+    if (function_exists('log_audit')) {
+        log_audit($userId, 'PLAN_PURCHASED', 'subscriptions', (int)$db->lastInsertId(), "Subscribed to {$planInfo['name']} with Priority Level {$priorityLevel}");
+    }
+
+    return [
+        'success' => true,
+        'plan_code' => $planCode,
+        'plan_name' => $planInfo['name'],
+        'priority_level' => $priorityLevel,
+        'priority_name' => $planInfo['priority_name'],
+        'expires_at' => $expiresAt,
+        'amount' => $amount,
+        'transaction_ref' => $txRef
+    ];
+}
+
+

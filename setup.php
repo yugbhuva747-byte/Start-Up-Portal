@@ -10,19 +10,26 @@ $output = [];
 $status = 'pending';
 
 try {
-    // 1. Connect without dbname first to ensure database exists
-    $dsnNoDb = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";charset=utf8mb4";
-    $pdoRoot = new PDO($dsnNoDb, DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
+    // 1. Attempt to create database if permitted (Local XAMPP / Root VPS)
+    try {
+        $dsnNoDb = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";charset=utf8mb4";
+        $pdoRoot = new PDO($dsnNoDb, DB_USER, DB_PASS, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_TIMEOUT => 4
+        ]);
+        $pdoRoot->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+        $output[] = "✓ Database `" . DB_NAME . "` created or verified.";
+    } catch (PDOException $e) {
+        // On live shared hosting (cPanel), CREATE DATABASE is restricted.
+        // The user already creates the database via the hosting control panel.
+        $output[] = "ℹ Connected directly to existing database `" . DB_NAME . "` (Live hosting standard).";
+    }
 
-    $pdoRoot->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-    $output[] = "✓ Database `" . DB_NAME . "` created or already exists.";
-
-    // 2. Connect with dbname
-    $db = new PDO("mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4", DB_USER, DB_PASS, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
+    // 2. Connect to database using multi-tier resilient handler
+    $db = get_db();
+    if (!$db) {
+        throw new Exception("Could not connect to database `" . DB_NAME . "`. Error: " . (Database::getLastError() ?? 'Please verify your .env credentials.'));
+    }
 
     // 3. Read and execute database.sql
     $sqlContent = file_get_contents(__DIR__ . '/database.sql');

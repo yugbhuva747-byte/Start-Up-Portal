@@ -1,12 +1,12 @@
 <?php
 /**
  * Admin Module: Master Compliance & Platform Dashboard
- * Clean White / Light Theme, Small Crisp Typography
+ * Clean, Minimalist Executive Overview (Linear / Stripe inspired)
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Master Compliance & Governance';
+$pageTitle = 'Dashboard Overview';
 
 $totalUsers = 0;
 $totalFounders = 0;
@@ -19,6 +19,9 @@ $recentAuditLogs = [];
 $pendingVerRequests = [];
 
 if ($db) {
+
+    try {
+
     $totalUsers = (int) $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
     $totalFounders = (int) $db->query("SELECT COUNT(*) FROM users WHERE role = 'founder'")->fetchColumn();
     $totalInvestors = (int) $db->query("SELECT COUNT(*) FROM users WHERE role = 'investor'")->fetchColumn();
@@ -27,25 +30,29 @@ if ($db) {
     $pendingVerifications = (int) $db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'")->fetchColumn();
     $pendingRounds = (int) $db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW')")->fetchColumn();
 
-    // Recent Audit Logs
-    $aStmt = $db->query("
-        SELECT al.*, u.name as actor_name, u.role as actor_role
-        FROM audit_logs al
-        LEFT JOIN users u ON al.actor_user_id = u.id
-        ORDER BY al.created_at DESC LIMIT 8
-    ");
-    $recentAuditLogs = $aStmt->fetchAll();
 
-    // Pending Verification Requests
-    $vrStmt = $db->query("
-        SELECT vr.*, u.name as applicant_name, u.role as applicant_role, u.email as applicant_email, c.name as company_name
-        FROM verification_requests vr
-        JOIN users u ON vr.user_id = u.id
-        LEFT JOIN companies c ON vr.company_id = c.id
-        WHERE vr.status = 'pending'
-        ORDER BY vr.created_at DESC LIMIT 5
-    ");
-    $pendingVerRequests = $vrStmt->fetchAll();
+        // Recent Audit Logs
+        $aStmt = $db->query("
+            SELECT al.*, u.name as actor_name, u.role as actor_role
+            FROM audit_logs al
+            LEFT JOIN users u ON al.actor_user_id = u.id
+            ORDER BY al.created_at DESC LIMIT 5
+        ");
+        $recentAuditLogs = $aStmt->fetchAll();
+
+        // Pending Verification Requests
+        $vrStmt = $db->query("
+            SELECT vr.*, u.name as applicant_name, u.role as applicant_role, u.email as applicant_email, c.name as company_name
+            FROM verification_requests vr
+            JOIN users u ON vr.user_id = u.id
+            LEFT JOIN companies c ON vr.company_id = c.id
+            WHERE vr.status = 'pending'
+            ORDER BY vr.created_at DESC LIMIT 5
+        ");
+        $pendingVerRequests = $vrStmt->fetchAll();
+    } catch (Exception $e) {
+        // Fallback
+    }
 }
 
 $flash = get_flash();
@@ -56,6 +63,7 @@ $flash = get_flash();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Admin & Compliance Dashboard • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
@@ -73,21 +81,25 @@ $flash = get_flash();
 
 <body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
 
+
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
+
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="admin-main">
 
             <?php if ($flash): ?>
                 <div
                     class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
+
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
+
 
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -105,44 +117,49 @@ $flash = get_flash();
                         <i data-lucide="check-square" class="w-4 h-4"></i>
                         <span>Process KYC Queue (<?= $pendingVerifications ?>)</span>
                     </a>
+
                 </div>
             </div>
 
             <!-- Global Platform KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
+
                 <div class="card-clean rounded-2xl p-5">
                     <div class="flex items-center justify-between text-slate-500 mb-2">
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Total Volume
                             Raised</span>
                         <div class="p-1.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="dollar-sign"
                                 class="w-4 h-4"></i></div>
+
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= format_inr($totalVolumeRaised) ?></div>
-                    <div class="text-[10.5px] text-emerald-600 font-semibold mt-1 flex items-center space-x-1">
-                        <i data-lucide="check" class="w-3 h-3"></i>
-                        <span>Escrow Reconciled</span>
+                    <div class="admin-stat-value stat-value-indigo"><?= format_inr($totalVolumeRaised) ?></div>
+                    <div class="admin-stat-sub">
+                        <span class="text-emerald-600 font-semibold flex items-center gap-1">
+                            <i data-lucide="check" class="w-3 h-3"></i> Escrow Secured
+                        </span>
                     </div>
                 </div>
+
 
                 <div class="card-clean rounded-2xl p-5">
                     <div class="flex items-center justify-between text-slate-500 mb-2">
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">KYC Queue</span>
                         <div class="p-1.5 rounded-lg bg-amber-50 text-amber-600"><i data-lucide="shield-alert"
                                 class="w-4 h-4"></i></div>
+
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $pendingVerifications ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-1">Awaiting Compliance Review</div>
                 </div>
+
 
                 <div class="card-clean rounded-2xl p-5">
                     <div class="flex items-center justify-between text-slate-500 mb-2">
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Companies</span>
                         <div class="p-1.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="building-2"
                                 class="w-4 h-4"></i></div>
+
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $totalCompanies ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-1"><?= $totalFounders ?> Verified Founders</div>
                 </div>
+
 
                 <div class="card-clean rounded-2xl p-5">
                     <div class="flex items-center justify-between text-slate-500 mb-2">
@@ -150,11 +167,12 @@ $flash = get_flash();
                             Investors</span>
                         <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="trending-up"
                                 class="w-4 h-4"></i></div>
+
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $totalInvestors ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-1">Angels & VC Partners</div>
                 </div>
+
             </div>
+
 
             <!-- Two Column: Verification Queue & Live Audit Logs -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -333,6 +351,7 @@ $flash = get_flash();
                                     <span>Show More Logs (+<?= count($recentAuditLogs) - 4 ?>)</span>
                                 </button>
                             <?php endif; ?>
+
                         <?php endif; ?>
                     </div>
                 </div>
@@ -344,6 +363,7 @@ $flash = get_flash();
 
     <script>
         lucide.createIcons();
+
         gsap.from("#admin-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
         gsap.from("#stats-grid > div", { duration: 0.35, y: 10, opacity: 0, stagger: 0.05, ease: "power2.out" });
 
@@ -405,6 +425,7 @@ $flash = get_flash();
                 }
             }
         }
+
     </script>
 </body>
 

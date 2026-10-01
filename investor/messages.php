@@ -224,6 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
     <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
+
         <div class="flex-1 flex overflow-hidden min-h-0">
 
             <!-- Conversation Threads List (Left Pane) -->
@@ -243,23 +244,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                             class="w-3.5 h-3.5 text-[#667085] dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
                         <input type="text" id="discussion-search-input" placeholder="Search discussions..."
                             class="w-full pl-9 pr-3 py-2 bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 rounded-xl text-xs text-[#111827] dark:text-white placeholder-[#667085] dark:placeholder-slate-400 outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-[#123B7A] dark:focus:border-blue-500 transition shadow-2xs">
+
                     </div>
                 </div>
 
                 <div class="flex-1 overflow-y-auto divide-y divide-[#E4E8EF] dark:divide-slate-800/80 thread-scroll-pane min-h-0"
                     id="conversations-thread-list">
                     <?php if (empty($conversations)): ?>
+
                         <div class="p-8 text-center text-xs text-[#667085] dark:text-slate-400 space-y-2">
                             <i data-lucide="message-square-off"
                                 class="w-8 h-8 text-[#667085]/30 dark:text-slate-600 mx-auto"></i>
                             <div class="font-bold text-[#0B1F3A] dark:text-slate-200">No active discussions</div>
                             <p class="text-[11px] text-[#667085] dark:text-slate-400">Explore the Discover marketplace to
                                 contact founders directly.</p>
+
                         </div>
                     <?php else: ?>
                         <?php foreach ($conversations as $c):
                             $isActive = $c['id'] == $selectedConvId;
                             $hash = hash_id_encode($c['id']);
+
                             ?>
                             <a href="<?= url('investor/messages.php?conv=' . $hash) ?>"
                                 class="p-4 block transition conversation-thread-item <?= $isActive ? 'chat-item-active' : 'chat-item-inactive' ?>"
@@ -286,6 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                                     <?php if ($c['unread_count'] > 0): ?>
                                         <span
                                             class="w-5 h-5 rounded-full bg-[#123B7A] dark:bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+
                                             <?= $c['unread_count'] ?>
                                         </span>
                                     <?php endif; ?>
@@ -301,6 +307,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                 class="<?= !$activeConv ? 'hidden md:flex' : 'flex' ?> flex-1 flex-col bg-[#FAFBFD] dark:bg-[#0B0F19] min-h-0 h-full overflow-hidden">
                 <?php if ($activeConv): ?>
                     <!-- Active Header -->
+
                     <div
                         class="h-16 px-4 sm:px-6 border-b border-[#E4E8EF] dark:border-slate-800 bg-white dark:bg-[#0F172A] flex items-center justify-between flex-shrink-0 shadow-2xs">
                         <div class="flex items-center space-x-3 min-w-0">
@@ -321,17 +328,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                                         class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
                                     <span class="truncate">Founder •
                                         <?= htmlspecialchars($activeConv['company_name'] ?? 'Startup') ?></span>
+
                                 </div>
                             </div>
                         </div>
                         <?php if (!empty($activeConv['comp_id'])): ?>
+
                             <a href="<?= url('investor/startup_detail.php?id=' . hash_id_encode($activeConv['comp_id'])) ?>"
                                 class="text-xs font-bold text-[#123B7A] dark:text-blue-300 hover:text-[#0B1F3A] dark:hover:text-white flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-[#EAF2FF] dark:bg-blue-950/70 border border-[#123B7A]/15 dark:border-blue-700/50 hover:bg-[#d8e6ff] dark:hover:bg-blue-900/60 transition shadow-2xs flex-shrink-0">
                                 <span>Deal Room</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+
                             </a>
                         <?php endif; ?>
                     </div>
+
 
                     <!-- Messages Stream -->
                     <div class="flex-1 min-h-0 p-4 sm:p-6 overflow-y-auto space-y-4" id="chat-messages-container">
@@ -358,12 +369,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                                     </div>
                                     <div
                                         class="text-[9.5px] mt-1.5 text-right <?= $isMe ? 'opacity-80 text-white' : 'text-[#667085] dark:text-slate-400' ?>">
+
                                         <?= date('h:i A', strtotime($msg['created_at'])) ?>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
+
 
                     <!-- Message Input Form (Fixed at bottom of chat column) -->
                     <form action="<?= url('investor/messages.php?conv=' . hash_id_encode($selectedConvId)) ?>" method="POST"
@@ -385,6 +398,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                         <div class="text-sm font-bold text-[#0B1F3A] dark:text-slate-200">Select a deal conversation</div>
                         <p class="text-xs text-[#667085] dark:text-slate-400 max-w-sm">Choose a conversation from the left
                             to review deal correspondence with founders.</p>
+
                     </div>
                 <?php endif; ?>
             </div>
