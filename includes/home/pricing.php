@@ -231,7 +231,7 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" class="w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5">
+          <a href="#nx-portal-register" data-plan="free_trial" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier1-cta">Start Free Trial</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
@@ -299,7 +299,7 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" class="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5">
+          <a href="#nx-portal-register" data-plan="1_month" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier2-cta">Choose 1 Month</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
@@ -381,7 +381,7 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5">
+          <a href="#nx-portal-register" data-plan="6_months" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier3-cta">Get 6-Month Pass</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
@@ -454,7 +454,7 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" class="w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5">
+          <a href="#nx-portal-register" data-plan="1_year" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier4-cta">Unlock 1 Year Pro</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
@@ -496,6 +496,81 @@
           </svg>
         </div>
         <span>0% Success Cuts or Hidden Fees</span>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL: Plan Priority & Checkout Confirmation
+         ======================================================== -->
+    <div id="nx-plan-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md transition-all">
+      <div class="relative w-full max-w-[540px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-100 overflow-hidden transform transition-all">
+        <!-- Floating Close Button -->
+        <button type="button" id="nx-plan-modal-close" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer">
+          ✕
+        </button>
+
+        <!-- Plan Header -->
+        <div class="flex items-center gap-3.5 mb-4">
+          <div id="modal-plan-icon" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+          </div>
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10.5px] font-extrabold uppercase tracking-wide" id="modal-plan-pill">
+              Level 3 Priority Granted
+            </div>
+            <h3 class="text-[21px] sm:text-[23px] font-extrabold text-slate-900 leading-tight mt-0.5" id="modal-plan-title">
+              6 Months Dealmaker
+            </h3>
+          </div>
+        </div>
+
+        <!-- Price & Cycle Breakdown -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-5 flex items-center justify-between">
+          <div>
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL BILLING</div>
+            <div class="text-[24px] font-extrabold text-slate-900 leading-none mt-1" id="modal-plan-price">₹9,999</div>
+          </div>
+          <div class="text-right">
+            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold" id="modal-plan-cycle">
+              6 Months Pass
+            </span>
+            <div class="text-[11px] text-slate-500 mt-1" id="modal-plan-period">₹1,666 / month</div>
+          </div>
+        </div>
+
+        <!-- Priority Perks Breakdown -->
+        <div class="mb-6">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+            YOUR PRIORITY PRIVILEGES:
+          </div>
+          <div class="space-y-2 text-[12.5px] text-slate-700 font-medium max-h-[190px] overflow-y-auto pr-1" id="modal-plan-perks">
+            <!-- Dynamic Perks inserted here -->
+          </div>
+        </div>
+
+        <!-- Action Alert Box -->
+        <div id="modal-alert-box" class="hidden mb-3.5 p-3 rounded-xl text-xs font-bold"></div>
+
+        <!-- Action Button -->
+        <div class="space-y-2.5">
+          <?php if (function_exists('auth_check') && auth_check()): ?>
+            <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
+              <span>⚡ Confirm Plan &amp; Activate Priority</span>
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          <?php else: ?>
+            <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
+              <span>✨ Claim Plan &amp; Register (Lock Priority)</span>
+              <span aria-hidden="true">&rarr;</span>
+            </button>
+          <?php endif; ?>
+          <p class="text-center text-[10.5px] text-slate-500 font-medium">
+            🔒 256-bit encrypted checkout &middot; 0% broker fee &middot; Instant activation
+          </p>
+        </div>
+
       </div>
     </div>
 
@@ -541,16 +616,36 @@
   const t4Features = document.getElementById('tier4-features');
   const t4Cta = document.getElementById('tier4-cta');
 
+  // Modal Elements
+  const modal = document.getElementById('nx-plan-modal');
+  const modalClose = document.getElementById('nx-plan-modal-close');
+  const modalTitle = document.getElementById('modal-plan-title');
+  const modalPill = document.getElementById('modal-plan-pill');
+  const modalPrice = document.getElementById('modal-plan-price');
+  const modalCycle = document.getElementById('modal-plan-cycle');
+  const modalPeriod = document.getElementById('modal-plan-period');
+  const modalPerks = document.getElementById('modal-plan-perks');
+  const modalActionBtn = document.getElementById('modal-confirm-action-btn');
+  const modalAlert = document.getElementById('modal-alert-box');
+
+  const isLoggedIn = <?= (function_exists('auth_check') && auth_check()) ? 'true' : 'false' ?>;
+
   let currentRole = 'founder';
   let isAnnual = false;
+  let selectedPlanCode = '6_months';
 
   const founderData = {
     title: 'Startup Founders Raising Capital.',
     desc: 'Transparent pricing with 0% broker commission. Connect directly with check-writing angels, manage diligence rooms, and close your round faster.',
     t1: {
-      name: 'Free Trial',
+      code: 'free_trial',
+      name: '14-Day Free Trial',
+      priorityLevel: 1,
+      priorityName: 'Standard Access',
       desc: 'Test drive deal rooms & verified investor network with zero commitment.',
-      cta: 'Start Founder Trial',
+      price: '₹0',
+      period: 'No credit card required',
+      cta: 'Start Free Trial',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN TRIAL:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
@@ -572,13 +667,16 @@
       `
     },
     t2: {
-      name: '1 Month Raise',
+      code: '1_month',
+      name: '1 Month Sprint',
+      priorityLevel: 2,
+      priorityName: 'Verified Fast-Track',
       desc: 'Perfect for startups actively running a fast seed fundraise sprint.',
       priceMonthly: '₹2,499',
       subtextMonthly: 'Billed monthly · Cancel anytime',
       priceAnnual: '₹1,999',
       subtextAnnual: '₹23,988 billed annually (Save 20%)',
-      cta: 'Get 1 Month Pass',
+      cta: 'Choose 1 Month',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN TRIAL, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
@@ -600,22 +698,25 @@
       `
     },
     t3: {
+      code: '6_months',
       name: '6 Months Dealmaker',
+      priorityLevel: 3,
+      priorityName: 'Featured Dealflow Priority',
       desc: 'Comprehensive runway for closing Seed to Pre-Series A funding rounds.',
       priceMonthly: '₹1,666',
       subtextMonthly: '₹9,999 billed for 6 months',
       priceAnnual: '₹1,499',
       subtextAnnual: '₹8,994 billed for 6 months (Save 33%)',
-      cta: 'Claim 6-Month Pass',
+      cta: 'Get 6-Month Pass',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-purple-900 mb-2">EVERYTHING IN 1 MONTH, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
           <span class="nx-feature-check bg-purple-600 text-white text-[11px] font-bold">✓</span>
-          <span>Unlimited Active Deal Rooms</span>
+          <span>Top Featured Dealflow Placement</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
           <span class="nx-feature-check bg-purple-600 text-white text-[11px] font-bold">✓</span>
-          <span>Featured Dealflow Placement</span>
+          <span>Unlimited Active Deal Rooms</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
           <span class="nx-feature-check bg-purple-600 text-white text-[11px] font-bold">✓</span>
@@ -632,7 +733,10 @@
       `
     },
     t4: {
+      code: '1_year',
       name: '1 Year Scale Pro',
+      priorityLevel: 4,
+      priorityName: 'VIP Spotlight Pro',
       desc: 'Full annual suite for high-growth serial founders and scaleups.',
       priceMonthly: '₹1,499',
       subtextMonthly: '₹17,999 billed annually',
@@ -643,7 +747,7 @@
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">FULL ENTERPRISE SUITE:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
           <span class="nx-feature-check bg-pink-100 text-pink-700 text-[11px] font-bold">✓</span>
-          <span>All 6-Month Growth Features</span>
+          <span>#1 Top Spotlight Placement &amp; Gold Badge</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
           <span class="nx-feature-check bg-pink-100 text-pink-700 text-[11px] font-bold">✓</span>
@@ -669,9 +773,14 @@
     title: 'Accredited Angels & Institutional VCs.',
     desc: 'Gain instant access to verified, pre-screened seed & Series A dealflow with audited financials, cap tables, and seamless co-investment syndication.',
     t1: {
-      name: 'Explorer Pass',
+      code: 'free_trial',
+      name: '14-Day Explorer Pass',
+      priorityLevel: 1,
+      priorityName: 'Explorer Access',
       desc: 'Browse curated deal flow summaries and public venture directories.',
-      cta: 'Start Investor Pass',
+      price: '₹0',
+      period: 'No commitment',
+      cta: 'Start Free Trial',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN PASS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
@@ -684,22 +793,21 @@
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
           <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
-          <span>Sector &amp; Stage Filters</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
           <span>Weekly Dealflow Newsletter</span>
         </div>
       `
     },
     t2: {
-      name: '1 Month Angel',
+      code: '1_month',
+      name: '1 Month Active Angel',
+      priorityLevel: 2,
+      priorityName: 'Verified Angel',
       desc: 'Direct access to confidential diligence rooms and verified founders.',
       priceMonthly: '₹3,499',
       subtextMonthly: 'Billed monthly · Cancel anytime',
       priceAnnual: '₹2,799',
       subtextAnnual: '₹33,588 billed annually (Save 20%)',
-      cta: 'Join as Active Angel',
+      cta: 'Choose 1 Month',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN EXPLORER, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
@@ -721,13 +829,16 @@
       `
     },
     t3: {
-      name: '6 Months Syndicate',
+      code: '6_months',
+      name: '6 Months Syndicate Lead',
+      priorityLevel: 3,
+      priorityName: 'Syndicate Priority',
       desc: 'For active angel syndicates and super-angels leading rounds.',
       priceMonthly: '₹2,499',
       subtextMonthly: '₹14,999 billed for 6 months',
       priceAnnual: '₹1,999',
       subtextAnnual: '₹11,994 billed for 6 months (Save 33%)',
-      cta: 'Claim Syndicate Pass',
+      cta: 'Get 6-Month Pass',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-purple-900 mb-2">EVERYTHING IN ANGEL, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
@@ -753,22 +864,21 @@
       `
     },
     t4: {
-      name: '1 Year Institutional',
+      code: '1_year',
+      name: '1 Year Institutional Suite',
+      priorityLevel: 4,
+      priorityName: 'Institutional VIP',
       desc: 'Full platform pipeline for VCs, Family Offices & Accelerators.',
       priceMonthly: '₹1,999',
       subtextMonthly: '₹23,999 billed annually',
       priceAnnual: '₹1,699',
       subtextAnnual: '₹20,388 billed annually (Save 40%)',
-      cta: 'Unlock Institutional Pro',
+      cta: 'Unlock 1 Year Pro',
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INSTITUTIONAL SUITE:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
           <span class="nx-feature-check bg-pink-100 text-pink-700 text-[11px] font-bold">✓</span>
-          <span>All Syndicate Lead Features</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-pink-100 text-pink-700 text-[11px] font-bold">✓</span>
-          <span>Custom Institutional Research</span>
+          <span>Custom Institutional Research Reports</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
           <span class="nx-feature-check bg-pink-100 text-pink-700 text-[11px] font-bold">✓</span>
@@ -861,18 +971,149 @@
     });
   }
 
-  // Connect CTA buttons to sync registration tab
-  document.querySelectorAll('#nx-pricing a[href="#nx-portal-register"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (currentRole === 'investor') {
-        const invTab = document.getElementById('portal-tab-investor');
-        if (invTab) invTab.click();
-      } else {
-        const fndTab = document.getElementById('portal-tab-startup');
-        if (fndTab) fndTab.click();
+  // Open Plan Modal
+  function openPlanModal(planCode) {
+    selectedPlanCode = planCode;
+    const data = (currentRole === 'investor') ? investorData : founderData;
+    let planObj = data.t3;
+    if (planCode === 'free_trial') planObj = data.t1;
+    else if (planCode === '1_month') planObj = data.t2;
+    else if (planCode === '6_months') planObj = data.t3;
+    else if (planCode === '1_year') planObj = data.t4;
+
+    if (modalTitle) modalTitle.textContent = planObj.name;
+    if (modalPill) modalPill.textContent = 'Level ' + planObj.priorityLevel + ' Priority: ' + planObj.priorityName;
+    
+    if (modalPrice) {
+      if (planCode === 'free_trial') {
+        modalPrice.textContent = '₹0';
+      } else if (planCode === '1_month') {
+        modalPrice.textContent = isAnnual ? '₹23,988' : (planObj.priceMonthly || '₹2,499');
+      } else if (planCode === '6_months') {
+        modalPrice.textContent = isAnnual ? '₹8,994' : '₹9,999';
+      } else if (planCode === '1_year') {
+        modalPrice.textContent = isAnnual ? (planObj.subtextAnnual ? planObj.subtextAnnual.split(' ')[0] : '₹14,988') : (planObj.subtextMonthly ? planObj.subtextMonthly.split(' ')[0] : '₹17,999');
       }
+    }
+
+    if (modalCycle) {
+      modalCycle.textContent = (planCode === 'free_trial') ? '14-Day Pass' : (isAnnual ? 'Annual Billing' : 'Monthly Billing');
+    }
+
+    if (modalPeriod) {
+      modalPeriod.textContent = (planCode === 'free_trial') ? 'Zero commitment' : (isAnnual ? (planObj.priceAnnual + ' / mo') : (planObj.priceMonthly + ' / mo'));
+    }
+
+    if (modalPerks) {
+      modalPerks.innerHTML = planObj.features;
+    }
+
+    if (modalAlert) {
+      modalAlert.classList.add('hidden');
+    }
+
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closePlanModal() {
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', closePlanModal);
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closePlanModal();
+    });
+  }
+
+  // Connect CTA buttons to open Modal
+  document.querySelectorAll('.nx-plan-cta-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const planCode = btn.getAttribute('data-plan') || '6_months';
+      openPlanModal(planCode);
     });
   });
+
+  // Action Button inside Modal
+  if (modalActionBtn) {
+    modalActionBtn.addEventListener('click', async () => {
+      const data = (currentRole === 'investor') ? investorData : founderData;
+      let planObj = data.t3;
+      if (selectedPlanCode === 'free_trial') planObj = data.t1;
+      else if (selectedPlanCode === '1_month') planObj = data.t2;
+      else if (selectedPlanCode === '6_months') planObj = data.t3;
+      else if (selectedPlanCode === '1_year') planObj = data.t4;
+
+      if (!isLoggedIn) {
+        // Not logged in: transfer selection to registration form and scroll smoothly
+        closePlanModal();
+        if (typeof window.nxSelectPlan === 'function') {
+          window.nxSelectPlan(selectedPlanCode, isAnnual ? 'annually' : 'monthly', currentRole, planObj.name, planObj.priorityName, planObj.priorityLevel);
+        }
+        
+        const registerTarget = document.getElementById('nx-portal-register');
+        if (registerTarget) {
+          const header = document.querySelector('#nx-header-bar, header');
+          const headerH = header ? header.offsetHeight : 0;
+          window.scrollTo({
+            top: registerTarget.getBoundingClientRect().top + window.scrollY - headerH,
+            behavior: 'smooth'
+          });
+        }
+      } else {
+        // Logged in: Call subscribe API directly
+        modalActionBtn.disabled = true;
+        const prevText = modalActionBtn.innerHTML;
+        modalActionBtn.innerHTML = '<span>⚡ Activating Priority Plan...</span>';
+
+        try {
+          const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+              plan_code: selectedPlanCode,
+              billing_cycle: isAnnual ? 'annually' : 'monthly'
+            })
+          });
+
+          const json = await res.json();
+          if (json && json.success) {
+            modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
+            modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
+            modalAlert.classList.remove('hidden');
+
+            setTimeout(() => {
+              window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
+            }, 1000);
+          } else {
+            modalActionBtn.disabled = false;
+            modalActionBtn.innerHTML = prevText;
+            modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+            modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Activation failed.') + '</span>';
+            modalAlert.classList.remove('hidden');
+          }
+        } catch (err) {
+          modalActionBtn.disabled = false;
+          modalActionBtn.innerHTML = prevText;
+          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+          modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
+          modalAlert.classList.remove('hidden');
+        }
+      }
+    });
+  }
 
   // Initialize
   updatePricingUI();

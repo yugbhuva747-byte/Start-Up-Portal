@@ -871,3 +871,259 @@ function time_elapsed_string($datetime, $full = false) {
     }
 }
 
+/**
+ * ============================================================================
+ * Subscription & Priority Level Management Helpers
+ * ============================================================================
+ */
+
+/**
+ * Get comprehensive metadata for a plan code and role
+ */
+function get_plan_details(string $planCode, string $role = 'founder'): array {
+    $role = strtolower($role) === 'investor' ? 'investor' : 'founder';
+    
+    $plans = [
+        'founder' => [
+            'free_trial' => [
+                'code' => 'free_trial',
+                'name' => '14-Day Free Trial',
+                'priority_level' => 1,
+                'priority_name' => 'Standard Access',
+                'badge_class' => 'bg-slate-100 text-slate-700 border-slate-300',
+                'price_monthly' => 0,
+                'price_annual' => 0,
+                'duration_days' => 14,
+                'deal_rooms' => 1,
+                'is_featured' => false,
+                'perks' => [
+                    '1 Live Pitch Deck Listing',
+                    'Basic Cap Table Viewer',
+                    'Public Syndicate Directory',
+                    'Standard Community Support'
+                ]
+            ],
+            '1_month' => [
+                'code' => '1_month',
+                'name' => '1 Month Sprint',
+                'priority_level' => 2,
+                'priority_name' => 'Verified Growth',
+                'badge_class' => 'bg-purple-100 text-purple-800 border-purple-300',
+                'price_monthly' => 2499,
+                'price_annual' => 1999,
+                'duration_days' => 30,
+                'deal_rooms' => 3,
+                'is_featured' => false,
+                'perks' => [
+                    '3 Active Deal Rooms',
+                    'Direct Founder-Investor DMs',
+                    'DigiLocker KYC Verified Badge',
+                    'Real-Time Pitch Analytics'
+                ]
+            ],
+            '6_months' => [
+                'code' => '6_months',
+                'name' => '6 Months Dealmaker',
+                'priority_level' => 3,
+                'priority_name' => 'Featured Priority',
+                'badge_class' => 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold',
+                'price_monthly' => 1666,
+                'price_annual' => 1499,
+                'duration_days' => 180,
+                'deal_rooms' => 9999, // unlimited
+                'is_featured' => true,
+                'perks' => [
+                    'Top Featured Dealflow Placement',
+                    'Unlimited Active Deal Rooms',
+                    'Direct WhatsApp Warm Intros',
+                    'SEBI & MCA SAFE Legal Templates',
+                    'Dedicated Venture Scout Manager'
+                ]
+            ],
+            '1_year' => [
+                'code' => '1_year',
+                'name' => '1 Year Scale Pro',
+                'priority_level' => 4,
+                'priority_name' => 'VIP Spotlight Pro',
+                'badge_class' => 'bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 text-white font-extrabold',
+                'price_monthly' => 1499,
+                'price_annual' => 1249,
+                'duration_days' => 365,
+                'deal_rooms' => 9999, // unlimited
+                'is_featured' => true,
+                'perks' => [
+                    '#1 Top Spotlight Placement & Gold Badge',
+                    'SPV Pooling & Syndicate Lead Tools',
+                    'White-Label LP Data Room',
+                    'Full Platform REST API & Webhooks',
+                    'Dedicated Partner Success Director'
+                ]
+            ]
+        ],
+        'investor' => [
+            'free_trial' => [
+                'code' => 'free_trial',
+                'name' => '14-Day Explorer Pass',
+                'priority_level' => 1,
+                'priority_name' => 'Explorer Access',
+                'badge_class' => 'bg-slate-100 text-slate-700 border-slate-300',
+                'price_monthly' => 0,
+                'price_annual' => 0,
+                'duration_days' => 14,
+                'deal_rooms' => 5,
+                'is_featured' => false,
+                'perks' => [
+                    'Browse 300+ Curated Deal Summaries',
+                    'Sector & Stage Filters',
+                    'Weekly Dealflow Newsletter'
+                ]
+            ],
+            '1_month' => [
+                'code' => '1_month',
+                'name' => '1 Month Active Angel',
+                'priority_level' => 2,
+                'priority_name' => 'Verified Angel',
+                'badge_class' => 'bg-purple-100 text-purple-800 border-purple-300',
+                'price_monthly' => 3499,
+                'price_annual' => 2799,
+                'duration_days' => 30,
+                'deal_rooms' => 25,
+                'is_featured' => false,
+                'perks' => [
+                    'Audited MRR & Diligence Cap Tables',
+                    'Direct Founder 1-on-1 DMs',
+                    'Full Pitch Deck Downloads',
+                    'Co-Invest From ₹2 Lakhs'
+                ]
+            ],
+            '6_months' => [
+                'code' => '6_months',
+                'name' => '6 Months Syndicate Lead',
+                'priority_level' => 3,
+                'priority_name' => 'Syndicate Priority',
+                'badge_class' => 'bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold',
+                'price_monthly' => 2499,
+                'price_annual' => 1999,
+                'duration_days' => 180,
+                'deal_rooms' => 9999,
+                'is_featured' => true,
+                'perks' => [
+                    'Lead Syndicates & SPV Pooling',
+                    'Priority Allocation in Hot Rounds',
+                    'Direct WhatsApp Founder Connect',
+                    'Automated Carry & Distribution CRM',
+                    'Dedicated Venture Scout'
+                ]
+            ],
+            '1_year' => [
+                'code' => '1_year',
+                'name' => '1 Year Institutional Suite',
+                'priority_level' => 4,
+                'priority_name' => 'Institutional VIP',
+                'badge_class' => 'bg-gradient-to-r from-amber-500 via-pink-600 to-purple-600 text-white font-extrabold',
+                'price_monthly' => 1999,
+                'price_annual' => 1699,
+                'duration_days' => 365,
+                'deal_rooms' => 9999,
+                'is_featured' => true,
+                'perks' => [
+                    'Custom Institutional Research Reports',
+                    'White-Label LP Deal Portal',
+                    'Full Dealflow REST API & Webhooks',
+                    'Dedicated Partner Relationship Manager'
+                ]
+            ]
+        ]
+    ];
+
+    return $plans[$role][$planCode] ?? $plans[$role]['free_trial'];
+}
+
+/**
+ * Update user subscription, calculate expiry, and update priority rankings across user and company records
+ */
+function activate_user_subscription(int $userId, string $planCode, string $billingCycle = 'monthly', ?float $customAmount = null, ?string $paymentRef = null): array {
+    $db = get_db();
+    if (!$db) {
+        return ['success' => false, 'error' => 'Database connection unavailable'];
+    }
+
+    $uStmt = $db->prepare("SELECT id, name, email, role FROM users WHERE id = ?");
+    $uStmt->execute([$userId]);
+    $user = $uStmt->fetch();
+    if (!$user) {
+        return ['success' => false, 'error' => 'User not found'];
+    }
+
+    $role = $user['role'] ?? 'founder';
+    $planInfo = get_plan_details($planCode, $role);
+    $priorityLevel = (int)$planInfo['priority_level'];
+    $durationDays = (int)$planInfo['duration_days'];
+
+    // If annual, multiply duration if not already 365
+    if ($billingCycle === 'annually' && $planCode !== '1_year' && $planCode !== 'free_trial') {
+        $durationDays = 365;
+    }
+
+    $expiresAt = date('Y-m-d H:i:s', strtotime("+{$durationDays} days"));
+    $amount = $customAmount !== null ? $customAmount : ($billingCycle === 'annually' ? (float)$planInfo['price_annual'] * ($planCode === '6_months' ? 6 : 12) : (float)$planInfo['price_monthly']);
+    if ($planCode === 'free_trial') {
+        $amount = 0.00;
+    }
+
+    $txRef = $paymentRef ?: ('NEX-' . strtoupper(substr($role, 0, 3)) . '-' . strtoupper(bin2hex(random_bytes(4))));
+
+    // 1. Mark existing active subscriptions as expired/replaced
+    $db->prepare("UPDATE subscriptions SET status = 'cancelled' WHERE user_id = ? AND status IN ('active', 'trial')")->execute([$userId]);
+
+    // 2. Insert new subscription record
+    $insStmt = $db->prepare("
+        INSERT INTO subscriptions 
+        (user_id, plan_code, plan_name, billing_cycle, role, amount, priority_level, status, payment_method, payment_status, transaction_ref, starts_at, expires_at, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'active', 'Razorpay / Instant Card Gateway', 'completed', ?, NOW(), ?, NOW())
+    ");
+    $insStmt->execute([
+        $userId,
+        $planCode,
+        $planInfo['name'],
+        $billingCycle,
+        $role,
+        $amount,
+        $priorityLevel,
+        $txRef,
+        $expiresAt
+    ]);
+
+    // 3. Update User table
+    $updUser = $db->prepare("UPDATE users SET current_plan = ?, priority_level = ?, plan_expires_at = ? WHERE id = ?");
+    $updUser->execute([$planCode, $priorityLevel, $expiresAt, $userId]);
+
+    // 4. If Founder, update associated Company priority level as well for dealflow ranking
+    if ($role === 'founder') {
+        $updComp = $db->prepare("
+            UPDATE companies c 
+            JOIN company_founders cf ON cf.company_id = c.id 
+            SET c.priority_level = ? 
+            WHERE cf.user_id = ?
+        ");
+        $updComp->execute([$priorityLevel, $userId]);
+    }
+
+    // 5. Audit log
+    if (function_exists('log_audit')) {
+        log_audit($userId, 'PLAN_PURCHASED', 'subscriptions', (int)$db->lastInsertId(), "Subscribed to {$planInfo['name']} with Priority Level {$priorityLevel}");
+    }
+
+    return [
+        'success' => true,
+        'plan_code' => $planCode,
+        'plan_name' => $planInfo['name'],
+        'priority_level' => $priorityLevel,
+        'priority_name' => $planInfo['priority_name'],
+        'expires_at' => $expiresAt,
+        'amount' => $amount,
+        'transaction_ref' => $txRef
+    ];
+}
+
+

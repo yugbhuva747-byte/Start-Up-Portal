@@ -37,6 +37,13 @@ $role = in_array($roleInput, ['investor']) ? 'investor' : 'founder';
 $city = trim((string)($input['city'] ?? 'Bengaluru'));
 $country = trim((string)($input['country'] ?? 'India'));
 
+// Plan Selection & Priority
+$planCode = trim((string)($input['plan_code'] ?? 'free_trial'));
+if (!in_array($planCode, ['free_trial', '1_month', '6_months', '1_year'], true)) {
+    $planCode = 'free_trial';
+}
+$billingCycle = strtolower(trim((string)($input['billing_cycle'] ?? 'monthly'))) === 'annually' ? 'annually' : 'monthly';
+
 // Founder fields
 $companyName = trim((string)($input['company_name'] ?? ($input['organization'] ?? '')));
 $industry = trim((string)($input['industry'] ?? 'AI & Enterprise SaaS'));
@@ -152,6 +159,11 @@ try {
         $prefStmt->execute([$userId, $preferredIndustries ?: 'AI/SaaS, FinTech, HealthTech', $minTicket, $maxTicket]);
     }
 
+    // Initialize Plan Subscription & Priority
+    if (function_exists('activate_user_subscription')) {
+        activate_user_subscription($userId, $planCode, $billingCycle);
+    }
+
     // Set Session
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -162,7 +174,7 @@ try {
     $_SESSION['user_name'] = $name;
 
     if (function_exists('log_audit')) {
-        log_audit($userId, 'USER_REGISTERED', 'users', $userId, "Registered via registration form as {$role}");
+        log_audit($userId, 'USER_REGISTERED', 'users', $userId, "Registered via registration form as {$role} on {$planCode} plan");
     }
     if (function_exists('set_flash')) {
         set_flash('success', "Welcome to the portal, " . htmlspecialchars($name) . "! Your " . ucfirst($role) . " account is ready.");
