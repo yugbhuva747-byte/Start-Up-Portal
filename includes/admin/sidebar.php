@@ -1,7 +1,7 @@
 <?php
 /**
  * Admin Sidebar Navigation Component
- * Enhanced – Bigger Fonts, Rich Hover Effects, Dark Mode & Premium Aesthetics
+ * Enhanced – Categorized Page Sections, Dynamic Database Badges, Rich Hover Effects, Dark Mode & Premium Aesthetics
  */
 if (!defined('APP_NAME')) {
     exit('Direct access not permitted');
@@ -12,11 +12,17 @@ $adminUser = current_user() ?? ['name' => 'Admin User', 'email' => 'admin@portal
 
 $pendingKycCount = 0;
 $pendingFundingCount = 0;
+$activeSubsCount = 0;
+$totalCompaniesCount = 0;
+$pendingInvoicesCount = 0;
 
 if (isset($db) && $db instanceof PDO) {
     try {
         $pendingKycCount = (int)$db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'")->fetchColumn();
         $pendingFundingCount = (int)$db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW', 'under_review')")->fetchColumn();
+        $activeSubsCount = (int)$db->query("SELECT COUNT(*) FROM subscriptions WHERE status = 'active'")->fetchColumn();
+        $totalCompaniesCount = (int)$db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+        $pendingInvoicesCount = (int)$db->query("SELECT COUNT(*) FROM platform_invoices WHERE settlement_status != 'SETTLED'")->fetchColumn();
     } catch (Exception $e) {}
 }
 
@@ -30,7 +36,7 @@ require_once __DIR__ . '/theme.php';
     /* ── Scrollbar ── */
     #main-sidebar .overflow-y-auto {
         scrollbar-width: thin;
-        scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+        scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
         overscroll-behavior: contain;
         scroll-behavior: auto !important;
         -webkit-overflow-scrolling: touch;
@@ -45,12 +51,28 @@ require_once __DIR__ . '/theme.php';
         background: rgba(148, 163, 184, 0.6);
     }
 
+    /* ── Section Title ── */
+    .sidebar-section-title {
+        font-size: 0.6875rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
+        padding: 0.85rem 0.75rem 0.35rem 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .dark .sidebar-section-title {
+        color: #64748b;
+    }
+
     /* ── Nav link base ── */
     .sidebar-link {
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.6rem 0.875rem;
+        padding: 0.55rem 0.8rem;
         border-radius: 0.625rem;
         font-size: 0.8125rem;
         font-weight: 600;
@@ -103,7 +125,7 @@ require_once __DIR__ . '/theme.php';
         width: 4.5rem !important;
     }
     #main-sidebar.rail-collapsed .sidebar-text-item,
-    #main-sidebar.rail-collapsed .sidebar-group-title,
+    #main-sidebar.rail-collapsed .sidebar-section-title,
     #main-sidebar.rail-collapsed .sidebar-badge-item {
         display: none !important;
     }
@@ -123,7 +145,7 @@ require_once __DIR__ . '/theme.php';
                     <div class="font-extrabold text-slate-900 dark:text-white text-sm tracking-tight leading-tight flex items-center gap-1 whitespace-nowrap">
                         ADMIN <span class="text-blue-600 dark:text-blue-400">CONTROL</span>
                     </div>
-                    <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">Compliance & Audit</div>
+                    <div class="text-[8.5px] text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">Compliance &amp; Audit Hub</div>
                 </div>
             </a>
             <button type="button" onclick="toggleMobileSidebar()" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0" title="Close navigation">
@@ -132,102 +154,138 @@ require_once __DIR__ . '/theme.php';
         </div>
 
         <!-- Admin Badge -->
-        <div class="mb-5 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-xs sidebar-badge-item">
+        <div class="mb-4 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-xs sidebar-badge-item">
             <div class="text-blue-900 dark:text-blue-200 font-bold flex items-center space-x-1.5 text-[10.5px]">
                 <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0"></span>
                 <span class="whitespace-nowrap">Governance Access</span>
             </div>
-            <div class="text-[9.5px] text-blue-700 dark:text-blue-400 mt-0.5 whitespace-nowrap">SEBI & KYC Gatekeeper</div>
+            <div class="text-[9.5px] text-blue-700 dark:text-blue-400 mt-0.5 whitespace-nowrap">SEBI &amp; KYC Gatekeeper</div>
         </div>
 
-        <!-- Navigation Links -->
+        <!-- Navigation Links Grouped by Sections -->
         <nav class="space-y-1 text-xs font-semibold">
+            
+            <!-- SECTION 1: CORE OVERVIEW -->
+            <div class="sidebar-section-title">
+                <span>Core Overview</span>
+            </div>
+
             <a href="<?= url('admin/dashboard.php') ?>" 
                class="sidebar-link <?= $currentPage === 'dashboard.php' ? 'is-active' : '' ?>">
-                <i data-lucide="gauge" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Overview & KPIs</span>
+                <i data-lucide="gauge" class="nav-icon flex-shrink-0 text-blue-600"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Overview &amp; KPIs</span>
             </a>
+
+            <a href="<?= url('admin/reports.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'reports.php' ? 'is-active' : '' ?>">
+                <i data-lucide="bar-chart-3" class="nav-icon flex-shrink-0 text-indigo-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Reports &amp; Analytics</span>
+            </a>
+
+            <!-- SECTION 2: DEALFLOW & GOVERNANCE -->
+            <div class="sidebar-section-title mt-2">
+                <span>Dealflow &amp; Compliance</span>
+            </div>
 
             <a href="<?= url('admin/verification_queue.php') ?>" 
                class="sidebar-link <?= $currentPage === 'verification_queue.php' ? 'is-active' : '' ?>">
-                <i data-lucide="check-square" class="nav-icon flex-shrink-0"></i>
+                <i data-lucide="check-square" class="nav-icon flex-shrink-0 text-amber-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item flex-1">KYC Queue</span>
                 <?php if ($pendingKycCount > 0): ?>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 sidebar-text-item"><?= $pendingKycCount ?></span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 sidebar-text-item"><?= $pendingKycCount ?></span>
                 <?php endif; ?>
             </a>
 
+            <a href="<?= url('admin/funding_review.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'funding_review.php' ? 'is-active' : '' ?>">
+                <i data-lucide="file-check-2" class="nav-icon flex-shrink-0 text-sky-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Funding Review</span>
+                <?php if ($pendingFundingCount > 0): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-950 text-sky-700 dark:text-sky-300 sidebar-text-item"><?= $pendingFundingCount ?></span>
+                <?php endif; ?>
+            </a>
 
-            <!-- Subscriptions & Priority -->
+            <a href="<?= url('admin/companies.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'companies.php' ? 'is-active' : '' ?>">
+                <i data-lucide="building-2" class="nav-icon flex-shrink-0 text-cyan-600"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Startup Companies</span>
+                <?php if ($totalCompaniesCount > 0): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 sidebar-text-item"><?= $totalCompaniesCount ?></span>
+                <?php endif; ?>
+            </a>
+
+            <a href="<?= url('admin/users.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'users.php' ? 'is-active' : '' ?>">
+                <i data-lucide="users" class="nav-icon flex-shrink-0 text-slate-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Users Directory</span>
+            </a>
+
+            <!-- SECTION 3: CAPITAL & REVENUE -->
+            <div class="sidebar-section-title mt-2">
+                <span>Capital &amp; Monetization</span>
+            </div>
+
             <a href="<?= url('admin/subscriptions.php') ?>" 
                title="Subscription Plans & Priority Manager"
                class="sidebar-link <?= $currentPage === 'subscriptions.php' ? 'is-active' : '' ?>">
                 <i data-lucide="crown" class="nav-icon flex-shrink-0 text-amber-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item flex-1">Subscriptions &amp; Plans</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[9.5px] font-extrabold bg-purple-100 text-purple-700 sidebar-text-item">VIP</span>
+                <span class="px-1.5 py-0.5 rounded-full text-[9.5px] font-extrabold bg-purple-100 text-purple-700 sidebar-text-item">
+                    VIP &middot; <?= $activeSubsCount ?>
+                </span>
             </a>
 
-            <a href="<?= url('admin/users.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'users.php' ? 'is-active' : '' ?>">
-                <i data-lucide="users" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Users Directory</span>
-            </a>
-
-            <a href="<?= url('admin/companies.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'companies.php' ? 'is-active' : '' ?>">
-                <i data-lucide="building-2" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Startup Companies</span>
-            </a>
-
-            <!-- Share Allotments -->
-            <a href="<?= url('admin/share_allotments.php') ?>" 
-               title="Share Certificates & Cap Table"
-               class="sidebar-link <?= $currentPage === 'share_allotments.php' ? 'is-active' : '' ?>">
-                <i data-lucide="award" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Share Allotments</span>
+            <a href="<?= url('admin/revenue.php') ?>" 
+               class="sidebar-link <?= ($currentPage === 'revenue.php' || $currentPage === 'invoice_view.php') ? 'is-active' : '' ?>">
+                <i data-lucide="receipt" class="nav-icon flex-shrink-0 text-emerald-600"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Revenue &amp; Invoices</span>
+                <?php if ($pendingInvoicesCount > 0): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200 sidebar-text-item"><?= $pendingInvoicesCount ?></span>
+                <?php endif; ?>
             </a>
 
             <a href="<?= url('admin/transactions.php') ?>" 
                class="sidebar-link <?= $currentPage === 'transactions.php' ? 'is-active' : '' ?>">
-                <i data-lucide="banknote" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Transactions & Escrow</span>
+                <i data-lucide="banknote" class="nav-icon flex-shrink-0 text-emerald-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Transactions &amp; Escrow</span>
             </a>
 
-            <a href="<?= url('admin/revenue.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'revenue.php' ? 'is-active' : '' ?>">
-                <i data-lucide="receipt" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Revenue & Fees</span>
+            <a href="<?= url('admin/share_allotments.php') ?>" 
+               title="Share Certificates & Cap Table"
+               class="sidebar-link <?= $currentPage === 'share_allotments.php' ? 'is-active' : '' ?>">
+                <i data-lucide="award" class="nav-icon flex-shrink-0 text-purple-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Share Allotments</span>
             </a>
 
-            <a href="<?= url('admin/reports.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'reports.php' ? 'is-active' : '' ?>">
-                <i data-lucide="bar-chart-3" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Reports & Stats</span>
-            </a>
-
-            <a href="<?= url('admin/audit_logs.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'audit_logs.php' ? 'is-active' : '' ?>">
-                <i data-lucide="history" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
-            </a>
+            <!-- SECTION 4: COMMUNICATIONS & SYSTEM -->
+            <div class="sidebar-section-title mt-2">
+                <span>Communications &amp; System</span>
+            </div>
 
             <a href="<?= url('admin/broadcasts.php') ?>" 
                class="sidebar-link <?= $currentPage === 'broadcasts.php' ? 'is-active' : '' ?>">
-                <i data-lucide="megaphone" class="nav-icon flex-shrink-0"></i>
+                <i data-lucide="megaphone" class="nav-icon flex-shrink-0 text-rose-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Broadcasts</span>
             </a>
 
             <a href="<?= url('admin/email_templates.php') ?>" 
                class="sidebar-link <?= $currentPage === 'email_templates.php' ? 'is-active' : '' ?>">
-                <i data-lucide="mail" class="nav-icon flex-shrink-0"></i>
+                <i data-lucide="mail-check" class="nav-icon flex-shrink-0 text-blue-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Email Templates</span>
+            </a>
+
+            <a href="<?= url('admin/audit_logs.php') ?>" 
+               class="sidebar-link <?= $currentPage === 'audit_logs.php' ? 'is-active' : '' ?>">
+                <i data-lucide="history" class="nav-icon flex-shrink-0 text-slate-400"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
             </a>
 
             <a href="<?= url('admin/settings.php') ?>" 
                class="sidebar-link <?= $currentPage === 'settings.php' ? 'is-active' : '' ?>">
-                <i data-lucide="settings" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Settings & Security</span>
+                <i data-lucide="settings" class="nav-icon flex-shrink-0 text-slate-400"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Settings &amp; Security</span>
             </a>
+
         </nav>
     </div>
 

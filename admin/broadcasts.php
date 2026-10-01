@@ -153,13 +153,24 @@ if ($db) {
     <title>Platform Broadcasts & Announcements • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: "Vay Portal", Sans-serif; }
-        .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
+        .stat-card-clean { 
+            background: #FFFFFF; 
+            border: 1px solid #E2E8F0; 
+            border-radius: 1rem; 
+            padding: 1.25rem 1.5rem; 
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); 
+            transition: all 0.2s ease-in-out;
+        }
+        .stat-card-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
+        }
+        .table-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); overflow: hidden; }
+        .filter-bar-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 0.875rem 1.25rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02); }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
 
-    
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
@@ -170,16 +181,15 @@ if ($db) {
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="broadcasts-main">
 
-
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center space-x-2 shadow-xs">
                     <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
@@ -187,15 +197,22 @@ if ($db) {
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="admin-page-icon">
-                        <i data-lucide="megaphone" class="w-5 h-5"></i>
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/80 dark:border-indigo-800/80 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-xs flex-shrink-0">
+                        <i data-lucide="megaphone" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                            Platform Broadcasts
-                        </h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Publish compliance bulletins, regulatory updates, and platform notices to user inboxes and banners.</p>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Platform Broadcasts
+                            </h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                Global Dispatch
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Publish compliance bulletins, regulatory updates, and platform notices to user inboxes and banners.
+                        </p>
                     </div>
                 </div>
                 
@@ -209,49 +226,49 @@ if ($db) {
             </div>
 
             <!-- Metric Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="admin-stat-card">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Total Dispatched</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Dispatched</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                             <i data-lucide="megaphone" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-sky"><?= $totalBroadcasts ?></div>
-                    <div class="admin-stat-sub">Platform announcements</div>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= $totalBroadcasts ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Platform announcements</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Active Banners</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Banners</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <i data-lucide="radio" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-emerald"><?= $activeBanners ?></div>
-                    <div class="admin-stat-sub">Live on user dashboards</div>
+                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><?= $activeBanners ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live on user dashboards</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Audience Reach</span>
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Audience Reach</span>
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                             <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-indigo"><?= number_format($totalRecipientsReach) ?></div>
-                    <div class="admin-stat-sub">Cumulative inbox deliveries</div>
+                    <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRecipientsReach) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cumulative inbox deliveries</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Urgent Bulletins</span>
-                        <div class="w-8 h-8 rounded-lg <?= $urgentAlertsCount > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Urgent Bulletins</span>
+                        <div class="w-9 h-9 rounded-xl <?= $urgentAlertsCount > 0 ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' ?> flex items-center justify-center">
                             <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value <?= $urgentAlertsCount > 0 ? 'stat-value-amber' : '' ?>"><?= $urgentAlertsCount ?></div>
-                    <div class="admin-stat-sub">High-priority compliance</div>
+                    <div class="text-2xl font-black <?= $urgentAlertsCount > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= $urgentAlertsCount ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">High-priority compliance</div>
                 </div>
             </div>
 

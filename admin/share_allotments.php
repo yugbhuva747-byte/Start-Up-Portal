@@ -156,13 +156,24 @@ if ($db) {
     <title>Share Allotments & Cap Table Registry • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: "Vay Portal", Sans-serif; }
-        .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
+        .stat-card-clean { 
+            background: #FFFFFF; 
+            border: 1px solid #E2E8F0; 
+            border-radius: 1rem; 
+            padding: 1.25rem 1.5rem; 
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); 
+            transition: all 0.2s ease-in-out;
+        }
+        .stat-card-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
+        }
+        .table-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); overflow: hidden; }
+        .filter-bar-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 0.875rem 1.25rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02); }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
 
-    
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
@@ -173,16 +184,15 @@ if ($db) {
 
         <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="allotment-main">
 
-
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center space-x-2 shadow-xs">
                     <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
@@ -190,69 +200,77 @@ if ($db) {
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="admin-page-icon">
-                        <i data-lucide="award" class="w-5 h-5"></i>
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-950/50 border border-violet-200/80 dark:border-violet-800/80 flex items-center justify-center text-violet-600 dark:text-violet-400 shadow-xs flex-shrink-0">
+                        <i data-lucide="award" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                            Share Allotments & Cap Table
-                        </h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Digital share certificates, distinctive share ranges, and statutory Cap Table governance.</p>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Share Allotments &amp; Cap Table
+                            </h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-50 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+                                Demat &amp; MCA
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Digital share certificates, distinctive share ranges, and statutory Cap Table governance.
+                        </p>
                     </div>
                 </div>
                 <div>
                     <button onclick="document.getElementById('issueModal').classList.remove('hidden')" 
-
-                            class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition flex items-center space-x-1.5 shadow-sm shadow-blue-600/20">
-                        <i data-lucide="award" class="w-3.5 h-3.5"></i>
-
+                            class="admin-btn-primary">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                         <span>Issue Share Certificate</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Metric Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="admin-stat-card">
+            <!-- Metric Cards (Consistent 4 KPIs) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Shares Allotted</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Shares Allotted</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                             <i data-lucide="layers" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-sky"><?= number_format($totalSharesAllotted) ?></div>
-                    <div class="admin-stat-sub">Units of equity & CCPS</div>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= number_format($totalSharesAllotted) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Units of equity &amp; CCPS</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Allotted Capital</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Allotted Capital</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <i data-lucide="trending-up" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-emerald"><?= format_inr($totalCapitalAllotted) ?></div>
-                    <div class="admin-stat-sub">Investor subscriptions</div>
+                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><?= format_inr($totalCapitalAllotted) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Investor subscriptions</div>
                 </div>
 
-
-                <div class="card-clean rounded-2xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Certificates Issued</div>
-                    <div class="text-lg font-black text-blue-600"><?= $totalCertificatesCount ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Digitally signed & verified</div>
-
-                </div>
-
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Compliance Standard</span>
-                        <div class="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Certificates Issued</span>
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                            <i data-lucide="award" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= number_format($totalCertificatesCount) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Digitally signed &amp; verified</div>
+                </div>
+
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Compliance Standard</span>
+                        <div class="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center">
                             <i data-lucide="shield-check" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-violet text-lg">SEBI & MCA 2013</div>
-                    <div class="admin-stat-sub">Sec. 56 Companies Act</div>
+                    <div class="text-xl font-black text-violet-600 dark:text-violet-400 mt-2">SEBI &amp; MCA 2013</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Sec. 56 Companies Act</div>
                 </div>
             </div>
 

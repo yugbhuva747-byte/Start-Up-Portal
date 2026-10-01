@@ -4,10 +4,12 @@
 
 
  */
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-header("Expires: 0");
+if (!headers_sent()) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+    header("Expires: 0");
+}
 
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
@@ -146,14 +148,19 @@ $flashClasses = match ($flashType) {
     <title>Settings & Security • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body {
-            font-family: "Vay Portal", Sans-serif;
+        .stat-card-clean {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
 
         .card-clean {
             background: #fff;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
 
         /* FIX: never let a card stay faded if the animation script fails */
@@ -167,7 +174,7 @@ $flashClasses = match ($flashType) {
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
 
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
@@ -200,60 +207,80 @@ $flashClasses = match ($flashType) {
 
 
             <!-- Header -->
-            <div>
-                <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Platform Settings & Security
-                </h1>
-                <p class="text-xs text-slate-500 mt-0.5">Manage industry categories, platform configuration, and
-                    security monitoring.</p>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/80 dark:border-indigo-800/80 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-xs flex-shrink-0">
+                        <i data-lucide="settings-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Platform Settings &amp; Security
+                            </h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                System Master
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Industry taxonomy categories, two-factor authentication policy, and infrastructure monitoring.
+                        </p>
+                    </div>
+                </div>
 
+                <div class="flex items-center gap-2">
+                    <a href="<?= url('admin/audit_logs.php') ?>" class="admin-btn-secondary">
+                        <i data-lucide="history" class="w-3.5 h-3.5"></i>
+                        <span>Audit Trail</span>
+                    </a>
+                </div>
             </div>
 
-            <!-- Platform Metrics -->
+            <!-- Platform Metrics (Exactly 4 Distinct KPIs) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Platform Environment</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Environment</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                             <i data-lucide="server" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-sky text-base">Development</div>
-                    <div class="text-[11px] text-slate-500 mt-1"><?= php_uname('s') ?> / Apache</div>
+                    <div class="text-xl font-black text-slate-900 dark:text-white mt-1">Development</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= php_uname('s') ?> / Apache Server</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Active Sessions</span>
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Sessions</span>
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                             <i data-lucide="activity" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-indigo"><?= $activeSessions ?></div>
-                    <div class="text-[11px] text-slate-500 mt-1">Logged-in during last 60m</div>
+                    <div class="text-xl font-black text-indigo-600 dark:text-indigo-400 mt-1"><?= $activeSessions ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Logged-in during last 60m</div>
                 </div>
 
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Active Sessions
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Database Engine</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="database" class="w-4 h-4"></i>
+                        </div>
                     </div>
-                    <div class="text-sm font-bold text-blue-600"><?= $activeSessions ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5">In last 60 minutes</div>
+                    <div class="text-xl font-black text-slate-900 dark:text-white mt-1"><?= DB_NAME ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= DB_HOST ?>:<?= DB_PORT ?> • MySQL</div>
                 </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Database</div>
-                    <div class="text-sm font-bold text-slate-900"><?= DB_NAME ?></div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= DB_HOST ?>:<?= DB_PORT ?></div>
-                </div>
-                <div class="card-clean rounded-xl p-4">
-                    <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Admin 2FA Status
+
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Admin 2FA Security</span>
+                        <div class="w-9 h-9 rounded-xl <?= $is2faEnabled ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' ?> flex items-center justify-center">
+                            <i data-lucide="<?= $is2faEnabled ? 'shield-check' : 'shield-alert' ?>" class="w-4 h-4"></i>
+                        </div>
                     </div>
-                    <div
-                        class="text-sm font-bold <?= $is2faEnabled ? 'text-emerald-600' : 'text-amber-600' ?> flex items-center space-x-1.5">
-                        <i data-lucide="<?= $is2faEnabled ? 'shield-check' : 'shield-alert' ?>"
-                            class="w-4 h-4 <?= $is2faEnabled ? 'text-emerald-600' : 'text-amber-600' ?>"></i>
+                    <div class="text-xl font-black <?= $is2faEnabled ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' ?> mt-1 flex items-center gap-1.5">
                         <span><?= $is2faEnabled ? 'Enforced' : 'Optional' ?></span>
                     </div>
-                    <div class="text-[10px] text-slate-500 mt-0.5"><?= $backupCodesRemaining ?> recovery
-                        code<?= $backupCodesRemaining === 1 ? '' : 's' ?> active</div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= $backupCodesRemaining ?> recovery code<?= $backupCodesRemaining === 1 ? '' : 's' ?> active</div>
                 </div>
             </div>
 

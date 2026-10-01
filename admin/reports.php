@@ -115,13 +115,13 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
     <title>Reports & Analytics • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: "Vay Portal", Sans-serif; }
-        .card-clean { background: #fff; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
+        .stat-card-clean { background: #fff; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
+        .card-clean { background: #fff; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
         .mini-bar { height: 24px; border-radius: 4px; transition: width 0.8s ease; }
         .donut-ring { fill: none; stroke-width: 4; stroke-linecap: round; }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
     
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 

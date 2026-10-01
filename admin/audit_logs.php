@@ -38,15 +38,12 @@ if ($db) {
 
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body { font-family: "Vay Portal", Sans-serif; }
-        .card-clean {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-        }
+        .stat-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
+        .table-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); overflow: hidden; }
+        .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
 
     
     <!-- Admin Sidebar -->
