@@ -1,8 +1,9 @@
 <?php
 /**
- * Shared Admin Head Component
+ * Shared Founder Head Component
  * Initializes Tailwind CDN with Class-based Dark Mode
  * Fast, flicker-free theme detection before paint
+ * Loads standardized theme tokens, fonts, and micro-animations
  */
 ?>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">

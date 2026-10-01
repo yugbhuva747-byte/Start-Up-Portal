@@ -119,6 +119,18 @@ function render_article_html(?string $content): string {
         <meta property="og:description" content="<?= htmlspecialchars($blog['summary'] ?? '') ?>">
         <meta property="og:image" content="<?= htmlspecialchars($coverImage) ?>">
     <?php endif; ?>
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('startup_portal_theme') || 
+                    (document.cookie.match(/startup_portal_theme=([^;]+)/) ? RegExp.$1 : null) ||
+                    (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            } catch (e) {}
+        })();
+        window.tailwind = { config: { darkMode: 'class' } };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -228,14 +240,47 @@ function render_article_html(?string $content): string {
         .card-clean:hover {
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
         }
-        /* Custom Reading Progress Bar */
-        #reading-progress {
-            transform-origin: left;
-            will-change: transform;
+        /* Dark Mode Support */
+        html.dark body {
+            background-color: #0B0F19 !important;
+            color: #F8FAFC !important;
+        }
+        html.dark .editorial-body {
+            color: #CBD5E1 !important;
+        }
+        html.dark .editorial-body h2,
+        html.dark .editorial-body h3,
+        html.dark .editorial-body h4 {
+            color: #FFFFFF !important;
+        }
+        html.dark .card-clean,
+        html.dark .bg-white {
+            background-color: #111827 !important;
+            border-color: #1E293B !important;
+            color: #F8FAFC !important;
+        }
+        html.dark [class*="bg-slate-50"],
+        html.dark [class*="bg-gray-50"] {
+            background-color: #0F172A !important;
+            border-color: #1E293B !important;
+            color: #E2E8F0 !important;
+        }
+        html.dark [class*="border-slate-100"],
+        html.dark [class*="border-slate-200"] {
+            border-color: #1E293B !important;
+        }
+        html.dark .text-slate-900,
+        html.dark .text-slate-800 {
+            color: #F8FAFC !important;
+        }
+        html.dark .text-slate-600,
+        html.dark .text-slate-500 {
+            color: #CBD5E1 !important;
+            font-weight: 500 !important;
         }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
 
     <!-- Top Reading Progress Indicator -->
     <div id="reading-progress" class="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600 w-full z-50 transform scale-x-0 transition-transform duration-75"></div>

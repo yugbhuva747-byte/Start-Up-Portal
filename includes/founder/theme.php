@@ -34,6 +34,61 @@
     /* ----------------------------------------------------
        1. UNIVERSAL TYPOGRAPHY & SMOOTH TRANSITIONS
     ---------------------------------------------------- */
+    html {
+        font-size: 16.5px !important;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        font-size: 1rem;
+        line-height: 1.65;
+    }
+
+    /* Boost ultra-small Tailwind text classes for high legibility */
+    .text-\[7px\],
+    .text-\[7\.5px\],
+    .text-\[8px\],
+    .text-\[8\.5px\],
+    .text-\[9px\],
+    .text-\[9\.5px\],
+    .text-\[10px\],
+    .text-\[10\.5px\],
+    .text-\[11px\],
+    .text-\[11\.5px\] {
+        font-size: 0.85rem !important; /* ~14px */
+        line-height: 1.5 !important;
+        font-weight: 550 !important;
+    }
+
+    .text-xs {
+        font-size: 0.925rem !important; /* ~15.2px */
+        line-height: 1.55 !important;
+        font-weight: 500 !important;
+    }
+
+    .text-sm {
+        font-size: 1.025rem !important; /* ~16.9px */
+        line-height: 1.65 !important;
+        font-weight: 500 !important;
+    }
+
+    .text-base {
+        font-size: 1.125rem !important; /* ~18.5px */
+        line-height: 1.65 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Universal medium readability for descriptions, body text, tables, and muted labels */
+    p, 
+    .text-slate-600, 
+    .text-slate-500, 
+    .text-slate-700,
+    .font-normal,
+    td,
+    label {
+        font-weight: 500 !important;
+    }
+
     html,
     body,
     button,
@@ -56,6 +111,7 @@
         font-family: "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 
     /* Silky-smooth color transition when toggling themes */
@@ -294,20 +350,29 @@
         box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35) !important;
     }
 
-    /* Secondary surfaces and subtle container fills */
+    /* Secondary surfaces and subtle container fills (covers all opacities) */
     html.dark .bg-slate-50,
-    html.dark .bg-slate-50\/50,
-    html.dark .bg-slate-50\/70,
-    html.dark .bg-slate-50\/80 {
+    html.dark [class*="bg-slate-50"],
+    html.dark [class*="bg-gray-50"],
+    html.dark [class*="bg-zinc-50"] {
         background-color: #0F172A !important;
+        border-color: #1E293B !important;
+        color: #E2E8F0 !important;
     }
 
-    html.dark .bg-slate-100 {
+    html.dark .bg-slate-100,
+    html.dark [class*="bg-slate-100"],
+    html.dark [class*="bg-gray-100"] {
         background-color: #1E293B !important;
+        border-color: #334155 !important;
+        color: #F8FAFC !important;
     }
 
-    html.dark .bg-slate-200 {
+    html.dark .bg-slate-200,
+    html.dark [class*="bg-slate-200"] {
         background-color: #334155 !important;
+        border-color: #475569 !important;
+        color: #FFFFFF !important;
     }
 
     /* Translucent pills (e.g. bg-white/80, bg-white/95) */
@@ -545,12 +610,16 @@
     html.dark .border-slate-100,
     html.dark .border-slate-200,
     html.dark .border-slate-200\/80,
-    html.dark .border-slate-300 {
+    html.dark .border-slate-300,
+    html.dark [class*="border-slate-100"],
+    html.dark [class*="border-slate-200"] {
         border-color: #1E293B !important;
     }
 
     html.dark .divide-slate-100> :not([hidden])~ :not([hidden]),
-    html.dark .divide-slate-200> :not([hidden])~ :not([hidden]) {
+    html.dark .divide-slate-200> :not([hidden])~ :not([hidden]),
+    html.dark [class*="divide-slate-100"]> :not([hidden])~ :not([hidden]),
+    html.dark [class*="divide-slate-200"]> :not([hidden])~ :not([hidden]) {
         border-color: #1E293B !important;
     }
 
@@ -607,12 +676,12 @@
 
     html.dark .text-slate-500,
     html.dark .text-gray-500 {
-        color: #94A3B8 !important;
+        color: #CBD5E1 !important;
     }
 
     html.dark .text-slate-400,
     html.dark .text-gray-400 {
-        color: #94A3B8 !important;
+        color: #CBD5E1 !important;
     }
 
     html.dark .text-slate-300,
@@ -789,6 +858,17 @@
         background-color: #0B0F19 !important;
         border-color: #334155 !important;
         color: #FFFFFF !important;
+    }
+
+    html.dark .form-label-clean,
+    html.dark label {
+        color: #F8FAFC !important;
+        font-weight: 600 !important;
+    }
+
+    html.dark .form-hint {
+        color: #CBD5E1 !important;
+        font-weight: 500 !important;
     }
 
     html.dark input::placeholder,

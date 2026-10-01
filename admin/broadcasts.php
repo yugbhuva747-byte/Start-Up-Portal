@@ -157,7 +157,7 @@ if ($db) {
         .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
 
     
     <!-- Admin Sidebar -->

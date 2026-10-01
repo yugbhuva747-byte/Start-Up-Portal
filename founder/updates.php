@@ -117,11 +117,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
         body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
             font-family: "Vay Portal", Sans-serif;
@@ -799,19 +795,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                             </span>
 
                                             <!-- Visibility Scope Badge -->
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold <?= $upd['visibility'] === 'portfolio_only' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-slate-100 text-slate-700 border border-slate-200' ?>">
+                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold <?= $upd['visibility'] === 'portfolio_only' ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700' ?>">
                                                 <i data-lucide="<?= $upd['visibility'] === 'portfolio_only' ? 'lock' : 'globe' ?>" class="w-3 h-3"></i>
                                                 <span><?= $upd['visibility'] === 'portfolio_only' ? 'Portfolio Exclusive' : 'Public Discovery' ?></span>
                                             </span>
 
                                             <!-- Formatted Time -->
-                                            <span class="text-xs text-slate-400 flex items-center gap-1 font-mono">
+                                            <span class="text-xs text-slate-400 dark:text-slate-400 flex items-center gap-1 font-mono">
                                                 <i data-lucide="clock" class="w-3.5 h-3.5"></i>
                                                 <span><?= date('M d, Y • h:i A', strtotime($upd['created_at'])) ?></span>
                                             </span>
                                         </div>
 
-                                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-snug">
+                                        <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-snug">
                                             <?= htmlspecialchars($upd['title']) ?>
                                         </h2>
                                     </div>
@@ -820,9 +816,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     <div class="flex items-center space-x-2 flex-shrink-0">
                                         <button type="button" 
                                                 onclick="copyEmailDigest(`<?= addslashes(htmlspecialchars($company['name'])) ?>`, `<?= addslashes(htmlspecialchars($upd['title'])) ?>`, `<?= addslashes(htmlspecialchars($upd['metrics_summary'])) ?>`, `<?= addslashes(htmlspecialchars($upd['content'])) ?>`)"
-                                                class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition"
+                                                class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition"
                                                 title="Copy as Investor Email Digest">
-                                            <i data-lucide="mail" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                            <i data-lucide="mail" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
                                             <span>Copy Email Digest</span>
                                         </button>
 
@@ -830,7 +826,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                             <input type="hidden" name="form_action" value="delete_update">
                                             <input type="hidden" name="update_id" value="<?= $upd['id'] ?>">
-                                            <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition" title="Delete Update">
+                                            <button type="submit" class="p-2 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition" title="Delete Update">
                                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                                             </button>
                                         </form>
@@ -839,7 +835,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                                 <!-- Key Metrics Pill Strip -->
                                 <?php if (!empty($upd['metrics_summary'])): ?>
-                                    <div class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50/50 dark:from-emerald-950/50 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center space-x-2.5">
+                                    <div class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50/50 dark:from-emerald-950/50 dark:via-slate-900 dark:to-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 text-xs sm:text-sm font-bold text-emerald-900 dark:text-emerald-300 flex items-center space-x-2.5">
                                         <div class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
                                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                                         </div>
@@ -847,21 +843,21 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     </div>
                                 <?php endif; ?>
 
-                                <!-- Narrative Body Content -->
-                                <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-line bg-slate-50/60 p-5 rounded-xl border border-slate-100 font-normal">
+                                <!-- Narrative Body Content (Easy to read, boosted font & high contrast dark mode) -->
+                                <div class="text-sm sm:text-base text-slate-700 dark:text-slate-100 leading-relaxed whitespace-pre-line bg-slate-50 dark:bg-slate-900/90 p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 font-medium">
                                     <?= htmlspecialchars($upd['content']) ?>
                                 </div>
 
                                 <!-- Card Delivery Proof Bar -->
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 pt-2 border-t border-slate-100">
-                                    <div class="flex items-center space-x-2 text-slate-500 font-medium">
-                                        <i data-lucide="check-check" class="w-4 h-4 text-emerald-600"></i>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <div class="flex items-center space-x-2 text-slate-500 dark:text-slate-400 font-medium">
+                                        <i data-lucide="check-check" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
                                         <span>Delivered to investor inboxes & startup profile feed</span>
                                     </div>
                                     <div class="flex items-center space-x-3 text-[11px]">
-                                        <span class="text-slate-400 font-mono">ID: #<?= $upd['id'] ?></span>
+                                        <span class="text-slate-400 dark:text-slate-500 font-mono">ID: #<?= $upd['id'] ?></span>
                                         <button type="button" onclick="navigator.clipboard.writeText(`<?= addslashes($upd['title'] . "\n\n" . $upd['content']) ?>`); alert('Update text copied to clipboard!');" 
-                                                class="text-indigo-600 hover:text-indigo-700 font-bold flex items-center space-x-1 transition">
+                                                class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold flex items-center space-x-1 transition">
                                             <i data-lucide="copy" class="w-3 h-3"></i>
                                             <span>Copy Raw Text</span>
                                         </button>

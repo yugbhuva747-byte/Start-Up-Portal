@@ -121,7 +121,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
         .donut-ring { fill: none; stroke-width: 4; stroke-linecap: round; }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
     
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 

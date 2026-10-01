@@ -86,18 +86,32 @@
         font-size: 0.925rem !important;
         /* ~15px */
         line-height: 1.55 !important;
+        font-weight: 500 !important;
     }
 
     .text-sm {
         font-size: 1.05rem !important;
         /* ~17px */
         line-height: 1.6 !important;
+        font-weight: 500 !important;
     }
 
     .text-base {
         font-size: 1.15rem !important;
         /* ~19px */
         line-height: 1.65 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Universal medium readability for descriptions, body text, tables, and muted labels */
+    p, 
+    .text-slate-600, 
+    .text-slate-500, 
+    .text-slate-700,
+    .font-normal,
+    td,
+    label {
+        font-weight: 500 !important;
     }
 
     .text-lg {
@@ -408,6 +422,24 @@
         border-color: #1E293B !important;
     }
 
+    /* Secondary surfaces and subtle container fills (covers all opacities) */
+    html.dark .bg-slate-50,
+    html.dark [class*="bg-slate-50"],
+    html.dark [class*="bg-gray-50"],
+    html.dark [class*="bg-zinc-50"] {
+        background-color: #0F172A !important;
+        border-color: #1E293B !important;
+        color: #E2E8F0 !important;
+    }
+
+    html.dark .bg-slate-100,
+    html.dark [class*="bg-slate-100"],
+    html.dark [class*="bg-gray-100"] {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
+        color: #F8FAFC !important;
+    }
+
     html.dark .network-row:hover {
         background-color: #1E293B !important;
     }
@@ -424,6 +456,8 @@
     html.dark .border-\[\#E4E8EF\],
     html.dark .border-slate-200,
     html.dark .border-slate-100,
+    html.dark [class*="border-slate-100"],
+    html.dark [class*="border-slate-200"],
     html.dark .divide-\[\#E4E8EF\]> :not([hidden])~ :not([hidden]),
     html.dark .divide-slate-200> :not([hidden])~ :not([hidden]) {
         border-color: #1E293B !important;
@@ -441,7 +475,8 @@
     html.dark .text-\[\#667085\],
     html.dark .text-slate-500,
     html.dark .text-slate-600 {
-        color: #94A3B8 !important;
+        color: #CBD5E1 !important;
+        font-weight: 500 !important;
     }
 
     /* Soft Blue Badges & Accent Fills */

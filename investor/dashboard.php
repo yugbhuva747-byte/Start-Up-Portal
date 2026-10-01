@@ -91,7 +91,7 @@ if ($hour < 12) {
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen">
+<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
 
     <!-- Investor Navigation Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>

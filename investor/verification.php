@@ -168,7 +168,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen antialiased">
+<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen antialiased dark:bg-[#0B0F19] dark:text-slate-100">
 
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>

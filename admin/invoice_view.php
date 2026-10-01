@@ -98,7 +98,7 @@ $total = (float)$inv['total_payable'];
         }
     </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center selection:bg-indigo-100 selection:text-indigo-900">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center selection:bg-indigo-100 selection:text-indigo-900 dark:bg-[#0B0F19] dark:text-slate-100">
 
     <!-- Top Action Toolbar -->
     <header class="no-print max-w-3xl w-full mb-6 flex items-center justify-between bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 text-white shadow-xl">

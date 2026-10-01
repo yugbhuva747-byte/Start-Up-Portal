@@ -280,32 +280,9 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <title><?= $pageTitle ?? APP_NAME ?> • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
-
-        body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
-            font-family: "Vay Portal", Sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        body {
-            background-color: #F8FAFC;
-            color: #0F172A;
-        }
-        .section-card {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 1.25rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .section-card:hover {
-            border-color: #CBD5E1;
-            box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.04), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
-        }
         html:not(.dark) .hero-cap-banner {
             background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #FAF5FF 100%);
             border: 1px solid #E2E8F0;
@@ -344,7 +321,7 @@ $unallocatedTotalShares = max(0, $totalAuthorizedShares - ($founderTotalShares +
         }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>

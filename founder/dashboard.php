@@ -119,33 +119,12 @@ $flash = get_flash();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Founder Dashboard • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
-        body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
-            font-family: "Vay Portal", Sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        body { 
-            background-color: #F8FAFC; 
-            color: #0F172A; 
-        }
-        .card-clean { 
-            background: #FFFFFF; 
-            border: 1px solid #E2E8F0; 
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02); 
-            transition: all 0.2s ease;
-        }
-        .card-clean:hover {
-            border-color: #CBD5E1;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-        }
         .progress-ring { transition: stroke-dashoffset 1.2s ease; }
     </style>
 </head>
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 

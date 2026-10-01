@@ -99,16 +99,33 @@
     .text-xs {
         font-size: 0.95rem !important; /* ~15.2px */
         line-height: 1.55 !important;
+        font-weight: 500 !important;
     }
 
     .text-sm {
         font-size: 1.075rem !important; /* ~17.2px */
         line-height: 1.6 !important;
+        font-weight: 500 !important;
     }
 
     .text-base {
         font-size: 1.175rem !important; /* ~18.8px */
         line-height: 1.65 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Universal medium readability for descriptions, body text, tables, and muted labels */
+    p, 
+    .text-slate-600, 
+    .text-slate-500, 
+    .text-slate-700,
+    .text-gray-600,
+    .text-gray-500,
+    .text-gray-700,
+    .font-normal,
+    td,
+    label {
+        font-weight: 500 !important;
     }
 
     .text-lg {
@@ -365,20 +382,29 @@
     }
 
     /* Sub-card and inset surfaces in Dark Mode */
-    html.dark .bg-slate-50\/80,
-    html.dark .bg-slate-50\/70,
-    html.dark .bg-slate-50\/60,
-    html.dark .bg-slate-50\/50,
     html.dark .bg-slate-50,
-    html.dark .bg-slate-100 {
+    html.dark [class*="bg-slate-50"],
+    html.dark [class*="bg-gray-50"],
+    html.dark [class*="bg-zinc-50"] {
         background-color: #1E293B !important;
         border-color: #334155 !important;
+        color: #F8FAFC !important;
+    }
+
+    html.dark .bg-slate-100,
+    html.dark [class*="bg-slate-100"],
+    html.dark [class*="bg-gray-100"] {
+        background-color: #1E293B !important;
+        border-color: #334155 !important;
+        color: #F8FAFC !important;
     }
 
     /* Dark Borders & Dividers */
     html.dark .border-slate-200,
     html.dark .border-slate-100,
     html.dark .border-gray-200,
+    html.dark [class*="border-slate-100"],
+    html.dark [class*="border-slate-200"],
     html.dark .divide-slate-200> :not([hidden])~ :not([hidden]),
     html.dark .divide-slate-100> :not([hidden])~ :not([hidden]) {
         border-color: #1E293B !important;
@@ -398,7 +424,8 @@
     html.dark .text-slate-400,
     html.dark .text-gray-600,
     html.dark .text-gray-500 {
-        color: #94A3B8 !important;
+        color: #CBD5E1 !important;
+        font-weight: 500 !important;
     }
 
     /* Dark Tables */

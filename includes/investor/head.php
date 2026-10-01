@@ -20,23 +20,26 @@
         } catch (e) {}
     })();
 </script>
-<script src="https://cdn.tailwindcss.com"></script>
 <script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                colors: {
-                    slate: {
-                        750: '#243044',
-                        850: '#151F32',
-                        950: '#0B1120'
+    window.tailwind = {
+        config: {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            750: '#243044',
+                            850: '#151F32',
+                            950: '#0B1120'
+                        }
                     }
                 }
             }
         }
     };
 </script>
+<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<?php include_once __DIR__ . '/theme.php'; ?>

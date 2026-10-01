@@ -79,7 +79,7 @@ $flash = get_flash();
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
 
 
     <!-- Admin Sidebar -->

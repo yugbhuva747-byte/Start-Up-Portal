@@ -155,7 +155,7 @@ require_once __DIR__ . '/theme.php';
 
 <header
     class="investor-navbar h-16 sm:h-20 border-b border-[#E4E8EF] dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-6 md:px-8 flex items-center justify-between transition-colors duration-200 shadow-2xs">
-    <!-- Left Section: Hamburger Menu + Back Button + Search -->
+    <!-- Left Section: Hamburger Menu + Back Button -->
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
@@ -174,16 +174,6 @@ require_once __DIR__ . '/theme.php';
         </button>
         <?php endif; ?>
 
-        <!-- Search Option Bar -->
-        <form action="<?= url('investor/discover.php') ?>" method="GET" class="relative flex items-center">
-            <div class="relative w-44 sm:w-60 md:w-72 lg:w-80">
-                <i data-lucide="search"
-                    class="w-4 h-4 text-[#667085] dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                <input type="text" name="search" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>"
-                    placeholder="Search startups, founders, sector..."
-                    class="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm rounded-xl bg-[#FAFBFD] dark:bg-slate-800/90 border border-[#E4E8EF] dark:border-slate-700 text-[#111827] dark:text-slate-100 placeholder-[#667085] dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123B7A]/20 dark:focus:ring-blue-500/20 focus:border-[#123B7A] dark:focus:border-blue-400 transition shadow-2xs">
-            </div>
-        </form>
     </div>
 
     <!-- Center Section: Main Nav (Discover first) -->
@@ -199,13 +189,109 @@ require_once __DIR__ . '/theme.php';
         <?php endforeach; ?>
     </nav>
 
-    <!-- Right Section: Status + Notifications + Dark Mode + Profile -->
+    <!-- Right Section: Contact + Notifications + Dark Mode + Profile -->
     <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
 
-        <!-- Status Indicator -->
-        <div class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 text-xs shadow-2xs">
-            <span class="w-2 h-2 rounded-full <?= !empty($currentUser['is_verified']) ? 'bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900/30' : 'bg-amber-500 ring-2 ring-amber-100 dark:ring-amber-900/30' ?>"></span>
-            <span class="text-slate-700 dark:text-slate-300 font-bold text-xs"><?= !empty($currentUser['is_verified']) ? 'SEBI & KYC Verified' : 'Accreditation Pending' ?></span>
+        <!-- Contact & Support Dropdown -->
+        <div class="relative hidden xl:block" id="investor-contact-wrapper">
+            <button onclick="toggleInvestorContact()" type="button"
+                class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 text-xs shadow-2xs hover:bg-[#EAF2FF] dark:hover:bg-slate-700 hover:border-[#123B7A]/30 transition group cursor-pointer"
+                aria-label="Contact & Support">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900/30 flex-shrink-0"></span>
+                <i data-lucide="headphones" class="w-3.5 h-3.5 text-[#123B7A] dark:text-blue-400 group-hover:scale-110 transition-transform flex-shrink-0"></i>
+                <span class="text-slate-700 dark:text-slate-300 font-bold">Contact & Support</span>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 flex-shrink-0" id="investor-contact-chevron"></i>
+            </button>
+
+            <!-- Contact Dropdown Panel -->
+            <div id="investor-contact-menu"
+                class="hidden absolute right-0 mt-2.5 w-72 bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
+
+                <!-- Panel Header -->
+                <div class="px-4 py-3 bg-gradient-to-r from-[#123B7A]/5 to-blue-50/80 dark:from-blue-950/30 dark:to-slate-800/60 border-b border-[#E4E8EF] dark:border-slate-800">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-lg bg-[#123B7A] flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="life-buoy" class="w-3.5 h-3.5 text-white"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-extrabold text-[#0B1F3A] dark:text-white">Investor Support Hub</div>
+                            <div class="text-[10px] text-slate-500 dark:text-slate-400 font-medium">We typically reply within 2 hours</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Options -->
+                <div class="p-2 space-y-0.5">
+                    <!-- Email Support -->
+                    <a href="mailto:investor.support@startupportal.in"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800 group transition">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-950/50 flex items-center justify-center flex-shrink-0 group-hover:bg-[#123B7A] transition">
+                            <i data-lucide="mail" class="w-4 h-4 text-[#123B7A] dark:text-blue-400 group-hover:text-white transition"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-[#123B7A] dark:group-hover:text-blue-400 transition">Email Support</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500 truncate">investor.support@startupportal.in</div>
+                        </div>
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/919876543210?text=Hi%2C%20I%20need%20investor%20support" target="_blank" rel="noopener noreferrer"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-800 group transition">
+                        <div class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-500 transition">
+                            <i data-lucide="message-circle" class="w-4 h-4 text-emerald-600 dark:text-emerald-400 group-hover:text-white transition"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition">WhatsApp Support</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500">+91 98765 43210 · Instant help</div>
+                        </div>
+                    </a>
+
+                    <!-- Live Chat / Helpdesk -->
+                    <a href="<?= url('investor/support.php') ?>"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-violet-50 dark:hover:bg-slate-800 group transition">
+                        <div class="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-950/50 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-600 transition">
+                            <i data-lucide="zap" class="w-4 h-4 text-violet-600 dark:text-violet-400 group-hover:text-white transition"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition">Live Helpdesk</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500">Raise a ticket · Track status</div>
+                        </div>
+                    </a>
+
+                    <!-- Investor Community -->
+                    <a href="<?= url('investor/community.php') ?>"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 group transition">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition">
+                            <i data-lucide="users" class="w-4 h-4 text-amber-600 dark:text-amber-400 group-hover:text-white transition"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">Investor Community</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500">Forum · Peer network · Events</div>
+                        </div>
+                    </a>
+
+                    <!-- Regulatory / Compliance Help -->
+                    <a href="https://www.sebi.gov.in" target="_blank" rel="noopener noreferrer"
+                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 group transition">
+                        <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 group-hover:bg-slate-600 transition">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-white transition"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition">Regulatory Guidance</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500">SEBI · DPIIT · Compliance FAQ</div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Footer CTA -->
+                <div class="px-4 py-3 border-t border-[#E4E8EF] dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+                    <a href="<?= url('investor/support.php') ?>"
+                        class="flex items-center justify-center space-x-1.5 text-xs font-extrabold text-[#123B7A] dark:text-blue-400 hover:underline transition">
+                        <i data-lucide="arrow-right-circle" class="w-3.5 h-3.5"></i>
+                        <span>View Full Support Center →</span>
+                    </a>
+                </div>
+            </div>
         </div>
 
         <!-- Notifications Bell -->
@@ -329,6 +415,23 @@ require_once __DIR__ . '/theme.php';
 </header>
 
 <script>
+    // Toggle Contact & Support Dropdown
+    function toggleInvestorContact() {
+        const contactMenu = document.getElementById('investor-contact-menu');
+        const chevron = document.getElementById('investor-contact-chevron');
+        const notifMenu = document.getElementById('investor-notif-menu');
+        const profileMenu = document.getElementById('investor-profile-menu');
+        if (notifMenu) notifMenu.classList.add('hidden');
+        if (profileMenu) profileMenu.classList.add('hidden');
+        if (contactMenu) {
+            const isHidden = contactMenu.classList.toggle('hidden');
+            if (chevron) {
+                chevron.style.transform = isHidden ? '' : 'rotate(180deg)';
+            }
+            if (!isHidden && window.lucide) lucide.createIcons();
+        }
+    }
+
     // Toggle Notifications Dropdown
     function toggleInvestorNotifs() {
         const notifMenu = document.getElementById('investor-notif-menu');
@@ -410,6 +513,14 @@ require_once __DIR__ . '/theme.php';
         const profileMenu = document.getElementById('investor-profile-menu');
         if (profileWrapper && profileMenu && !profileWrapper.contains(e.target)) {
             profileMenu.classList.add('hidden');
+        }
+
+        const contactWrapper = document.getElementById('investor-contact-wrapper');
+        const contactMenu = document.getElementById('investor-contact-menu');
+        const chevron = document.getElementById('investor-contact-chevron');
+        if (contactWrapper && contactMenu && !contactWrapper.contains(e.target)) {
+            contactMenu.classList.add('hidden');
+            if (chevron) chevron.style.transform = '';
         }
     });
 
