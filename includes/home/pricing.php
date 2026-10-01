@@ -23,7 +23,7 @@
       radial-gradient(at 85% 90%, #ECFDF5 0px, transparent 45%);
     position: relative;
     overflow: hidden;
-    z-index: 10;
+    z-index: 50;
     color: #0F172A;
     font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
@@ -502,15 +502,16 @@
     <!-- ========================================================
          MODAL: Plan Priority & Checkout Confirmation
          ======================================================== -->
-    <div id="nx-plan-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-all">
-      <div class="relative w-full max-w-[540px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-100 overflow-hidden transform transition-all max-h-[90vh] overflow-y-auto">
+    <div id="nx-plan-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-all">
+      <div class="relative w-full max-w-[560px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-100 overflow-hidden transform transition-all max-h-[92vh] overflow-y-auto">
+        
         <!-- Floating Close Button -->
-        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer">
+        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer z-10">
           ✕
         </button>
 
         <!-- Plan Header -->
-        <div class="flex items-center gap-3.5 mb-4">
+        <div class="flex items-center gap-3.5 mb-4 pr-8">
           <div id="modal-plan-icon" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -527,7 +528,7 @@
         </div>
 
         <!-- Price & Cycle Breakdown -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-5 flex items-center justify-between">
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-4 flex items-center justify-between">
           <div>
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL BILLING</div>
             <div class="text-[24px] font-extrabold text-slate-900 leading-none mt-1" id="modal-plan-price">₹17,999</div>
@@ -540,37 +541,90 @@
           </div>
         </div>
 
-        <!-- Priority Perks Breakdown -->
-        <div class="mb-5">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-            YOUR PRIORITY PRIVILEGES:
-          </div>
-          <div class="space-y-2 text-[12.5px] text-slate-700 font-medium max-h-[160px] overflow-y-auto pr-1" id="modal-plan-perks">
-            <!-- Dynamic Perks inserted here -->
-          </div>
-        </div>
-
         <!-- Action Alert Box -->
         <div id="modal-alert-box" class="hidden mb-3.5 p-3 rounded-xl text-xs font-bold"></div>
 
-        <!-- Action Buttons -->
-        <div class="space-y-2.5">
-          <?php if (function_exists('auth_check') && auth_check()): ?>
+        <?php if (function_exists('auth_check') && auth_check()): ?>
+          <!-- LOGGED-IN USERS: Direct Plan Purchase / Upgrade -->
+          <div class="space-y-4">
+            <!-- Priority Perks Breakdown -->
+            <div class="mb-3">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
+                YOUR PRIORITY PRIVILEGES:
+              </div>
+              <div class="space-y-2 text-[12px] text-slate-700 font-medium max-h-[140px] overflow-y-auto pr-1" id="modal-plan-perks">
+                <!-- Dynamic Perks inserted here -->
+              </div>
+            </div>
+
             <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
               <span>⚡ Confirm Plan &amp; Activate Priority</span>
               <span aria-hidden="true">&rarr;</span>
             </button>
-          <?php else: ?>
-            <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>✨ Claim Plan &amp; Proceed to Registration</span>
-              <span aria-hidden="true">&rarr;</span>
-            </button>
-          <?php endif; ?>
-          
-          <p class="text-center text-[10.5px] text-slate-500 font-medium">
-            🔒 256-bit encrypted checkout &middot; 0% broker fee &middot; Instant activation
-          </p>
-        </div>
+          </div>
+        <?php else: ?>
+          <!-- GUEST / VISITOR: Instant Checkout & Quick Registration -->
+          <form id="modal-checkout-form" class="space-y-3.5">
+            <input type="hidden" id="modal-form-plan-code" name="plan_code" value="1_year">
+            <input type="hidden" id="modal-form-billing-cycle" name="billing_cycle" value="monthly">
+            <input type="hidden" id="modal-form-role" name="role" value="founder">
+
+            <div class="text-[11px] font-bold uppercase tracking-wider text-purple-900 mb-1 flex items-center gap-1.5">
+              <span>⚡ INSTANT ACCOUNT CREATION &amp; PLAN ACTIVATION</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  FULL NAME <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="modal-input-name" name="name" required placeholder="e.g. John Doe"
+                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+              </div>
+
+              <div>
+                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  EMAIL ADDRESS <span class="text-rose-500">*</span>
+                </label>
+                <input type="email" id="modal-input-email" name="email" required placeholder="name@company.com"
+                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                  PASSWORD <span class="text-rose-500">*</span>
+                </label>
+                <input type="password" id="modal-input-password" name="password" required placeholder="Min 6 characters" autocomplete="new-password"
+                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+              </div>
+
+              <div id="modal-founder-org-wrap">
+                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1" id="modal-label-org">
+                  STARTUP / COMPANY NAME <span class="text-rose-500">*</span>
+                </label>
+                <input type="text" id="modal-input-org" name="company_name" placeholder="e.g. NextGen AI Labs"
+                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-purple-500">
+              </div>
+            </div>
+
+            <div class="pt-1.5 space-y-2">
+              <button type="submit" id="modal-submit-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
+                <span id="modal-submit-text">⚡ Complete Purchase &amp; Activate Plan</span>
+                <span aria-hidden="true">&rarr;</span>
+              </button>
+
+              <button type="button" id="modal-scroll-to-register-btn" class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>📝 Or Fill Full Landing Page Form (Scroll Up)</span>
+              </button>
+            </div>
+          </form>
+        <?php endif; ?>
+
+        <p class="text-center text-[10px] text-slate-500 font-medium mt-3">
+          🔒 256-bit encrypted checkout &middot; 0% broker fee &middot; Instant priority activation
+        </p>
 
       </div>
     </div>
@@ -626,8 +680,19 @@
   const modalCycle = document.getElementById('modal-plan-cycle');
   const modalPeriod = document.getElementById('modal-plan-period');
   const modalPerks = document.getElementById('modal-plan-perks');
-  const modalActionBtn = document.getElementById('modal-confirm-action-btn');
   const modalAlert = document.getElementById('modal-alert-box');
+
+  const modalForm = document.getElementById('modal-checkout-form');
+  const modalSubmitBtn = document.getElementById('modal-submit-btn');
+  const modalSubmitText = document.getElementById('modal-submit-text');
+  const modalScrollBtn = document.getElementById('modal-scroll-to-register-btn');
+  const modalConfirmActionBtn = document.getElementById('modal-confirm-action-btn');
+
+  const modalFormPlanCode = document.getElementById('modal-form-plan-code');
+  const modalFormBillingCycle = document.getElementById('modal-form-billing-cycle');
+  const modalFormRole = document.getElementById('modal-form-role');
+  const modalLabelOrg = document.getElementById('modal-label-org');
+  const modalInputOrg = document.getElementById('modal-input-org');
 
   const isLoggedIn = <?= (function_exists('auth_check') && auth_check()) ? 'true' : 'false' ?>;
 
@@ -932,6 +997,15 @@
     if (t4Subtext) t4Subtext.textContent = isAnnual ? data.t4.subtextAnnual : data.t4.subtextMonthly;
     if (t4Cta) t4Cta.textContent = data.t4.cta;
     if (t4Features) t4Features.innerHTML = data.t4.features;
+
+    // Sync modal role labels if present
+    if (modalFormRole) modalFormRole.value = currentRole;
+    if (modalLabelOrg) {
+      modalLabelOrg.innerHTML = currentRole === 'investor' ? 'INVESTOR FIRM / SYNDICATE' : 'STARTUP / COMPANY NAME <span class="text-rose-500">*</span>';
+    }
+    if (modalInputOrg) {
+      modalInputOrg.placeholder = currentRole === 'investor' ? 'e.g. Nexus Angel Syndicate' : 'e.g. NextGen AI Labs';
+    }
   }
 
   // Role Buttons Event Listeners
@@ -1009,6 +1083,14 @@
       modalPerks.innerHTML = planObj.features;
     }
 
+    if (modalFormPlanCode) modalFormPlanCode.value = selectedPlanCode;
+    if (modalFormBillingCycle) modalFormBillingCycle.value = isAnnual ? 'annually' : 'monthly';
+    if (modalFormRole) modalFormRole.value = currentRole;
+
+    if (modalSubmitText) {
+      modalSubmitText.textContent = '⚡ Complete Purchase & Activate ' + planObj.name;
+    }
+
     if (modalAlert) {
       modalAlert.classList.add('hidden');
     }
@@ -1038,18 +1120,108 @@
     });
   }
 
-  // Connect all CTA buttons
-  document.querySelectorAll('.nx-plan-cta-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  // Global event delegation for all plan CTA buttons
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.nx-plan-cta-btn');
+    if (btn) {
       e.preventDefault();
       const planCode = btn.getAttribute('data-plan') || '1_year';
       window.nxOpenPlanModal(planCode);
-    });
+    }
   });
 
-  // Action Button inside Modal
-  if (modalActionBtn) {
-    modalActionBtn.addEventListener('click', async () => {
+  // Action Button inside Modal (Logged-In Users)
+  if (modalConfirmActionBtn) {
+    modalConfirmActionBtn.addEventListener('click', async () => {
+      modalConfirmActionBtn.disabled = true;
+      const prevText = modalConfirmActionBtn.innerHTML;
+      modalConfirmActionBtn.innerHTML = '<span>⚡ Activating Priority Plan...</span>';
+
+      try {
+        const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            plan_code: selectedPlanCode,
+            billing_cycle: isAnnual ? 'annually' : 'monthly'
+          })
+        });
+
+        const json = await res.json();
+        if (json && json.success) {
+          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
+          modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
+          modalAlert.classList.remove('hidden');
+
+          setTimeout(() => {
+            window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
+          }, 800);
+        } else {
+          modalConfirmActionBtn.disabled = false;
+          modalConfirmActionBtn.innerHTML = prevText;
+          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+          modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Activation failed.') + '</span>';
+          modalAlert.classList.remove('hidden');
+        }
+      } catch (err) {
+        modalConfirmActionBtn.disabled = false;
+        modalConfirmActionBtn.innerHTML = prevText;
+        modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+        modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
+        modalAlert.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Instant Checkout Form inside Modal (Guest Users)
+  if (modalForm) {
+    modalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      modalSubmitBtn.disabled = true;
+      const prevText = modalSubmitBtn.innerHTML;
+      modalSubmitBtn.innerHTML = '<span>⚡ Processing Plan Activation...</span>';
+
+      const formData = new FormData(modalForm);
+      const payload = {};
+      formData.forEach((value, key) => { payload[key] = value; });
+
+      try {
+        const res = await fetch('<?= function_exists('url') ? url('api/register.php') : 'api/register.php' ?>', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const json = await res.json();
+        if (json && json.success) {
+          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
+          modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Account created & Priority plan activated!') + '</span>';
+          modalAlert.classList.remove('hidden');
+
+          setTimeout(() => {
+            window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
+          }, 800);
+        } else {
+          modalSubmitBtn.disabled = false;
+          modalSubmitBtn.innerHTML = prevText;
+          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+          modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Registration failed. Please try again.') + '</span>';
+          modalAlert.classList.remove('hidden');
+        }
+      } catch (err) {
+        modalSubmitBtn.disabled = false;
+        modalSubmitBtn.innerHTML = prevText;
+        modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
+        modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
+        modalAlert.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Scroll to full landing page register form button
+  if (modalScrollBtn) {
+    modalScrollBtn.addEventListener('click', () => {
+      window.nxClosePlanModal();
       const data = (currentRole === 'investor') ? investorData : founderData;
       let planObj = data.t4;
       if (selectedPlanCode === 'free_trial') planObj = data.t1;
@@ -1057,63 +1229,16 @@
       else if (selectedPlanCode === '6_months') planObj = data.t3;
       else if (selectedPlanCode === '1_year') planObj = data.t4;
 
-      if (!isLoggedIn) {
-        // Not logged in: transfer selection to registration form and scroll cleanly
-        window.nxClosePlanModal();
-        if (typeof window.nxSelectPlan === 'function') {
-          window.nxSelectPlan(selectedPlanCode, isAnnual ? 'annually' : 'monthly', currentRole, planObj.name, planObj.priorityName, planObj.priorityLevel);
-        }
-        
-        // Force unhide and scroll to top registration form
-        const registerSection = document.getElementById('nx-portal-register');
-        if (registerSection) {
-          registerSection.style.visibility = 'visible';
-          registerSection.style.opacity = '1';
-        }
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      } else {
-        // Logged in: Call subscribe API directly
-        modalActionBtn.disabled = true;
-        const prevText = modalActionBtn.innerHTML;
-        modalActionBtn.innerHTML = '<span>⚡ Activating Priority Plan...</span>';
-
-        try {
-          const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-              plan_code: selectedPlanCode,
-              billing_cycle: isAnnual ? 'annually' : 'monthly'
-            })
-          });
-
-          const json = await res.json();
-          if (json && json.success) {
-            modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
-            modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
-            modalAlert.classList.remove('hidden');
-
-            setTimeout(() => {
-              window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
-            }, 800);
-          } else {
-            modalActionBtn.disabled = false;
-            modalActionBtn.innerHTML = prevText;
-            modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
-            modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Activation failed.') + '</span>';
-            modalAlert.classList.remove('hidden');
-          }
-        } catch (err) {
-          modalActionBtn.disabled = false;
-          modalActionBtn.innerHTML = prevText;
-          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
-          modalAlert.classList.remove('hidden');
-        }
+      if (typeof window.nxSelectPlan === 'function') {
+        window.nxSelectPlan(selectedPlanCode, isAnnual ? 'annually' : 'monthly', currentRole, planObj.name, planObj.priorityName, planObj.priorityLevel);
       }
+
+      const registerSection = document.getElementById('nx-portal-register');
+      if (registerSection) {
+        registerSection.style.visibility = 'visible';
+        registerSection.style.opacity = '1';
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 
