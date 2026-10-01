@@ -186,28 +186,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-3xl w-full mx-auto" id="invest-main">
             
             <!-- Breadcrumb -->
-            <div class="flex items-center space-x-2 text-xs text-slate-400">
-                <a href="<?= url('investor/startup_detail.php?id=' . hash_id_encode($round['company_id'])) ?>" class="hover:text-slate-800 transition flex items-center space-x-1">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+            <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-500">
+                <a href="<?= url('investor/startup_detail.php?id=' . hash_id_encode($round['company_id'])) ?>" class="hover:text-slate-900 transition flex items-center space-x-1">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
                     <span>Back to Deal Room</span>
                 </a>
                 <span>/</span>
-                <span class="text-slate-700 font-semibold">Investment Commitment</span>
+                <span class="text-slate-800 font-bold">Investment Commitment</span>
             </div>
 
             <?php if ($success): ?>
                 <!-- SUCCESS CONFIRMATION VIEW -->
-                <div class="card-clean rounded-2xl p-8 md:p-10 text-center relative">
-                    <div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+                <div class="card-clean rounded-2xl p-8 sm:p-10 text-center relative">
+                    <div class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-4">
                         <i data-lucide="check-circle" class="w-8 h-8"></i>
                     </div>
 
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 mb-1.5">Investment Successfully Confirmed!</h1>
-                    <p class="text-xs text-slate-500 max-w-md mx-auto mb-6">
-                        Your capital commitment of <strong class="text-emerald-700"><?= format_inr($_POST['amount']) ?></strong> into <strong class="text-slate-800"><?= htmlspecialchars($round['company_name']) ?></strong> is recorded in escrow.
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">Investment Successfully Confirmed!</h1>
+                    <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6">
+                        Your capital commitment of <strong class="text-emerald-700 font-bold"><?= format_inr($_POST['amount']) ?></strong> into <strong class="text-slate-900 font-bold"><?= htmlspecialchars($round['company_name']) ?></strong> is recorded in escrow.
                     </p>
 
-                    <div class="max-w-md mx-auto p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-left space-y-2.5 mb-6">
+                    <div class="max-w-md mx-auto p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-100 text-xs sm:text-sm text-left space-y-3 mb-6">
                         <div class="flex justify-between py-1 border-b border-slate-200/60">
                             <span class="text-slate-500">Transaction Reference:</span>
                             <span class="font-mono font-bold text-slate-900"><?= htmlspecialchars($transactionRef) ?></span>
@@ -222,18 +222,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="flex justify-between py-1 border-b border-slate-200/60">
                             <span class="text-slate-500">Escrow Status:</span>
-                            <span class="text-emerald-700 font-semibold flex items-center space-x-1">
-                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span class="text-emerald-700 font-bold flex items-center space-x-1.5">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
                                 <span>Secured in Escrow</span>
                             </span>
                         </div>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-                        <a href="<?= url('investor/portfolio.php') ?>" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm transition">
+                        <a href="<?= url('investor/portfolio.php') ?>" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
                             View in Portfolio →
                         </a>
-                        <a href="<?= url('investor/discover.php') ?>" class="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition">
+                        <a href="<?= url('investor/discover.php') ?>" class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm transition">
                             Explore More Deals
                         </a>
                     </div>
@@ -242,19 +242,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php else: ?>
 
                 <!-- INVESTMENT ENTRY FORM -->
-                <div class="card-clean rounded-2xl p-6">
+                <div class="card-clean rounded-2xl p-5 sm:p-6">
                     
-                    <div class="flex items-center space-x-3.5 mb-5 pb-5 border-b border-slate-100">
-                        <img src="<?= $round['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>" class="w-12 h-12 rounded-xl object-cover border border-slate-200">
+                    <div class="flex items-center space-x-4 mb-5 pb-5 border-b border-slate-100">
+                        <img src="<?= $round['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>" class="w-14 h-14 rounded-2xl object-cover border border-slate-200 flex-shrink-0">
                         <div>
-                            <h1 class="text-base font-bold text-slate-900"><?= htmlspecialchars($round['company_name']) ?></h1>
-                            <div class="text-[11px] text-slate-500"><?= htmlspecialchars($round['round_name']) ?> • Pre-money Valuation: <strong class="text-slate-800"><?= format_inr($round['valuation']) ?></strong></div>
+                            <h1 class="text-base sm:text-lg font-bold text-slate-900"><?= htmlspecialchars($round['company_name']) ?></h1>
+                            <div class="text-xs sm:text-sm text-slate-500 mt-0.5"><?= htmlspecialchars($round['round_name']) ?> • Pre-money Valuation: <strong class="text-slate-900 font-bold"><?= format_inr($round['valuation']) ?></strong></div>
                         </div>
                     </div>
 
                     <?php if (!empty($error)): ?>
-                        <div class="mb-5 p-3 rounded-lg text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
-                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                        <div class="mb-5 p-3.5 rounded-xl text-xs sm:text-sm font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                             <span><?= htmlspecialchars($error) ?></span>
                         </div>
                     <?php endif; ?>
@@ -262,56 +262,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <form action="<?= url('investor/invest.php?round=' . $roundHash) ?>" method="POST" class="space-y-5">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
 
-                        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-xs grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs sm:text-sm grid grid-cols-2 md:grid-cols-4 gap-3.5">
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Min. Ticket</span>
-                                <span class="font-bold text-slate-900 text-xs"><?= format_inr($round['min_investment']) ?></span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Min. Ticket</span>
+                                <span class="font-bold text-slate-900 text-sm"><?= format_inr($round['min_investment']) ?></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Target</span>
-                                <span class="font-bold text-slate-900 text-xs"><?= format_inr($round['target_amount']) ?></span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Target</span>
+                                <span class="font-bold text-slate-900 text-sm"><?= format_inr($round['target_amount']) ?></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Raised</span>
-                                <span class="font-bold text-emerald-600 text-xs"><?= format_inr($round['amount_raised']) ?></span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Raised</span>
+                                <span class="font-bold text-emerald-600 text-sm"><?= format_inr($round['amount_raised']) ?></span>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Remaining</span>
-                                <span class="font-bold text-indigo-600 text-xs"><?= format_inr(max(0, $round['target_amount'] - $round['amount_raised'])) ?></span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Remaining</span>
+                                <span class="font-bold text-indigo-600 text-sm"><?= format_inr(max(0, $round['target_amount'] - $round['amount_raised'])) ?></span>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                                 Investment Commitment Amount (₹) *
                             </label>
                             <div class="relative">
-                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">₹</span>
+                                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-base">₹</span>
                                 <input type="number" id="invest-amount" name="amount" required 
                                        min="<?= $round['min_investment'] ?>" 
                                        max="<?= max(0, $round['target_amount'] - $round['amount_raised']) ?>" 
                                        step="25000" 
                                        value="<?= $round['min_investment'] ?>"
                                        oninput="calcEstimate()"
-                                       class="w-full pl-8 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-lg text-sm font-bold text-slate-900 outline-none transition">
+                                       class="w-full pl-9 pr-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 rounded-xl text-base font-bold text-slate-900 outline-none transition">
                             </div>
-                            <div class="text-[11px] text-slate-500 mt-1.5 flex items-center justify-between">
+                            <div class="text-xs sm:text-sm text-slate-600 mt-2 flex items-center justify-between">
                                 <span>Estimated Equity Allocation: <strong id="equity-est" class="text-indigo-600 font-bold">0.00%</strong></span>
                                 <span class="text-slate-400">Based on <?= format_inr($round['valuation']) ?> valuation</span>
                             </div>
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 space-y-2">
-                            <label class="flex items-start space-x-2.5 cursor-pointer">
-                                <input type="checkbox" name="terms_accepted" required class="mt-0.5 w-3.5 h-3.5 rounded text-indigo-600 border-slate-300">
-                                <span class="text-[11px] text-slate-500 leading-relaxed">
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <input type="checkbox" name="terms_accepted" required class="mt-1 w-4 h-4 rounded text-indigo-600 border-slate-300">
+                                <span class="text-xs text-slate-600 leading-relaxed font-medium">
                                     I confirm that I am an accredited investor, have completed my KYC, and understand startup investments carry substantial illiquidity and capital risk. Funds will be deposited into the regulatory escrow account pending final instrument allotment.
                                 </span>
                             </label>
                         </div>
 
-                        <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg shadow-sm transition flex items-center justify-center space-x-1.5">
-                            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center justify-center space-x-2">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
                             <span>Confirm & Authorize Escrow Commitment</span>
                         </button>
                     </form>

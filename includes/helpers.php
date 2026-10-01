@@ -40,6 +40,11 @@ function url(string $path = ''): string {
     return BASE_URL . '/' . $cleanPath . $query . $fragment;
 }
 
+// 1.1 Asset URL Generator
+function asset(string $path = ''): string {
+    return BASE_URL . '/assets/' . ltrim($path, '/');
+}
+
 // 2. Hash ID Encoding & Decoding (Reversible, URL-safe, secure obfuscation)
 function hash_id_encode(int|string|null $id): string {
     if (empty($id)) return '';

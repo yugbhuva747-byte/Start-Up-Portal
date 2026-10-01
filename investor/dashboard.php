@@ -94,77 +94,77 @@ $flash = get_flash();
             <?php include __DIR__ . '/../includes/announcement_banner.php'; ?>
 
             <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-1.5">
                         <span>Welcome, <?= htmlspecialchars($user['name']) ?></span>
                     </h1>
-                    <p class="text-xs text-slate-500 mt-0.5 font-medium">Accredited Angel & Syndicate Portfolio Workspace</p>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">Accredited Angel & Syndicate Portfolio Workspace</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="<?= url('investor/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-slate-400"></i>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <a href="<?= url('investor/view.php') ?>" class="flex-1 sm:flex-initial justify-center px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-2xs transition flex items-center space-x-1.5">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
                         <span>View Profile</span>
                     </a>
-                    <a href="<?= url('investor/discover.php') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
-                        <i data-lucide="compass" class="w-3.5 h-3.5"></i>
+                    <a href="<?= url('investor/discover.php') ?>" class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-sm transition flex items-center space-x-1.5">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
                         <span>Explore Startups</span>
                     </a>
                 </div>
             </div>
 
             <!-- Key Portfolio Metrics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Total Invested</span>
-                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="wallet" class="w-3.5 h-3.5"></i></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4" id="stats-grid">
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Total Invested</span>
+                        <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="wallet" class="w-4 h-4"></i></div>
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= format_inr($totalInvested) ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Across <?= count($portfolioInvestments) ?> Startups</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= format_inr($totalInvested) ?></div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Across <?= count($portfolioInvestments) ?> Startups</div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Active Deals</span>
-                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="zap" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Active Deals</span>
+                        <div class="p-1.5 rounded-lg bg-indigo-50 text-indigo-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $activeDealsCount ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Live Rounds Open</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $activeDealsCount ?></div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Live Rounds Open</div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Watchlist</span>
-                        <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="bookmark" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Watchlist</span>
+                        <div class="p-1.5 rounded-lg bg-purple-50 text-purple-600"><i data-lucide="bookmark" class="w-4 h-4"></i></div>
                     </div>
-                    <div class="text-xl font-black text-slate-900"><?= $watchlistCount ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-0.5">Pinned Deal Rooms</div>
+                    <div class="text-xl sm:text-2xl font-extrabold text-slate-900"><?= $watchlistCount ?></div>
+                    <div class="text-xs text-slate-500 mt-0.5 font-medium">Pinned Deal Rooms</div>
                 </div>
 
-                <div class="card-clean rounded-xl p-5">
-                    <div class="flex items-center justify-between text-slate-400 mb-1.5">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-500">Accreditation</span>
-                        <div class="p-1.5 rounded-lg bg-teal-50 text-teal-600"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i></div>
+                <div class="card-clean rounded-2xl p-4 sm:p-5">
+                    <div class="flex items-center justify-between text-slate-500 mb-1.5">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Accreditation</span>
+                        <div class="p-1.5 rounded-lg bg-teal-50 text-teal-600"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
                     </div>
                     <div class="mt-1"><?= render_status_badge($user['is_verified'] ? 'VERIFIED' : 'PENDING') ?></div>
-                    <div class="text-[10.5px] text-slate-500 mt-1.5">SEBI Compliant Angel</div>
+                    <div class="text-xs text-slate-500 mt-1 font-medium">SEBI Compliant Angel</div>
                 </div>
             </div>
 
             <!-- Recommended Deal Flow Spotlight -->
             <div>
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <div class="flex items-center justify-between mb-3.5">
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
                         <span>Live Startups Raising Now</span>
                     </h2>
-                    <a href="<?= url('investor/discover.php') ?>" class="text-xs text-emerald-600 hover:text-emerald-700 font-semibold">View All →</a>
+                    <a href="<?= url('investor/discover.php') ?>" class="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 font-bold">View All →</a>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
                     <?php if (empty($recommendedStartups)): ?>
-                        <div class="col-span-3 card-clean rounded-xl p-8 text-center text-slate-400 text-xs">
+                        <div class="col-span-3 card-clean rounded-2xl p-8 text-center text-slate-400 text-sm font-medium">
                             No live funding rounds currently active.
                         </div>
                     <?php else: ?>
@@ -172,31 +172,31 @@ $flash = get_flash();
                             $pct = ($startup['target_amount'] ?? 0) > 0 ? round(($startup['amount_raised'] / $startup['target_amount']) * 100) : 0;
                             $hashId = hash_id_encode($startup['id']);
                         ?>
-                            <div class="card-clean rounded-xl p-5 flex flex-col justify-between">
+                            <div class="card-clean rounded-2xl p-5 flex flex-col justify-between">
                                 <div>
                                     <div class="flex items-start justify-between mb-3">
                                         <img src="<?= $startup['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-10 h-10 rounded-xl object-cover border border-slate-200">
-                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             <?= htmlspecialchars($startup['industry']) ?>
                                         </span>
                                     </div>
-                                    <h3 class="text-sm font-bold text-slate-900 mb-1"><?= htmlspecialchars($startup['name']) ?></h3>
-                                    <p class="text-xs text-slate-500 line-clamp-2 mb-3"><?= htmlspecialchars($startup['pitch']) ?></p>
+                                    <h3 class="text-base font-bold text-slate-900 mb-1"><?= htmlspecialchars($startup['name']) ?></h3>
+                                    <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-3 font-medium"><?= htmlspecialchars($startup['pitch']) ?></p>
                                 </div>
 
                                 <div class="pt-3 border-t border-slate-100">
-                                    <div class="flex justify-between text-[11px] mb-1 font-semibold">
-                                        <span class="text-slate-500">Target: <?= format_inr($startup['target_amount']) ?></span>
+                                    <div class="flex justify-between text-xs mb-1 font-semibold">
+                                        <span class="text-slate-600 font-medium">Target: <strong class="text-slate-900"><?= format_inr($startup['target_amount']) ?></strong></span>
                                         <span class="text-emerald-700 font-bold"><?= $pct ?>%</span>
                                     </div>
-                                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-3 border border-slate-200">
+                                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3 border border-slate-200">
                                         <div class="h-full bg-emerald-600 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
                                     </div>
-                                    <div class="flex items-center justify-between text-[10.5px] text-slate-500 mb-3">
-                                        <span>Min: <strong class="text-slate-800"><?= format_inr($startup['min_investment']) ?></strong></span>
-                                        <span>Val: <strong class="text-slate-800"><?= format_inr($startup['valuation']) ?></strong></span>
+                                    <div class="flex items-center justify-between text-xs text-slate-600 mb-3">
+                                        <span>Min: <strong class="text-slate-900 font-bold"><?= format_inr($startup['min_investment']) ?></strong></span>
+                                        <span>Val: <strong class="text-slate-900 font-bold"><?= format_inr($startup['valuation']) ?></strong></span>
                                     </div>
-                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-center text-xs font-semibold text-slate-800 block transition">
+                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-center text-xs sm:text-sm font-bold text-slate-800 block transition">
                                         View Data Room →
                                     </a>
                                 </div>
@@ -207,44 +207,44 @@ $flash = get_flash();
             </div>
 
             <!-- Active Portfolio Table -->
-            <div class="card-clean rounded-2xl p-5">
+            <div class="card-clean rounded-2xl p-5 sm:p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                    <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
                         <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-600"></i>
                         <span>Recent Portfolio Allocations</span>
                     </h2>
-                    <a href="<?= url('investor/portfolio.php') ?>" class="text-xs text-emerald-600 hover:text-emerald-700 font-semibold">Full Portfolio →</a>
+                    <a href="<?= url('investor/portfolio.php') ?>" class="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 font-bold">Full Portfolio →</a>
                 </div>
 
                 <?php if (empty($portfolioInvestments)): ?>
-                    <div class="py-8 text-center text-slate-400 text-xs">
+                    <div class="py-8 text-center text-slate-400 text-sm font-medium">
                         No portfolio investments made yet. Start by discovering verified startups and committing capital.
                     </div>
                 <?php else: ?>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs">
+                        <table class="w-full text-left text-xs sm:text-sm">
                             <thead>
-                                <tr class="border-b border-slate-100 text-slate-400 uppercase tracking-wider text-[10px]">
-                                    <th class="pb-2.5 font-semibold">Startup</th>
-                                    <th class="pb-2.5 font-semibold">Industry</th>
-                                    <th class="pb-2.5 font-semibold">Round</th>
-                                    <th class="pb-2.5 font-semibold">Amount</th>
-                                    <th class="pb-2.5 font-semibold">Equity %</th>
-                                    <th class="pb-2.5 font-semibold">Certificate</th>
+                                <tr class="border-b border-slate-200 text-slate-500 uppercase tracking-wider text-xs font-bold">
+                                    <th class="pb-3">Startup</th>
+                                    <th class="pb-3">Industry</th>
+                                    <th class="pb-3">Round</th>
+                                    <th class="pb-3">Amount</th>
+                                    <th class="pb-3">Equity %</th>
+                                    <th class="pb-3">Certificate</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <?php foreach ($portfolioInvestments as $inv): ?>
                                     <tr>
-                                        <td class="py-3 flex items-center space-x-2">
-                                            <img src="<?= $inv['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-6 h-6 rounded-lg object-cover border border-slate-200">
-                                            <span class="font-bold text-slate-800"><?= htmlspecialchars($inv['company_name']) ?></span>
+                                        <td class="py-3.5 flex items-center space-x-2.5">
+                                            <img src="<?= $inv['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-7 h-7 rounded-lg object-cover border border-slate-200 flex-shrink-0">
+                                            <span class="font-bold text-slate-900"><?= htmlspecialchars($inv['company_name']) ?></span>
                                         </td>
-                                        <td class="py-3 text-slate-500 text-[11px]"><?= htmlspecialchars($inv['industry']) ?></td>
-                                        <td class="py-3 text-slate-600"><?= htmlspecialchars($inv['round_name']) ?></td>
-                                        <td class="py-3 font-bold text-slate-900"><?= format_inr($inv['amount_invested']) ?></td>
-                                        <td class="py-3 text-slate-800 font-bold"><?= $inv['equity_allotted_percent'] ?>%</td>
-                                        <td class="py-3 font-mono text-[10.5px] text-slate-500"><?= htmlspecialchars($inv['certificate_number'] ?? 'PENDING') ?></td>
+                                        <td class="py-3.5 text-slate-600 text-xs font-medium"><?= htmlspecialchars($inv['industry']) ?></td>
+                                        <td class="py-3.5 text-slate-700 font-medium"><?= htmlspecialchars($inv['round_name']) ?></td>
+                                        <td class="py-3.5 font-bold text-slate-900"><?= format_inr($inv['amount_invested']) ?></td>
+                                        <td class="py-3.5 text-slate-900 font-bold"><?= $inv['equity_allotted_percent'] ?>%</td>
+                                        <td class="py-3.5 font-mono text-xs text-slate-600 font-medium"><?= htmlspecialchars($inv['certificate_number'] ?? 'PENDING') ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

@@ -76,23 +76,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Saved Deal Watchlist</h1>
-                    <p class="text-xs text-slate-500 mt-0.5">Keep track of startups preparing to open funding or undergoing clinical/product milestones.</p>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Saved Deal Watchlist</h1>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Keep track of startups preparing to open funding or undergoing clinical/product milestones.</p>
                 </div>
-                <a href="<?= url('investor/discover.php') ?>" class="px-3.5 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center space-x-1.5">
-                    <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                <a href="<?= url('investor/discover.php') ?>" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold transition flex items-center space-x-1.5">
+                    <i data-lucide="search" class="w-4 h-4"></i>
                     <span>Discover More Startups</span>
                 </a>
             </div>
 
             <?php if (empty($watchlist)): ?>
-                <div class="card-clean rounded-2xl p-10 text-center text-slate-400 text-xs">
-                    <i data-lucide="bookmark" class="w-10 h-10 text-slate-300 mx-auto mb-2.5"></i>
-                    <div class="text-xs font-bold text-slate-800 mb-1">Your watchlist is currently empty</div>
-                    <div class="text-[11px] text-slate-500">Click the bookmark icon on any startup card in Discovery to pin it here.</div>
+                <div class="card-clean rounded-2xl p-8 sm:p-12 text-center text-slate-500">
+                    <i data-lucide="bookmark" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+                    <div class="text-base font-bold text-slate-800 mb-1">Your watchlist is currently empty</div>
+                    <div class="text-xs sm:text-sm text-slate-500">Click the bookmark icon on any startup card in Discovery to pin it here.</div>
                 </div>
             <?php else: ?>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                     <?php foreach ($watchlist as $s): 
                         $pct = ($s['target_amount'] ?? 0) > 0 ? round(($s['amount_raised'] / $s['target_amount']) * 100) : 0;
                         $hashId = hash_id_encode($s['id']);
@@ -104,42 +104,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="action" value="remove_watchlist">
                                 <input type="hidden" name="company_id" value="<?= $hashId ?>">
-                                <button type="submit" title="Remove" class="p-1.5 rounded-lg bg-slate-50 hover:bg-rose-50 text-amber-500 hover:text-rose-600 border border-slate-200 transition">
-                                    <i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-500"></i>
+                                <button type="submit" title="Remove" class="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 text-amber-500 hover:text-rose-600 border border-slate-200 transition">
+                                    <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500"></i>
                                 </button>
                             </form>
 
                             <div>
-                                <div class="flex items-start space-x-3 mb-3.5 pr-8">
-                                    <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>" class="w-10 h-10 rounded-xl object-cover border border-slate-200 flex-shrink-0">
+                                <div class="flex items-start space-x-3 mb-3.5 pr-10">
+                                    <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>" class="w-11 h-11 rounded-xl object-cover border border-slate-200 flex-shrink-0">
                                     <div class="min-w-0">
-                                        <h3 class="text-xs font-bold text-slate-900 truncate"><?= htmlspecialchars($s['name']) ?></h3>
-                                        <div class="flex items-center space-x-1.5 mt-0.5">
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        <h3 class="text-base font-bold text-slate-900 truncate"><?= htmlspecialchars($s['name']) ?></h3>
+                                        <div class="flex items-center space-x-1.5 mt-1">
+                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
                                                 <?= htmlspecialchars($s['industry']) ?>
                                             </span>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600 border border-slate-200">
+                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
                                                 <?= htmlspecialchars($s['stage']) ?>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <p class="text-xs text-slate-600 line-clamp-2 mb-3 leading-relaxed"><?= htmlspecialchars($s['pitch']) ?></p>
+                                <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-3.5 leading-relaxed"><?= htmlspecialchars($s['pitch']) ?></p>
                             </div>
 
-                            <div class="pt-3 border-t border-slate-100">
+                            <div class="pt-3.5 border-t border-slate-100">
                                 <?php if (!empty($s['target_amount'])): ?>
-                                    <div class="flex justify-between text-[11px] mb-1 font-semibold">
-                                        <span class="text-slate-500">Raised: <?= format_inr($s['amount_raised']) ?></span>
+                                    <div class="flex justify-between text-xs mb-1.5 font-semibold">
+                                        <span class="text-slate-600">Raised: <?= format_inr($s['amount_raised']) ?></span>
                                         <span class="text-emerald-700 font-bold"><?= $pct ?>%</span>
                                     </div>
-                                    <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-3 border border-slate-200">
+                                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3.5 border border-slate-200">
                                         <div class="h-full bg-emerald-500 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
                                     </div>
                                 <?php endif; ?>
 
-                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2 rounded-lg bg-indigo-50 hover:bg-indigo-600 text-center text-xs font-semibold text-indigo-700 hover:text-white block transition duration-150">
+                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-center text-xs sm:text-sm font-bold text-indigo-700 hover:text-white block transition duration-150">
                                     Open Diligence Deal Room →
                                 </a>
                             </div>

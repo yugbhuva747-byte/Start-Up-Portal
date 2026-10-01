@@ -125,23 +125,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Discover Early-Stage Deal Flow</h1>
-                    <p class="text-xs text-slate-500 mt-0.5 font-medium">Search MCA & DigiLocker verified startups raising active capital.</p>
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Discover Early-Stage Deal Flow</h1>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Search MCA & DigiLocker verified startups raising active capital.</p>
                 </div>
             </div>
 
             <!-- Filter Bar -->
-            <div class="card-clean rounded-2xl p-4">
-                <form action="<?= url('investor/discover.php') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-2.5 text-xs">
+            <div class="card-clean rounded-2xl p-4 sm:p-5">
+                <form action="<?= url('investor/discover.php') ?>" method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs sm:text-sm">
                     
                     <div class="md:col-span-2 relative">
-                        <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                         <input type="text" name="q" value="<?= htmlspecialchars($search) ?>" placeholder="Search startups, keywords, founders..."
-                               class="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 outline-none focus:bg-white focus:border-emerald-600 transition">
+                               class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs sm:text-sm outline-none focus:bg-white focus:border-emerald-600 transition">
                     </div>
 
                     <div>
-                        <select name="industry" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 outline-none focus:bg-white focus:border-emerald-600 transition">
+                        <select name="industry" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-xs sm:text-sm outline-none focus:bg-white focus:border-emerald-600 transition">
                             <option value="">All Sectors</option>
                             <?php foreach (['AI/SaaS', 'FinTech', 'HealthTech', 'CleanTech', 'DeepTech', 'E-Commerce', 'EdTech'] as $ind): ?>
                                 <option value="<?= $ind ?>" <?= $industry === $ind ? 'selected' : '' ?>><?= $ind ?></option>
@@ -150,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     </div>
 
                     <div>
-                        <select name="stage" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 outline-none focus:bg-white focus:border-emerald-600 transition">
+                        <select name="stage" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-xs sm:text-sm outline-none focus:bg-white focus:border-emerald-600 transition">
                             <option value="">All Stages</option>
                             <?php foreach (['Idea / MVP', 'Pre-Seed', 'Seed', 'Pre-Series A', 'Series A'] as $stg): ?>
                                 <option value="<?= $stg ?>" <?= $stage === $stg ? 'selected' : '' ?>><?= $stg ?></option>
@@ -158,14 +158,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </select>
                     </div>
 
-                    <div class="flex items-center space-x-1.5">
-                        <button type="submit" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm transition flex items-center justify-center space-x-1">
-                            <i data-lucide="filter" class="w-3 h-3"></i>
+                    <div class="flex items-center space-x-2">
+                        <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition flex items-center justify-center space-x-1.5 text-xs sm:text-sm">
+                            <i data-lucide="filter" class="w-3.5 h-3.5"></i>
                             <span>Filter</span>
                         </button>
                         <?php if (!empty($search) || !empty($industry) || !empty($stage)): ?>
-                            <a href="<?= url('investor/discover.php') ?>" title="Reset" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-600">
-                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                            <a href="<?= url('investor/discover.php') ?>" title="Reset" class="p-2.5 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600">
+                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                             </a>
                         <?php endif; ?>
                     </div>
@@ -174,15 +174,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             <!-- Startups Grid -->
             <div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs text-slate-500 font-semibold">Showing <strong class="text-slate-800"><?= count($startups) ?></strong> verified opportunities</span>
+                <div class="flex items-center justify-between mb-3.5">
+                    <span class="text-xs sm:text-sm text-slate-600 font-semibold">Showing <strong class="text-slate-900"><?= count($startups) ?></strong> verified opportunities</span>
                 </div>
 
                 <?php if (empty($startups)): ?>
-                    <div class="card-clean rounded-2xl p-8 text-center text-slate-400 text-xs">
-                        <i data-lucide="search-x" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
-                        <div class="text-xs font-bold text-slate-700 mb-0.5">No startups match your filters</div>
-                        <div class="text-[11px]">Try clearing some search filters.</div>
+                    <div class="card-clean rounded-2xl p-8 sm:p-12 text-center text-slate-500">
+                        <i data-lucide="search-x" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
+                        <div class="text-sm sm:text-base font-bold text-slate-800 mb-1">No startups match your filters</div>
+                        <div class="text-xs sm:text-sm text-slate-500">Try adjusting your search criteria or clearing filters.</div>
                     </div>
                 <?php else: ?>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="deal-cards">
@@ -191,57 +191,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             $hashId = hash_id_encode($s['id']);
                             $isSaved = in_array($s['id'], $watchlistIds);
                         ?>
-                            <div class="card-clean rounded-2xl p-5 flex flex-col justify-between relative group">
+                            <div class="card-clean rounded-2xl p-5 flex flex-col justify-between relative group hover:border-slate-300 transition">
                                 
                                 <form action="<?= url('investor/discover.php') ?>" method="POST" class="absolute top-4 right-4 z-10">
                                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                     <input type="hidden" name="action" value="toggle_watchlist">
                                     <input type="hidden" name="company_id" value="<?= $hashId ?>">
-                                    <button type="submit" class="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition <?= $isSaved ? 'text-amber-500' : 'text-slate-400 hover:text-slate-700' ?>">
-                                        <i data-lucide="bookmark" class="w-3.5 h-3.5 <?= $isSaved ? 'fill-amber-500' : '' ?>"></i>
+                                    <button type="submit" class="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 transition <?= $isSaved ? 'text-amber-500' : 'text-slate-400 hover:text-slate-700' ?>" title="Bookmark deal">
+                                        <i data-lucide="bookmark" class="w-4 h-4 <?= $isSaved ? 'fill-amber-500' : '' ?>"></i>
                                     </button>
                                 </form>
 
                                 <div>
-                                    <div class="flex items-start space-x-2.5 mb-3 pr-8">
-                                        <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-10 h-10 rounded-xl object-cover border border-slate-200 flex-shrink-0">
+                                    <div class="flex items-start space-x-3 mb-3 pr-10">
+                                        <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-11 h-11 rounded-xl object-cover border border-slate-200 flex-shrink-0">
                                         <div class="min-w-0">
-                                            <h3 class="text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($s['name']) ?></h3>
-                                            <div class="flex items-center space-x-1 mt-0.5">
-                                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                                            <h3 class="text-base font-bold text-slate-900 truncate"><?= htmlspecialchars($s['name']) ?></h3>
+                                            <div class="flex items-center space-x-1.5 mt-1">
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                                                     <?= htmlspecialchars($s['industry']) ?>
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-full text-[9.5px] font-semibold bg-slate-100 text-slate-600">
+                                                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
                                                     <?= htmlspecialchars($s['stage']) ?>
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <p class="text-xs text-slate-500 line-clamp-2 mb-3 leading-relaxed"><?= htmlspecialchars($s['pitch']) ?></p>
+                                    <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-3 leading-relaxed"><?= htmlspecialchars($s['pitch']) ?></p>
 
-                                    <div class="text-[10.5px] text-slate-400 flex items-center space-x-1.5 mb-3">
-                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
+                                    <div class="text-xs text-slate-500 flex items-center space-x-1.5 mb-3.5">
+                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-400"></i>
                                         <span><?= htmlspecialchars($s['city']) ?>, <?= htmlspecialchars($s['country']) ?></span>
                                     </div>
                                 </div>
 
-                                <div class="pt-3 border-t border-slate-100">
+                                <div class="pt-3.5 border-t border-slate-100">
                                     <?php if (!empty($s['target_amount'])): ?>
-                                        <div class="flex justify-between text-[11px] mb-1 font-semibold">
-                                            <span class="text-slate-500">Raised: <?= format_inr($s['amount_raised']) ?></span>
+                                        <div class="flex justify-between text-xs mb-1.5 font-semibold">
+                                            <span class="text-slate-600">Raised: <?= format_inr($s['amount_raised']) ?></span>
                                             <span class="text-emerald-700 font-bold"><?= $pct ?>%</span>
                                         </div>
-                                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden mb-3 border border-slate-200">
+                                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3 border border-slate-200">
                                             <div class="h-full bg-emerald-600 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
                                         </div>
-                                        <div class="flex items-center justify-between text-[10.5px] text-slate-500 mb-3">
-                                            <span>Min: <strong class="text-slate-800"><?= format_inr($s['min_investment']) ?></strong></span>
-                                            <span>Val: <strong class="text-slate-800"><?= format_inr($s['valuation']) ?></strong></span>
+                                        <div class="flex items-center justify-between text-xs text-slate-600 mb-3.5">
+                                            <span>Min: <strong class="text-slate-900 font-bold"><?= format_inr($s['min_investment']) ?></strong></span>
+                                            <span>Val: <strong class="text-slate-900 font-bold"><?= format_inr($s['valuation']) ?></strong></span>
                                         </div>
                                     <?php endif; ?>
 
-                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2 rounded-lg bg-slate-50 hover:bg-emerald-600 hover:text-white border border-slate-200 text-center text-xs font-semibold text-slate-800 block transition">
+                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2.5 rounded-xl bg-slate-50 hover:bg-emerald-600 hover:text-white border border-slate-200 text-center text-xs sm:text-sm font-bold text-slate-800 block transition">
                                         Review Deal Terms →
                                     </a>
                                 </div>

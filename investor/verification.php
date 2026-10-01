@@ -181,39 +181,39 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight flex items-center space-x-2.5">
+                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center space-x-2.5">
                         <i data-lucide="shield-check" class="w-6 h-6 text-emerald-600"></i>
                         <span>Investor KYC & Accreditation Hub</span>
                     </h1>
-                    <p class="text-xs text-slate-500 mt-0.5">SEBI Compliant Accredited Investor status & DigiLocker national identity gateway.</p>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1 font-medium">SEBI Compliant Accredited Investor status & DigiLocker national identity gateway.</p>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="px-3 py-1 rounded-full text-xs font-bold border <?= $user['is_verified'] ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200' ?>">
+                    <span class="px-3.5 py-1.5 rounded-full text-xs font-bold border <?= $user['is_verified'] ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200' ?>">
                         <?= $user['is_verified'] ? 'ACCREDITED & VERIFIED' : 'KYC UNDER REVIEW' ?>
                     </span>
                 </div>
             </div>
 
             <!-- Primary DigiLocker Status Card -->
-            <div class="card-clean rounded-2xl p-6 relative overflow-hidden">
+            <div class="card-clean rounded-2xl p-5 sm:p-6 relative overflow-hidden">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                     <div class="space-y-2 max-w-xl">
                         <div class="flex items-center space-x-2">
-                            <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-bold uppercase">Official Gateway</span>
-                            <h2 class="text-base font-bold text-slate-900">DigiLocker National Identity & Tax PAN</h2>
+                            <span class="px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-bold uppercase tracking-wider">Official Gateway</span>
+                            <h2 class="text-base sm:text-lg font-bold text-slate-900">DigiLocker National Identity & Tax PAN</h2>
                         </div>
-                        <p class="text-xs text-slate-600 leading-relaxed">
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
                             Under SEBI regulations for angel investment syndicates, accredited investors must maintain verified identity and PAN records. Authenticate via DigiLocker to instantly unlock verified badge and direct escrow investment rights.
                         </p>
 
                         <?php if ($user['is_verified'] && $verificationRequest): ?>
-                            <div class="pt-2 flex flex-wrap items-center gap-4 text-xs">
+                            <div class="pt-2 flex flex-wrap items-center gap-4 text-xs sm:text-sm">
                                 <div class="flex items-center space-x-1.5 text-emerald-700 font-semibold">
                                     <i data-lucide="badge-check" class="w-4 h-4 text-emerald-600"></i>
                                     <span>Ref: <?= htmlspecialchars($verificationRequest['provider_ref_id'] ?? 'DL-INV-98214') ?></span>
                                 </div>
-                                <div class="text-slate-400">•</div>
-                                <div class="text-slate-500">
+                                <div class="text-slate-300">•</div>
+                                <div class="text-slate-500 font-medium">
                                     Verified on <?= date('M d, Y', strtotime($verificationRequest['verified_at'] ?? 'now')) ?>
                                 </div>
                             </div>
@@ -225,13 +225,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             <form action="<?= url('investor/verification.php') ?>" method="POST">
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="form_action" value="simulate_digilocker">
-                                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition flex items-center space-x-2">
+                                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-sm transition flex items-center space-x-2">
                                     <i data-lucide="fingerprint" class="w-4 h-4"></i>
                                     <span>Authenticate with DigiLocker</span>
                                 </button>
                             </form>
                         <?php else: ?>
-                            <div class="px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold flex items-center space-x-2">
+                            <div class="px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs sm:text-sm font-bold flex items-center space-x-2">
                                 <i data-lucide="check" class="w-4 h-4"></i>
                                 <span>DigiLocker Authenticated</span>
                             </div>
@@ -241,26 +241,26 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             </div>
 
             <!-- KYC Documents Upload Card -->
-            <div class="card-clean rounded-2xl p-6">
+            <div class="card-clean rounded-2xl p-5 sm:p-6">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
                     <div>
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                        <h3 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
                             <i data-lucide="file-text" class="w-4 h-4 text-emerald-600"></i>
                             <span>Accreditation Documents Vault</span>
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Upload supporting compliance documents (PAN, CA Net Worth Certificate, Bank details).</p>
+                        <p class="text-xs sm:text-sm text-slate-500 mt-1">Upload supporting compliance documents (PAN, CA Net Worth Certificate, Bank details).</p>
                     </div>
                 </div>
 
                 <!-- Upload Form -->
-                <form action="<?= url('investor/verification.php') ?>" method="POST" enctype="multipart/form-data" class="mt-4 p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-3">
+                <form action="<?= url('investor/verification.php') ?>" method="POST" enctype="multipart/form-data" class="mt-4 p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm space-y-3.5">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="upload_kyc_doc">
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                         <div>
-                            <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Document Type</label>
-                            <select name="doc_type" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 outline-none">
+                            <label class="block font-bold text-slate-600 text-xs mb-1.5 uppercase tracking-wider">Document Type</label>
+                            <select name="doc_type" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-800 outline-none focus:border-emerald-600 transition">
                                 <option value="PAN Card Copy">PAN Card Copy</option>
                                 <option value="CA Net Worth Certificate">CA Net Worth Certificate</option>
                                 <option value="Bank Account Verification">Bank Account Verification</option>
@@ -268,10 +268,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             </select>
                         </div>
                         <div class="sm:col-span-2">
-                            <label class="block font-bold text-slate-600 text-[11px] mb-1 uppercase tracking-wider">Choose File (PDF, JPG, PNG - Max 10MB)</label>
+                            <label class="block font-bold text-slate-600 text-xs mb-1.5 uppercase tracking-wider">Choose File (PDF, JPG, PNG - Max 10MB)</label>
                             <div class="flex items-center gap-2">
-                                <input type="file" name="doc_file" required accept=".pdf,.jpg,.jpeg,.png" class="flex-1 px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700">
-                                <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg text-xs transition">
+                                <input type="file" name="doc_file" required accept=".pdf,.jpg,.jpeg,.png" class="flex-1 px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm text-slate-700">
+                                <button type="submit" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs sm:text-sm transition">
                                     Upload
                                 </button>
                             </div>
@@ -282,30 +282,30 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <!-- Document List -->
                 <div class="mt-4 divide-y divide-slate-100">
                     <?php if (empty($verificationDocs)): ?>
-                        <div class="py-6 text-center text-xs text-slate-400">
+                        <div class="py-6 text-center text-xs sm:text-sm text-slate-400">
                             No manual documents uploaded yet. DigiLocker authenticated credentials are active.
                         </div>
                     <?php else: ?>
                         <?php foreach ($verificationDocs as $doc): ?>
-                            <div class="py-3 flex items-center justify-between text-xs">
-                                <div class="flex items-center space-x-2.5">
-                                    <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
+                            <div class="py-3.5 flex items-center justify-between text-xs sm:text-sm">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 flex-shrink-0">
                                         <i data-lucide="file" class="w-4 h-4"></i>
                                     </div>
                                     <div>
-                                        <div class="font-bold text-slate-800"><?= htmlspecialchars($doc['document_type']) ?></div>
-                                        <div class="text-[10px] text-slate-400"><?= $doc['file_size'] ?> • Uploaded <?= date('M d, Y', strtotime($doc['created_at'])) ?></div>
+                                        <div class="font-bold text-slate-900"><?= htmlspecialchars($doc['document_type']) ?></div>
+                                        <div class="text-xs text-slate-400"><?= $doc['file_size'] ?> • Uploaded <?= date('M d, Y', strtotime($doc['created_at'])) ?></div>
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold <?= $doc['status'] === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($doc['status'] === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') ?>">
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?= $doc['status'] === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : ($doc['status'] === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200') ?>">
                                         <?= strtoupper($doc['status']) ?>
                                     </span>
-                                    <a href="<?= url($doc['file_path']) ?>" target="_blank" class="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="View Document in New Tab">
+                                    <a href="<?= url($doc['file_path']) ?>" target="_blank" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center space-x-1 transition shadow-sm" title="View Document in New Tab">
                                         <i data-lucide="eye" class="w-3.5 h-3.5"></i>
                                         <span>View</span>
                                     </a>
-                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center space-x-1 transition shadow-sm" title="Download Document File">
+                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center space-x-1 transition shadow-sm" title="Download Document File">
                                         <i data-lucide="download" class="w-3.5 h-3.5"></i>
                                         <span>Download</span>
                                     </a>
@@ -318,19 +318,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
             <!-- Compliance Timeline / Audit Log -->
             <?php if (!empty($verificationLogs)): ?>
-                <div class="card-clean rounded-2xl p-6">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
+                <div class="card-clean rounded-2xl p-5 sm:p-6">
+                    <h3 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3.5 flex items-center space-x-2">
                         <i data-lucide="history" class="w-4 h-4 text-slate-500"></i>
                         <span>Verification History & Review Audit</span>
                     </h3>
-                    <div class="space-y-2 text-xs">
+                    <div class="space-y-2.5 text-xs sm:text-sm">
                         <?php foreach ($verificationLogs as $vl): ?>
-                            <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-between">
+                            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                                 <div>
-                                    <span class="font-bold text-slate-800"><?= htmlspecialchars($vl['new_status']) ?></span>
-                                    <span class="text-slate-500 ml-2"><?= htmlspecialchars($vl['remarks'] ?? 'Status updated') ?></span>
+                                    <span class="font-bold text-slate-900"><?= htmlspecialchars($vl['new_status']) ?></span>
+                                    <span class="text-slate-600 ml-2 font-medium"><?= htmlspecialchars($vl['remarks'] ?? 'Status updated') ?></span>
                                 </div>
-                                <div class="text-[10px] text-slate-400 font-mono">
+                                <div class="text-xs text-slate-400 font-mono">
                                     <?= date('M d, Y H:i', strtotime($vl['created_at'])) ?>
                                 </div>
                             </div>
