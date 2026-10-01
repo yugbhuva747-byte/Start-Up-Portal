@@ -384,6 +384,15 @@ aside#main-sidebar.rail-collapsed #sidebar-footer { padding: 0.75rem 0 !importan
                         <span class="truncate sidebar-text-item flex-1">Users Directory</span>
                     </a>
 
+                    <!-- Subscriptions & Priority -->
+                    <a href="<?= url('admin/subscriptions.php') ?>" 
+                       title="Subscription Plans & Priority Manager"
+                       class="nav-link <?= $currentPage === 'subscriptions.php' ? 'active' : '' ?>">
+                        <i data-lucide="crown" class="w-4 h-4 flex-shrink-0 text-amber-500"></i>
+                        <span class="truncate sidebar-text-item flex-1">Subscriptions &amp; Plans</span>
+                        <span class="sidebar-badge px-1.5 py-0.5 rounded-full text-[9.5px] font-extrabold bg-purple-100 text-purple-700">VIP</span>
+                    </a>
+
                     <!-- Share Allotments -->
                     <a href="<?= url('admin/share_allotments.php') ?>" 
                        title="Share Certificates & Cap Table"

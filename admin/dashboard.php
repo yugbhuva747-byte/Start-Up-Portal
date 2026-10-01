@@ -98,6 +98,10 @@ $flash = get_flash();
                 
                 <div class="flex items-center gap-2">
                     <span class="text-xs text-slate-400 font-medium hidden sm:inline mr-1"><?= date('l, d M Y') ?></span>
+                    <a href="<?= url('admin/subscriptions.php') ?>" class="admin-btn-secondary">
+                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span>Subscriptions</span>
+                    </a>
                     <?php if ($pendingVerifications > 0): ?>
                         <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-primary">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>

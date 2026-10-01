@@ -174,6 +174,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                             <tr>
                                 <th>User Profile</th>
                                 <th>Role</th>
+                                <th>Plan &amp; Priority</th>
                                 <th>Location / Contact</th>
                                 <th>KYC Status</th>
                                 <th>State</th>
@@ -210,6 +211,36 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                                             <span class="admin-badge <?= $u['role'] === 'admin' ? 'admin-badge-neutral' : ($u['role'] === 'founder' ? 'admin-badge-primary' : 'admin-badge-success') ?>">
                                                 <?= ucfirst(htmlspecialchars($u['role'])) ?>
                                             </span>
+                                        </td>
+
+                                        <!-- Plan & Priority Level -->
+                                        <td>
+                                            <?php 
+                                                $pLevel = (int)($u['priority_level'] ?? 1);
+                                                $plan = $u['current_plan'] ?? 'free_trial';
+                                            ?>
+                                            <div class="flex items-center gap-1.5">
+                                                <?php if ($pLevel === 4): ?>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-amber-500 to-pink-500 text-white shadow-2xs">
+                                                        👑 Level 4 (VIP)
+                                                    </span>
+                                                <?php elseif ($pLevel === 3): ?>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+                                                        ⭐ Level 3 (Featured)
+                                                    </span>
+                                                <?php elseif ($pLevel === 2): ?>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                                                        ⚡ Level 2
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700">
+                                                        🌱 Level 1
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="text-[10px] text-slate-500 capitalize mt-0.5 font-medium">
+                                                <?= htmlspecialchars(str_replace('_', ' ', $plan)) ?>
+                                            </div>
                                         </td>
 
                                         <!-- Contact / City -->
@@ -249,6 +280,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                                         <!-- Actions -->
                                         <td class="text-right whitespace-nowrap">
                                             <?php if ($u['role'] !== 'admin'): ?>
+                                                <a href="<?= url('admin/subscriptions.php?q=' . urlencode($u['email'])) ?>" 
+                                                   class="admin-btn-secondary text-[11px] py-1 px-2 hover:text-purple-600 hover:border-purple-200 inline-flex items-center gap-1 mr-1" 
+                                                   title="Manage Plan & Priority Level">
+                                                    <i data-lucide="crown" class="w-3 h-3 text-amber-500"></i>
+                                                    <span>Plan</span>
+                                                </a>
                                                 <form action="<?= url('admin/users.php') ?>" method="POST" class="inline" 
                                                       onsubmit="return confirm('Change status for <?= addslashes($u['name']) ?> to <?= $u['status'] === 'active' ? 'suspended' : 'active' ?>?');">
                                                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
