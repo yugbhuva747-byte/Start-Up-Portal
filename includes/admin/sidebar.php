@@ -157,13 +157,14 @@ require_once __DIR__ . '/theme.php';
                 <?php endif; ?>
             </a>
 
-            <a href="<?= url('admin/funding_review.php') ?>" 
-               class="sidebar-link <?= $currentPage === 'funding_review.php' ? 'is-active' : '' ?>">
-                <i data-lucide="file-check-2" class="nav-icon flex-shrink-0"></i>
-                <span class="whitespace-nowrap sidebar-text-item flex-1">Funding Approvals</span>
-                <?php if ($pendingFundingCount > 0): ?>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 sidebar-text-item"><?= $pendingFundingCount ?></span>
-                <?php endif; ?>
+
+            <!-- Subscriptions & Priority -->
+            <a href="<?= url('admin/subscriptions.php') ?>" 
+               title="Subscription Plans & Priority Manager"
+               class="sidebar-link <?= $currentPage === 'subscriptions.php' ? 'is-active' : '' ?>">
+                <i data-lucide="crown" class="nav-icon flex-shrink-0 text-amber-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Subscriptions &amp; Plans</span>
+                <span class="px-1.5 py-0.5 rounded-full text-[9.5px] font-extrabold bg-purple-100 text-purple-700 sidebar-text-item">VIP</span>
             </a>
 
             <a href="<?= url('admin/users.php') ?>" 
@@ -178,7 +179,9 @@ require_once __DIR__ . '/theme.php';
                 <span class="whitespace-nowrap sidebar-text-item">Startup Companies</span>
             </a>
 
+            <!-- Share Allotments -->
             <a href="<?= url('admin/share_allotments.php') ?>" 
+               title="Share Certificates & Cap Table"
                class="sidebar-link <?= $currentPage === 'share_allotments.php' ? 'is-active' : '' ?>">
                 <i data-lucide="award" class="nav-icon flex-shrink-0"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Share Allotments</span>

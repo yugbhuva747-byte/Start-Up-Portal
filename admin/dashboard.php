@@ -67,9 +67,7 @@ $flash = get_flash();
     <title>Admin & Compliance Dashboard • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/admin/head.php'; ?>
     <style>
-        body {
-            font-family: "Vay Portal", Sans-serif;
-        }
+        /* Base font is handled by the admin theme */
 
         .card-clean {
             background: #ffffff;
@@ -95,7 +93,7 @@ $flash = get_flash();
                 <div
                     class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
 
-                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
+                    <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle' : 'alert-triangle' ?>" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
@@ -111,13 +109,25 @@ $flash = get_flash();
                     <p class="text-xs text-slate-500 mt-0.5">SEBI Regulatory Framework, DigiLocker Verification & Escrow
                         Oversight</p>
                 </div>
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="<?= url('admin/verification_queue.php') ?>"
-                        class="w-full sm:w-auto justify-center px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm shadow-blue-600/20 transition flex items-center space-x-1.5">
-                        <i data-lucide="check-square" class="w-4 h-4"></i>
-                        <span>Process KYC Queue (<?= $pendingVerifications ?>)</span>
+                
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400 font-medium hidden sm:inline mr-1"><?= date('l, d M Y') ?></span>
+                    <a href="<?= url('admin/subscriptions.php') ?>" class="admin-btn-secondary">
+                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span>Subscriptions</span>
                     </a>
-
+                    <?php if ($pendingVerifications > 0): ?>
+                        <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-primary">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                            <span>Review KYC (<?= $pendingVerifications ?>)</span>
+                        </a>
+                    <?php endif; ?>
+                    <?php if ($pendingRounds > 0): ?>
+                        <a href="<?= url('admin/funding_review.php') ?>" class="admin-btn-secondary">
+                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>Rounds (<?= $pendingRounds ?>)</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -146,7 +156,12 @@ $flash = get_flash();
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">KYC Queue</span>
                         <div class="p-1.5 rounded-lg bg-amber-50 text-amber-600"><i data-lucide="shield-alert"
                                 class="w-4 h-4"></i></div>
-
+                    </div>
+                    <div class="admin-stat-value stat-value-amber"><?= $pendingVerifications ?></div>
+                    <div class="admin-stat-sub">
+                        <span class="text-amber-600 font-semibold flex items-center gap-1">
+                            <i data-lucide="clock" class="w-3 h-3"></i> Awaiting Review
+                        </span>
                     </div>
                 </div>
 
@@ -156,7 +171,12 @@ $flash = get_flash();
                         <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">Companies</span>
                         <div class="p-1.5 rounded-lg bg-blue-50 text-blue-600"><i data-lucide="building-2"
                                 class="w-4 h-4"></i></div>
-
+                    </div>
+                    <div class="admin-stat-value stat-value-indigo"><?= $totalCompanies ?></div>
+                    <div class="admin-stat-sub">
+                        <span class="text-blue-600 font-semibold flex items-center gap-1">
+                            <i data-lucide="trending-up" class="w-3 h-3"></i> Registered Startups
+                        </span>
                     </div>
                 </div>
 
@@ -167,7 +187,12 @@ $flash = get_flash();
                             Investors</span>
                         <div class="p-1.5 rounded-lg bg-emerald-50 text-emerald-600"><i data-lucide="trending-up"
                                 class="w-4 h-4"></i></div>
-
+                    </div>
+                    <div class="admin-stat-value stat-value-emerald"><?= $totalInvestors ?></div>
+                    <div class="admin-stat-sub">
+                        <span class="text-emerald-600 font-semibold flex items-center gap-1">
+                            <i data-lucide="users" class="w-3 h-3"></i> <?= $totalFounders ?> Founders
+                        </span>
                     </div>
                 </div>
 
