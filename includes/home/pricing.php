@@ -231,10 +231,10 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" data-plan="free_trial" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <button type="button" id="tier1-cta-btn" data-plan="free_trial" onclick="window.nxOpenPlanModal('free_trial')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier1-cta">Start Free Trial</span>
             <span aria-hidden="true">&rarr;</span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -299,10 +299,10 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" data-plan="1_month" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <button type="button" id="tier2-cta-btn" data-plan="1_month" onclick="window.nxOpenPlanModal('1_month')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier2-cta">Choose 1 Month</span>
             <span aria-hidden="true">&rarr;</span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -381,10 +381,10 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" data-plan="6_months" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <button type="button" id="tier3-cta-btn" data-plan="6_months" onclick="window.nxOpenPlanModal('6_months')" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier3-cta">Get 6-Month Pass</span>
             <span aria-hidden="true">&rarr;</span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -454,10 +454,10 @@
 
         <!-- CTA Button -->
         <div>
-          <a href="#nx-portal-register" data-plan="1_year" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <button type="button" id="tier4-cta-btn" data-plan="1_year" onclick="window.nxOpenPlanModal('1_year')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
             <span id="tier4-cta">Unlock 1 Year Pro</span>
             <span aria-hidden="true">&rarr;</span>
-          </a>
+          </button>
         </div>
       </div>
 
@@ -502,10 +502,10 @@
     <!-- ========================================================
          MODAL: Plan Priority & Checkout Confirmation
          ======================================================== -->
-    <div id="nx-plan-modal" class="fixed inset-0 z-[200] hidden items-center justify-center p-4 bg-slate-950/60 backdrop-blur-md transition-all">
-      <div class="relative w-full max-w-[540px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-100 overflow-hidden transform transition-all">
+    <div id="nx-plan-modal" class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-all">
+      <div class="relative w-full max-w-[540px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-purple-100 overflow-hidden transform transition-all max-h-[90vh] overflow-y-auto">
         <!-- Floating Close Button -->
-        <button type="button" id="nx-plan-modal-close" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer">
+        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer">
           ✕
         </button>
 
@@ -518,10 +518,10 @@
           </div>
           <div>
             <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10.5px] font-extrabold uppercase tracking-wide" id="modal-plan-pill">
-              Level 3 Priority Granted
+              Level 4 Priority Granted
             </div>
             <h3 class="text-[21px] sm:text-[23px] font-extrabold text-slate-900 leading-tight mt-0.5" id="modal-plan-title">
-              6 Months Dealmaker
+              1 Year Scale Pro
             </h3>
           </div>
         </div>
@@ -530,22 +530,22 @@
         <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-5 flex items-center justify-between">
           <div>
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL BILLING</div>
-            <div class="text-[24px] font-extrabold text-slate-900 leading-none mt-1" id="modal-plan-price">₹9,999</div>
+            <div class="text-[24px] font-extrabold text-slate-900 leading-none mt-1" id="modal-plan-price">₹17,999</div>
           </div>
           <div class="text-right">
             <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold" id="modal-plan-cycle">
-              6 Months Pass
+              1 Year Pass
             </span>
-            <div class="text-[11px] text-slate-500 mt-1" id="modal-plan-period">₹1,666 / month</div>
+            <div class="text-[11px] text-slate-500 mt-1" id="modal-plan-period">₹1,499 / month</div>
           </div>
         </div>
 
         <!-- Priority Perks Breakdown -->
-        <div class="mb-6">
-          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2.5">
+        <div class="mb-5">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
             YOUR PRIORITY PRIVILEGES:
           </div>
-          <div class="space-y-2 text-[12.5px] text-slate-700 font-medium max-h-[190px] overflow-y-auto pr-1" id="modal-plan-perks">
+          <div class="space-y-2 text-[12.5px] text-slate-700 font-medium max-h-[160px] overflow-y-auto pr-1" id="modal-plan-perks">
             <!-- Dynamic Perks inserted here -->
           </div>
         </div>
@@ -553,7 +553,7 @@
         <!-- Action Alert Box -->
         <div id="modal-alert-box" class="hidden mb-3.5 p-3 rounded-xl text-xs font-bold"></div>
 
-        <!-- Action Button -->
+        <!-- Action Buttons -->
         <div class="space-y-2.5">
           <?php if (function_exists('auth_check') && auth_check()): ?>
             <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
@@ -562,10 +562,11 @@
             </button>
           <?php else: ?>
             <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>✨ Claim Plan &amp; Register (Lock Priority)</span>
+              <span>✨ Claim Plan &amp; Proceed to Registration</span>
               <span aria-hidden="true">&rarr;</span>
             </button>
           <?php endif; ?>
+          
           <p class="text-center text-[10.5px] text-slate-500 font-medium">
             🔒 256-bit encrypted checkout &middot; 0% broker fee &middot; Instant activation
           </p>
@@ -632,7 +633,7 @@
 
   let currentRole = 'founder';
   let isAnnual = false;
-  let selectedPlanCode = '6_months';
+  let selectedPlanCode = '1_year';
 
   const founderData = {
     title: 'Startup Founders Raising Capital.',
@@ -971,37 +972,37 @@
     });
   }
 
-  // Open Plan Modal
-  function openPlanModal(planCode) {
-    selectedPlanCode = planCode;
+  // Open Plan Modal Function (Global & Local)
+  window.nxOpenPlanModal = function(planCode) {
+    selectedPlanCode = planCode || '1_year';
     const data = (currentRole === 'investor') ? investorData : founderData;
-    let planObj = data.t3;
-    if (planCode === 'free_trial') planObj = data.t1;
-    else if (planCode === '1_month') planObj = data.t2;
-    else if (planCode === '6_months') planObj = data.t3;
-    else if (planCode === '1_year') planObj = data.t4;
+    let planObj = data.t4;
+    if (selectedPlanCode === 'free_trial') planObj = data.t1;
+    else if (selectedPlanCode === '1_month') planObj = data.t2;
+    else if (selectedPlanCode === '6_months') planObj = data.t3;
+    else if (selectedPlanCode === '1_year') planObj = data.t4;
 
     if (modalTitle) modalTitle.textContent = planObj.name;
     if (modalPill) modalPill.textContent = 'Level ' + planObj.priorityLevel + ' Priority: ' + planObj.priorityName;
     
     if (modalPrice) {
-      if (planCode === 'free_trial') {
+      if (selectedPlanCode === 'free_trial') {
         modalPrice.textContent = '₹0';
-      } else if (planCode === '1_month') {
+      } else if (selectedPlanCode === '1_month') {
         modalPrice.textContent = isAnnual ? '₹23,988' : (planObj.priceMonthly || '₹2,499');
-      } else if (planCode === '6_months') {
+      } else if (selectedPlanCode === '6_months') {
         modalPrice.textContent = isAnnual ? '₹8,994' : '₹9,999';
-      } else if (planCode === '1_year') {
+      } else if (selectedPlanCode === '1_year') {
         modalPrice.textContent = isAnnual ? (planObj.subtextAnnual ? planObj.subtextAnnual.split(' ')[0] : '₹14,988') : (planObj.subtextMonthly ? planObj.subtextMonthly.split(' ')[0] : '₹17,999');
       }
     }
 
     if (modalCycle) {
-      modalCycle.textContent = (planCode === 'free_trial') ? '14-Day Pass' : (isAnnual ? 'Annual Billing' : 'Monthly Billing');
+      modalCycle.textContent = (selectedPlanCode === 'free_trial') ? '14-Day Pass' : (isAnnual ? 'Annual Billing' : 'Monthly Billing');
     }
 
     if (modalPeriod) {
-      modalPeriod.textContent = (planCode === 'free_trial') ? 'Zero commitment' : (isAnnual ? (planObj.priceAnnual + ' / mo') : (planObj.priceMonthly + ' / mo'));
+      modalPeriod.textContent = (selectedPlanCode === 'free_trial') ? 'Zero commitment' : (isAnnual ? (planObj.priceAnnual + ' / mo') : (planObj.priceMonthly + ' / mo'));
     }
 
     if (modalPerks) {
@@ -1017,32 +1018,32 @@
       modal.classList.add('flex');
       document.body.style.overflow = 'hidden';
     }
-  }
+  };
 
-  function closePlanModal() {
+  window.nxClosePlanModal = function() {
     if (modal) {
       modal.classList.add('hidden');
       modal.classList.remove('flex');
       document.body.style.overflow = '';
     }
-  }
+  };
 
   if (modalClose) {
-    modalClose.addEventListener('click', closePlanModal);
+    modalClose.addEventListener('click', window.nxClosePlanModal);
   }
 
   if (modal) {
     modal.addEventListener('click', (e) => {
-      if (e.target === modal) closePlanModal();
+      if (e.target === modal) window.nxClosePlanModal();
     });
   }
 
-  // Connect CTA buttons to open Modal
+  // Connect all CTA buttons
   document.querySelectorAll('.nx-plan-cta-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      const planCode = btn.getAttribute('data-plan') || '6_months';
-      openPlanModal(planCode);
+      const planCode = btn.getAttribute('data-plan') || '1_year';
+      window.nxOpenPlanModal(planCode);
     });
   });
 
@@ -1050,28 +1051,29 @@
   if (modalActionBtn) {
     modalActionBtn.addEventListener('click', async () => {
       const data = (currentRole === 'investor') ? investorData : founderData;
-      let planObj = data.t3;
+      let planObj = data.t4;
       if (selectedPlanCode === 'free_trial') planObj = data.t1;
       else if (selectedPlanCode === '1_month') planObj = data.t2;
       else if (selectedPlanCode === '6_months') planObj = data.t3;
       else if (selectedPlanCode === '1_year') planObj = data.t4;
 
       if (!isLoggedIn) {
-        // Not logged in: transfer selection to registration form and scroll smoothly
-        closePlanModal();
+        // Not logged in: transfer selection to registration form and scroll cleanly
+        window.nxClosePlanModal();
         if (typeof window.nxSelectPlan === 'function') {
           window.nxSelectPlan(selectedPlanCode, isAnnual ? 'annually' : 'monthly', currentRole, planObj.name, planObj.priorityName, planObj.priorityLevel);
         }
         
-        const registerTarget = document.getElementById('nx-portal-register');
-        if (registerTarget) {
-          const header = document.querySelector('#nx-header-bar, header');
-          const headerH = header ? header.offsetHeight : 0;
-          window.scrollTo({
-            top: registerTarget.getBoundingClientRect().top + window.scrollY - headerH,
-            behavior: 'smooth'
-          });
+        // Force unhide and scroll to top registration form
+        const registerSection = document.getElementById('nx-portal-register');
+        if (registerSection) {
+          registerSection.style.visibility = 'visible';
+          registerSection.style.opacity = '1';
         }
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
       } else {
         // Logged in: Call subscribe API directly
         modalActionBtn.disabled = true;
@@ -1096,7 +1098,7 @@
 
             setTimeout(() => {
               window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
-            }, 1000);
+            }, 800);
           } else {
             modalActionBtn.disabled = false;
             modalActionBtn.innerHTML = prevText;
@@ -1115,8 +1117,9 @@
     });
   }
 
-  // Initialize
+  // Initialize UI
   updatePricingUI();
 
 })();
 </script>
+

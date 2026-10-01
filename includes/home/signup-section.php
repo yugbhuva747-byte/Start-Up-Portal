@@ -994,6 +994,12 @@
       if (role) {
         setRole(role);
       }
+      const section = document.getElementById('nx-portal-register');
+      if (section) {
+        section.style.visibility = 'visible';
+        section.style.opacity = '1';
+      }
+
       const planInput = document.getElementById('portal-plan-code');
       const cycleInput = document.getElementById('portal-billing-cycle');
       const badge = document.getElementById('portal-selected-plan-badge');
