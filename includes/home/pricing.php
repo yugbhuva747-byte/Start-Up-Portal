@@ -168,7 +168,7 @@
     </div>
 
     <!-- 4 Tiers Pricing Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 items-stretch nx-reveal">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 items-stretch nx-reveal" style="isolation: isolate;">
 
       <!-- ========================================================
            TIER 1: Free Trial (14 Days)
@@ -309,7 +309,7 @@
       <!-- ========================================================
            TIER 3: 6 Months Plan (MOST POPULAR)
            ======================================================== -->
-      <div class="nx-price-card-popular rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative transform lg:-translate-y-2">
+      <div class="nx-price-card-popular rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative transform lg:-translate-y-2" style="z-index: 1;">
         <!-- Most Popular Floating Pill -->
         <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white text-[11px] font-extrabold uppercase tracking-wider shadow-md flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -391,7 +391,7 @@
       <!-- ========================================================
            TIER 4: 1 Year Plan (Annual Pro)
            ======================================================== -->
-      <div class="nx-price-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative border border-pink-100">
+      <div class="nx-price-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative border border-pink-100" style="z-index: 3;">
         <div>
           <!-- Plan Header -->
           <div class="flex items-center justify-between mb-4">
@@ -453,8 +453,11 @@
         </div>
 
         <!-- CTA Button -->
-        <div>
-          <button type="button" id="tier4-cta-btn" data-plan="1_year" onclick="window.nxOpenPlanModal('1_year')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
+        <div style="position: relative; z-index: 10;">
+          <button type="button" id="tier4-cta-btn" data-plan="1_year"
+            style="position: relative; z-index: 10; pointer-events: all; cursor: pointer;"
+            onclick="event.stopPropagation(); window.nxOpenPlanModal('1_year');"
+            class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
             <span id="tier4-cta" class="pointer-events-none">Unlock 1 Year Pro</span>
             <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
           </button>
@@ -1252,6 +1255,24 @@
 
   // Initialize UI
   updatePricingUI();
+
+  // ── CRITICAL: Direct binding for Tier 4 (1 Year Pro) button ──────────────
+  // Belt-and-suspenders: directly bind to avoid any z-index / stacking issue.
+  function bindTier4Btn() {
+    const t4Btn = document.getElementById('tier4-cta-btn');
+    if (t4Btn && !t4Btn._nxBound) {
+      t4Btn._nxBound = true;
+      t4Btn.style.cssText += '; position: relative !important; z-index: 100 !important; pointer-events: all !important; cursor: pointer !important;';
+      t4Btn.addEventListener('click', function(e) {
+        e.stopImmediatePropagation();
+        window.nxOpenPlanModal('1_year');
+      }, true); // capture phase — fires before any other handler
+    }
+  }
+  bindTier4Btn();
+  // Also re-bind on any DOM change (e.g. role/billing switch re-renders)
+  setTimeout(bindTier4Btn, 500);
+  setTimeout(bindTier4Btn, 1500);
 
 })();
 </script>

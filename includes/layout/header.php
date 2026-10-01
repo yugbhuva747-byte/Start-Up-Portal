@@ -246,10 +246,12 @@
       background-color: var(--nx-bg);
       transform: translateY(-100%);
       transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+      pointer-events: none;
     }
 
     #nx-mobile-drawer.is-open {
       transform: translateY(0);
+      pointer-events: auto;
     }
 
     /* Hamburger Toggle Icon */

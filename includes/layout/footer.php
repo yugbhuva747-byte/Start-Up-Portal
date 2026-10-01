@@ -273,18 +273,29 @@
      FLOATING CHAT & SUPPORT WIDGET
      ========================================================================== -->
 <style>
+  #chatWidgetWrap {
+    pointer-events: none !important;
+  }
+  #chatPopBtn {
+    pointer-events: auto !important;
+  }
   #chatPanel {
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   #chatPanel.chat-hidden {
-    opacity: 0;
+    display: none !important;
+    opacity: 0 !important;
     transform: translateY(24px) scale(0.95);
-    pointer-events: none;
+    pointer-events: none !important;
   }
   #chatPanel.chat-visible {
-    opacity: 1;
+    display: flex !important;
+    opacity: 1 !important;
     transform: translateY(0) scale(1);
-    pointer-events: auto;
+    pointer-events: auto !important;
+  }
+  #chatTooltip {
+    pointer-events: none !important;
   }
   #chatMessages::-webkit-scrollbar {
     width: 4px;
@@ -345,7 +356,7 @@
   }
 </style>
 
-<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3" id="chatWidgetWrap">
+<div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 pointer-events-none" id="chatWidgetWrap">
 
   <!-- Chat Panel -->
   <div id="chatPanel"
@@ -578,10 +589,10 @@
     // Tooltip auto-show
     setTimeout(function () {
       if (!isOpen && tooltip) {
-        tooltip.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+        tooltip.classList.remove('opacity-0', 'translate-y-2');
         tooltip.classList.add('opacity-100', 'translate-y-0');
         setTimeout(function () {
-          tooltip.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+          tooltip.classList.add('opacity-0', 'translate-y-2');
           tooltip.classList.remove('opacity-100', 'translate-y-0');
         }, 5000);
       }
@@ -591,12 +602,12 @@
     if (popBtn && tooltip) {
       popBtn.addEventListener('mouseenter', function () {
         if (!isOpen) {
-          tooltip.classList.remove('opacity-0', 'translate-y-2', 'pointer-events-none');
+          tooltip.classList.remove('opacity-0', 'translate-y-2');
           tooltip.classList.add('opacity-100', 'translate-y-0');
         }
       });
       popBtn.addEventListener('mouseleave', function () {
-        tooltip.classList.add('opacity-0', 'translate-y-2', 'pointer-events-none');
+        tooltip.classList.add('opacity-0', 'translate-y-2');
         tooltip.classList.remove('opacity-100', 'translate-y-0');
       });
     }
