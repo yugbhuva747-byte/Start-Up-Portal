@@ -231,9 +231,9 @@
 
         <!-- CTA Button -->
         <div>
-          <button type="button" id="tier1-cta-btn" data-plan="free_trial" onclick="window.nxOpenPlanModal('free_trial')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span id="tier1-cta">Start Free Trial</span>
-            <span aria-hidden="true">&rarr;</span>
+          <button type="button" id="tier1-cta-btn" data-plan="free_trial" onclick="window.nxOpenPlanModal('free_trial')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
+            <span id="tier1-cta" class="pointer-events-none">Start Free Trial</span>
+            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
           </button>
         </div>
       </div>
@@ -299,9 +299,9 @@
 
         <!-- CTA Button -->
         <div>
-          <button type="button" id="tier2-cta-btn" data-plan="1_month" onclick="window.nxOpenPlanModal('1_month')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span id="tier2-cta">Choose 1 Month</span>
-            <span aria-hidden="true">&rarr;</span>
+          <button type="button" id="tier2-cta-btn" data-plan="1_month" onclick="window.nxOpenPlanModal('1_month')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
+            <span id="tier2-cta" class="pointer-events-none">Choose 1 Month</span>
+            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
           </button>
         </div>
       </div>
@@ -381,9 +381,9 @@
 
         <!-- CTA Button -->
         <div>
-          <button type="button" id="tier3-cta-btn" data-plan="6_months" onclick="window.nxOpenPlanModal('6_months')" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span id="tier3-cta">Get 6-Month Pass</span>
-            <span aria-hidden="true">&rarr;</span>
+          <button type="button" id="tier3-cta-btn" data-plan="6_months" onclick="window.nxOpenPlanModal('6_months')" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
+            <span id="tier3-cta" class="pointer-events-none">Get 6-Month Pass</span>
+            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
           </button>
         </div>
       </div>
@@ -454,9 +454,9 @@
 
         <!-- CTA Button -->
         <div>
-          <button type="button" id="tier4-cta-btn" data-plan="1_year" onclick="window.nxOpenPlanModal('1_year')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer">
-            <span id="tier4-cta">Unlock 1 Year Pro</span>
-            <span aria-hidden="true">&rarr;</span>
+          <button type="button" id="tier4-cta-btn" data-plan="1_year" onclick="window.nxOpenPlanModal('1_year')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
+            <span id="tier4-cta" class="pointer-events-none">Unlock 1 Year Pro</span>
+            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
           </button>
         </div>
       </div>
@@ -1048,6 +1048,11 @@
 
   // Open Plan Modal Function (Global & Local)
   window.nxOpenPlanModal = function(planCode) {
+    const modalEl = document.getElementById('nx-plan-modal');
+    if (modalEl && modalEl.parentElement !== document.body) {
+      document.body.appendChild(modalEl);
+    }
+
     selectedPlanCode = planCode || '1_year';
     const data = (currentRole === 'investor') ? investorData : founderData;
     let planObj = data.t4;
@@ -1095,17 +1100,19 @@
       modalAlert.classList.add('hidden');
     }
 
-    if (modal) {
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+    if (modalEl) {
+      modalEl.classList.remove('hidden');
+      modalEl.style.display = 'flex';
+      modalEl.style.zIndex = '999999';
       document.body.style.overflow = 'hidden';
     }
   };
 
   window.nxClosePlanModal = function() {
-    if (modal) {
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    const modalEl = document.getElementById('nx-plan-modal');
+    if (modalEl) {
+      modalEl.classList.add('hidden');
+      modalEl.style.display = 'none';
       document.body.style.overflow = '';
     }
   };
@@ -1114,9 +1121,10 @@
     modalClose.addEventListener('click', window.nxClosePlanModal);
   }
 
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) window.nxClosePlanModal();
+  const modalEl = document.getElementById('nx-plan-modal');
+  if (modalEl) {
+    modalEl.addEventListener('click', (e) => {
+      if (e.target === modalEl) window.nxClosePlanModal();
     });
   }
 
