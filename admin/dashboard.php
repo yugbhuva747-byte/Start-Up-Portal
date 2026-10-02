@@ -135,21 +135,24 @@ $flash = get_flash();
                 </div>
                 
                 <div class="flex items-center gap-2 flex-wrap">
-                    <span class="text-xs text-slate-400 font-medium hidden sm:inline mr-1"><?= date('l, d M Y') ?></span>
-                    <a href="<?= url('admin/subscriptions.php') ?>" class="admin-btn-secondary">
-                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
-                        <span>Subscriptions</span>
+                    <div class="hidden sm:flex items-center space-x-1.5 text-xs text-slate-400 dark:text-slate-400 font-medium px-2 py-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <span><?= date('l, d M Y') ?></span>
+                    </div>
+                    <a href="<?= url('admin/subscriptions.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition">
+                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500 flex-shrink-0"></i>
+                        <span class="whitespace-nowrap">Subscriptions</span>
                     </a>
                     <?php if ($pendingVerifications > 0): ?>
-                        <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-primary">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                            <span>Review KYC (<?= $pendingVerifications ?>)</span>
+                        <a href="<?= url('admin/verification_queue.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                            <span class="whitespace-nowrap">Review KYC (<?= $pendingVerifications ?>)</span>
                         </a>
                     <?php endif; ?>
                     <?php if ($pendingRounds > 0): ?>
-                        <a href="<?= url('admin/funding_review.php') ?>" class="admin-btn-secondary">
-                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Rounds (<?= $pendingRounds ?>)</span>
+                        <a href="<?= url('admin/funding_review.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition">
+                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-600 flex-shrink-0"></i>
+                            <span class="whitespace-nowrap">Rounds (<?= $pendingRounds ?>)</span>
                         </a>
                     <?php endif; ?>
                 </div>
