@@ -107,6 +107,10 @@ if ($db) {
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button onclick="exportTxCSV()" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 transition shadow-xs">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Export CSV</span>
+                    </button>
                     <button onclick="window.location.reload()" class="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition">
                         <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                         <span>Reconcile Ledger</span>
@@ -196,6 +200,7 @@ if ($db) {
                                 <th class="py-3.5 px-4">Payment Method</th>
                                 <th class="py-3.5 px-4">Status</th>
                                 <th class="py-3.5 px-4 text-right">Date & Time</th>
+                                <th class="py-3.5 px-4 text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody id="tx-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -269,11 +274,90 @@ if ($db) {
                                             <div><?= date('d M Y', strtotime($t['created_at'])) ?></div>
                                             <div class="text-[11px] text-slate-400 mt-0.5"><?= date('H:i', strtotime($t['created_at'])) ?></div>
                                         </td>
+
+                                        <!-- Action -->
+                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                            <button type="button" onclick="inspectTx(<?= htmlspecialchars(json_encode([
+                                                'ref' => $t['transaction_ref'],
+                                                'amount' => format_inr($t['amount']),
+                                                'raw_amount' => $t['amount'],
+                                                'status' => $t['status'],
+                                                'method' => $t['payment_mode'] ?? 'Escrow Wire',
+                                                'investor' => $t['investor_name'],
+                                                'email' => $t['investor_email'],
+                                                'company' => $t['company_name'],
+                                                'round' => $t['round_name'],
+                                                'date' => date('d M Y, H:i', strtotime($t['created_at']))
+                                            ])) ?>)" class="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-xs font-bold transition inline-flex items-center space-x-1">
+                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                                <span>Inspect</span>
+                                            </button>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <!-- Transaction Inspection Modal -->
+            <div id="tx-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-7 max-w-lg w-full shadow-2xl relative space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center font-bold">
+                                <i data-lucide="receipt" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-slate-900 dark:text-white text-base">Escrow Audit Voucher</h3>
+                                <p id="m-ref" class="text-xs font-mono text-indigo-600 dark:text-indigo-400 font-bold"></p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="closeTxModal()" class="p-1 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-3 text-xs sm:text-sm">
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                            <span class="text-slate-500 font-medium">Reconciled Amount:</span>
+                            <span id="m-amount" class="text-lg font-black text-emerald-600"></span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[10px] uppercase font-bold text-slate-400">Investor Entity</div>
+                                <div id="m-investor" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate"></div>
+                                <div id="m-email" class="text-[11px] text-slate-500 truncate"></div>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
+                                <div class="text-[10px] uppercase font-bold text-slate-400">Target Venture</div>
+                                <div id="m-company" class="font-bold text-slate-800 dark:text-slate-200 mt-0.5 truncate"></div>
+                                <div id="m-round" class="text-[11px] text-indigo-600 dark:text-indigo-400 font-semibold truncate"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <span class="text-slate-500">Settlement Gateway:</span>
+                            <span id="m-method" class="font-bold text-slate-700 dark:text-slate-300"></span>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
+                            <span class="text-slate-500">Timestamp:</span>
+                            <span id="m-date" class="font-mono text-slate-700 dark:text-slate-300"></span>
+                        </div>
+                    </div>
+
+                    <div class="pt-2 flex items-center justify-end space-x-2">
+                        <button type="button" onclick="window.print()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition flex items-center space-x-1.5">
+                            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                            <span>Print Voucher</span>
+                        </button>
+                        <button type="button" onclick="closeTxModal()" class="px-5 py-2 bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold rounded-xl transition">
+                            Done
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -301,6 +385,56 @@ if ($db) {
             const countEl = document.getElementById('tx-count');
             if (countEl) countEl.textContent = visibleCount;
         }
+
+        function inspectTx(data) {
+            document.getElementById('m-ref').textContent = data.ref;
+            document.getElementById('m-amount').textContent = data.amount;
+            document.getElementById('m-investor').textContent = data.investor;
+            document.getElementById('m-email').textContent = data.email;
+            document.getElementById('m-company').textContent = data.company;
+            document.getElementById('m-round').textContent = data.round;
+            document.getElementById('m-method').textContent = data.method;
+            document.getElementById('m-date').textContent = data.date;
+
+            document.getElementById('tx-modal').classList.remove('hidden');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function closeTxModal() {
+            document.getElementById('tx-modal').classList.add('hidden');
+        }
+
+        function exportTxCSV() {
+            const rows = document.querySelectorAll('.tx-row');
+            let csv = 'Transaction Ref,Investor,Company,Round,Amount,Payment Method,Status,Date\n';
+
+            rows.forEach(r => {
+                const cols = r.querySelectorAll('td');
+                if (cols.length >= 7) {
+                    const ref = cols[0].innerText.trim();
+                    const investor = cols[1].querySelector('div:first-child')?.innerText.trim() || '';
+                    const company = cols[2].querySelector('div:first-child')?.innerText.trim() || '';
+                    const round = cols[2].querySelector('div:nth-child(2)')?.innerText.trim() || '';
+                    const amount = cols[3].innerText.trim().replace(/,/g, '');
+                    const method = cols[4].innerText.trim();
+                    const status = cols[5].innerText.trim();
+                    const date = cols[6].innerText.trim().replace(/\n/g, ' ');
+                    csv += `"${ref}","${investor}","${company}","${round}","${amount}","${method}","${status}","${date}"\n`;
+                }
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `escrow_transactions_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeTxModal();
+        });
     </script>
 </body>
 </html>

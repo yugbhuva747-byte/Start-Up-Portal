@@ -56,7 +56,7 @@ require_once __DIR__ . '/theme.php';
 
         <!-- Clean Breadcrumb -->
         <div class="flex items-center space-x-2 text-xs text-slate-400 min-w-0">
-            <span class="hidden sm:inline font-medium hover:text-slate-600 dark:hover:text-slate-300 transition">Admin</span>
+            <!-- <span class="hidden sm:inline font-medium hover:text-slate-600 dark:hover:text-slate-300 transition">Admin</span> -->
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden sm:inline flex-shrink-0"></i>
             <h1 class="text-xs font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                 <?= $pageTitle ?? 'Overview' ?>
@@ -66,24 +66,8 @@ require_once __DIR__ . '/theme.php';
 
     <!-- Right Header Actions -->
     <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-        <!-- Consolidated Action Badge (If pending reviews exist) -->
-        <?php if ($pendingTotal > 0): ?>
-            <a href="<?= $pendingKycCount > 0 ? url('admin/verification_queue.php') : url('admin/funding_review.php') ?>" 
-               class="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-100 transition-colors flex items-center space-x-1.5 cursor-pointer" 
-               title="<?= $pendingKycCount ?> KYC + <?= $pendingFundingCount ?> Funding rounds awaiting review">
-                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                <span><?= $pendingTotal ?> Pending</span>
-            </a>
-        <?php endif; ?>
-
-        <!-- View Public Portal -->
-        <a href="<?= url('index.php') ?>" target="_blank" 
-           class="hidden sm:inline-flex items-center space-x-1 text-xs text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" 
-           title="Preview public portal in new tab">
-            <span>View Portal</span>
-            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
-        </a>
-
+       
+      
         <!-- Email Templates & Logs Button -->
         <a href="<?= url('admin/email_templates.php') ?>" 
            class="p-2 sm:p-2.5 rounded-xl <?= (basename($_SERVER['PHP_SELF']) === 'email_templates.php') ? 'bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800' : 'bg-slate-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 hover:border-blue-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600' ?> transition flex items-center justify-center shadow-xs group" 
@@ -117,15 +101,121 @@ require_once __DIR__ . '/theme.php';
             </span>
         </button>
 
-        <!-- System Active Status -->
-        <div class="hidden xs:flex items-center space-x-1.5 pl-2 border-l border-slate-200 dark:border-slate-700 text-xs text-slate-500 font-medium">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span class="hidden md:inline">Online</span>
+        <!-- Admin Profile Icon & Dropdown Menu -->
+        <div class="relative pl-1" id="admin-profile-wrapper">
+            <button onclick="toggleAdminProfileMenu()" 
+                    type="button" 
+                    id="admin-profile-btn"
+                    class="flex items-center space-x-2 h-9 sm:h-10 pl-1 pr-2 sm:pr-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition bg-white dark:bg-slate-900 shadow-2xs group cursor-pointer flex-shrink-0" 
+                    aria-label="Admin Profile Menu"
+                    aria-expanded="false">
+                <img src="<?= (!empty($currentUser['avatar_url']) ? htmlspecialchars($currentUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') ?>" 
+                     alt="<?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?>" 
+                     style="width: 28px; height: 28px; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px; border-radius: 9999px; object-fit: cover;"
+                     class="w-7 h-7 rounded-full object-cover border border-blue-200 dark:border-slate-700 flex-shrink-0">
+                <div class="hidden sm:flex flex-col text-left">
+                    <span class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 transition truncate max-w-[100px] leading-tight">
+                        <?= htmlspecialchars(explode(' ', $currentUser['name'] ?? 'Admin')[0]) ?>
+                    </span>
+                    <span class="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider leading-none">Admin</span>
+                </div>
+                <i data-lucide="chevron-down" id="admin-profile-chevron" class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 flex-shrink-0"></i>
+            </button>
+
+            <!-- Admin Dropdown Menu Drawer -->
+            <div id="admin-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                <!-- Profile Header -->
+                <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-3 bg-slate-50/80 dark:bg-slate-800/60 rounded-xl mb-1.5">
+                    <img src="<?= (!empty($currentUser['avatar_url']) ? htmlspecialchars($currentUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') ?>" 
+                         alt="<?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?>"
+                         style="width: 38px; height: 38px; min-width: 38px; min-height: 38px; max-width: 38px; max-height: 38px; border-radius: 9999px; object-fit: cover;"
+                         class="w-9 h-9 rounded-full object-cover border border-blue-200 dark:border-slate-700 flex-shrink-0">
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 truncate leading-tight">
+                            <?= htmlspecialchars($currentUser['name'] ?? 'Administrator') ?>
+                        </div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                            <?= htmlspecialchars($currentUser['email'] ?? 'admin@portal.com') ?>
+                        </div>
+                       
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="py-1 space-y-0.5 text-xs font-semibold">
+                    <a href="<?= url('admin/settings.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+                        <span>Settings &amp; Security</span>
+                    </a>
+                    <a href="<?= url('admin/email_templates.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="mail-check" class="w-4 h-4 text-blue-500"></i>
+                        <span>Email Templates &amp; Logs</span>
+                    </a>
+                    <a href="<?= url('admin/audit_logs.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
+                        <span>Security Audit Trail</span>
+                    </a>
+                    <a href="<?= url('index.php') ?>" target="_blank" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
+                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
+                        <span>View Public Portal</span>
+                    </a>
+                </div>
+
+                <!-- Sign Out -->
+                <div class="pt-1.5 mt-1 border-t border-slate-100 dark:border-slate-800">
+                    <a href="<?= url('auth/logout.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-bold text-xs transition">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Sign Out</span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </header>
 <?php include_once __DIR__ . '/../smooth_scroll.php'; ?>
 <script>
+    function toggleAdminProfileMenu() {
+        const menu = document.getElementById('admin-profile-menu');
+        const chevron = document.getElementById('admin-profile-chevron');
+        const btn = document.getElementById('admin-profile-btn');
+        if (!menu) return;
+        const isHidden = menu.classList.contains('hidden');
+        if (isHidden) {
+            menu.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+        } else {
+            menu.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrapper = document.getElementById('admin-profile-wrapper');
+        const menu = document.getElementById('admin-profile-menu');
+        const chevron = document.getElementById('admin-profile-chevron');
+        const btn = document.getElementById('admin-profile-btn');
+        if (wrapper && !wrapper.contains(e.target) && menu && !menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const menu = document.getElementById('admin-profile-menu');
+            const chevron = document.getElementById('admin-profile-chevron');
+            const btn = document.getElementById('admin-profile-btn');
+            if (menu && !menu.classList.contains('hidden')) {
+                menu.classList.add('hidden');
+                if (chevron) chevron.style.transform = 'rotate(0deg)';
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        }
+    });
+
     function adminGoBack(btn) {
         if (btn) {
             btn.style.transform = 'scale(0.92)';

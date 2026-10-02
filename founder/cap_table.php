@@ -377,11 +377,6 @@ $flashStyles = [
                                 <i data-lucide="download" class="w-4 h-4 text-emerald-600"></i>
                                 <span>Export CSV</span>
                             </button>
-                            <button type="button" onclick="window.print()"
-                                class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-sm font-bold shadow-sm transition flex items-center space-x-1.5">
-                                <i data-lucide="printer" class="w-4 h-4 text-slate-600"></i>
-                                <span>Print</span>
-                            </button>
                         </div>
                     </div>
                 </div>

@@ -138,9 +138,15 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
                     <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Platform Reports & Analytics</h1>
                     <p class="text-xs text-slate-500 mt-0.5">Aggregate platform metrics, funding activity, user trends, and verification pipeline health.</p>
                 </div>
-                <div class="flex items-center space-x-2 text-[10px] text-slate-400 font-medium">
-                    <i data-lucide="clock" class="w-3 h-3"></i>
-                    <span>Last updated: <?= date('d M Y, H:i') ?></span>
+                <div class="flex items-center space-x-3">
+                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition shadow-xs flex items-center space-x-1.5 cursor-pointer">
+                        <i data-lucide="printer" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <span>Print / Export PDF</span>
+                    </button>
+                    <div class="flex items-center space-x-1.5 text-[11px] text-slate-400 font-medium">
+                        <i data-lucide="clock" class="w-3 h-3"></i>
+                        <span>Last updated: <?= date('d M Y, H:i') ?></span>
+                    </div>
                 </div>
             </div>
 

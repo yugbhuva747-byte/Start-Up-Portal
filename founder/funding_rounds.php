@@ -85,9 +85,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Load rounds AFTER POST handling
+$searchQuery = trim($_GET['q'] ?? '');
 if ($db && $company) {
-    $rStmt = $db->prepare("SELECT * FROM funding_rounds WHERE company_id = ? ORDER BY created_at DESC");
-    $rStmt->execute([$company['id']]);
+    if (!empty($searchQuery)) {
+        $rStmt = $db->prepare("SELECT * FROM funding_rounds WHERE company_id = ? AND (round_name LIKE ? OR purpose LIKE ? OR status LIKE ?) ORDER BY created_at DESC");
+        $term = "%{$searchQuery}%";
+        $rStmt->execute([$company['id'], $term, $term, $term]);
+    } else {
+        $rStmt = $db->prepare("SELECT * FROM funding_rounds WHERE company_id = ? ORDER BY created_at DESC");
+        $rStmt->execute([$company['id']]);
+    }
     $rounds = $rStmt->fetchAll();
 }
 
@@ -298,6 +305,17 @@ $flashStyles = [
 
             <!-- Rounds List -->
             <div class="space-y-4">
+                <?php if (!empty($searchQuery)): ?>
+                    <div class="flex items-center justify-between p-3.5 rounded-xl bg-indigo-50 border border-indigo-100 text-xs">
+                        <div class="flex items-center space-x-2 text-indigo-900 font-semibold">
+                            <i data-lucide="filter" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Showing results for: <strong>"<?= htmlspecialchars($searchQuery) ?>"</strong> (<?= count($rounds) ?> found)</span>
+                        </div>
+                        <a href="<?= url('founder/funding_rounds.php') ?>" class="px-3 py-1 bg-white hover:bg-slate-100 text-indigo-700 font-bold rounded-lg border border-indigo-200 transition">
+                            Clear Filter
+                        </a>
+                    </div>
+                <?php endif; ?>
                 <?php if (empty($rounds)): ?>
                     <div class="section-card p-12 text-center text-slate-400 text-xs">
                         <div
@@ -550,6 +568,10 @@ $flashStyles = [
             document.getElementById('modal-post-money').innerText = `₹${cr} Cr (₹${post.toLocaleString('en-IN')})`;
         }
         calcPostMoney();
+
+        if (new URLSearchParams(window.location.search).get('action') === 'new' || window.location.hash === '#new-round') {
+            openRoundModal();
+        }
 
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRoundModal(); });
     </script>

@@ -249,15 +249,7 @@ require_once __DIR__ . '/theme.php';
                 <span class="sidebar-text-item whitespace-nowrap">Overview</span>
             </a>
 
-            <a href="<?= url('founder/company.php') ?>"
-               data-tooltip="Company Profile"
-               title="Company Profile"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'company.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                <i data-lucide="building-2"
-                    class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'company.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
-                <span class="sidebar-text-item whitespace-nowrap">Company Profile</span>
-            </a>
-
+           
             <a href="<?= url('founder/funding_rounds.php') ?>"
                data-tooltip="Funding Rounds"
                title="Funding Rounds"
@@ -314,31 +306,7 @@ require_once __DIR__ . '/theme.php';
         </nav>
     </div>
 
-    <!-- User Footer Profile & Logout -->
-    <div class="sidebar-footer-container p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
-        <div class="sidebar-footer-inner flex items-center justify-between">
-            <a href="<?= url('founder/view.php') ?>" title="View Full Profile" data-tooltip="<?= htmlspecialchars($founderUser['name']) ?>"
-                class="sidebar-footer-user flex items-center space-x-3 overflow-hidden flex-1 p-1 rounded-xl hover:bg-slate-200/60 dark:hover:bg-slate-750 transition group">
-                <img src="<?= $founderUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80' ?>"
-                    class="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 group-hover:ring-2 group-hover:ring-indigo-500 transition flex-shrink-0">
-                <div class="truncate sidebar-text-item">
-                    <div class="text-sm font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition">
-                        <?= htmlspecialchars($founderUser['name']) ?>
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate flex items-center space-x-1">
-                        <span>Founder Profile</span>
-                        <i data-lucide="chevron-right" class="w-3 h-3 opacity-0 group-hover:opacity-100 transition"></i>
-                    </div>
-                </div>
-            </a>
-            <div class="sidebar-logout-btn flex items-center">
-                <a href="<?= url('auth/logout.php') ?>" title="Sign Out" data-tooltip="Sign Out"
-                    class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition ml-1">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+   
 </aside>
 
 <script>

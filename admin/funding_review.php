@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     if (!empty($reviewNotes)) {
                         $notifMsg .= " Remarks: " . $reviewNotes;
                     }
-                    send_notification($fData['user_id'], "Funding Round " . ucfirst(strtolower($newStatus)), $notifMsg, $notifType, 'founder/funding.php');
+                    send_notification($fData['user_id'], "Funding Round " . ucfirst(strtolower($newStatus)), $notifMsg, $notifType, 'founder/funding_rounds.php');
                 }
 
                 set_flash('success', "Funding round successfully updated to {$newStatus}. Automatic email & in-app alerts dispatched to founder.");
