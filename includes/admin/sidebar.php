@@ -313,14 +313,7 @@ require_once __DIR__ . '/theme.php';
             </button>
         </div>
 
-        <!-- Admin Badge -->
-        <div class="mb-4 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 text-xs sidebar-badge-item">
-            <div class="text-blue-900 dark:text-blue-200 font-bold flex items-center space-x-1.5 text-[10.5px]">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 flex-shrink-0"></span>
-                <span class="whitespace-nowrap">Governance Access</span>
-            </div>
-            <div class="text-[9.5px] text-blue-700 dark:text-blue-400 mt-0.5 whitespace-nowrap">SEBI &amp; KYC Gatekeeper</div>
-        </div>
+        
 
         <!-- Navigation Links Grouped by Sections -->
         <nav class="space-y-1 text-xs font-semibold">
@@ -452,38 +445,14 @@ require_once __DIR__ . '/theme.php';
             </a>
 
 
-            <a href="<?= url('admin/audit_logs.php') ?>" 
-               data-tooltip="Audit Trail"
-               title="Audit Trail"
-               class="sidebar-link <?= $currentPage === 'audit_logs.php' ? 'is-active' : '' ?>">
-                <i data-lucide="history" class="nav-icon text-slate-400"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
-            </a>
+           
 
            
 
         </nav>
     </div>
 
-    <!-- User Footer Profile & Logout -->
-    <div class="sidebar-footer-container p-3.5 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
-        <div class="sidebar-footer-inner flex items-center justify-between">
-            <div class="sidebar-footer-user flex items-center gap-2.5 overflow-hidden min-w-0" data-tooltip="<?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?>">
-                <img src="<?= (!empty($adminUser['avatar_url']) ? htmlspecialchars($adminUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80') ?>"
-                     class="w-8 h-8 rounded-full object-cover flex-shrink-0 border border-indigo-200 dark:border-slate-700">
-                <div class="truncate sidebar-text-item">
-                    <div class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate"><?= htmlspecialchars($adminUser['name'] ?? 'Admin') ?></div>
-                    <div class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold truncate">Administrator</div>
-                </div>
-            </div>
-            <div class="sidebar-logout-btn flex items-center gap-1 flex-shrink-0">
-                <a href="<?= url('auth/logout.php') ?>" title="Sign Out" data-tooltip="Sign Out"
-                   class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition">
-                    <i data-lucide="log-out" class="w-4 h-4"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+   
 </aside>
 
 <script>

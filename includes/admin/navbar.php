@@ -56,7 +56,7 @@ require_once __DIR__ . '/theme.php';
 
         <!-- Clean Breadcrumb -->
         <div class="flex items-center space-x-2 text-xs text-slate-400 min-w-0">
-            <span class="hidden sm:inline font-medium hover:text-slate-600 dark:hover:text-slate-300 transition">Admin</span>
+            <!-- <span class="hidden sm:inline font-medium hover:text-slate-600 dark:hover:text-slate-300 transition">Admin</span> -->
             <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 hidden sm:inline flex-shrink-0"></i>
             <h1 class="text-xs font-bold text-slate-900 dark:text-slate-100 tracking-tight truncate">
                 <?= $pageTitle ?? 'Overview' ?>
@@ -66,24 +66,8 @@ require_once __DIR__ . '/theme.php';
 
     <!-- Right Header Actions -->
     <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-        <!-- Consolidated Action Badge (If pending reviews exist) -->
-        <?php if ($pendingTotal > 0): ?>
-            <a href="<?= $pendingKycCount > 0 ? url('admin/verification_queue.php') : url('admin/funding_review.php') ?>" 
-               class="px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-100 transition-colors flex items-center space-x-1.5 cursor-pointer" 
-               title="<?= $pendingKycCount ?> KYC + <?= $pendingFundingCount ?> Funding rounds awaiting review">
-                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                <span><?= $pendingTotal ?> Pending</span>
-            </a>
-        <?php endif; ?>
-
-        <!-- View Public Portal -->
-        <a href="<?= url('index.php') ?>" target="_blank" 
-           class="hidden sm:inline-flex items-center space-x-1 text-xs text-slate-600 dark:text-slate-300 hover:text-blue-600 font-semibold px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition" 
-           title="Preview public portal in new tab">
-            <span>View Portal</span>
-            <i data-lucide="external-link" class="w-3.5 h-3.5 text-slate-400"></i>
-        </a>
-
+       
+      
         <!-- Email Templates & Logs Button -->
         <a href="<?= url('admin/email_templates.php') ?>" 
            class="p-2 sm:p-2.5 rounded-xl <?= (basename($_SERVER['PHP_SELF']) === 'email_templates.php') ? 'bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-400 dark:border-blue-800' : 'bg-slate-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 hover:border-blue-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600' ?> transition flex items-center justify-center shadow-xs group" 
@@ -153,9 +137,7 @@ require_once __DIR__ . '/theme.php';
                         <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                             <?= htmlspecialchars($currentUser['email'] ?? 'admin@portal.com') ?>
                         </div>
-                        <span class="inline-flex items-center px-1.5 py-0.5 mt-1 rounded text-[9.5px] font-extrabold uppercase tracking-wider bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-200 dark:border-blue-800/50">
-                            Compliance Admin
-                        </span>
+                       
                     </div>
                 </div>
 
