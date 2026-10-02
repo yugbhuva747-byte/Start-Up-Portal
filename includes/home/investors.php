@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 /**
  * ============================================================================
  * include/home/investors.php
  * ----------------------------------------------------------------------------
- * SECTION 05 — FOR INVESTORS (COLORFUL PASTEL LUXE EDITION)
+ * SECTION 05 â€” FOR INVESTORS (COLORFUL PASTEL LUXE EDITION)
  * 
  * Bulletproof Visibility + Instant Clarity + Frosted Pastel Glass
  * Soft Violet (#EDE9FE), Blush Rose (#FCE7F3), Warm Peach (#FFF7ED)
@@ -12,7 +12,7 @@
 ?>
 
 <style>
-  /* ── Canvas Container with Dynamic Top Clip-Path & Pastel Aurora ── */
+  /* â”€â”€ Canvas Container with Dynamic Top Clip-Path & Pastel Aurora â”€â”€ */
   #nx-investors {
     background-color: #FAF5FF !important;
     color: #0F172A !important;
@@ -78,7 +78,7 @@
     pointer-events: none;
   }
 
-  /* ── Frosted Pastel Step Cards ───────────────────────────────── */
+  /* â”€â”€ Frosted Pastel Step Cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .nx-inv-card {
     background: rgba(255, 255, 255, 0.9);
     border: 1.5px solid rgba(221, 214, 254, 0.8);
@@ -272,7 +272,7 @@
   }
 </style>
 
-<section id="nx-investors" class="w-full border-t border-purple-100" aria-label="For Investors — Direct Dealflow">
+<section id="nx-investors" class="w-full border-t border-purple-100" aria-label="For Investors â€” Direct Dealflow">
 
   <!-- Ambient Light Backdrops -->
   <div class="nx-inv-glow nx-inv-glow-1"></div>
@@ -282,9 +282,9 @@
 
   <div class="max-w-[1320px] mx-auto px-5 sm:px-8 lg:px-12 relative z-10">
 
-    <!-- ═══════════════════════════════════════════════════════════
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          01. HEADER: Immediate 1-Glance Positioning
-         ═══════════════════════════════════════════════════════════ -->
+         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="text-center max-w-[820px] mx-auto mb-14 lg:mb-20">
 
       <!-- Badge Pill -->
@@ -308,12 +308,12 @@
 
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          02. 3-STEP FLOW: 01 DISCOVER -> 02 VERIFY -> 03 CONNECT
-         ═══════════════════════════════════════════════════════════ -->
+         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
 
-      <!-- ── CARD 01: DISCOVER ── -->
+      <!-- â”€â”€ CARD 01: DISCOVER â”€â”€ -->
       <div class="nx-inv-card">
         <span class="nx-inv-card-num">01</span>
 
@@ -337,25 +337,25 @@
 
           <!-- Interactive Chips -->
           <div class="flex flex-wrap gap-2 mb-6">
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">
               <span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span> DeepTech
             </a>
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">AI Infra</a>
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">CleanEnergy</a>
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">Robotics</a>
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">BioDevices</a>
-            <a href="login.php?role=investor" class="nx-inv-chip no-underline">+9 More</a>
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">AI Infra</a>
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">CleanEnergy</a>
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">Robotics</a>
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">BioDevices</a>
+            <a href="auth/login.php?role=investor" class="nx-inv-chip no-underline">+9 More</a>
           </div>
         </div>
 
         <!-- Footer Action -->
-        <a href="login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-purple-700 hover:text-purple-900 transition-colors group no-underline">
+        <a href="auth/login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-purple-700 hover:text-purple-900 transition-colors group no-underline">
           <span>Explore 250+ Startups</span>
           <span class="text-purple-600 transition-transform duration-200 group-hover:translate-x-1.5">&rarr;</span>
         </a>
       </div>
 
-      <!-- ── CARD 02: VERIFY ── -->
+      <!-- â”€â”€ CARD 02: VERIFY â”€â”€ -->
       <div class="nx-inv-card">
         <span class="nx-inv-card-num">02</span>
 
@@ -412,13 +412,13 @@
         </div>
 
         <!-- Footer Action -->
-        <a href="login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-pink-700 hover:text-pink-900 transition-colors group no-underline">
+        <a href="auth/login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-pink-700 hover:text-pink-900 transition-colors group no-underline">
           <span>Inspect Diligence Vault</span>
           <span class="text-pink-600 transition-transform duration-200 group-hover:translate-x-1.5">&rarr;</span>
         </a>
       </div>
 
-      <!-- ── CARD 03: CONNECT ── -->
+      <!-- â”€â”€ CARD 03: CONNECT â”€â”€ -->
       <div class="nx-inv-card">
         <span class="nx-inv-card-num">03</span>
 
@@ -466,7 +466,7 @@
         </div>
 
         <!-- Footer Action -->
-        <a href="login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-amber-700 hover:text-amber-900 transition-colors group no-underline">
+        <a href="auth/login.php?role=investor" class="pt-5 border-t border-purple-100 flex items-center justify-between text-[13.5px] font-bold text-amber-700 hover:text-amber-900 transition-colors group no-underline">
           <span>Connect With Founders</span>
           <span class="text-amber-600 transition-transform duration-200 group-hover:translate-x-1.5">&rarr;</span>
         </a>
@@ -477,9 +477,9 @@
     <!-- Animated Connector Across Cards (Desktop) -->
     <div class="hidden md:block nx-inv-connector"></div>
 
-    <!-- ═══════════════════════════════════════════════════════════
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          03. TRUST METRICS BAR
-         ═══════════════════════════════════════════════════════════ -->
+         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 rounded-3xl bg-white/90 border border-purple-200/80 p-6 sm:p-8 mt-10 md:mt-0 mb-14 shadow-sm backdrop-blur-xl">
       <div class="text-center p-3 border-r border-purple-100 max-md:border-b">
         <div class="text-[28px] sm:text-[38px] font-extrabold text-slate-900 tracking-tight">250+</div>
@@ -499,16 +499,16 @@
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════
+    <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
          04. CALL TO ACTION & COMPLIANCE NOTE
-         ═══════════════════════════════════════════════════════════ -->
+         â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
     <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-purple-100">
       <div class="flex flex-wrap items-center gap-4">
-        <a href="login.php?role=investor" class="nx-inv-btn-primary">
+        <a href="auth/login.php?role=investor" class="nx-inv-btn-primary">
           <span>Explore Live Opportunities</span>
           <span>&rarr;</span>
         </a>
-        <a href="login.php?role=investor" class="nx-inv-btn-secondary">
+        <a href="auth/login.php?role=investor" class="nx-inv-btn-secondary">
           <span>How It Works</span>
           <span>&rarr;</span>
         </a>

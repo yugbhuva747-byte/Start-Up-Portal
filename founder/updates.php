@@ -856,10 +856,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     </div>
                                     <div class="flex items-center space-x-3 text-[11px]">
                                         <span class="text-slate-400 dark:text-slate-500 font-mono">ID: #<?= $upd['id'] ?></span>
-                                        <button type="button" onclick="navigator.clipboard.writeText(`<?= addslashes($upd['title'] . "\n\n" . $upd['content']) ?>`); alert('Update text copied to clipboard!');" 
+                                        <button type="button" onclick="copyUpdateText(this, `<?= addslashes($upd['title'] . "\n\n" . $upd['content']) ?>`);" 
                                                 class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-bold flex items-center space-x-1 transition">
                                             <i data-lucide="copy" class="w-3 h-3"></i>
-                                            <span>Copy Raw Text</span>
+                                            <span class="btn-copy-label">Copy Raw Text</span>
                                         </button>
                                     </div>
                                 </div>
@@ -1050,11 +1050,47 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             });
         }
 
+        // Toast notification system
+        function showToast(message, type = 'success') {
+            let toast = document.getElementById('portal-toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'portal-toast-notification';
+                toast.className = 'fixed bottom-6 right-6 z-50 transform translate-y-4 opacity-0 transition-all duration-300 pointer-events-none';
+                document.body.appendChild(toast);
+            }
+            const isSuccess = type === 'success';
+            toast.innerHTML = `
+                <div class="px-4 py-3 rounded-2xl ${isSuccess ? 'bg-slate-900 text-white border border-slate-700' : 'bg-rose-900 text-white'} shadow-2xl flex items-center space-x-2.5 text-xs sm:text-sm font-bold">
+                    <span class="w-2 h-2 rounded-full ${isSuccess ? 'bg-emerald-400' : 'bg-rose-400'} animate-pulse"></span>
+                    <span>${message}</span>
+                </div>
+            `;
+            toast.classList.remove('translate-y-4', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-4', 'opacity-0');
+            }, 3200);
+        }
+
+        // Copy raw update text with feedback
+        function copyUpdateText(btn, text) {
+            navigator.clipboard.writeText(text);
+            const label = btn.querySelector('.btn-copy-label');
+            if (label) {
+                const orig = label.textContent;
+                label.textContent = 'Copied!';
+                setTimeout(() => { label.textContent = orig; }, 2000);
+            }
+            showToast('Update text copied to clipboard!');
+        }
+
         // Copy as formatted investor email digest
         function copyEmailDigest(company, title, metrics, content) {
             const digest = `SUBJECT: [Investor Update] ${company} — ${title}\n\nKEY HIGHLIGHTS:\n${metrics || 'N/A'}\n\n${content}\n\n---\nSent via ${company} Founder Portal`;
             navigator.clipboard.writeText(digest);
-            alert('Formatted Investor Email Digest copied to clipboard!\nReady to paste into Gmail or Outlook.');
+            showToast('Formatted Investor Digest copied! Ready to paste into Gmail.');
         }
 
         // Initialize preview on load

@@ -94,6 +94,10 @@ if ($db) {
                             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                         </a>
                     <?php endif; ?>
+                    <button type="button" onclick="exportAuditCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition shadow-xs flex items-center space-x-1.5 cursor-pointer">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Export CSV</span>
+                    </button>
                 </form>
             </div>
 
@@ -199,6 +203,36 @@ if ($db) {
         lucide.createIcons();
 
         gsap.from("#audit-admin-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+
+        const auditLogsData = <?= json_encode($logs ?? []) ?>;
+
+        function exportAuditCSV() {
+            if (!auditLogsData || auditLogsData.length === 0) {
+                alert("No audit logs available to export.");
+                return;
+            }
+
+            const headers = ["Timestamp", "Actor Name", "Actor Role", "Action", "Entity", "Entity ID", "IP Address", "Details"];
+            const rows = auditLogsData.map(log => [
+                `"${log.created_at || ''}"`,
+                `"${(log.actor_name || 'System / Anonymous').replace(/"/g, '""')}"`,
+                `"${(log.actor_role || 'Guest').replace(/"/g, '""')}"`,
+                `"${(log.action || '').replace(/"/g, '""')}"`,
+                `"${(log.entity || '').replace(/"/g, '""')}"`,
+                `"${log.entity_id || ''}"`,
+                `"${(log.ip_address || '').replace(/"/g, '""')}"`,
+                `"${(log.details || '').replace(/"/g, '""')}"`
+            ]);
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `audit_trail_export_${new Date().toISOString().slice(0, 10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
 
         function toggleAuditRow(detailRowId, triggerRow) {
             const detailRow = document.getElementById(detailRowId);

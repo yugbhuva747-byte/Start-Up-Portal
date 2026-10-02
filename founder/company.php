@@ -129,6 +129,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             }
+        } elseif ($action === 'delete_doc' && $company) {
+            $docId = (int) ($_POST['doc_id'] ?? 0);
+            if ($docId > 0) {
+                $docQuery = $db->prepare("SELECT * FROM company_documents WHERE id = ? AND company_id = ?");
+                $docQuery->execute([$docId, $company['id']]);
+                $docToDelete = $docQuery->fetch();
+                if ($docToDelete) {
+                    if (!empty($docToDelete['file_path'])) {
+                        $fullFilePath = ROOT_PATH . '/' . ltrim($docToDelete['file_path'], '/\\');
+                        if (file_exists($fullFilePath)) {
+                            @unlink($fullFilePath);
+                        }
+                    }
+                    $delStmt = $db->prepare("DELETE FROM company_documents WHERE id = ? AND company_id = ?");
+                    $delStmt->execute([$docId, $company['id']]);
+                    log_audit($user['id'], 'DELETE_DOCUMENT', 'company_documents', $docId, "Deleted document: " . ($docToDelete['title'] ?? ''));
+                    set_flash('success', 'Document deleted successfully from data room.');
+                }
+            }
+            header('Location: ' . url('founder/company.php#company-data-room'));
+            exit;
         }
     }
 }
@@ -798,6 +819,15 @@ $flashStyles = [
                                         <i data-lucide="download" class="w-4 h-4"></i>
                                         <span>Download</span>
                                     </a>
+
+                                    <form action="<?= url('founder/company.php') ?>" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently remove this document from the Data Room?');">
+                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                        <input type="hidden" name="form_action" value="delete_doc">
+                                        <input type="hidden" name="doc_id" value="<?= (int) $doc['id'] ?>">
+                                        <button type="submit" class="p-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 transition shadow-sm" title="Delete document">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         <?php endforeach; ?>
