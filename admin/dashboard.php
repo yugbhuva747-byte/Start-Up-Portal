@@ -19,14 +19,17 @@ $recentAuditLogs = [];
 $pendingVerRequests = [];
 
 if ($db) {
+
     try {
-        $totalUsers = (int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn();
-        $totalFounders = (int)$db->query("SELECT COUNT(*) FROM users WHERE role = 'founder'")->fetchColumn();
-        $totalInvestors = (int)$db->query("SELECT COUNT(*) FROM users WHERE role = 'investor'")->fetchColumn();
-        $totalCompanies = (int)$db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
-        $totalVolumeRaised = (float)$db->query("SELECT SUM(amount_raised) FROM funding_rounds")->fetchColumn() ?: 0;
-        $pendingVerifications = (int)$db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'")->fetchColumn();
-        $pendingRounds = (int)$db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW')")->fetchColumn();
+
+    $totalUsers = (int) $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+    $totalFounders = (int) $db->query("SELECT COUNT(*) FROM users WHERE role = 'founder'")->fetchColumn();
+    $totalInvestors = (int) $db->query("SELECT COUNT(*) FROM users WHERE role = 'investor'")->fetchColumn();
+    $totalCompanies = (int) $db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+    $totalVolumeRaised = (float) $db->query("SELECT SUM(amount_raised) FROM funding_rounds")->fetchColumn() ?: 0;
+    $pendingVerifications = (int) $db->query("SELECT COUNT(*) FROM verification_requests WHERE status = 'pending'")->fetchColumn();
+    $pendingRounds = (int) $db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW')")->fetchColumn();
+
 
         // Recent Audit Logs
         $aStmt = $db->query("
@@ -56,62 +59,100 @@ $flash = get_flash();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Overview • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <title>Admin & Compliance Dashboard • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
+    <style>
+        .stat-card-clean {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .stat-card-clean, html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
+        .stat-card-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
+        }
+        .card-clean {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+        .dark .card-clean, html.dark .card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
+    </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen">
-    
+
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
+
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="admin-main">
-            
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="admin-main">
+
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
+                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
+                    <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle' : 'alert-triangle' ?>" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
-            <!-- Page Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="admin-page-icon">
-                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/80 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-xs flex-shrink-0">
+                        <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                            Executive Overview
-                        </h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Welcome back, <?= htmlspecialchars($user['name']) ?>. Here is your portfolio pulse.</p>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Governance & Compliance Dashboard
+                            </h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1"></span> SEBI Compliant
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Regulatory Framework, DigiLocker Verification &amp; Escrow Syndicate Oversight
+                        </p>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-slate-400 font-medium hidden sm:inline mr-1"><?= date('l, d M Y') ?></span>
-                    <a href="<?= url('admin/subscriptions.php') ?>" class="admin-btn-secondary">
-                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500"></i>
-                        <span>Subscriptions</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="hidden sm:flex items-center space-x-1.5 text-xs text-slate-400 dark:text-slate-400 font-medium px-2 py-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
+                        <span><?= date('l, d M Y') ?></span>
+                    </div>
+                    <a href="<?= url('admin/subscriptions.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition">
+                        <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-500 flex-shrink-0"></i>
+                        <span class="whitespace-nowrap">Subscriptions</span>
                     </a>
                     <?php if ($pendingVerifications > 0): ?>
-                        <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-primary">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                            <span>Review KYC (<?= $pendingVerifications ?>)</span>
+                        <a href="<?= url('admin/verification_queue.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                            <span class="whitespace-nowrap">Review KYC (<?= $pendingVerifications ?>)</span>
                         </a>
                     <?php endif; ?>
                     <?php if ($pendingRounds > 0): ?>
-                        <a href="<?= url('admin/funding_review.php') ?>" class="admin-btn-secondary">
-                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Rounds (<?= $pendingRounds ?>)</span>
+                        <a href="<?= url('admin/funding_review.php') ?>" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-xs transition">
+                            <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-indigo-600 flex-shrink-0"></i>
+                            <span class="whitespace-nowrap">Rounds (<?= $pendingRounds ?>)</span>
                         </a>
                     <?php endif; ?>
                 </div>
@@ -119,157 +160,239 @@ $flash = get_flash();
 
             <!-- Global Platform KPIs -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
-                
-                <!-- Metric 1: Capital Raised -->
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Capital Raised</span>
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Volume Raised</span>
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-indigo"><?= format_inr($totalVolumeRaised) ?></div>
-                    <div class="admin-stat-sub">
-                        <span class="text-emerald-600 font-semibold flex items-center gap-1">
-                            <i data-lucide="check" class="w-3 h-3"></i> Escrow Secured
-                        </span>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= format_inr($totalVolumeRaised) ?></div>
+                    <div class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 mt-1">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Escrow Secured &amp; Reconciled
                     </div>
                 </div>
 
-                <!-- Metric 2: Registered Companies -->
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Startups Enrolled</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800 <?= $pendingVerifications > 0 ? 'ring-1 ring-amber-400/50' : '' ?>">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">KYC Queue</span>
+                        <div class="w-9 h-9 rounded-xl <?= $pendingVerifications > 0 ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' ?> flex items-center justify-center">
+                            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="text-2xl font-black <?= $pendingVerifications > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?>"><?= $pendingVerifications ?></div>
+                    <div class="text-xs <?= $pendingVerifications > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400' ?> font-semibold flex items-center gap-1 mt-1">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i> <?= $pendingVerifications > 0 ? 'Awaiting Identity Review' : 'All Clear' ?>
+                    </div>
+                </div>
+
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Registered Startups</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                             <i data-lucide="building-2" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-sky"><?= $totalCompanies ?></div>
-                    <div class="admin-stat-sub">
-                        <span class="text-slate-500 font-medium"><?= $totalFounders ?> registered founders</span>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= number_format($totalCompanies) ?></div>
+                    <div class="text-xs text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1 mt-1">
+                        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <?= $pendingRounds ?> Active Funding Rounds
                     </div>
                 </div>
 
-                <!-- Metric 3: Active Investors -->
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Accredited Angels</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                            <i data-lucide="users" class="w-4 h-4"></i>
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
+                    <div class="flex items-center justify-between text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Investor Network</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-emerald"><?= $totalInvestors ?></div>
-                    <div class="admin-stat-sub">
-                        <span class="text-slate-500 font-medium">Angels & institutional syndicate</span>
-                    </div>
-                </div>
-
-                <!-- Metric 4: Compliance Queue -->
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Pending Reviews</span>
-                        <div class="w-8 h-8 rounded-lg <?= ($pendingVerifications + $pendingRounds) > 0 ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600' ?> flex items-center justify-center">
-                            <i data-lucide="clock" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="admin-stat-value <?= ($pendingVerifications + $pendingRounds) > 0 ? 'stat-value-amber' : 'stat-value-emerald' ?>"><?= $pendingVerifications + $pendingRounds ?></div>
-                    <div class="admin-stat-sub">
-                        <?php if ($pendingVerifications + $pendingRounds > 0): ?>
-                            <span class="text-amber-700 font-semibold"><?= $pendingVerifications ?> KYC & <?= $pendingRounds ?> Funding</span>
-                        <?php else: ?>
-                            <span class="text-emerald-600 font-semibold flex items-center gap-1">
-                                <i data-lucide="check" class="w-3 h-3"></i> Queue is all clear
-                            </span>
-                        <?php endif; ?>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= number_format($totalInvestors) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1 mt-1">
+                        <i data-lucide="users" class="w-3.5 h-3.5"></i> <?= number_format($totalFounders) ?> Founders Active
                     </div>
                 </div>
 
             </div>
 
-            <!-- Two Column Section: Action Items & Activity Trail -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
-                <!-- Left: Pending KYC Applications -->
-                <div class="admin-card p-5 sm:p-6">
-                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                        <div>
-                            <h2 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                <i data-lucide="shield-check" class="w-4 h-4 text-indigo-600"></i>
-                                <span>KYC Verifications Awaiting Review</span>
-                            </h2>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Founders and investors awaiting diligence approval.</p>
+            <!-- Two Column: Verification Queue & Live Audit Logs -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+                <!-- Pending Verifications Section Card -->
+                <div class="card-clean rounded-2xl p-5 sm:p-6 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                        onclick="toggleCollapsibleCard('kyc-section-content', this)"
+                        title="Click to expand/collapse section">
+                        <div class="flex items-center space-x-2.5 min-w-0 pr-2">
+                            <div
+                                class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="clock" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h2 class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider truncate">
+                                    Pending KYC Verification Queue
+                                </h2>
+                                <p class="text-[11px] text-slate-400 mt-0.5 truncate">Applicant identification review queue</p>
+                            </div>
                         </div>
-                        <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-ghost text-xs">
-                            <span>Open Queue</span>
-                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                        </a>
+                        <div class="flex items-center space-x-2 flex-shrink-0">
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 whitespace-nowrap">
+                                <?= count($pendingVerRequests) ?> Pending
+                            </span>
+                            <a href="<?= url('admin/verification_queue.php') ?>" onclick="event.stopPropagation()"
+                                class="inline-flex items-center space-x-1 text-[11px] text-blue-600 hover:text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition whitespace-nowrap">
+                                <span>Full Queue</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </a>
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                <i data-lucide="chevron-down" data-chevron
+                                    class="w-4 h-4 transition-transform duration-300"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <?php if (empty($pendingVerRequests)): ?>
-                        <div class="py-12 text-center text-slate-400 text-xs flex flex-col items-center justify-center">
-                            <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
-                                <i data-lucide="check" class="w-5 h-5"></i>
+                    <div id="kyc-section-content" class="transition-all duration-300">
+                        <?php if (empty($pendingVerRequests)): ?>
+                            <div class="py-8 text-center text-slate-400 text-xs">
+                                <i data-lucide="check-circle-2" class="w-8 h-8 mx-auto text-emerald-500 mb-2"></i>
+                                No pending KYC requests in queue. All applicants are verified.
                             </div>
-                            <span class="font-bold text-slate-700">All Applicants Verified</span>
-                            <span class="text-[11px] text-slate-400 mt-0.5">No pending submissions in the queue right now.</span>
-                        </div>
-                    <?php else: ?>
-                        <div class="divide-y divide-slate-100">
-                            <?php foreach ($pendingVerRequests as $vr): ?>
-                                <div class="py-3 flex items-center justify-between hover:bg-slate-50/70 transition px-2 rounded-xl">
-                                    <div class="min-w-0 pr-3">
-                                        <div class="font-semibold text-slate-900 text-xs truncate flex items-center gap-1.5">
-                                            <span><?= htmlspecialchars($vr['applicant_name']) ?></span>
-                                            <span class="admin-badge <?= $vr['applicant_role'] === 'founder' ? 'admin-badge-primary' : 'admin-badge-success' ?> text-[10px]">
-                                                <?= ucfirst($vr['applicant_role']) ?>
-                                            </span>
+                        <?php else: ?>
+                            <div class="divide-y divide-slate-100 text-xs" id="kyc-list-wrapper">
+                                <?php foreach ($pendingVerRequests as $idx => $vr): ?>
+                                    <div
+                                        class="py-3 flex items-center justify-between hover:bg-slate-50/60 transition px-2 rounded-xl <?= $idx >= 3 ? 'kyc-extra-item hidden' : '' ?>">
+                                        <div class="min-w-0 pr-3">
+                                            <div
+                                                class="font-bold text-slate-900 text-xs flex items-center space-x-1.5 truncate">
+                                                <span><?= htmlspecialchars($vr['applicant_name']) ?></span>
+                                                <span
+                                                    class="text-[9.5px] px-1.5 py-0.5 rounded bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold uppercase"><?= ucfirst($vr['applicant_role']) ?></span>
+                                            </div>
+                                            <div class="text-slate-500 text-[11px] truncate mt-0.5">
+                                                <?= htmlspecialchars($vr['company_name'] ?? $vr['applicant_email']) ?> •
+                                                <?= htmlspecialchars($vr['provider_name']) ?></div>
                                         </div>
-                                        <div class="text-slate-500 text-[11px] truncate mt-0.5">
-                                            <?= htmlspecialchars($vr['company_name'] ?? $vr['applicant_email']) ?>
-                                        </div>
+                                        <a href="<?= url('admin/verification_queue.php') ?>"
+                                            class="flex-shrink-0 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] transition shadow-xs flex items-center space-x-1">
+                                            <span>Review</span>
+                                            <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                        </a>
                                     </div>
-                                    <a href="<?= url('admin/verification_queue.php') ?>" class="admin-btn-secondary text-[11px] py-1 px-2.5">
-                                        Review
-                                    </a>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php if (count($pendingVerRequests) > 3): ?>
+                                <button type="button" id="btn-toggle-kyc"
+                                    onclick="toggleListItems('kyc-extra-item', 'btn-toggle-kyc', 'Show More Requests (+<?= count($pendingVerRequests) - 3 ?>)', 'Show Less')"
+                                    class="w-full mt-3 py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 text-blue-600 dark:text-blue-400 font-semibold text-xs transition flex items-center justify-center space-x-1.5">
+                                    <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+                                    <span>Show More Requests (+<?= count($pendingVerRequests) - 3 ?>)</span>
+                                </button>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <!-- Right: Recent Security & Platform Audit Trail -->
-                <div class="admin-card p-5 sm:p-6">
-                    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
-                        <div>
-                            <h2 class="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                                <i data-lucide="history" class="w-4 h-4 text-slate-600"></i>
-                                <span>Recent Platform Activity</span>
-                            </h2>
-                            <p class="text-[11px] text-slate-400 mt-0.5">Real-time immutable administrative audit trail.</p>
+                <!-- Recent Immutable Security Logs Section Card -->
+                <div class="card-clean rounded-2xl p-5 sm:p-6 transition-all duration-300">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                        onclick="toggleCollapsibleCard('audit-section-content', this)"
+                        title="Click to expand/collapse section">
+                        <div class="flex items-center space-x-2.5 min-w-0 pr-2">
+                            <div
+                                class="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="history" class="w-4 h-4"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h2 class="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider truncate">
+                                    Live Platform Audit Trail
+                                </h2>
+                                <p class="text-[11px] text-slate-400 mt-0.5 truncate">Real-time immutable activity stream</p>
+                            </div>
                         </div>
-                        <a href="<?= url('admin/audit_logs.php') ?>" class="admin-btn-ghost text-xs">
-                            <span>View All</span>
-                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                        </a>
+                        <div class="flex items-center space-x-2 flex-shrink-0">
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800 whitespace-nowrap">
+                                <?= count($recentAuditLogs) ?> Recent Logs
+                            </span>
+                            <a href="<?= url('admin/audit_logs.php') ?>" onclick="event.stopPropagation()"
+                                class="inline-flex items-center space-x-1 text-[11px] text-blue-600 hover:text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition whitespace-nowrap">
+                                <span>View All</span>
+                                <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            </a>
+                            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                <i data-lucide="chevron-down" data-chevron
+                                    class="w-4 h-4 transition-transform duration-300"></i>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="divide-y divide-slate-100">
+                    <div id="audit-section-content" class="transition-all duration-300">
                         <?php if (empty($recentAuditLogs)): ?>
-                            <div class="py-12 text-center text-slate-400 text-xs">No audit events recorded yet.</div>
+                            <div class="py-8 text-center text-slate-400 text-xs">
+                                No security logs recorded yet.
+                            </div>
                         <?php else: ?>
-                            <?php foreach ($recentAuditLogs as $log): ?>
-                                <div class="py-2.5 flex items-start space-x-2.5 hover:bg-slate-50/70 transition px-2 rounded-xl">
-                                    <div class="w-2 h-2 rounded-full bg-slate-400 mt-1.5 flex-shrink-0"></div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center justify-between gap-2">
-                                            <span class="font-medium text-slate-800 text-xs truncate"><?= htmlspecialchars(str_replace('_', ' ', $log['action'])) ?></span>
-                                            <span class="text-[11px] text-slate-400 flex-shrink-0"><?= date('H:i', strtotime($log['created_at'])) ?></span>
+                            <div class="divide-y divide-slate-100 text-xs" id="audit-list-wrapper">
+                                <?php foreach ($recentAuditLogs as $idx => $log): ?>
+                                    <div
+                                        class="py-2.5 px-2 rounded-xl hover:bg-slate-50/60 transition <?= $idx >= 4 ? 'audit-extra-item hidden' : '' ?>">
+                                        <div class="flex items-start space-x-2.5 cursor-pointer"
+                                            onclick="toggleLogDetail('log-detail-<?= $idx ?>', this)"
+                                            title="Click to view full event details">
+                                            <div class="w-2 h-2 rounded-full bg-blue-600 mt-1.5 flex-shrink-0"></div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between">
+                                                    <span
+                                                        class="font-mono font-bold text-slate-800 text-[11px]"><?= htmlspecialchars($log['action']) ?></span>
+                                                    <span
+                                                        class="text-[10px] text-slate-400"><?= date('H:i:s', strtotime($log['created_at'])) ?></span>
+                                                </div>
+                                                <div class="text-slate-500 text-[10.5px] truncate mt-0.5">
+                                                    <?= htmlspecialchars($log['details'] ?? 'No details provided') ?></div>
+                                                <div
+                                                    class="text-[10px] text-slate-400 mt-0.5 flex items-center justify-between">
+                                                    <span><?= htmlspecialchars($log['actor_name'] ?? 'System') ?> •
+                                                        <?= htmlspecialchars($log['ip_address']) ?></span>
+                                                    <span
+                                                        class="text-blue-600 font-semibold text-[10px] hover:underline flex items-center space-x-0.5">
+                                                        <span>Details</span>
+                                                        <i data-lucide="chevron-down"
+                                                            class="w-3 h-3 transition-transform duration-200"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="text-slate-500 text-[11px] truncate mt-0.5"><?= htmlspecialchars($log['details'] ?? 'System event') ?></div>
-                                        <div class="text-[10px] text-slate-400 mt-0.5"><?= htmlspecialchars($log['actor_name'] ?? 'System') ?></div>
+                                        <!-- Expandable Full Details Drawer -->
+                                        <div id="log-detail-<?= $idx ?>"
+                                            class="hidden mt-2 p-2.5 rounded-lg bg-slate-50/80 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700 text-[11px] space-y-1">
+                                            <div class="text-slate-700 dark:text-slate-200 font-semibold">Full Event Payload:
+                                            </div>
+                                            <div
+                                                class="font-mono text-[10px] text-slate-600 dark:text-slate-300 break-all bg-white dark:bg-slate-900 p-2 rounded border border-slate-200 dark:border-slate-800">
+                                                <?= htmlspecialchars($log['details'] ?? 'None') ?>
+                                            </div>
+                                            <div class="text-[10px] text-slate-400 pt-0.5 flex justify-between">
+                                                <span>Entity: <?= htmlspecialchars($log['entity_type'] ?? 'N/A') ?>
+                                                    #<?= htmlspecialchars($log['entity_id'] ?? '—') ?></span>
+                                                <span>Time: <?= htmlspecialchars($log['created_at']) ?></span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <?php if (count($recentAuditLogs) > 4): ?>
+                                <button type="button" id="btn-toggle-audit"
+                                    onclick="toggleListItems('audit-extra-item', 'btn-toggle-audit', 'Show More Logs (+<?= count($recentAuditLogs) - 4 ?>)', 'Show Less')"
+                                    class="w-full mt-3 py-2 px-3 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 hover:border-blue-400 hover:bg-blue-50/50 dark:hover:bg-slate-800/50 text-blue-600 dark:text-blue-400 font-semibold text-xs transition flex items-center justify-center space-x-1.5">
+                                    <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i>
+                                    <span>Show More Logs (+<?= count($recentAuditLogs) - 4 ?>)</span>
+                                </button>
+                            <?php endif; ?>
+
                         <?php endif; ?>
                     </div>
                 </div>
@@ -281,7 +404,70 @@ $flash = get_flash();
 
     <script>
         lucide.createIcons();
-        gsap.from("#admin-main", { duration: 0.3, y: 8, opacity: 0, ease: "power2.out" });
+
+        gsap.from("#admin-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#stats-grid > div", { duration: 0.35, y: 10, opacity: 0, stagger: 0.05, ease: "power2.out" });
+
+        // Collapsible Card Section Toggle
+        function toggleCollapsibleCard(contentId, headerEl) {
+            const content = document.getElementById(contentId);
+            if (!content) return;
+            const isHidden = content.classList.contains('hidden');
+            if (isHidden) {
+                content.classList.remove('hidden');
+                if (headerEl) {
+                    const icon = headerEl.querySelector('[data-chevron]');
+                    if (icon) icon.classList.remove('rotate-180');
+                }
+            } else {
+                content.classList.add('hidden');
+                if (headerEl) {
+                    const icon = headerEl.querySelector('[data-chevron]');
+                    if (icon) icon.classList.add('rotate-180');
+                }
+            }
+        }
+
+        // Show More / Show Less Items Engine
+        function toggleListItems(itemClass, btnId, moreText, lessText) {
+            const items = document.querySelectorAll('.' + itemClass);
+            const btn = document.getElementById(btnId);
+            if (!items.length || !btn) return;
+            const isExpanded = !items[0].classList.contains('hidden');
+            items.forEach(el => {
+                if (isExpanded) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            btn.innerHTML = isExpanded
+                ? `<i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i><span>${moreText}</span>`
+                : `<i data-lucide="chevrons-up" class="w-3.5 h-3.5"></i><span>${lessText}</span>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Expandable Log Detail Drawer
+        function toggleLogDetail(detailId, rowEl) {
+            const detailBox = document.getElementById(detailId);
+            if (!detailBox) return;
+            const isHidden = detailBox.classList.contains('hidden');
+            if (isHidden) {
+                detailBox.classList.remove('hidden');
+                if (rowEl) {
+                    const arrow = rowEl.querySelector('.lucide-chevron-down');
+                    if (arrow) arrow.classList.add('rotate-180');
+                }
+            } else {
+                detailBox.classList.add('hidden');
+                if (rowEl) {
+                    const arrow = rowEl.querySelector('.lucide-chevron-down');
+                    if (arrow) arrow.classList.remove('rotate-180');
+                }
+            }
+        }
+
     </script>
 </body>
+
 </html>

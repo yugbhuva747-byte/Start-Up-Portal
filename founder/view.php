@@ -81,21 +81,10 @@ $flash = get_flash();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
-        }
-    </style>
+        <title><?= $pageTitle ?? APP_NAME ?> • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Sidebar Navigation based on current user role -->
     <?php 
@@ -108,7 +97,7 @@ $flash = get_flash();
     }
     ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php 
         if ($currentUser['role'] === 'founder') {
             include __DIR__ . '/../includes/founder/navbar.php';
@@ -119,7 +108,7 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="founder-view-main">
+        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-view-main">
             
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5">
@@ -157,16 +146,18 @@ $flash = get_flash();
             <!-- Master Profile Header Card -->
             <div class="card-clean rounded-2xl overflow-hidden relative">
                 <!-- Cover Banner Strip -->
-                <div class="h-32 bg-gradient-to-r from-slate-100 via-indigo-50/60 to-slate-100 border-b border-slate-200/80 relative">
+
+                <div class="h-28 bg-gradient-to-r from-slate-100 via-indigo-50/60 to-slate-100 dark:from-slate-900 dark:via-indigo-950/50 dark:to-slate-900 border-b border-slate-200/80 dark:border-slate-800 relative">
                     <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:16px_16px]"></div>
                 </div>
 
-                <div class="px-6 sm:px-8 pb-7 pt-0 relative">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-5 border-b border-slate-100">
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-5">
-                            <div class="relative -mt-14 flex-shrink-0">
+                <div class="px-6 pb-6 pt-0 relative">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="relative -mt-12 flex-shrink-0">
                                 <img src="<?= $founder['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                     class="w-26 h-26 rounded-2xl object-cover border-4 border-white shadow-md bg-white">
+                                     class="w-24 h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-800">
+
                                 <?php if ($founder['is_verified']): ?>
                                     <div class="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm" title="Verified Founder">
                                         <i data-lucide="check" class="w-4 h-4"></i>

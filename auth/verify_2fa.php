@@ -46,7 +46,8 @@ if (!is_admin_totp_setup($userId)) {
 $error = '';
 $flash = get_flash();
 $rec = get_2fa_record($userId);
-$currentAppCode = !empty($rec['secret_code']) ? get_totp_code($rec['secret_code']) : '';
+$allowDemoBypass = (defined('IS_LOCALHOST') && IS_LOCALHOST && defined('APP_ENV') && APP_ENV === 'development' && (getenv('ALLOW_DEMO_2FA_BYPASS') === 'true' || ($_ENV['ALLOW_DEMO_2FA_BYPASS'] ?? '') === 'true'));
+$currentAppCode = ($allowDemoBypass && !empty($rec['secret_code'])) ? get_totp_code($rec['secret_code']) : '';
 
 // Handle Form Submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -92,6 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $insSession->execute([$userId, $sessionToken, $ip, $ua]);
                 }
 
+                if (!empty($_SESSION['2fa_pending_remember'])) {
+                    set_remember_me_cookie($userId, 30);
+                    unset($_SESSION['2fa_pending_remember']);
+                }
+
                 unset($_SESSION['2fa_pending_user_id'], $_SESSION['2fa_pending_email'], $_SESSION['2fa_pending_role'], $_SESSION['2fa_pending_name']);
 
                 log_audit($userId, 'USER_LOGIN_2FA', 'users', $userId, 'Admin authenticated successfully via Authenticator App');
@@ -111,6 +117,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_role'] = $userRole;
                 $_SESSION['user_name'] = $userName;
                 $_SESSION['2fa_verified'] = true;
+
+                if (!empty($_SESSION['2fa_pending_remember'])) {
+                    set_remember_me_cookie($userId, 30);
+                    unset($_SESSION['2fa_pending_remember']);
+                }
 
                 unset($_SESSION['2fa_pending_user_id'], $_SESSION['2fa_pending_email'], $_SESSION['2fa_pending_role'], $_SESSION['2fa_pending_name']);
 
@@ -143,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #FAFAFB;
+            background-color: #F4F2EE;
             color: #0F172A;
         }
         .code-input {
@@ -151,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex items-center justify-center p-4 selection:bg-indigo-100 selection:text-indigo-900">
 
     <div class="max-w-md w-full my-8" id="auth-container">
         

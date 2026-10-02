@@ -149,31 +149,50 @@ if ($db) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Broadcasts • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <title>Platform Broadcasts & Announcements • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
+    <style>
+        .stat-card-clean { 
+            background: #FFFFFF; 
+            border: 1px solid #E2E8F0; 
+            border-radius: 1rem; 
+            padding: 1.25rem 1.5rem; 
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); 
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
+        .stat-card-clean:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
+        }
+        .table-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); overflow: hidden; }
+        .dark .table-card-clean, html.dark .table-card-clean { background: #111827 !important; border-color: #1e293b !important; }
+        .filter-bar-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 0.875rem 1.25rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02); }
+        .dark .filter-bar-clean, html.dark .filter-bar-clean { background: #111827 !important; border-color: #1e293b !important; }
+    </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen">
-    
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
+
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
+
+        <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="broadcasts-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="broadcasts-main">
 
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
                     <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 flex items-center space-x-2">
+                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center space-x-2 shadow-xs">
                     <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
@@ -181,15 +200,22 @@ if ($db) {
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="admin-page-icon">
-                        <i data-lucide="megaphone" class="w-5 h-5"></i>
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200/80 dark:border-indigo-800/80 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-xs flex-shrink-0">
+                        <i data-lucide="megaphone" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                            Platform Broadcasts
-                        </h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Publish compliance bulletins, regulatory updates, and platform notices to user inboxes and banners.</p>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                Platform Broadcasts
+                            </h1>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                                Global Dispatch
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            Publish compliance bulletins, regulatory updates, and platform notices to user inboxes and banners.
+                        </p>
                     </div>
                 </div>
                 
@@ -203,73 +229,78 @@ if ($db) {
             </div>
 
             <!-- Metric Cards -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="admin-stat-card">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Total Dispatched</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Dispatched</span>
+                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
                             <i data-lucide="megaphone" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-sky"><?= $totalBroadcasts ?></div>
-                    <div class="admin-stat-sub">Platform announcements</div>
+                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= $totalBroadcasts ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Platform announcements</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Active Banners</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Banners</span>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                             <i data-lucide="radio" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-emerald"><?= $activeBanners ?></div>
-                    <div class="admin-stat-sub">Live on user dashboards</div>
+                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><?= $activeBanners ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live on user dashboards</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Audience Reach</span>
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Audience Reach</span>
+                        <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                             <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value stat-value-indigo"><?= number_format($totalRecipientsReach) ?></div>
-                    <div class="admin-stat-sub">Cumulative inbox deliveries</div>
+                    <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRecipientsReach) ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cumulative inbox deliveries</div>
                 </div>
 
-                <div class="admin-stat-card">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Urgent Bulletins</span>
-                        <div class="w-8 h-8 rounded-lg <?= $urgentAlertsCount > 0 ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-400' ?> flex items-center justify-center">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Urgent Bulletins</span>
+                        <div class="w-9 h-9 rounded-xl <?= $urgentAlertsCount > 0 ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-400' ?> flex items-center justify-center">
                             <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="admin-stat-value <?= $urgentAlertsCount > 0 ? 'stat-value-amber' : '' ?>"><?= $urgentAlertsCount ?></div>
-                    <div class="admin-stat-sub">High-priority compliance</div>
+                    <div class="text-2xl font-black <?= $urgentAlertsCount > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= $urgentAlertsCount ?></div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">High-priority compliance</div>
                 </div>
             </div>
 
-            <!-- Broadcasts Management Table -->
+            <!-- Broadcasts Management Table Card -->
             <div class="space-y-3">
-                <h2 class="text-sm font-bold text-slate-900 tracking-tight">
-                    Dispatched Announcements & Banners
-                </h2>
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
+                        Dispatched Announcements &amp; Banners
+                    </h2>
+                    <span class="text-xs text-slate-400 font-medium">
+                        Showing <?= count($broadcasts) ?> broadcast(s)
+                    </span>
+                </div>
 
-                <div class="admin-table-container">
+                <div class="table-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="overflow-x-auto">
-                        <table class="admin-table">
+                        <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr>
-                                    <th>Priority</th>
-                                    <th>Title & Message</th>
-                                    <th>Target Audience</th>
-                                    <th>Banner State</th>
-                                    <th>Reach</th>
-                                    <th>Date</th>
-                                    <th class="text-right">Action</th>
+                                <tr class="bg-slate-50/80 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700/80 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
+                                    <th class="py-3.5 px-4">Priority</th>
+                                    <th class="py-3.5 px-4">Title &amp; Message</th>
+                                    <th class="py-3.5 px-4">Target Audience</th>
+                                    <th class="py-3.5 px-4">Banner State</th>
+                                    <th class="py-3.5 px-4">Reach</th>
+                                    <th class="py-3.5 px-4">Date</th>
+                                    <th class="py-3.5 px-4 text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                 <?php if (empty($broadcasts)): ?>
                                     <tr>
                                         <td colspan="7" class="py-12 text-center text-slate-400">
@@ -278,11 +309,11 @@ if ($db) {
                                     </tr>
                                 <?php else: ?>
                                     <?php foreach ($broadcasts as $b): 
-                                        $badgeClass = match($b['priority']) {
-                                            'urgent' => 'admin-badge-danger',
-                                            'compliance' => 'admin-badge-warning',
-                                            'opportunity' => 'admin-badge-success',
-                                            default => 'admin-badge-primary'
+                                        $badgeBg = match($b['priority']) {
+                                            'urgent' => 'bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60',
+                                            'compliance' => 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60',
+                                            'opportunity' => 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60',
+                                            default => 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800/60'
                                         };
                                         $audLabel = match($b['target_audience']) {
                                             'all' => 'All Users',
@@ -293,70 +324,73 @@ if ($db) {
                                         };
                                         $isExpired = $b['expires_at'] && strtotime($b['expires_at']) < time();
                                     ?>
-                                        <tr>
-                                            <td>
-                                                <span class="admin-badge <?= $badgeClass ?> text-[10px]">
-                                                    <span class="admin-badge-dot"></span>
+                                        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+                                            <td class="py-3.5 px-4">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border <?= $badgeBg ?>">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                                                     <span><?= strtoupper(htmlspecialchars($b['priority'])) ?></span>
                                                 </span>
                                             </td>
-                                            <td class="max-w-md">
-                                                <div class="font-semibold text-slate-900 text-xs"><?= htmlspecialchars($b['title']) ?></div>
-                                                <div class="text-[11px] text-slate-500 mt-0.5 line-clamp-1"><?= htmlspecialchars($b['message']) ?></div>
+                                            <td class="py-3.5 px-4 max-w-md">
+                                                <div class="font-bold text-slate-900 dark:text-slate-100 text-xs"><?= htmlspecialchars($b['title']) ?></div>
+                                                <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1"><?= htmlspecialchars($b['message']) ?></div>
                                                 <?php if ($b['cta_label']): ?>
-                                                    <div class="text-[10px] text-indigo-600 font-medium mt-1">
-                                                        CTA: <?= htmlspecialchars($b['cta_label']) ?>
+                                                    <div class="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1 flex items-center gap-1">
+                                                        <span>CTA:</span>
+                                                        <span class="underline"><?= htmlspecialchars($b['cta_label']) ?></span>
                                                     </div>
                                                 <?php endif; ?>
                                             </td>
-                                            <td>
-                                                <span class="admin-badge admin-badge-neutral text-[10px]">
+                                            <td class="py-3.5 px-4">
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                                                     <?= $audLabel ?>
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td class="py-3.5 px-4">
                                                 <?php if ($b['show_banner'] && $b['is_active'] && !$isExpired): ?>
-                                                    <span class="admin-badge admin-badge-success text-[10px]">
-                                                        <span class="admin-badge-dot"></span>
+                                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                                         <span>Live Banner</span>
                                                     </span>
                                                 <?php elseif ($isExpired): ?>
-                                                    <span class="text-slate-400 text-xs">Expired</span>
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700">Expired</span>
                                                 <?php elseif (!$b['show_banner']): ?>
-                                                    <span class="text-slate-400 text-xs">Inbox Only</span>
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Inbox Only</span>
                                                 <?php else: ?>
-                                                    <span class="admin-badge admin-badge-neutral text-[10px]">Disabled</span>
+                                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Disabled</span>
                                                 <?php endif; ?>
                                             </td>
-                                            <td class="font-mono text-slate-800 text-xs">
+                                            <td class="py-3.5 px-4 font-mono text-slate-800 dark:text-slate-200 text-xs font-semibold">
                                                 <?= number_format($b['recipients_count']) ?> users
                                             </td>
-                                            <td class="text-slate-500 text-xs whitespace-nowrap">
+                                            <td class="py-3.5 px-4 text-slate-500 dark:text-slate-400 text-xs whitespace-nowrap">
                                                 <div><?= date('d M Y', strtotime($b['created_at'])) ?></div>
                                             </td>
-                                            <td class="text-right whitespace-nowrap">
-                                                <!-- Toggle State -->
-                                                <form method="POST" class="inline">
-                                                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                                    <input type="hidden" name="form_action" value="toggle_active">
-                                                    <input type="hidden" name="broadcast_id" value="<?= $b['id'] ?>">
-                                                    <input type="hidden" name="new_state" value="<?= $b['is_active'] ? 0 : 1 ?>">
-                                                    <button type="submit" 
-                                                            class="admin-btn-ghost p-1.5 <?= $b['is_active'] ? 'text-emerald-600' : 'text-slate-400' ?>" 
-                                                            title="<?= $b['is_active'] ? 'Disable Banner' : 'Activate Banner' ?>">
-                                                        <i data-lucide="<?= $b['is_active'] ? 'eye' : 'eye-off' ?>" class="w-3.5 h-3.5"></i>
-                                                    </button>
-                                                </form>
+                                            <td class="py-3.5 px-4 text-right whitespace-nowrap">
+                                                <div class="flex items-center justify-end gap-1.5">
+                                                    <!-- Toggle State -->
+                                                    <form method="POST" class="inline">
+                                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                        <input type="hidden" name="form_action" value="toggle_active">
+                                                        <input type="hidden" name="broadcast_id" value="<?= $b['id'] ?>">
+                                                        <input type="hidden" name="new_state" value="<?= $b['is_active'] ? 0 : 1 ?>">
+                                                        <button type="submit" 
+                                                                class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition <?= $b['is_active'] ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/30' : 'text-slate-400' ?>" 
+                                                                title="<?= $b['is_active'] ? 'Disable Banner' : 'Activate Banner' ?>">
+                                                            <i data-lucide="<?= $b['is_active'] ? 'eye' : 'eye-off' ?>" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </form>
 
-                                                <!-- Delete -->
-                                                <form method="POST" class="inline" onsubmit="return confirm('Delete this broadcast announcement?');">
-                                                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                                    <input type="hidden" name="form_action" value="delete_broadcast">
-                                                    <input type="hidden" name="broadcast_id" value="<?= $b['id'] ?>">
-                                                    <button type="submit" class="admin-btn-ghost p-1.5 hover:text-rose-600" title="Delete">
-                                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                                    </button>
-                                                </form>
+                                                    <!-- Delete -->
+                                                    <form method="POST" class="inline" onsubmit="return confirm('Delete this broadcast announcement?');">
+                                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                        <input type="hidden" name="form_action" value="delete_broadcast">
+                                                        <input type="hidden" name="broadcast_id" value="<?= $b['id'] ?>">
+                                                        <button type="submit" class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition" title="Delete">
+                                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -371,20 +405,20 @@ if ($db) {
     </div>
 
     <!-- Compose Broadcast Modal -->
-    <div id="composeModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative">
+    <div id="composeModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative max-h-[90vh] overflow-y-auto">
             <button onclick="document.getElementById('composeModal').classList.add('hidden')" 
-                    class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                    class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
 
-            <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100">
-                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center">
+            <div class="flex items-center space-x-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
                     <i data-lucide="megaphone" class="w-4 h-4 text-white"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900">Compose Announcement</h3>
-                    <p class="text-[11px] text-slate-400">Dispatch message to inboxes and top dashboard banner.</p>
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white">Compose Platform Announcement</h3>
+                    <p class="text-[11px] text-slate-400">Dispatch regulatory bulletin to user inboxes and dashboard banners.</p>
                 </div>
             </div>
 
@@ -393,21 +427,21 @@ if ($db) {
                 <input type="hidden" name="form_action" value="create_broadcast">
 
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Announcement Title</label>
-                    <input type="text" name="title" required placeholder="e.g., Scheduled Maintenance / Regulatory Update" 
-                           class="admin-input w-full">
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">Announcement Title</label>
+                    <input type="text" name="title" required placeholder="e.g., Scheduled Maintenance / MCA Compliance Circular" 
+                           class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition">
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-700 mb-1 text-xs">Message</label>
-                    <textarea name="message" rows="3" required placeholder="Type the announcement details here..." 
-                              class="admin-input w-full"></textarea>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">Message</label>
+                    <textarea name="message" rows="3" required placeholder="Type announcement details..." 
+                              class="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition leading-relaxed"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Priority</label>
-                        <select name="priority" class="admin-input w-full">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">Priority</label>
+                        <select name="priority" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition cursor-pointer">
                             <option value="update">General Update</option>
                             <option value="compliance">Compliance Notice</option>
                             <option value="opportunity">Investment Opportunity</option>
@@ -415,8 +449,8 @@ if ($db) {
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1 text-xs">Target Audience</label>
-                        <select name="target_audience" class="admin-input w-full">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">Target Audience</label>
+                        <select name="target_audience" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition cursor-pointer">
                             <option value="all">All Users</option>
                             <option value="founder">Founders Only</option>
                             <option value="investor">Investors Only</option>
@@ -427,26 +461,27 @@ if ($db) {
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1 text-xs">CTA Button Label (Optional)</label>
-                        <input type="text" name="cta_label" placeholder="e.g., View Round" class="admin-input w-full">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">CTA Button Label (Optional)</label>
+                        <input type="text" name="cta_label" placeholder="e.g., View Regulatory Circular" class="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1 text-xs">CTA Target URL</label>
-                        <input type="text" name="cta_url" placeholder="e.g., founder/verification.php" class="admin-input w-full">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1 text-xs">CTA Target URL</label>
+                        <input type="text" name="cta_url" placeholder="e.g., founder/verification.php" class="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-blue-600 focus:ring-1 focus:ring-blue-600 rounded-xl text-slate-900 dark:text-slate-100 text-xs outline-none transition">
                     </div>
                 </div>
 
                 <div class="flex items-center space-x-2 pt-1">
-                    <input type="checkbox" name="show_banner" id="show_banner_check" value="1" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="show_banner_check" class="text-xs text-slate-700 font-medium">Show persistent banner on user dashboard</label>
+                    <input type="checkbox" name="show_banner" id="show_banner_check" value="1" checked class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                    <label for="show_banner_check" class="text-xs text-slate-700 dark:text-slate-300 font-medium cursor-pointer">Show persistent banner on user dashboard</label>
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2">
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end space-x-2">
                     <button type="button" onclick="document.getElementById('composeModal').classList.add('hidden')" 
-                            class="admin-btn-secondary">
+                            class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-xs transition">
                         Cancel
                     </button>
-                    <button type="submit" class="admin-btn-primary">
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-xs transition flex items-center space-x-1.5">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
                         <span>Dispatch Broadcast</span>
                     </button>
                 </div>

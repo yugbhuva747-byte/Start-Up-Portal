@@ -42,12 +42,12 @@
 
     <!-- Dual Action Buttons -->
     <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-5 nx-reveal">
-      <a href="login.php?role=investor"
+      <a href="auth/login.php?role=investor"
         class="h-[56px] sm:h-[58px] px-8 sm:px-10 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white text-[15px] font-bold inline-flex items-center gap-2.5 shadow-lg shadow-pink-500/25 hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 group">
         <span>Explore Opportunities</span>
         <span class="text-base transition-transform duration-200 group-hover:translate-x-1.5" aria-hidden="true">&rarr;</span>
       </a>
-      <a href="login.php?role=startup"
+      <a href="auth/login.php?role=startup"
         class="h-[56px] sm:h-[58px] px-8 sm:px-10 rounded-full bg-white text-purple-700 border-2 border-purple-200 hover:border-purple-300 hover:bg-purple-50 text-[15px] font-bold inline-flex items-center gap-2.5 transition-all duration-300 shadow-xs hover:scale-[1.02] active:scale-[0.98] group">
         <span>Raise Capital</span>
         <span class="text-base text-purple-500 transition-transform duration-200 group-hover:translate-x-1.5" aria-hidden="true">&rarr;</span>

@@ -5,7 +5,8 @@
  */
 
 // 1. Dynamic URL Generator (Clean URLs without .php extension)
-function url(string $path = ''): string {
+function url(string $path = ''): string
+{
     $cleanPath = ltrim($path, '/');
     if ($cleanPath === '') {
         return BASE_URL;
@@ -46,27 +47,32 @@ function asset(string $path = ''): string {
 }
 
 // 2. Hash ID Encoding & Decoding (Reversible, URL-safe, secure obfuscation)
-function hash_id_encode(int|string|null $id): string {
-    if (empty($id)) return '';
-    $id = (int)$id;
+function hash_id_encode(int|string|null $id): string
+{
+    if (empty($id))
+        return '';
+    $id = (int) $id;
     $key = APP_KEY;
     $salt = substr(hash('sha256', $key . $id), 0, 6);
     $payload = base64_encode($id . ':' . $salt);
     return str_replace(['+', '/', '='], ['-', '_', ''], $payload);
 }
 
-function hash_id_decode(?string $hash): int {
-    if (empty($hash)) return 0;
+function hash_id_decode(?string $hash): int
+{
+    if (empty($hash))
+        return 0;
     $b64 = str_replace(['-', '_'], ['+', '/'], $hash);
     $mod4 = strlen($b64) % 4;
     if ($mod4) {
         $b64 .= substr('====', $mod4);
     }
     $decoded = base64_decode($b64, true);
-    if (!$decoded || !str_contains($decoded, ':')) return 0;
-    
+    if (!$decoded || !str_contains($decoded, ':'))
+        return 0;
+
     list($id, $salt) = explode(':', $decoded, 2);
-    $id = (int)$id;
+    $id = (int) $id;
     $expectedSalt = substr(hash('sha256', APP_KEY . $id), 0, 6);
     if (hash_equals($expectedSalt, $salt)) {
         return $id;
@@ -74,33 +80,224 @@ function hash_id_decode(?string $hash): int {
     return 0;
 }
 
-function encode_id(int|string|null $id): string {
+function encode_id(int|string|null $id): string
+{
     return hash_id_encode($id);
 }
 
-function decode_id(?string $hash): int {
+function decode_id(?string $hash): int
+{
     return hash_id_decode($hash);
 }
 
-// 3. Authentication & Role Control
-function auth_check(): bool {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+// 3. Authentication & Persistent Cookie Sessions
+function set_remember_me_cookie(int $userId, int $days = 30): bool {
+    $db = get_db();
+    if (!$db || $userId <= 0) return false;
+
+    try {
+        // Generate secure 128-bit selector and 256-bit validator
+        $selector = bin2hex(random_bytes(16));
+        $validator = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $validator);
+        $expiresAt = date('Y-m-d H:i:s', time() + ($days * 86400));
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+
+        // Delete any existing tokens for this user on this IP to avoid stale duplicate rows
+        $db->prepare("DELETE FROM remember_tokens WHERE user_id = ? AND ip_address = ?")->execute([$userId, $clientIp]);
+
+        $stmt = $db->prepare("
+            INSERT INTO remember_tokens (user_id, selector, token_hash, ip_address, user_agent, expires_at, created_at, last_used_at)
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+        ");
+        $stmt->execute([$userId, $selector, $tokenHash, $clientIp, $userAgent, $expiresAt]);
+
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        $cookieValue = $selector . ':' . $validator;
+
+        return setcookie('remember_token', $cookieValue, [
+            'expires'  => time() + ($days * 86400),
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
-function is_logged_in(): bool {
+function check_remember_me_cookie(): ?array {
+    // If already active in PHP session, return current user
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        return current_user();
+    }
+
+    if (empty($_COOKIE['remember_token'])) {
+        return null;
+    }
+
+    $cookieVal = (string)$_COOKIE['remember_token'];
+    $parts = explode(':', $cookieVal, 2);
+    if (count($parts) !== 2 || strlen($parts[0]) !== 32 || strlen($parts[1]) !== 64) {
+        clear_remember_me_cookie();
+        return null;
+    }
+
+    $selector = $parts[0];
+    $validator = $parts[1];
+
+    $db = get_db();
+    if (!$db) return null;
+
+    try {
+        $stmt = $db->prepare("SELECT * FROM remember_tokens WHERE selector = ? AND expires_at > NOW() LIMIT 1");
+        $stmt->execute([$selector]);
+        $tokenRow = $stmt->fetch();
+
+        if (!$tokenRow) {
+            clear_remember_me_cookie();
+            return null;
+        }
+
+        // Constant-time hash verification
+        $calculatedHash = hash('sha256', $validator);
+        if (!hash_equals($tokenRow['token_hash'], $calculatedHash)) {
+            // Compromised token detected! Invalidate this selector and clear cookie
+            $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$selector]);
+            clear_remember_me_cookie();
+            log_security_event($tokenRow['user_id'] ?? null, 'REMEMBER_TOKEN_TAMPERED', 'high', 'Invalid remember token validator detected');
+            return null;
+        }
+
+        // Fetch user record
+        $uStmt = $db->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
+        $uStmt->execute([$tokenRow['user_id']]);
+        $user = $uStmt->fetch();
+
+        if (!$user || $user['status'] === 'suspended') {
+            $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$selector]);
+            clear_remember_me_cookie();
+            return null;
+        }
+
+        // Token is valid! Rotate validator to prevent replay attacks
+        $newValidator = bin2hex(random_bytes(32));
+        $newTokenHash = hash('sha256', $newValidator);
+        $newExpiry = date('Y-m-d H:i:s', time() + (30 * 86400));
+
+        $db->prepare("UPDATE remember_tokens SET token_hash = ?, expires_at = ?, last_used_at = NOW() WHERE id = ?")
+           ->execute([$newTokenHash, $newExpiry, $tokenRow['id']]);
+
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        setcookie('remember_token', $selector . ':' . $newValidator, [
+            'expires'  => time() + (30 * 86400),
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
+        // Restore authenticated PHP session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_regenerate_id(true);
+        $_SESSION['user_id'] = (int)$user['id'];
+        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['is_remembered'] = true;
+
+        if ($user['role'] === 'admin') {
+            $_SESSION['2fa_verified'] = true;
+        }
+
+        // Track active login session
+        $sessionToken = bin2hex(random_bytes(32));
+        $_SESSION['session_token'] = $sessionToken;
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+        $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$user['id'], $sessionToken, $clientIp, $ua]);
+
+        log_audit($user['id'], 'SESSION_RESTORED_COOKIE', 'users', $user['id'], 'Restored session via persistent remember-me cookie');
+        return $user;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function clear_remember_me_cookie(): void {
+    if (!empty($_COOKIE['remember_token'])) {
+        $parts = explode(':', (string)$_COOKIE['remember_token'], 2);
+        if (!empty($parts[0])) {
+            $db = get_db();
+            if ($db) {
+                try {
+                    $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$parts[0]]);
+                } catch (Exception $e) {}
+            }
+        }
+    }
+
+    if (isset($_SESSION['user_id'])) {
+        $db = get_db();
+        if ($db) {
+            try {
+                $db->prepare("DELETE FROM remember_tokens WHERE user_id = ? AND expires_at < NOW()")->execute([$_SESSION['user_id']]);
+            } catch (Exception $e) {}
+        }
+    }
+
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    setcookie('remember_token', '', [
+        'expires'  => time() - 86400,
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => $isSecure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    unset($_COOKIE['remember_token']);
+}
+
+function auth_check(): bool {
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        return true;
+    }
+    if (!empty($_COOKIE['remember_token'])) {
+        $user = check_remember_me_cookie();
+        return !empty($user);
+    }
+    return false;
+}
+
+function is_logged_in(): bool
+{
     return auth_check();
 }
 
-function current_user(): ?array {
-    if (!auth_check()) return null;
+function current_user(): ?array
+{
+    if (!auth_check())
+        return null;
     $db = get_db();
-    if (!$db) return null;
-    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
-    $stmt->execute([$_SESSION['user_id']]);
-    return $stmt->fetch() ?: null;
+    if (!$db)
+        return null;
+    try {
+        $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        return $stmt->fetch() ?: null;
+    } catch (\Throwable $e) {
+        error_log("current_user() DB Error: " . $e->getMessage());
+        return null;
+    }
 }
 
-function require_auth(?string $allowedRole = null): array {
+function require_auth(?string $allowedRole = null): array
+{
     if (!auth_check()) {
         set_flash('error', 'Please log in to continue.');
         header('Location: ' . url('auth/login.php'));
@@ -113,12 +310,12 @@ function require_auth(?string $allowedRole = null): array {
         exit;
     }
     // Enforce 2FA verification for Admin sessions
-    if ($user['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int)$user['id'])) {
-        $_SESSION['2fa_pending_user_id'] = (int)$user['id'];
+    if ($user['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int) $user['id'])) {
+        $_SESSION['2fa_pending_user_id'] = (int) $user['id'];
         $_SESSION['2fa_pending_email'] = $user['email'];
         $_SESSION['2fa_pending_role'] = $user['role'];
         $_SESSION['2fa_pending_name'] = $user['name'];
-        if (!is_admin_totp_setup((int)$user['id'])) {
+        if (!is_admin_totp_setup((int) $user['id'])) {
             header('Location: ' . url('auth/setup_2fa.php'));
             exit;
         }
@@ -127,9 +324,9 @@ function require_auth(?string $allowedRole = null): array {
     }
     if ($allowedRole !== null && $user['role'] !== $allowedRole && $user['role'] !== 'admin') {
         set_flash('error', 'Unauthorized access to this section.');
-        $redirect = match($user['role']) {
+        $redirect = match ($user['role']) {
             'founder' => 'founder/dashboard.php',
-            'investor' => 'investor/dashboard.php',
+            'investor' => 'investor/discover.php',
             'admin' => 'admin/dashboard.php',
             default => 'index.php'
         };
@@ -140,9 +337,11 @@ function require_auth(?string $allowedRole = null): array {
 }
 
 // 4. Audit Trail Logger
-function log_audit(?int $actorId, string $action, string $entityType, ?int $entityId, ?string $details = null, ?string $prevValue = null, ?string $newValue = null): void {
+function log_audit(?int $actorId, string $action, string $entityType, ?int $entityId, ?string $details = null, ?string $prevValue = null, ?string $newValue = null): void
+{
     $db = get_db();
-    if (!$db) return;
+    if (!$db)
+        return;
     try {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
@@ -157,27 +356,32 @@ function log_audit(?int $actorId, string $action, string $entityType, ?int $enti
 }
 
 // 5. In-App Notification Sender
-function send_notification(int $userId, string $title, string $message, string $type = 'info', ?string $actionUrl = null): void {
+function send_notification(int $userId, string $title, string $message, string $type = 'info', ?string $actionUrl = null): void
+{
     $db = get_db();
-    if (!$db) return;
+    if (!$db)
+        return;
     try {
         $stmt = $db->prepare("
             INSERT INTO notifications (user_id, title, message, type, action_url, is_read, created_at)
             VALUES (?, ?, ?, ?, ?, 0, NOW())
         ");
         $stmt->execute([$userId, $title, $message, $type, $actionUrl]);
-    } catch (Exception $e) {}
+    } catch (Exception $e) {
+    }
 }
 
 // 6. Flash Messages
-function set_flash(string $type, string $message): void {
+function set_flash(string $type, string $message): void
+{
     $_SESSION['flash'] = [
         'type' => $type, // 'success', 'error', 'info', 'warning'
         'message' => $message
     ];
 }
 
-function get_flash(): ?array {
+function get_flash(): ?array
+{
     if (isset($_SESSION['flash'])) {
         $flash = $_SESSION['flash'];
         unset($_SESSION['flash']);
@@ -187,21 +391,24 @@ function get_flash(): ?array {
 }
 
 // 7. Security: Sanitization & CSRF
-function sanitize(mixed $data): mixed {
+function sanitize(mixed $data): mixed
+{
     if (is_array($data)) {
         return array_map('sanitize', $data);
     }
-    return htmlspecialchars(trim((string)$data), ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars(trim((string) $data), ENT_QUOTES, 'UTF-8');
 }
 
-function csrf_token(): string {
+function csrf_token(): string
+{
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
 }
 
-function verify_csrf(?string $token): bool {
+function verify_csrf(?string $token): bool
+{
     return !empty($token) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
@@ -210,7 +417,8 @@ function csrf_field(): string {
 }
 
 // 8. Currency & Number Formatters (Indian Rupee formatting: e.g., ₹25,00,000)
-function format_inr(float|int $number, bool $includeSymbol = true): string {
+function format_inr(float|int $number, bool $includeSymbol = true): string
+{
     $sym = $includeSymbol ? '₹' : '';
     $number = round($number);
     if ($number >= 10000000) {
@@ -222,7 +430,8 @@ function format_inr(float|int $number, bool $includeSymbol = true): string {
 }
 
 // 9. Status Badges HTML Helper (Crisp, Clean Light Theme)
-function render_status_badge(string $status): string {
+function render_status_badge(string $status): string
+{
     $statusUpper = strtoupper($status);
     $dotColors = [
         'DRAFT' => 'bg-slate-400',
@@ -263,9 +472,11 @@ function render_status_badge(string $status): string {
 }
 
 // 10. Profile Completion Calculator
-function get_profile_progress(int $userId, string $role): array {
+function get_profile_progress(int $userId, string $role): array
+{
     $db = get_db();
-    if (!$db) return ['percentage' => 0, 'is_complete' => false, 'missing' => []];
+    if (!$db)
+        return ['percentage' => 0, 'is_complete' => false, 'missing' => []];
 
     $missing = [];
     $totalSteps = 0;
@@ -278,68 +489,90 @@ function get_profile_progress(int $userId, string $role): array {
     if ($role === 'founder') {
         $totalSteps = 6;
         // Step 1: Basic user info
-        if (!empty($user['name']) && !empty($user['email']) && !empty($user['phone'])) $completedSteps++;
-        else $missing[] = 'Basic Account & Phone Details';
+        if (!empty($user['name']) && !empty($user['email']) && !empty($user['phone']))
+            $completedSteps++;
+        else
+            $missing[] = 'Basic Account & Phone Details';
 
         // Step 2: Founder profile
         $fpStmt = $db->prepare("SELECT * FROM founder_profiles WHERE user_id = ?");
         $fpStmt->execute([$userId]);
         $fp = $fpStmt->fetch();
-        if ($fp && !empty($fp['bio']) && !empty($fp['linkedin_url'])) $completedSteps++;
-        else $missing[] = 'Founder Bio & LinkedIn Profile';
+        if ($fp && !empty($fp['bio']) && !empty($fp['linkedin_url']))
+            $completedSteps++;
+        else
+            $missing[] = 'Founder Bio & LinkedIn Profile';
 
         // Step 3: Company Master record
         $cStmt = $db->prepare("SELECT c.* FROM companies c JOIN company_founders cf ON c.id = cf.company_id WHERE cf.user_id = ?");
         $cStmt->execute([$userId]);
         $comp = $cStmt->fetch();
-        if ($comp && !empty($comp['name']) && !empty($comp['cin_number']) && !empty($comp['industry'])) $completedSteps++;
-        else $missing[] = 'Company Details & CIN Registration';
+        if ($comp && !empty($comp['name']) && !empty($comp['cin_number']) && !empty($comp['industry']))
+            $completedSteps++;
+        else
+            $missing[] = 'Company Details & CIN Registration';
 
         // Step 4: Company Pitch & Stage
-        if ($comp && !empty($comp['pitch']) && !empty($comp['stage'])) $completedSteps++;
-        else $missing[] = 'Startup Stage & Pitch Summary';
+        if ($comp && !empty($comp['pitch']) && !empty($comp['stage']))
+            $completedSteps++;
+        else
+            $missing[] = 'Startup Stage & Pitch Summary';
 
         // Step 5: KYC / Verification uploaded
         $vStmt = $db->prepare("SELECT * FROM verification_requests WHERE user_id = ?");
         $vStmt->execute([$userId]);
         $ver = $vStmt->fetch();
-        if ($ver && $ver['status'] !== 'rejected') $completedSteps++;
-        else $missing[] = 'Identity KYC / DigiLocker Verification';
+        if ($ver && $ver['status'] !== 'rejected')
+            $completedSteps++;
+        else
+            $missing[] = 'Identity KYC / DigiLocker Verification';
 
         // Step 6: Bank & Declaration
-        if ($fp && !empty($fp['pan_number'])) $completedSteps++;
-        else $missing[] = 'PAN & Founder Tax Declaration';
+        if ($fp && !empty($fp['pan_number']))
+            $completedSteps++;
+        else
+            $missing[] = 'PAN & Founder Tax Declaration';
 
     } else if ($role === 'investor') {
         $totalSteps = 5;
         // Step 1: Basic account
-        if (!empty($user['name']) && !empty($user['email']) && !empty($user['phone'])) $completedSteps++;
-        else $missing[] = 'Account Details & Phone';
+        if (!empty($user['name']) && !empty($user['email']) && !empty($user['phone']))
+            $completedSteps++;
+        else
+            $missing[] = 'Account Details & Phone';
 
         // Step 2: Investor profile
         $ipStmt = $db->prepare("SELECT * FROM investor_profiles WHERE user_id = ?");
         $ipStmt->execute([$userId]);
         $ip = $ipStmt->fetch();
-        if ($ip && !empty($ip['investor_type']) && !empty($ip['experience_years'])) $completedSteps++;
-        else $missing[] = 'Investor Type & Experience';
+        if ($ip && !empty($ip['investor_type']) && !empty($ip['experience_years']))
+            $completedSteps++;
+        else
+            $missing[] = 'Investor Type & Experience';
 
         // Step 3: Investment preferences & ticket size
         $prefStmt = $db->prepare("SELECT * FROM investor_preferences WHERE user_id = ?");
         $prefStmt->execute([$userId]);
         $pref = $prefStmt->fetch();
-        if ($pref && !empty($pref['preferred_industries']) && !empty($pref['min_ticket'])) $completedSteps++;
-        else $missing[] = 'Investment Preferences & Ticket Size';
+        if ($pref && !empty($pref['preferred_industries']) && !empty($pref['min_ticket']))
+            $completedSteps++;
+        else
+            $missing[] = 'Investment Preferences & Ticket Size';
 
         // Step 4: Verification status
         $vStmt = $db->prepare("SELECT * FROM verification_requests WHERE user_id = ?");
         $vStmt->execute([$userId]);
         $ver = $vStmt->fetch();
-        if ($ver && $ver['status'] !== 'rejected') $completedSteps++;
-        else $missing[] = 'Investor KYC / Accreditation';
+        if ($ver && $ver['status'] !== 'rejected')
+            $completedSteps++;
+        else
+            $missing[] = 'Investor KYC / Accreditation';
 
         // Step 5: PAN & Risk acceptance
-        if ($ip && !empty($ip['pan_number']) && $ip['risk_disclosure_accepted']) $completedSteps++;
-        else $missing[] = 'PAN & Risk Disclosure Acceptance';
+        if ($ip && !empty($ip['pan_number']) && $ip['risk_disclosure_accepted'])
+            $completedSteps++;
+        else
+            $missing[] = 'PAN & Risk Disclosure Acceptance';
     } else {
         return ['percentage' => 100, 'is_complete' => true, 'missing' => []];
     }
@@ -358,59 +591,62 @@ function get_profile_progress(int $userId, string $role): array {
  * 12. Handle Avatar File Upload
  * Validates, saves to /uploads/avatars/, and returns array ['success', 'url', 'error']
  */
-function handle_avatar_upload(array $file, int $userId): array {
+function handle_avatar_upload(array $file, int $userId): array
+{
     if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
         return ['success' => false, 'url' => null, 'error' => null];
     }
-    
+
     if ($file['error'] !== UPLOAD_ERR_OK) {
         return ['success' => false, 'url' => null, 'error' => 'Photo upload failed (code ' . $file['error'] . ').'];
     }
-    
+
     // Validate size (max 8MB)
     if ($file['size'] > 8 * 1024 * 1024) {
         return ['success' => false, 'url' => null, 'error' => 'Photo file size must be less than 8MB.'];
     }
-    
+
     // Validate image format
     $imageInfo = @getimagesize($file['tmp_name']);
     if (!$imageInfo) {
         return ['success' => false, 'url' => null, 'error' => 'The selected file is not a valid image.'];
     }
-    
+
     $allowedMimes = [
         'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
+        'image/png' => 'png',
         'image/webp' => 'webp',
-        'image/gif'  => 'gif'
+        'image/gif' => 'gif'
     ];
-    
+
     $mime = $imageInfo['mime'];
     if (!isset($allowedMimes[$mime])) {
         return ['success' => false, 'url' => null, 'error' => 'Only JPG, PNG, WEBP, and GIF photos are supported.'];
     }
-    
+
     $ext = $allowedMimes[$mime];
     $uploadDir = ROOT_PATH . '/uploads/avatars';
     if (!is_dir($uploadDir)) {
         @mkdir($uploadDir, 0777, true);
     }
-    
+
     $filename = 'avatar_' . $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
     $destination = $uploadDir . '/' . $filename;
-    
+
     if (!move_uploaded_file($file['tmp_name'], $destination)) {
         return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded photo to disk.'];
     }
-    
+
     $publicUrl = url('uploads/avatars/' . $filename);
     return ['success' => true, 'url' => $publicUrl, 'error' => null];
 }
 
 // 13. Security Event Logger
-function log_security_event(?int $userId, string $eventType, string $severity = 'medium', ?string $details = null): void {
+function log_security_event(?int $userId, string $eventType, string $severity = 'medium', ?string $details = null): void
+{
     $db = get_db();
-    if (!$db) return;
+    if (!$db)
+        return;
     try {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
@@ -419,11 +655,55 @@ function log_security_event(?int $userId, string $eventType, string $severity = 
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([$userId, $eventType, $severity, $ip, $userAgent, $details]);
+    } catch (Exception $e) {
+    }
+}
+
+/**
+ * Brute-Force Rate Limiting Engine:
+ * Blocks IP/account if more than 5 failed login attempts in last 15 minutes
+ */
+function is_login_rate_limited(string $ip, string $email): bool {
+    $db = get_db();
+    if (!$db) return false;
+    try {
+        $stmt = $db->prepare("
+            SELECT COUNT(*) 
+            FROM security_events 
+            WHERE event_type = 'LOGIN_FAILED' 
+              AND (ip_address = ? OR details LIKE ?)
+              AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+        ");
+        $emailPattern = '%' . $email . '%';
+        $stmt->execute([$ip, $emailPattern]);
+        $failures = (int)$stmt->fetchColumn();
+        return $failures >= 5;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function record_failed_login(string $ip, string $email): void {
+    log_security_event(null, 'LOGIN_FAILED', 'medium', "Failed credentials attempt for email: {$email}");
+}
+
+function clear_failed_logins(string $ip, string $email): void {
+    $db = get_db();
+    if (!$db) return;
+    try {
+        $emailPattern = '%' . $email . '%';
+        $stmt = $db->prepare("
+            DELETE FROM security_events 
+            WHERE event_type = 'LOGIN_FAILED' 
+              AND (ip_address = ? OR details LIKE ?)
+        ");
+        $stmt->execute([$ip, $emailPattern]);
     } catch (Exception $e) {}
 }
 
 // 14. Two-Factor Authentication (2FA) Helpers: Base32 & RFC 6238 TOTP Engine
-function base32_decode(string $b32): string {
+function base32_decode(string $b32): string
+{
     $b32 = strtoupper(trim($b32));
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $binary = '';
@@ -432,9 +712,11 @@ function base32_decode(string $b32): string {
 
     for ($i = 0; $i < strlen($b32); $i++) {
         $char = $b32[$i];
-        if ($char === '=') break;
+        if ($char === '=')
+            break;
         $val = strpos($alphabet, $char);
-        if ($val === false) continue;
+        if ($val === false)
+            continue;
 
         $buffer = ($buffer << 5) | $val;
         $bufferSize += 5;
@@ -447,7 +729,8 @@ function base32_decode(string $b32): string {
     return $binary;
 }
 
-function base32_encode(string $data): string {
+function base32_encode(string $data): string
+{
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $b32 = '';
     $buffer = 0;
@@ -471,7 +754,8 @@ function base32_encode(string $data): string {
     return $b32;
 }
 
-function generate_totp_secret(int $length = 16): string {
+function generate_totp_secret(int $length = 16): string
+{
     $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     $secret = '';
     for ($i = 0; $i < $length; $i++) {
@@ -480,9 +764,10 @@ function generate_totp_secret(int $length = 16): string {
     return $secret;
 }
 
-function get_totp_code(string $secret, ?int $timeSlice = null): string {
+function get_totp_code(string $secret, ?int $timeSlice = null): string
+{
     if ($timeSlice === null) {
-        $timeSlice = (int)floor(time() / 30);
+        $timeSlice = (int) floor(time() / 30);
     }
     $secretKey = base32_decode($secret);
     $time = chr(0) . chr(0) . chr(0) . chr(0) . pack('N*', $timeSlice);
@@ -494,10 +779,12 @@ function get_totp_code(string $secret, ?int $timeSlice = null): string {
     return sprintf('%06d', $modulo);
 }
 
-function verify_totp_code(string $secret, string $code, int $discrepancy = 1): bool {
+function verify_totp_code(string $secret, string $code, int $discrepancy = 1): bool
+{
     $cleanCode = trim(preg_replace('/[^0-9]/', '', $code));
-    if (strlen($cleanCode) !== 6) return false;
-    $currentTimeSlice = (int)floor(time() / 30);
+    if (strlen($cleanCode) !== 6)
+        return false;
+    $currentTimeSlice = (int) floor(time() / 30);
     for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
         $calcCode = get_totp_code($secret, $currentTimeSlice + $i);
         if (hash_equals($calcCode, $cleanCode)) {
@@ -507,15 +794,18 @@ function verify_totp_code(string $secret, string $code, int $discrepancy = 1): b
     return false;
 }
 
-function get_totp_auth_url(string $email, string $secret): string {
+function get_totp_auth_url(string $email, string $secret): string
+{
     $issuer = APP_NAME;
     $label = rawurlencode($issuer) . ':' . rawurlencode($email);
     return "otpauth://totp/{$label}?secret={$secret}&issuer=" . rawurlencode($issuer) . "&algorithm=SHA1&digits=6&period=30";
 }
 
-function get_2fa_record(int $userId): ?array {
+function get_2fa_record(int $userId): ?array
+{
     $db = get_db();
-    if (!$db) return null;
+    if (!$db)
+        return null;
     $stmt = $db->prepare("SELECT * FROM two_factor_auth WHERE user_id = ? LIMIT 1");
     $stmt->execute([$userId]);
     $rec = $stmt->fetch();
@@ -535,21 +825,27 @@ function get_2fa_record(int $userId): ?array {
     return $rec ?: null;
 }
 
-function is_admin_2fa_enforced(int $userId): bool {
+function is_admin_2fa_enforced(int $userId): bool
+{
     $rec = get_2fa_record($userId);
-    if (!$rec) return true; // Default enforced for admin
-    return (bool)$rec['is_enabled'];
+    if (!$rec)
+        return true; // Default enforced for admin
+    return (bool) $rec['is_enabled'];
 }
 
-function is_admin_totp_setup(int $userId): bool {
+function is_admin_totp_setup(int $userId): bool
+{
     $rec = get_2fa_record($userId);
-    if (!$rec) return false;
+    if (!$rec)
+        return false;
     return !empty($rec['is_totp_setup']) && !empty($rec['secret_code']);
 }
 
-function get_or_create_totp_secret(int $userId): string {
+function get_or_create_totp_secret(int $userId): string
+{
     $db = get_db();
-    if (!$db) return '';
+    if (!$db)
+        return '';
     $rec = get_2fa_record($userId);
     if (!empty($rec['secret_code'])) {
         return $rec['secret_code'];
@@ -560,9 +856,11 @@ function get_or_create_totp_secret(int $userId): string {
     return $secret;
 }
 
-function confirm_admin_totp_setup(int $userId, string $code): array {
+function confirm_admin_totp_setup(int $userId, string $code): array
+{
     $db = get_db();
-    if (!$db) return ['success' => false, 'message' => 'Database error.'];
+    if (!$db)
+        return ['success' => false, 'message' => 'Database error.'];
     $rec = get_2fa_record($userId);
     if (!$rec || empty($rec['secret_code'])) {
         return ['success' => false, 'message' => 'No active setup secret found. Please refresh and try again.'];
@@ -592,9 +890,11 @@ function confirm_admin_totp_setup(int $userId, string $code): array {
     return ['success' => false, 'message' => 'Invalid 6-digit code. Please verify the code displayed in Google/Microsoft Authenticator and ensure device clock is accurate.'];
 }
 
-function verify_admin_totp_login(int $userId, string $code): array {
+function verify_admin_totp_login(int $userId, string $code): array
+{
     $db = get_db();
-    if (!$db) return ['success' => false, 'message' => 'Database error.'];
+    if (!$db)
+        return ['success' => false, 'message' => 'Database error.'];
 
     $cleanCode = trim(preg_replace('/[^0-9]/', '', $code));
     if (strlen($cleanCode) !== 6) {
@@ -606,7 +906,7 @@ function verify_admin_totp_login(int $userId, string $code): array {
         return ['success' => false, 'message' => 'Authenticator app is not configured. Please complete setup.'];
     }
 
-    if ((int)$rec['attempts'] >= 5) {
+    if ((int) $rec['attempts'] >= 5) {
         log_security_event($userId, '2FA_MAX_ATTEMPTS_EXCEEDED', 'high', 'Max 2FA failed attempts reached.');
         return ['success' => false, 'message' => 'Too many failed attempts. Please wait 1 minute before trying again or use an Emergency Backup Code.'];
     }
@@ -617,7 +917,7 @@ function verify_admin_totp_login(int $userId, string $code): array {
         log_audit($userId, '2FA_VERIFICATION_SUCCESS', 'two_factor_auth', $userId, 'Admin authenticated via Authenticator TOTP');
         return ['success' => true, 'message' => 'Verification successful!'];
     } else {
-        $newAttempts = (int)$rec['attempts'] + 1;
+        $newAttempts = (int) $rec['attempts'] + 1;
         $db->prepare("UPDATE two_factor_auth SET attempts = ? WHERE user_id = ?")->execute([$newAttempts, $userId]);
         $remaining = max(0, 5 - $newAttempts);
         log_security_event($userId, '2FA_VERIFICATION_FAILED', 'medium', "Invalid TOTP entered. Attempt {$newAttempts} of 5.");
@@ -625,18 +925,22 @@ function verify_admin_totp_login(int $userId, string $code): array {
     }
 }
 
-function reset_admin_totp(int $userId): void {
+function reset_admin_totp(int $userId): void
+{
     $db = get_db();
-    if (!$db) return;
+    if (!$db)
+        return;
     $newSecret = generate_totp_secret();
     $db->prepare("UPDATE two_factor_auth SET secret_code = ?, is_totp_setup = 0, attempts = 0 WHERE user_id = ?")->execute([$newSecret, $userId]);
     log_security_event($userId, '2FA_TOTP_RESET', 'high', 'Admin mobile authenticator was reset for re-pairing.');
     log_audit($userId, '2FA_TOTP_RESET', 'two_factor_auth', $userId, 'Mobile Authenticator reset for QR re-scan');
 }
 
-function generate_2fa_otp(int $userId): string {
+function generate_2fa_otp(int $userId): string
+{
     $db = get_db();
-    if (!$db) return '';
+    if (!$db)
+        return '';
 
     // Ensure 2FA record exists
     get_2fa_record($userId);
@@ -658,7 +962,8 @@ function generate_2fa_otp(int $userId): string {
     return $otp;
 }
 
-function verify_2fa_otp(int $userId, string $code): array {
+function verify_2fa_otp(int $userId, string $code): array
+{
     $db = get_db();
     if (!$db) {
         return ['success' => false, 'message' => 'Database connection unavailable.'];
@@ -675,7 +980,7 @@ function verify_2fa_otp(int $userId, string $code): array {
     }
 
     // Rate limiting: 5 attempts
-    if ((int)$rec['attempts'] >= 5) {
+    if ((int) $rec['attempts'] >= 5) {
         log_security_event($userId, '2FA_MAX_ATTEMPTS_EXCEEDED', 'high', 'Max 2FA failed attempts reached. Code invalidated.');
         return ['success' => false, 'message' => 'Security limit exceeded: Too many incorrect attempts. Please click "Resend Code" to obtain a new code.'];
     }
@@ -687,7 +992,7 @@ function verify_2fa_otp(int $userId, string $code): array {
     }
 
     // Compare
-    if (hash_equals((string)$rec['current_otp'], $cleanCode)) {
+    if (hash_equals((string) $rec['current_otp'], $cleanCode)) {
         // Clear active code upon successful verification
         $upd = $db->prepare("
             UPDATE two_factor_auth 
@@ -701,7 +1006,7 @@ function verify_2fa_otp(int $userId, string $code): array {
 
         return ['success' => true, 'message' => 'Verification successful!'];
     } else {
-        $newAttempts = (int)$rec['attempts'] + 1;
+        $newAttempts = (int) $rec['attempts'] + 1;
         $db->prepare("UPDATE two_factor_auth SET attempts = ? WHERE user_id = ?")->execute([$newAttempts, $userId]);
         $remaining = max(0, 5 - $newAttempts);
 
@@ -710,9 +1015,11 @@ function verify_2fa_otp(int $userId, string $code): array {
     }
 }
 
-function generate_2fa_backup_codes(int $userId, int $count = 5): array {
+function generate_2fa_backup_codes(int $userId, int $count = 5): array
+{
     $db = get_db();
-    if (!$db) return [];
+    if (!$db)
+        return [];
 
     get_2fa_record($userId);
 
@@ -742,9 +1049,11 @@ function generate_2fa_backup_codes(int $userId, int $count = 5): array {
     return $plainCodes;
 }
 
-function verify_2fa_backup_code(int $userId, string $enteredCode): array {
+function verify_2fa_backup_code(int $userId, string $enteredCode): array
+{
     $db = get_db();
-    if (!$db) return ['success' => false, 'message' => 'Database error.'];
+    if (!$db)
+        return ['success' => false, 'message' => 'Database error.'];
 
     $clean = strtoupper(trim(preg_replace('/[^A-Za-z0-9]/', '', $enteredCode)));
     if (strlen($clean) < 6) {
@@ -791,14 +1100,18 @@ function verify_2fa_backup_code(int $userId, string $enteredCode): array {
     return ['success' => false, 'message' => 'Invalid or already used emergency backup code.'];
 }
 
-function get_remaining_backup_codes_count(int $userId): int {
+function get_remaining_backup_codes_count(int $userId): int
+{
     $rec = get_2fa_record($userId);
-    if (!$rec || empty($rec['backup_codes'])) return 0;
+    if (!$rec || empty($rec['backup_codes']))
+        return 0;
     $codes = json_decode($rec['backup_codes'], true);
-    if (!is_array($codes)) return 0;
+    if (!is_array($codes))
+        return 0;
     $unused = 0;
     foreach ($codes as $c) {
-        if (empty($c['used'])) $unused++;
+        if (empty($c['used']))
+            $unused++;
     }
     return $unused;
 }

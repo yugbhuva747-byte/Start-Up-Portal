@@ -97,16 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deal Chat • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-    </style>
+        <title><?= $pageTitle ?? APP_NAME ?> • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
     
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
@@ -114,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
     <div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <div class="flex-1 flex overflow-hidden">
+        <main class="flex-1 flex overflow-hidden" id="founder-messages-main">
             
             <!-- Conversation Threads List -->
             <div class="<?= $activeConv ? 'hidden md:flex' : 'flex' ?> w-full md:w-80 lg:w-96 border-r border-slate-200 bg-white flex-col">
@@ -236,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                 <?php endif; ?>
             </div>
 
-        </div>
+        </main>
     </div>
 
     <script>

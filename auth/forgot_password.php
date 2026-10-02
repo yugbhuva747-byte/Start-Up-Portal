@@ -44,12 +44,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     log_audit($user['id'], 'PASSWORD_RESET_REQUESTED', 'users', $user['id'], 'Password reset token generated');
                     
-                    // In production, send email. For demo, show the link directly.
-                    $resetLink = url('auth/reset_password.php?token=' . $token . '&email=' . urlencode($user['email']));
+                    // Send password reset email
+                    $resetUrl = url('auth/reset_password.php?token=' . $token . '&email=' . urlencode($user['email']));
+                    if (function_exists('send_system_email')) {
+                        $emailSubject = 'Reset Your ' . APP_NAME . ' Password';
+                        $emailBody = "
+                            <div style='font-family:sans-serif; max-width:540px; margin:auto; padding:24px; border:1px solid #e2e8f0; border-radius:12px;'>
+                                <h2 style='color:#0f172a;'>Password Reset Request</h2>
+                                <p style='color:#475569;'>Hello " . htmlspecialchars($user['name']) . ",</p>
+                                <p style='color:#475569;'>We received a request to reset your password for your " . htmlspecialchars(APP_NAME) . " account. Click the button below to choose a new password. This link is valid for 1 hour.</p>
+                                <div style='margin:28px 0;'>
+                                    <a href='{$resetUrl}' style='background:#4f46e5; color:#ffffff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:14px; display:inline-block;'>Reset My Password</a>
+                                </div>
+                                <p style='color:#94a3b8; font-size:12px;'>If you did not request this, you can safely ignore this email. Your password will remain unchanged.</p>
+                            </div>
+                        ";
+                        send_system_email($user['email'], $user['name'], $emailSubject, $emailBody, 'password_reset');
+                    }
+
+                    // Only expose on-screen reset link in explicit local development mode
+                    $allowDevDemo = (defined('IS_LOCALHOST') && IS_LOCALHOST && defined('APP_ENV') && APP_ENV === 'development' && (getenv('ALLOW_DEMO_2FA_BYPASS') === 'true' || ($_ENV['ALLOW_DEMO_2FA_BYPASS'] ?? '') === 'true'));
+                    if ($allowDevDemo) {
+                        $resetLink = $resetUrl;
+                    }
                     $success = true;
                 } else {
                     // Don't reveal whether email exists (security best practice)
-                    // But for demo purposes, we'll still show success
                     $success = true;
                 }
             } else {
@@ -70,10 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-sm w-full my-8" id="auth-container">
         

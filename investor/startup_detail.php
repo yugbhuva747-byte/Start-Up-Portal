@@ -56,7 +56,7 @@ if ($db) {
     // 5. Check Watchlist
     $wStmt = $db->prepare("SELECT id FROM watchlists WHERE investor_user_id = ? AND company_id = ?");
     $wStmt->execute([$user['id'], $companyId]);
-    $isSaved = (bool)$wStmt->fetch();
+    $isSaved = (bool) $wStmt->fetch();
 
     // 6. Fetch Founder Updates & Milestones
     $uStmt = $db->prepare("SELECT * FROM startup_updates WHERE company_id = ? ORDER BY created_at DESC");
@@ -73,16 +73,17 @@ $flash = get_flash();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($company['name']) ?> • Deal Room • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            font-family: "Vay Portal", Sans-serif;
+        }
+
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -90,361 +91,430 @@ $flash = get_flash();
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
-    
+
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-6xl w-full mx-auto" id="deal-room-main">
-            
+        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="deal-room-main">
+
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div
+                    class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
+                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
-            <!-- Breadcrumb Navigation -->
-            <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-500">
-                <a href="<?= url('investor/discover.php') ?>" class="hover:text-slate-900 transition flex items-center space-x-1">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                    <span>Back to Discovery</span>
+            <!-- Navigation Breadcrumb -->
+            <div class="flex items-center space-x-2 text-xs text-[#667085]">
+                <a href="<?= url('investor/discover.php') ?>"
+                    class="hover:text-[#123B7A] transition flex items-center space-x-1">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+                    <span>Deal Discovery</span>
                 </a>
                 <span>/</span>
-                <span class="text-slate-800 font-bold"><?= htmlspecialchars($company['name']) ?></span>
+                <span class="text-[#111827] font-bold"><?= htmlspecialchars($company['name']) ?></span>
             </div>
 
-            <!-- Hero Company Header -->
-            <div class="card-clean rounded-2xl p-5 sm:p-6 relative">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div class="flex items-start space-x-4">
-                        <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=160' ?>" class="w-16 h-16 rounded-2xl object-cover border border-slate-200 flex-shrink-0">
+            <!-- ==========================================
+                 TOP: STARTUP PROFILE HEADER
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                    <div class="flex items-start space-x-5">
+                        <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200' ?>"
+                            class="w-20 h-20 rounded-2xl object-cover border border-[#E4E8EF] flex-shrink-0">
                         <div>
-                            <div class="flex items-center space-x-2.5">
-                                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight"><?= htmlspecialchars($company['name']) ?></h1>
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0B1F3A] tracking-tight">
+                                    <?= htmlspecialchars($company['name']) ?>
+                                </h1>
                                 <?= render_status_badge($company['verified_status']) ?>
                             </div>
-                            <div class="flex items-center space-x-2 text-xs sm:text-sm text-slate-600 mt-1 font-medium">
-                                <span class="text-indigo-600 font-bold"><?= htmlspecialchars($company['industry']) ?></span>
+
+                            <div class="flex flex-wrap items-center gap-2 text-xs text-[#667085] mt-1.5">
+                                <span
+                                    class="font-bold text-[#123B7A]"><?= htmlspecialchars($company['industry']) ?></span>
                                 <span>•</span>
                                 <span><?= htmlspecialchars($company['stage']) ?></span>
                                 <span>•</span>
-                                <span><?= htmlspecialchars($company['city']) ?>, <?= htmlspecialchars($company['country']) ?></span>
+                                <span><?= htmlspecialchars($company['city']) ?>,
+                                    <?= htmlspecialchars($company['country']) ?></span>
                             </div>
+
+                            <p class="text-xs sm:text-sm text-[#111827] mt-3 max-w-2xl font-medium leading-relaxed">
+                                <?= htmlspecialchars($company['pitch']) ?>
+                            </p>
                         </div>
                     </div>
 
-                    <div class="flex items-center space-x-2.5">
-                        <!-- Message Founder Button -->
+                    <!-- Primary Actions -->
+                    <div class="flex flex-wrap items-center gap-3 flex-shrink-0">
                         <?php if (!empty($founders)): ?>
-                            <a href="<?= url('investor/messages.php?founder=' . hash_id_encode($founders[0]['id']) . '&company=' . $hashId) ?>" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold transition flex items-center space-x-1.5">
-                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                            <a href="<?= url('investor/messages.php?founder=' . hash_id_encode($founders[0]['id']) . '&company=' . $hashId) ?>"
+                                class="px-4 py-2.5 rounded-lg bg-white hover:bg-[#FAFBFD] border border-[#E4E8EF] text-[#111827] text-xs font-bold transition flex items-center space-x-2">
+                                <i data-lucide="message-circle" class="w-4 h-4 text-[#667085]"></i>
                                 <span>Message Founder</span>
                             </a>
                         <?php endif; ?>
 
-                        <!-- Invest Now Action -->
                         <?php if ($activeRound): ?>
-                            <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>" class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center space-x-1.5">
+                            <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>"
+                                class="px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm">
                                 <i data-lucide="zap" class="w-4 h-4"></i>
                                 <span>Participate / Invest</span>
                             </a>
                         <?php endif; ?>
                     </div>
                 </div>
+            </section>
 
-                <div class="mt-4 pt-4 border-t border-slate-100 text-xs sm:text-sm text-slate-600">
-                    <span class="font-bold text-slate-900 text-xs uppercase tracking-wider block mb-1">Elevator Pitch:</span>
-                    <div class="text-slate-700 font-medium leading-relaxed"><?= htmlspecialchars($company['pitch']) ?></div>
+            <!-- ==========================================
+                 SECTION: ABOUT & MARKET OPPORTUNITY
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8 space-y-3">
+                <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                    About Company & Opportunity
                 </div>
-            </div>
+                <div class="text-xs sm:text-sm text-[#111827] leading-relaxed whitespace-pre-line max-w-4xl">
+                    <?= nl2br(htmlspecialchars($company['description'])) ?>
+                </div>
+            </section>
 
-            <!-- Two Column Layout: Round Details & Pitch Description -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                
-                <!-- Main Information (2 cols) -->
-                <div class="lg:col-span-2 space-y-6">
-                    
-                    <!-- Business Overview -->
-                    <div class="card-clean rounded-2xl p-5 sm:p-6">
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                            <i data-lucide="info" class="w-4 h-4 text-indigo-600"></i>
-                            <span>About the Company & Market Opportunity</span>
-                        </h2>
-                        <div class="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line space-y-2">
-                            <?= nl2br(htmlspecialchars($company['description'])) ?>
-                        </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5 mt-5 pt-4 border-t border-slate-100 text-xs sm:text-sm">
-                            <div>
-                                <span class="text-slate-400 text-xs uppercase font-bold tracking-wider block">Business Model</span>
-                                <span class="text-slate-900 font-bold"><?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS') ?></span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 text-xs uppercase font-bold tracking-wider block">Corporate CIN</span>
-                                <span class="text-slate-900 font-mono font-bold"><?= htmlspecialchars($company['cin_number'] ?? 'Verified') ?></span>
-                            </div>
-                            <div>
-                                <span class="text-slate-400 text-xs uppercase font-bold tracking-wider block">Team Size</span>
-                                <span class="text-slate-900 font-bold"><?= htmlspecialchars($company['employee_count'] ?? '10') ?> Members</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Founding Team -->
-                    <div class="card-clean rounded-2xl p-5 sm:p-6">
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                            <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
-                            <span>Leadership & Founding Team</span>
-                        </h2>
-
-                        <div class="space-y-3.5">
-                            <?php foreach ($founders as $f): 
-                                $fId = $f['user_id'] ?? $f['id'] ?? 0;
-                            ?>
-                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-start space-x-3.5 hover:bg-slate-100/70 transition group">
-                                    <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>" title="View Full Founder Profile">
-                                        <img src="<?= $f['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>" class="w-11 h-11 rounded-full object-cover border border-slate-200 group-hover:ring-2 group-hover:ring-indigo-500 transition">
-                                    </a>
-                                    <div class="flex-1 text-xs sm:text-sm">
-                                        <div class="flex items-center justify-between">
-                                            <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>" class="font-bold text-slate-900 text-sm sm:text-base hover:text-indigo-600 transition flex items-center space-x-1.5">
-                                                <span><?= htmlspecialchars($f['name']) ?></span>
-                                                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition"></i>
-                                            </a>
-                                            <div class="flex items-center space-x-2">
-                                                <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold">
-                                                    View Profile
-                                                </a>
-                                                <?php if (!empty($f['linkedin_url'])): ?>
-                                                    <span class="text-slate-300">•</span>
-                                                    <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" class="text-slate-500 hover:text-slate-800 font-bold flex items-center space-x-0.5 text-xs">
-                                                        <span>LinkedIn</span>
-                                                        <i data-lucide="external-link" class="w-3 h-3"></i>
-                                                    </a>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                        <div class="text-indigo-600 font-bold text-xs uppercase tracking-wider mt-0.5 mb-1"><?= htmlspecialchars($f['designation'] ?? 'Founder') ?></div>
-                                        <div class="text-slate-600 leading-relaxed text-xs sm:text-sm"><?= htmlspecialchars($f['bio'] ?? 'Experienced startup builder.') ?></div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-
-                    <!-- Company Traction & Founder Updates Feed -->
-                    <div class="card-clean rounded-2xl p-5 sm:p-6" id="updates">
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-                                <i data-lucide="newspaper" class="w-4 h-4 text-emerald-600"></i>
-                                <span>Traction Updates & Founder Announcements</span>
-                            </h2>
-                            <span class="text-xs font-semibold text-slate-400"><?= count($updates) ?> update<?= count($updates) === 1 ? '' : 's' ?></span>
-                        </div>
-
-                        <div class="mt-4 space-y-3.5 text-xs sm:text-sm">
-                            <?php if (empty($updates)): ?>
-                                <div class="py-6 text-center text-slate-400">No public milestones posted yet.</div>
-                            <?php else: ?>
-                                <?php foreach ($updates as $upd): ?>
-                                    <div class="p-4 rounded-xl bg-slate-50/70 border border-slate-200/70 space-y-2">
-                                        <div class="flex flex-wrap items-center justify-between gap-1">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-bold">
-                                                    <?= htmlspecialchars($upd['category']) ?>
-                                                </span>
-                                                <h3 class="font-bold text-slate-900 text-sm sm:text-base"><?= htmlspecialchars($upd['title']) ?></h3>
-                                            </div>
-                                            <span class="text-xs text-slate-400 font-medium">
-                                                <?= date('M d, Y', strtotime($upd['created_at'])) ?>
-                                            </span>
-                                        </div>
-
-                                        <?php if (!empty($upd['metrics_summary'])): ?>
-                                            <div class="text-xs sm:text-sm font-bold text-indigo-700 flex items-center space-x-1.5">
-                                                <i data-lucide="trending-up" class="w-4 h-4 text-indigo-600"></i>
-                                                <span><?= htmlspecialchars($upd['metrics_summary']) ?></span>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <p class="text-slate-600 text-xs sm:text-sm leading-relaxed whitespace-pre-line"><?= htmlspecialchars($upd['content']) ?></p>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <!-- Company Stories, Trust Media & Blogs -->
-                    <div class="card-clean rounded-2xl p-5 sm:p-6" id="blogs">
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
-                            <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-                                <i data-lucide="book-open" class="w-4 h-4 text-indigo-600"></i>
-                                <span>Company Stories & Trust Media (<?= count($companyBlogs) ?>)</span>
-                            </h2>
-                            <span class="text-xs font-semibold text-slate-400">Authentic proof & founder articles</span>
-                        </div>
-
-                        <div class="mt-4">
-                            <?php if (empty($companyBlogs)): ?>
-                                <div class="py-6 text-center text-slate-400 text-xs sm:text-sm">
-                                    The founder has not published long-form stories or proof articles yet.
-                                </div>
-                            <?php else: ?>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <?php foreach ($companyBlogs as $cb): 
-                                        $cbCover = str_starts_with($cb['cover_image'], 'http') ? $cb['cover_image'] : url($cb['cover_image']);
-                                        $cbUrl = url('blog.php?id=' . $cb['id']);
-                                    ?>
-                                        <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white hover:border-indigo-300 transition flex flex-col group">
-                                            <div class="h-36 overflow-hidden bg-slate-100 relative">
-                                                <img src="<?= htmlspecialchars($cbCover) ?>" alt="<?= htmlspecialchars($cb['title']) ?>" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                                                <span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/95 text-indigo-700 shadow-sm border border-white">
-                                                    <?= htmlspecialchars($cb['category']) ?>
-                                                </span>
-                                            </div>
-                                            <div class="p-4 flex-1 flex flex-col justify-between text-xs sm:text-sm">
-                                                <div>
-                                                    <div class="text-xs text-slate-400 mb-1">
-                                                        <?= date('M d, Y', strtotime($cb['published_at'])) ?> • <?= $cb['read_time_minutes'] ?> min read
-                                                    </div>
-                                                    <h3 class="font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-indigo-600 transition text-sm sm:text-base"><?= htmlspecialchars($cb['title']) ?></h3>
-                                                    <p class="text-slate-600 text-xs sm:text-sm mt-1 line-clamp-2"><?= htmlspecialchars($cb['summary']) ?></p>
-                                                </div>
-                                                <div class="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between">
-                                                    <a href="<?= $cbUrl ?>" target="_blank" class="text-indigo-600 hover:text-indigo-700 font-bold text-xs sm:text-sm flex items-center space-x-1">
-                                                        <span>Read Story</span>
-                                                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-                                                    </a>
-                                                    <a href="https://api.whatsapp.com/send?text=<?= urlencode($cb['title'] . ' ' . $cbUrl) ?>" target="_blank" class="p-1.5 rounded-lg hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition" title="Share via WhatsApp">
-                                                        <i data-lucide="share-2" class="w-4 h-4"></i>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <!-- Gated Data Room Documents -->
-                    <div class="card-clean rounded-2xl p-5 sm:p-6">
-                        <h2 class="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center space-x-2">
-                            <i data-lucide="file-lock" class="w-4 h-4 text-indigo-600"></i>
-                            <span>Confidential Data Room & Diligence Files</span>
-                        </h2>
-
-                        <div class="divide-y divide-slate-100 text-xs sm:text-sm">
-                            <?php if (empty($documents)): ?>
-                                <div class="py-6 text-center text-slate-400">No additional data room documents attached.</div>
-                            <?php else: ?>
-                                <?php foreach ($documents as $doc): ?>
-                                    <div class="py-3.5 flex items-center justify-between">
-                                        <div class="flex items-center space-x-3">
-                                            <div class="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 flex-shrink-0">
-                                                <i data-lucide="file-text" class="w-4 h-4"></i>
-                                            </div>
-                                            <div>
-                                                <div class="font-bold text-slate-900 text-xs sm:text-sm"><?= htmlspecialchars($doc['title']) ?></div>
-                                                <div class="text-xs text-slate-500"><?= htmlspecialchars($doc['document_type']) ?> • <?= htmlspecialchars($doc['file_size']) ?></div>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center space-x-2">
-                                            <a href="<?= url($doc['file_path']) ?>" target="_blank" class="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center space-x-1 transition shadow-sm" title="View in New Tab">
-                                                <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-                                                <span>View</span>
-                                            </a>
-                                            <a href="<?= url('download.php?id=' . $doc['id'] . '&type=company') ?>" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center space-x-1 transition shadow-sm" title="Download Document">
-                                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                                                <span>Download</span>
-                                            </a>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
+            <!-- ==========================================
+                 SECTION: COMPANY INFORMATION (Horizontal Rows)
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                    Company Information
                 </div>
 
-                <!-- Live Round Sidebar (1 col) -->
-                <div class="space-y-4">
-                    <?php if ($activeRound): 
-                        $pct = $activeRound['target_amount'] > 0 ? round(($activeRound['amount_raised'] / $activeRound['target_amount']) * 100) : 0;
-                        $remaining = max(0, $activeRound['target_amount'] - $activeRound['amount_raised']);
+                <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF] text-xs">
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-[#667085] font-medium sm:w-1/3">Corporate CIN / Registry</span>
+                        <span
+                            class="font-mono font-bold text-[#111827]"><?= htmlspecialchars($company['cin_number'] ?? 'Verified MCA Entity') ?></span>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-[#667085] font-medium sm:w-1/3">Business Model</span>
+                        <span
+                            class="font-semibold text-[#111827]"><?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS / Enterprise') ?></span>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-[#667085] font-medium sm:w-1/3">Team Size</span>
+                        <span
+                            class="font-semibold text-[#111827]"><?= htmlspecialchars($company['employee_count'] ?? '10') ?>
+                            Full-time Members</span>
+                    </div>
+                    <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span class="text-[#667085] font-medium sm:w-1/3">Headquarters Location</span>
+                        <span class="font-semibold text-[#111827]"><?= htmlspecialchars($company['city']) ?>,
+                            <?= htmlspecialchars($company['state'] ?? '') ?>
+                            <?= htmlspecialchars($company['country']) ?></span>
+                    </div>
+                    <?php 
+                        $compWebsite = !empty($company['website']) ? $company['website'] : ($company['website_url'] ?? '');
+                        if (!empty($compWebsite)): 
                     ?>
-                        <div class="card-clean rounded-2xl p-5 sm:p-6 relative">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    ACTIVE ROUND
-                                </span>
-                                <?= render_status_badge($activeRound['status']) ?>
-                            </div>
-
-                            <h3 class="text-base sm:text-lg font-bold text-slate-900 mb-1"><?= htmlspecialchars($activeRound['round_name']) ?></h3>
-                            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600 mb-3"><?= format_inr($activeRound['amount_raised']) ?> <span class="text-xs text-slate-400 font-normal">raised</span></div>
-
-                            <!-- Progress Bar -->
-                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-1.5 border border-slate-200">
-                                <div class="h-full bg-emerald-500 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
-                            </div>
-                            <div class="flex justify-between text-xs text-slate-600 font-semibold mb-4">
-                                <span><?= $pct ?>% funded</span>
-                                <span>Target: <?= format_inr($activeRound['target_amount']) ?></span>
-                            </div>
-
-                            <div class="space-y-2.5 text-xs sm:text-sm mb-5 p-4 rounded-xl bg-slate-50 border border-slate-100">
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600 font-medium">Pre-Money Valuation:</span>
-                                    <span class="font-bold text-slate-900"><?= format_inr($activeRound['valuation']) ?></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600 font-medium">Equity Offered:</span>
-                                    <span class="font-bold text-slate-900"><?= $activeRound['equity_offered'] ?>%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600 font-medium">Min. Investment Ticket:</span>
-                                    <span class="font-bold text-emerald-700"><?= format_inr($activeRound['min_investment']) ?></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-slate-600 font-medium">Remaining Gap:</span>
-                                    <span class="font-bold text-slate-900"><?= format_inr($remaining) ?></span>
-                                </div>
-                            </div>
-
-                            <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm flex items-center justify-center space-x-2 transition">
-                                <span>Commit Investment (Escrow)</span>
-                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span class="text-[#667085] font-medium sm:w-1/3">Official Website</span>
+                            <a href="<?= htmlspecialchars($compWebsite) ?>" target="_blank"
+                                class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
+                                <span><?= htmlspecialchars($compWebsite) ?></span>
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>
                         </div>
-                    <?php else: ?>
-                        <div class="card-clean rounded-2xl p-6 text-center text-xs sm:text-sm text-slate-400">
-                            No open funding round at this moment. You can message the founder directly to express preliminary syndicate interest.
-                        </div>
                     <?php endif; ?>
+                </div>
+            </section>
 
-                    <!-- Compliance Safeguards -->
-                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-600 leading-relaxed">
-                        <div class="font-bold text-slate-800 mb-1 flex items-center space-x-1.5">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-                            <span>SEBI Diligence Standard</span>
+            <!-- ==========================================
+                 SECTION: ACTIVE FUNDING ROUND & SYNDICATE TERMS
+                 ========================================== -->
+            <?php if ($activeRound):
+                $pct = $activeRound['target_amount'] > 0 ? round(($activeRound['amount_raised'] / $activeRound['target_amount']) * 100) : 0;
+                $remaining = max(0, $activeRound['target_amount'] - $activeRound['amount_raised']);
+                ?>
+                <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">Active Funding Round
+                            </div>
+                            <h2 class="text-lg font-bold text-[#0B1F3A]"><?= htmlspecialchars($activeRound['round_name']) ?>
+                            </h2>
                         </div>
-                        This opportunity is verified against MCA MCA-21 registry filings. All investment commitments are executed through structured escrow mechanics.
+                        <?= render_status_badge($activeRound['status']) ?>
+                    </div>
+
+                    <div class="bg-white border border-[#E4E8EF] rounded-xl p-6 sm:p-8 space-y-6">
+                        <div>
+                            <div class="flex justify-between text-xs mb-2 font-bold">
+                                <span class="text-[#667085]">Raised <?= format_inr($activeRound['amount_raised']) ?> of
+                                    <?= format_inr($activeRound['target_amount']) ?></span>
+                                <span class="text-[#123B7A]"><?= $pct ?>% Committed</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-[#E4E8EF] rounded-full overflow-hidden">
+                                <div class="h-full bg-[#123B7A] rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-t border-[#E4E8EF] text-xs">
+                            <div>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Pre-Money
+                                    Valuation</span>
+                                <span
+                                    class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['valuation']) ?></span>
+                            </div>
+                            <div>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Equity
+                                    Offered</span>
+                                <span
+                                    class="font-extrabold text-[#123B7A] text-sm"><?= $activeRound['equity_offered'] ?>%</span>
+                            </div>
+                            <div>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Min.
+                                    Check Size</span>
+                                <span
+                                    class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($activeRound['min_investment']) ?></span>
+                            </div>
+                            <div>
+                                <span
+                                    class="text-[10.5px] font-bold text-[#667085] uppercase tracking-wider block mb-1">Remaining
+                                    Open Gap</span>
+                                <span class="font-extrabold text-[#0B1F3A] text-sm"><?= format_inr($remaining) ?></span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-[#E4E8EF]">
+                            <div class="text-xs text-[#667085] flex items-center gap-2">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-[#123B7A]"></i>
+                                <span>All commitments escrowed under SEBI Angel Network regulations.</span>
+                            </div>
+                            <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>"
+                                class="w-full sm:w-auto px-6 py-3 bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-bold text-xs rounded-lg transition shadow-sm text-center">
+                                Commit Capital to Round →
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            <?php endif; ?>
+
+            <!-- ==========================================
+                 SECTION: LEADERSHIP & FOUNDING TEAM
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                    Leadership & Founding Team (<?= count($founders) ?>)
+                </div>
+
+                <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
+                    <?php foreach ($founders as $f):
+                        $fId = $f['user_id'] ?? $f['id'] ?? 0;
+                        ?>
+                        <div
+                            class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
+                            <div class="flex items-start space-x-4 min-w-0">
+                                <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>">
+                                    <img src="<?= $f['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>"
+                                        class="w-12 h-12 rounded-full object-cover border border-[#E4E8EF] flex-shrink-0">
+                                </a>
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>"
+                                            class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
+                                            <?= htmlspecialchars($f['name']) ?>
+                                        </a>
+                                        <span
+                                            class="text-[10px] font-semibold text-[#123B7A] px-2 py-0.5 rounded bg-[#EAF2FF]">
+                                            <?= htmlspecialchars($f['designation'] ?? 'Founder & CEO') ?>
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-[#667085] mt-1 leading-relaxed max-w-xl">
+                                        <?= htmlspecialchars($f['bio'] ?? 'Experienced technology operator.') ?>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3 text-xs flex-shrink-0">
+                                <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>"
+                                    class="text-xs font-bold text-[#123B7A] hover:underline">
+                                    View Full Profile
+                                </a>
+                                <?php if (!empty($f['linkedin_url'])): ?>
+                                    <span class="text-[#E4E8EF]">•</span>
+                                    <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank"
+                                        class="text-xs font-bold text-[#667085] hover:text-[#111827] flex items-center gap-1">
+                                        <span>LinkedIn</span>
+                                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: TRACTION UPDATES & MILESTONES
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                        Traction & Milestone History (<?= count($updates) ?>)
                     </div>
                 </div>
 
-            </div>
+                <?php if (empty($updates)): ?>
+                    <div class="py-6 text-center text-xs text-[#667085] bg-white border border-[#E4E8EF] rounded-xl">
+                        No public traction milestones published yet.
+                    </div>
+                <?php else: ?>
+                    <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
+                        <?php foreach ($updates as $upd): ?>
+                            <div class="p-4 sm:p-5 space-y-2 hover:bg-[#FAFBFD] transition text-xs">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#EAF2FF] text-[#123B7A]">
+                                            <?= htmlspecialchars($upd['category']) ?>
+                                        </span>
+                                        <h3 class="font-bold text-[#0B1F3A] text-sm"><?= htmlspecialchars($upd['title']) ?></h3>
+                                    </div>
+                                    <span class="text-[11px] text-[#667085]">
+                                        <?= date('M d, Y', strtotime($upd['created_at'])) ?>
+                                    </span>
+                                </div>
+
+                                <?php if (!empty($upd['metrics_summary'])): ?>
+                                    <div class="text-xs font-bold text-[#123B7A] flex items-center space-x-1.5">
+                                        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                                        <span><?= htmlspecialchars($upd['metrics_summary']) ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <p class="text-[#667085] leading-relaxed whitespace-pre-line max-w-3xl">
+                                    <?= htmlspecialchars($upd['content']) ?>
+                                </p>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: CONFIDENTIAL DATA ROOM & FILES
+                 ========================================== -->
+            <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                    Confidential Due Diligence Room
+                </div>
+
+                <?php if (empty($documents)): ?>
+                    <div class="py-6 text-center text-xs text-[#667085] bg-white border border-[#E4E8EF] rounded-xl">
+                        No supplementary diligence files uploaded. You may request documents via direct founder message.
+                    </div>
+                <?php else: ?>
+                    <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
+                        <?php foreach ($documents as $doc): ?>
+                            <div class="p-4 flex items-center justify-between hover:bg-[#FAFBFD] transition text-xs">
+                                <div class="flex items-center space-x-3.5 min-w-0">
+                                    <div class="p-2.5 rounded-lg bg-[#EAF2FF] text-[#123B7A]">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-[#0B1F3A] truncate"><?= htmlspecialchars($doc['title']) ?>
+                                        </div>
+                                        <div class="text-[10.5px] text-[#667085]">
+                                            <?= htmlspecialchars($doc['document_type']) ?> •
+                                            <?= htmlspecialchars($doc['file_size']) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2 flex-shrink-0">
+                                    <a href="<?= url($doc['file_path']) ?>" target="_blank"
+                                        class="px-3 py-1.5 rounded-lg border border-[#E4E8EF] bg-white hover:bg-[#FAFBFD] text-[#111827] font-semibold flex items-center space-x-1.5 transition">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                        <span>View</span>
+                                    </a>
+                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=company') ?>"
+                                        class="px-3 py-1.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white font-semibold flex items-center space-x-1.5 transition">
+                                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                                        <span>Download</span>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: STORIES & BLOGS
+                 ========================================== -->
+            <?php if (!empty($companyBlogs)): ?>
+                <section class="space-y-4">
+                    <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                        Company Stories & Media
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <?php foreach ($companyBlogs as $cb):
+                            $cbCover = str_starts_with($cb['cover_image'], 'http') ? $cb['cover_image'] : url($cb['cover_image']);
+                            $cbUrl = url('blog.php?id=' . $cb['id']);
+                            ?>
+                            <div
+                                class="bg-white border border-[#E4E8EF] rounded-xl overflow-hidden hover:border-[#123B7A]/40 transition flex flex-col group">
+                                <div class="h-40 overflow-hidden bg-slate-100 relative">
+                                    <img src="<?= htmlspecialchars($cbCover) ?>" alt="<?= htmlspecialchars($cb['title']) ?>"
+                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                                    <span
+                                        class="absolute top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold bg-white text-[#123B7A] shadow-sm">
+                                        <?= htmlspecialchars($cb['category']) ?>
+                                    </span>
+                                </div>
+                                <div class="p-5 flex-1 flex flex-col justify-between text-xs">
+                                    <div>
+                                        <div class="text-[10px] text-[#667085] mb-1">
+                                            <?= date('M d, Y', strtotime($cb['published_at'])) ?> •
+                                            <?= $cb['read_time_minutes'] ?> min read
+                                        </div>
+                                        <h3
+                                            class="font-bold text-[#0B1F3A] text-sm group-hover:text-[#123B7A] transition leading-snug line-clamp-2">
+                                            <?= htmlspecialchars($cb['title']) ?>
+                                        </h3>
+                                        <p class="text-[#667085] mt-1.5 line-clamp-2 leading-relaxed">
+                                            <?= htmlspecialchars($cb['summary']) ?>
+                                        </p>
+                                    </div>
+                                    <div class="pt-4 mt-4 border-t border-[#E4E8EF] flex items-center justify-between">
+                                        <a href="<?= $cbUrl ?>" target="_blank"
+                                            class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
+                                            <span>Read Story</span>
+                                            <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+            <?php endif; ?>
 
         </main>
     </div>
 
     <script>
         lucide.createIcons();
-        gsap.from("#deal-room-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#deal-room-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
+
 </html>

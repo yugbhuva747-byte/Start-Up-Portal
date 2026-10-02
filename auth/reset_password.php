@@ -84,10 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $validToken) {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-sm w-full my-8" id="auth-container">
         

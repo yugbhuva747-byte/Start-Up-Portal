@@ -13,6 +13,9 @@ CREATE TABLE IF NOT EXISTS `users` (
     `phone` VARCHAR(30) NULL,
     `password_hash` VARCHAR(255) NOT NULL,
     `role` ENUM('founder', 'investor', 'admin') NOT NULL DEFAULT 'founder',
+    `current_plan` VARCHAR(50) NOT NULL DEFAULT 'free_trial',
+    `priority_level` INT NOT NULL DEFAULT 1,
+    `plan_expires_at` DATETIME NULL,
     `status` ENUM('active', 'pending', 'suspended') NOT NULL DEFAULT 'active',
     `is_verified` TINYINT(1) NOT NULL DEFAULT 0,
     `email_verified_at` DATETIME NULL,
@@ -87,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `companies` (
     `state` VARCHAR(100) DEFAULT 'Karnataka',
     `country` VARCHAR(100) DEFAULT 'India',
     `verified_status` ENUM('unverified', 'pending', 'verified', 'rejected') DEFAULT 'verified',
+    `priority_level` INT NOT NULL DEFAULT 1,
     `authorized_capital` DECIMAL(15,2) DEFAULT 10000000.00,
     `face_value_per_share` DECIMAL(10,2) DEFAULT 10.00,
     `esop_pool_percent` DECIMAL(5,2) DEFAULT 10.00,
@@ -458,5 +462,132 @@ CREATE TABLE IF NOT EXISTS `email_logs` (
     `sent_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 29. Subscriptions (Plan Tiers, Priority Levels & Payment Entitlements)
+CREATE TABLE IF NOT EXISTS `subscriptions` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `plan_code` ENUM('free_trial', '1_month', '6_months', '1_year') NOT NULL DEFAULT 'free_trial',
+    `plan_name` VARCHAR(150) NOT NULL,
+    `billing_cycle` ENUM('monthly', 'annually', 'trial') NOT NULL DEFAULT 'monthly',
+    `role` ENUM('founder', 'investor') NOT NULL DEFAULT 'founder',
+    `amount` DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    `priority_level` INT NOT NULL DEFAULT 1, -- 1=Basic/Explorer, 2=FastTrack/Angel, 3=Featured/Lead, 4=VIP Spotlight
+    `status` ENUM('active', 'expired', 'cancelled', 'trial') NOT NULL DEFAULT 'active',
+    `payment_method` VARCHAR(100) DEFAULT 'Card / UPI / NetBanking',
+    `payment_status` ENUM('completed', 'trial', 'pending') DEFAULT 'completed',
+    `transaction_ref` VARCHAR(100) DEFAULT NULL,
+    `starts_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `expires_at` DATETIME NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 30. Persistent Login Sessions (Active Device Tracking)
+CREATE TABLE IF NOT EXISTS `login_sessions` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `session_token` VARCHAR(255) NOT NULL UNIQUE,
+    `ip_address` VARCHAR(45) DEFAULT '127.0.0.1',
+    `user_agent` VARCHAR(255) DEFAULT NULL,
+    `last_active_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================================
+-- 31. Subscription Plans (Master Plan Definitions)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `subscription_plans` (
+    `id`               INT AUTO_INCREMENT PRIMARY KEY,
+    `name`             VARCHAR(100)   NOT NULL,
+    `slug`             VARCHAR(100)   NOT NULL UNIQUE,
+    `description`      TEXT           NULL,
+    `plan_type`        ENUM('founder', 'investor', 'both') NOT NULL DEFAULT 'both',
+    `billing_cycle`    ENUM('monthly', 'quarterly', 'yearly', 'lifetime') NOT NULL DEFAULT 'monthly',
+    `price`            DECIMAL(10,2)  NOT NULL DEFAULT 0.00,
+    `original_price`   DECIMAL(10,2)  NULL,
+    `currency`         VARCHAR(10)    NOT NULL DEFAULT 'INR',
+    `features`         JSON           NULL,
+    `max_pitches`      INT            NULL DEFAULT NULL,
+    `max_investments`  INT            NULL DEFAULT NULL,
+    `priority_listing` TINYINT(1)    NOT NULL DEFAULT 0,
+    `analytics_access` TINYINT(1)    NOT NULL DEFAULT 0,
+    `badge_label`      VARCHAR(50)    NULL,
+    `badge_color`      VARCHAR(30)    NULL,
+    `is_active`        TINYINT(1)    NOT NULL DEFAULT 1,
+    `sort_order`       INT           NOT NULL DEFAULT 0,
+    `created_at`       DATETIME      DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`       DATETIME      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 32. User Subscriptions (Active & Historical)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `user_subscriptions` (
+    `id`              INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id`         INT          NOT NULL,
+    `plan_id`         INT          NOT NULL,
+    `status`          ENUM('active', 'cancelled', 'expired', 'pending', 'trial', 'paused') NOT NULL DEFAULT 'pending',
+    `payment_method`  ENUM('razorpay', 'stripe', 'upi', 'bank_transfer', 'manual', 'free') NOT NULL DEFAULT 'free',
+    `payment_id`      VARCHAR(255) NULL,
+    `order_id`        VARCHAR(255) NULL,
+    `amount_paid`     DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    `currency`        VARCHAR(10)  NOT NULL DEFAULT 'INR',
+    `discount_code`   VARCHAR(100) NULL,
+    `discount_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    `starts_at`       DATETIME     NOT NULL,
+    `expires_at`      DATETIME     NULL,
+    `cancelled_at`    DATETIME     NULL,
+    `cancel_reason`   TEXT         NULL,
+    `auto_renew`      TINYINT(1)   NOT NULL DEFAULT 0,
+    `trial_ends_at`   DATETIME     NULL,
+    `receipt_url`     VARCHAR(500) NULL,
+    `notes`           TEXT         NULL,
+    `created_at`      DATETIME     DEFAULT CURRENT_TIMESTAMP,
+    `updated_at`      DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`plan_id`) REFERENCES `subscription_plans`(`id`) ON DELETE RESTRICT,
+    INDEX `idx_user_sub_user`   (`user_id`),
+    INDEX `idx_user_sub_status` (`status`),
+    INDEX `idx_user_sub_expiry` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Default Plans Seed Data
+INSERT IGNORE INTO `subscription_plans`
+    (`name`, `slug`, `description`, `plan_type`, `billing_cycle`, `price`, `original_price`, `features`, `max_pitches`, `max_investments`, `priority_listing`, `analytics_access`, `badge_label`, `badge_color`, `sort_order`)
+VALUES
+    ('Free', 'free', 'Basic access to explore the platform.', 'both', 'monthly', 0.00, NULL,
+     '["1 active pitch", "Basic profile", "Discover investors", "Community access"]',
+     1, 3, 0, 0, 'FREE', 'slate', 1),
+    ('Starter', 'starter', 'For early-stage founders ready to raise their first round.', 'founder', 'monthly', 999.00, 1499.00,
+     '["Up to 3 active pitches", "Priority inbox", "Basic analytics", "Investor messaging", "Email support"]',
+     3, NULL, 0, 1, 'STARTER', 'blue', 2),
+    ('Growth', 'growth', 'For serious founders scaling with active fundraising.', 'founder', 'monthly', 2499.00, 3499.00,
+     '["Unlimited pitches", "Boosted visibility", "Advanced analytics", "Due diligence support", "Priority support"]',
+     NULL, NULL, 1, 1, 'PRO', 'indigo', 3),
+    ('Investor Pro', 'investor-pro', 'For angels and VCs who want premium deal flow access.', 'investor', 'monthly', 1999.00, 2999.00,
+     '["Unlimited deal browsing", "Advanced filters", "Watchlist alerts", "Founder direct contact", "Deal analytics"]',
+     NULL, NULL, 1, 1, 'PRO', 'emerald', 4),
+    ('VIP Elite', 'vip-elite', 'All-inclusive plan with white-glove service.', 'both', 'yearly', 19999.00, 29999.00,
+     '["Everything in Growth & Investor Pro", "Dedicated account manager", "SEBI compliance advisory", "Private deal room", "Cap table tools", "API access"]',
+     NULL, NULL, 1, 1, 'VIP', 'purple', 5);
+
+-- ============================================================
+-- 33. Persistent Remember Me Cookie Tokens (Selector + Validator Model)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `remember_tokens` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `selector` VARCHAR(64) NOT NULL UNIQUE,
+    `token_hash` VARCHAR(255) NOT NULL,
+    `ip_address` VARCHAR(45) DEFAULT '127.0.0.1',
+    `user_agent` VARCHAR(255) DEFAULT NULL,
+    `expires_at` DATETIME NOT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `last_used_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    INDEX `idx_selector` (`selector`),
+    INDEX `idx_expires` (`expires_at`),
+    INDEX `idx_user_remember` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

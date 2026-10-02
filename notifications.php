@@ -73,20 +73,17 @@ $unread = (int)$unreadCount->fetchColumn();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
-        }
-    </style>
+    <?php 
+    if ($role === 'founder') {
+        include __DIR__ . '/includes/founder/head.php';
+    } elseif ($role === 'investor') {
+        include __DIR__ . '/includes/investor/head.php';
+    } else {
+        include __DIR__ . '/includes/admin/head.php';
+    }
+    ?>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen">
 
     <!-- Role-Adapted Sidebar -->
     <?php if ($role === 'founder'): ?>
@@ -144,21 +141,21 @@ $unread = (int)$unreadCount->fetchColumn();
             </div>
 
             <!-- Filter Tabs -->
-            <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3 text-xs font-semibold">
+            <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 text-xs font-semibold">
                 <a href="<?= url('notifications.php?filter=all') ?>" 
-                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                     All (<?= $total ?>)
                 </a>
                 <a href="<?= url('notifications.php?filter=unread') ?>" 
-                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'unread' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'unread' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                     Unread (<?= $unread ?>)
                 </a>
                 <a href="<?= url('notifications.php?filter=investment') ?>" 
-                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'investment' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'investment' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                     Funding & Deals
                 </a>
                 <a href="<?= url('notifications.php?filter=verification') ?>" 
-                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'verification' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' ?>">
+                   class="px-3 py-1.5 rounded-lg transition <?= $filter === 'verification' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                     KYC & Verification
                 </a>
             </div>

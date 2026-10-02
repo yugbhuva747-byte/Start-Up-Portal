@@ -40,16 +40,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved Watchlist • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            font-family: "Vay Portal", Sans-serif;
+        }
+
         .card-clean {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -57,91 +58,138 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
-    
+
+<body class="bg-[#F4F2EE] text-slate-900 flex min-h-screen dark:bg-[#0B0F19] dark:text-slate-100">
+
     <!-- Investor Sidebar -->
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto" id="watchlist-main">
-            
+        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="watchlist-main">
+
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div
+                    class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
+                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <!-- Identity Header -->
+            <div
+                class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E4E8EF] dark:border-slate-800 pb-6">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Saved Deal Watchlist</h1>
-                    <p class="text-xs sm:text-sm text-slate-600 mt-1 font-medium">Keep track of startups preparing to open funding or undergoing clinical/product milestones.</p>
+
+                    <div
+                        class="text-xs font-bold text-[#123B7A] dark:text-blue-400 tracking-wider uppercase mb-1 flex items-center gap-2">
+                        <span>Portfolio Tracking</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 pulse-beacon"></span>
+                        <span class="text-[#667085] dark:text-slate-400 font-semibold">Shortlisted Deals</span>
+                    </div>
+                    <h1
+                        class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        Saved Companies & Deals</h1>
+                    <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5">Startups and live
+                        syndicates you are actively monitoring and evaluating.</p>
                 </div>
-                <a href="<?= url('investor/discover.php') ?>" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold transition flex items-center space-x-1.5">
-                    <i data-lucide="search" class="w-4 h-4"></i>
-                    <span>Discover More Startups</span>
-                </a>
+                <div class="flex items-center space-x-3">
+                    <a href="<?= url('investor/discover.php') ?>"
+                        class="px-5 py-3 rounded-xl bg-[#123B7A] hover:bg-[#0B1F3A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white text-xs sm:text-sm font-bold transition flex items-center space-x-2 shadow-sm">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <span>Discover More Deals</span>
+                    </a>
+                </div>
+
             </div>
 
+            <!-- Saved Companies List (Horizontal Rows, Minimal Borders, Strong Typography) -->
             <?php if (empty($watchlist)): ?>
-                <div class="card-clean rounded-2xl p-8 sm:p-12 text-center text-slate-500">
-                    <i data-lucide="bookmark" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                    <div class="text-base font-bold text-slate-800 mb-1">Your watchlist is currently empty</div>
-                    <div class="text-xs sm:text-sm text-slate-500">Click the bookmark icon on any startup card in Discovery to pin it here.</div>
+
+                <div class="bg-white border border-[#E4E8EF] rounded-xl p-12 text-center text-xs text-[#667085]">
+                    <div
+                        class="w-12 h-12 rounded-full bg-[#FAFBFD] border border-[#E4E8EF] text-[#667085] flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="bookmark" class="w-5 h-5"></i>
+                    </div>
+                    <div class="text-sm font-bold text-[#0B1F3A] mb-1">Your saved list is empty</div>
+                    <p class="max-w-md mx-auto text-[#667085] leading-relaxed">
+                        Pin interesting deals while browsing the discovery marketplace to evaluate their metrics, traction,
+                        and data room here.
+                    </p>
+                    <a href="<?= url('investor/discover.php') ?>"
+                        class="inline-block mt-4 text-[#123B7A] font-bold hover:underline">
+                        Explore Startups →
+                    </a>
                 </div>
             <?php else: ?>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <?php foreach ($watchlist as $s): 
+                <div class="bg-white border border-[#E4E8EF] rounded-xl divide-y divide-[#E4E8EF]">
+                    <?php foreach ($watchlist as $s):
                         $pct = ($s['target_amount'] ?? 0) > 0 ? round(($s['amount_raised'] / $s['target_amount']) * 100) : 0;
                         $hashId = hash_id_encode($s['id']);
-                    ?>
-                        <div class="card-clean rounded-2xl p-5 flex flex-col justify-between hover:border-indigo-300 transition duration-200 relative group">
-                            
-                            <!-- Remove button -->
-                            <form action="<?= url('investor/watchlist.php') ?>" method="POST" class="absolute top-4 right-4 z-10">
-                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                <input type="hidden" name="action" value="remove_watchlist">
-                                <input type="hidden" name="company_id" value="<?= $hashId ?>">
-                                <button type="submit" title="Remove" class="p-2 rounded-xl bg-slate-50 hover:bg-rose-50 text-amber-500 hover:text-rose-600 border border-slate-200 transition">
-                                    <i data-lucide="bookmark" class="w-4 h-4 fill-amber-500"></i>
-                                </button>
-                            </form>
-
-                            <div>
-                                <div class="flex items-start space-x-3 mb-3.5 pr-10">
-                                    <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120' ?>" class="w-11 h-11 rounded-xl object-cover border border-slate-200 flex-shrink-0">
-                                    <div class="min-w-0">
-                                        <h3 class="text-base font-bold text-slate-900 truncate"><?= htmlspecialchars($s['name']) ?></h3>
-                                        <div class="flex items-center space-x-1.5 mt-1">
-                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                                <?= htmlspecialchars($s['industry']) ?>
-                                            </span>
-                                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">
-                                                <?= htmlspecialchars($s['stage']) ?>
-                                            </span>
-                                        </div>
+                        ?>
+                        <div
+                            class="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
+                            <!-- Startup Identity & Pitch -->
+                            <div class="flex items-start space-x-4 min-w-0 flex-1">
+                                <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>"
+                                    class="w-12 h-12 rounded-xl object-cover border border-[#E4E8EF] flex-shrink-0">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
+                                            class="text-sm font-bold text-[#0B1F3A] hover:text-[#123B7A] transition truncate">
+                                            <?= htmlspecialchars($s['name']) ?>
+                                        </a>
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
+                                            <?= htmlspecialchars($s['industry']) ?>
+                                        </span>
+                                        <span
+                                            class="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#FAFBFD] text-[#667085] border border-[#E4E8EF]">
+                                            <?= htmlspecialchars($s['stage']) ?>
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-[#667085] line-clamp-1 mt-1 leading-relaxed">
+                                        <?= htmlspecialchars($s['pitch']) ?>
+                                    </p>
+                                    <div class="text-[10.5px] text-[#667085] mt-1">
+                                        <span>Saved on <?= date('d M Y', strtotime($s['saved_at'])) ?></span>
                                     </div>
                                 </div>
-
-                                <p class="text-xs sm:text-sm text-slate-600 line-clamp-2 mb-3.5 leading-relaxed"><?= htmlspecialchars($s['pitch']) ?></p>
                             </div>
 
-                            <div class="pt-3.5 border-t border-slate-100">
+                            <!-- Financial Metrics & Actions -->
+                            <div
+                                class="flex items-center justify-between md:justify-end gap-6 text-xs flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#E4E8EF]">
                                 <?php if (!empty($s['target_amount'])): ?>
-                                    <div class="flex justify-between text-xs mb-1.5 font-semibold">
-                                        <span class="text-slate-600">Raised: <?= format_inr($s['amount_raised']) ?></span>
-                                        <span class="text-emerald-700 font-bold"><?= $pct ?>%</span>
+                                    <div class="text-left md:text-right">
+                                        <span class="text-[10px] text-[#667085] block">Target</span>
+                                        <span class="font-bold text-[#111827]"><?= format_inr($s['target_amount']) ?></span>
                                     </div>
-                                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-3.5 border border-slate-200">
-                                        <div class="h-full bg-emerald-500 rounded-full" style="width: <?= min(100, $pct) ?>%"></div>
+                                    <div class="text-left md:text-right">
+                                        <span class="text-[10px] text-[#667085] block">Raised</span>
+                                        <span class="font-bold text-[#123B7A]"><?= $pct ?>%</span>
                                     </div>
                                 <?php endif; ?>
 
-                                <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" class="w-full py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-600 text-center text-xs sm:text-sm font-bold text-indigo-700 hover:text-white block transition duration-150">
-                                    Open Diligence Deal Room →
-                                </a>
+                                <div class="flex items-center space-x-2">
+                                    <a href="<?= url('investor/startup_detail.php?id=' . $hashId) ?>"
+                                        class="px-4 py-2 rounded-lg bg-[#FAFBFD] hover:bg-[#EAF2FF] text-[#123B7A] hover:text-[#0B1F3A] border border-[#E4E8EF] font-bold text-xs transition">
+                                        Open Deal Room →
+                                    </a>
+
+                                    <!-- Remove bookmark form -->
+                                    <form action="<?= url('investor/watchlist.php') ?>" method="POST" class="inline">
+                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                        <input type="hidden" name="action" value="remove_watchlist">
+                                        <input type="hidden" name="company_id" value="<?= $hashId ?>">
+                                        <button type="submit" title="Remove from Saved"
+                                            class="p-2 rounded-lg bg-[#FAFBFD] hover:bg-rose-50 text-amber-500 hover:text-rose-600 border border-[#E4E8EF] transition">
+                                            <i data-lucide="bookmark" class="w-3.5 h-3.5 fill-amber-500"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -153,7 +201,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     <script>
         lucide.createIcons();
-        gsap.from("#watchlist-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#watchlist-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
     </script>
 </body>
+
 </html>

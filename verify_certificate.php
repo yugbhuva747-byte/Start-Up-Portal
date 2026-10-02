@@ -37,7 +37,7 @@ if ($db && $searched) {
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFB; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
         .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04); }
     </style>
 </head>
@@ -126,7 +126,16 @@ if ($db && $searched) {
                         <div class="py-3 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
                             <span class="text-slate-500">Registered Allottee</span>
                             <span class="font-bold text-slate-900">
-                                <?= htmlspecialchars(substr($certData['investor_name'], 0, 1) . str_repeat('*', strlen($certData['investor_name']) - 2) . substr($certData['investor_name'], -1)) ?> 
+                                <?php
+                                    $invName = trim((string)($certData['investor_name'] ?? 'Investor'));
+                                    $nameLen = mb_strlen($invName);
+                                    if ($nameLen <= 2) {
+                                        $maskedName = mb_substr($invName, 0, 1) . '***';
+                                    } else {
+                                        $maskedName = mb_substr($invName, 0, 1) . str_repeat('*', max(1, $nameLen - 2)) . mb_substr($invName, -1);
+                                    }
+                                    echo htmlspecialchars($maskedName);
+                                ?> 
                                 <span class="text-[10px] text-slate-400 font-mono">(Verified Investor)</span>
                             </span>
                         </div>

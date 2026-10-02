@@ -1,7 +1,10 @@
 <?php
 /**
- * Founder Module: Profile & Account Settings
- * Ultra-Modern SaaS Form UI
+
+ * Founder Module: Profile & Account Settings Studio
+ * Executive Persona, Credentials, Social Links & Security Management
+ * Vay Portal Typography, Clean Visual Contrast, Full Width Layout
+
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('founder');
@@ -73,7 +76,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 $updFP->execute([$user['id'], $designation, $bio, $linkedin, $website, $pan]);
 
                 log_audit($user['id'], 'UPDATE_PROFILE', 'users', $user['id'], 'Founder updated personal profile');
-                set_flash('success', 'Profile credentials successfully saved.');
+
+                set_flash('success', 'Profile details successfully updated.');
+
                 header('Location: ' . url('founder/profile.php'));
                 exit;
             }
@@ -102,136 +107,201 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Founder Profile Settings • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <title><?= $pageTitle ?? APP_NAME ?> • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .form-input-group:focus-within {
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
-            background-color: #ffffff;
+        html:not(.dark) .hero-profile-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #F1F5F9 100%);
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
         }
-        .clean-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+        .hero-profile-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+        html.dark .hero-profile-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
+        }
+        .form-input-clean {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            color: #0F172A;
+            font-size: 0.875rem;
+            line-height: 1.4rem;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+        .form-input-clean:hover {
+            background-color: #F1F5F9;
+            border-color: #CBD5E1;
+        }
+        .form-input-clean:focus {
+            background-color: #FFFFFF;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+        .form-label-clean {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 0.4rem;
         }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
     
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
+        <!-- Sticky Top Fixed Founder Navbar -->
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-4xl w-full mx-auto" id="profile-main">
+        <!-- Full-screen Dynamic Main Container -->
+        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="profile-main">
             
+            <!-- Flash Feedback -->
             <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-sm">
-                    <div class="flex items-center space-x-2.5">
-                        <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-4 h-4 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?> flex-shrink-0"></i>
+
+                <div class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center justify-between shadow-xs">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle-2' : 'alert-circle' ?>" class="w-5 h-5 flex-shrink-0 <?= $flash['type'] === 'success' ? 'text-emerald-600' : 'text-rose-600' ?>"></i>
                         <span><?= htmlspecialchars($flash['message']) ?></span>
                     </div>
-                    <span class="text-[10px] text-slate-400 font-medium">Saved</span>
+                    <span class="text-xs font-bold uppercase opacity-75">Notice</span>
+
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="p-4 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-2.5 shadow-sm">
-                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-600 flex-shrink-0"></i>
+
+                <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-xs">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
-            <!-- Founder Identity Hero Card -->
-            <div class="clean-card rounded-2xl p-6 sm:p-7 bg-gradient-to-r from-white via-slate-50/50 to-indigo-50/30">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center space-x-4 sm:space-x-5">
+
+            <!-- Executive Persona Hero Card -->
+            <div class="hero-profile-banner p-6 sm:p-8 relative overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
+                <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute right-32 -bottom-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex flex-col md:flex-row items-center sm:items-start justify-between gap-6 relative z-10">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-5">
                         <div class="relative group">
                             <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                 class="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl object-cover border-2 border-white shadow-md bg-white">
-                            <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full <?= $user['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?> border-2 border-white flex items-center justify-center text-white" title="<?= $user['is_verified'] ? 'Verified Founder' : 'Pending Verification' ?>">
-                                <i data-lucide="<?= $user['is_verified'] ? 'check' : 'clock' ?>" class="w-3.5 h-3.5"></i>
-                            </div>
+                                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md" id="avatar-preview-img">
+                            <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 <?= $user['is_verified'] ? 'bg-emerald-500' : 'bg-amber-400' ?>"></span>
                         </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2.5">
-                                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight"><?= htmlspecialchars($user['name']) ?></h1>
-                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border <?= $user['is_verified'] ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200' ?>">
-                                    <?= $user['is_verified'] ? 'DigiLocker Verified' : 'KYC Review Pending' ?>
+
+                        <div class="text-center sm:text-left space-y-1.5">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                    <?= htmlspecialchars($user['name']) ?>
+                                </h1>
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?= $user['is_verified'] ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' ?>">
+                                    <?= $user['is_verified'] ? 'KYC VERIFIED FOUNDER' : 'KYC PENDING' ?>
                                 </span>
                             </div>
-                            <div class="text-sm text-slate-700 font-bold mt-0.5">
+                            <div class="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-bold">
                                 <?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>
                                 <?php if ($company): ?>
-                                    <span class="text-slate-400 font-normal">•</span> <span class="text-indigo-600 font-bold"><?= htmlspecialchars($company['name']) ?></span>
+                                    • <span class="text-slate-800 dark:text-slate-200 font-semibold"><?= htmlspecialchars($company['name']) ?></span>
                                 <?php endif; ?>
                             </div>
-                            <div class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 flex items-center space-x-2">
+                            <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-0.5">
                                 <span><?= htmlspecialchars($user['email']) ?></span>
                                 <span>•</span>
                                 <span><?= htmlspecialchars($user['city'] ?? 'India') ?></span>
+                                <?php if (!empty($user['phone'])): ?>
+                                    <span>•</span>
+                                    <span><?= htmlspecialchars($user['phone']) ?></span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
-                    <a href="<?= url('founder/view.php') ?>" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-sm font-bold flex items-center justify-center space-x-2 shadow-2xs transition">
-                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
-                        <span>Public Preview</span>
-                    </a>
+
+                    <!-- Public Profile Link Button -->
+                    <div class="flex items-center space-x-2.5">
+                        <a href="<?= url('founder/view.php') ?>" class="px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-2">
+                            <i data-lucide="external-link" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                            <span>View Public Founder Profile</span>
+                        </a>
+                    </div>
+
                 </div>
             </div>
 
             <!-- Profile Info Edit Form -->
-            <div class="clean-card rounded-2xl p-6 sm:p-7">
+
+            <div class="section-card p-6 sm:p-7 space-y-6">
+
                 <form action="<?= url('founder/profile.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="update_profile">
 
-                    <div class="flex items-center space-x-2.5 border-b border-slate-100 pb-3.5">
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                            <i data-lucide="user-check" class="w-4 h-4"></i>
+
+                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+                                <i data-lucide="user-check" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                <span>Personal Information & Bio</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visible to angel syndicates and venture investors researching your leadership background.</p>
                         </div>
-                        <h2 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider">
-                            1. Personal Information & Identity
-                        </h2>
                     </div>
 
-                    <!-- Profile Photo Uploader Dropzone -->
-                    <div class="p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 flex flex-col sm:flex-row items-center gap-5">
-                        <div class="relative flex-shrink-0 group cursor-pointer" onclick="document.getElementById('avatar_file').click()">
+                    <!-- Photo Upload Dropzone -->
+                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5">
+                        <div class="relative flex-shrink-0 group">
                             <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=160' ?>" 
-                                 class="w-22 h-22 rounded-2xl object-cover border-2 border-white shadow-md bg-white transition group-hover:brightness-90" id="avatar-form-img">
-                            <div class="absolute inset-0 bg-slate-900/50 rounded-2xl flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition">
-                                <i data-lucide="camera" class="w-6 h-6 mb-1"></i>
-                                <span class="text-xs font-bold">Change</span>
-                            </div>
+                                 class="w-20 h-20 rounded-2xl object-cover border-2 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 transition group-hover:brightness-95" id="avatar-form-img">
+                            <label for="avatar_file" class="absolute inset-0 bg-black/40 rounded-2xl flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition cursor-pointer" title="Click to choose photo">
+                                <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
+                                <span class="text-[9px] font-bold">Change</span>
+                            </label>
                         </div>
-
-                        <div class="flex-1 text-center sm:text-left space-y-2 w-full">
-                            <div>
-                                <div class="font-extrabold text-slate-900 text-sm flex items-center justify-center sm:justify-start space-x-2">
-                                    <span>Founder Display Portrait</span>
-                                    <span class="text-xs px-2.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full font-bold">JPG, PNG, WEBP</span>
-                                </div>
-                                <p class="text-xs sm:text-sm text-slate-600 mt-1 font-medium">High-resolution authentic photo increases founder trustworthiness with institutional angels.</p>
+                        <div class="flex-1 text-center sm:text-left space-y-1.5 w-full">
+                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center justify-center sm:justify-start space-x-2">
+                                <span>Executive Headshot</span>
+                                <span class="text-[10px] px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full font-bold">JPG, PNG, WEBP</span>
                             </div>
-
-                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-1">
-                                <label for="avatar_file" class="cursor-pointer inline-flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow-sm transition">
-                                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                                    <span>Upload New Photo</span>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Upload a crisp professional headshot. Max file size: 8MB.</p>
+                            
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 pt-1">
+                                <label for="avatar_file" class="cursor-pointer inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-bold text-xs shadow-xs transition">
+                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                    <span>Choose New Photo</span>
                                 </label>
                                 <input type="file" name="avatar_file" id="avatar_file" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" onchange="previewAvatar(this)">
-                                <span id="file-chosen-name" class="text-xs text-slate-500 font-medium">No new file selected</span>
+                                <span id="file-chosen-name" class="text-xs text-slate-500 italic">No new photo chosen</span>
+                            </div>
+
+                            <div class="pt-1">
+                                <details class="text-xs text-slate-500 cursor-pointer">
+                                    <summary class="hover:text-indigo-600 font-medium select-none">Or paste an external photo URL</summary>
+                                    <div class="mt-1.5">
+                                        <input type="url" name="avatar_url" id="avatar_url_input" value="<?= htmlspecialchars($user['avatar_url'] ?? '') ?>" placeholder="https://example.com/photo.jpg"
+                                               class="w-full px-3 py-1.5 bg-white border border-slate-200 focus:border-indigo-600 rounded-lg text-xs text-slate-800 outline-none"
+                                               oninput="previewUrlAvatar(this.value)">
+                                    </div>
+                                </details>
+
                             </div>
 
                             <details class="text-xs text-slate-500 pt-1">
@@ -245,108 +315,85 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         </div>
                     </div>
 
-                    <!-- Personal Information Inputs -->
-                    <div class="space-y-4.5">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">
-                                    <span>Full Legal Name</span>
-                                    <span class="text-rose-500">*</span>
-                                </label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="user" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="text" name="name" required value="<?= htmlspecialchars($user['name']) ?>"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">Official Designation</label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="briefcase" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="text" name="designation" value="<?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">Direct Phone Number</label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="phone" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="tel" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+91 98765 43210"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">Operating City</label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="map-pin" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="text" name="city" value="<?= htmlspecialchars($user['city'] ?? 'Bengaluru') ?>"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center justify-between">
-                                    <span>Tax PAN Number</span>
-                                    <span class="text-xs text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded font-bold">Confidential</span>
-                                </label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="credit-card" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="text" name="pan_number" value="<?= htmlspecialchars($founderProfile['pan_number'] ?? '') ?>" placeholder="ABCDE1234F" maxlength="10"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 uppercase font-mono font-bold outline-none">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">LinkedIn Profile URL</label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="linkedin" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="url" name="linkedin_url" value="<?= htmlspecialchars($founderProfile['linkedin_url'] ?? '') ?>" placeholder="https://linkedin.com/in/username"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-bold text-slate-800 mb-1.5">Personal Portfolio / Link</label>
-                                <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                    <span class="pl-4 text-slate-400">
-                                        <i data-lucide="globe" class="w-4.5 h-4.5"></i>
-                                    </span>
-                                    <input type="url" name="website_url" value="<?= htmlspecialchars($founderProfile['website_url'] ?? '') ?>" placeholder="https://founder.xyz"
-                                           class="w-full pl-3 pr-4 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Fields in 2 & 3 Columns -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center justify-between">
-                                <span>Founder Bio & Entrepreneurial Background</span>
-                                <span class="text-xs text-slate-500 font-medium" id="bio-counter">Domain Authority</span>
+                            <label class="form-label-clean">
+                                <span>Legal Full Name <span class="text-rose-500">*</span></span>
                             </label>
-                            <div class="form-input-group border border-slate-200 rounded-xl bg-slate-50 transition p-1">
-                                <textarea name="bio" rows="4" placeholder="Tell investors about your core domain expertise, previous startup exits, engineering patents, or key milestone achievements..."
-                                          class="w-full p-3 bg-transparent rounded-lg text-sm text-slate-900 outline-none leading-relaxed font-normal placeholder:text-slate-400 resize-y"><?= htmlspecialchars($founderProfile['bio'] ?? '') ?></textarea>
+                            <input type="text" name="name" required value="<?= htmlspecialchars($user['name']) ?>"
+                                   class="form-input-clean font-semibold">
+                        </div>
+                        <div>
+                            <label class="form-label-clean">
+                                <span>Official Designation</span>
+                            </label>
+                            <input type="text" name="designation" value="<?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>"
+                                   class="form-input-clean font-semibold">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="form-label-clean">
+                                <span>Direct Phone</span>
+                            </label>
+                            <input type="tel" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>"
+                                   class="form-input-clean font-medium">
+                        </div>
+                        <div>
+                            <label class="form-label-clean">
+                                <span>Operating City</span>
+                            </label>
+                            <input type="text" name="city" value="<?= htmlspecialchars($user['city'] ?? 'Mumbai') ?>"
+                                   class="form-input-clean font-medium">
+                        </div>
+                        <div>
+                            <label class="form-label-clean">
+                                <span>Tax PAN Number</span>
+                                <span class="text-[11px] text-slate-400 font-normal">Confidential</span>
+                            </label>
+                            <input type="text" name="pan_number" value="<?= htmlspecialchars($founderProfile['pan_number'] ?? '') ?>" placeholder="ABCDE1234F"
+                                   class="form-input-clean font-mono uppercase">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="form-label-clean">
+                                <span>LinkedIn Profile URL</span>
+                            </label>
+                            <div class="relative">
+                                <input type="url" name="linkedin_url" value="<?= htmlspecialchars($founderProfile['linkedin_url'] ?? '') ?>" placeholder="https://linkedin.com/in/username"
+                                       class="form-input-clean pl-10 font-medium">
+                                <i data-lucide="linkedin" class="w-4 h-4 text-blue-600 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="form-label-clean">
+                                <span>Personal Portfolio / Blog URL</span>
+                            </label>
+                            <div class="relative">
+                                <input type="url" name="website_url" value="<?= htmlspecialchars($founderProfile['website_url'] ?? '') ?>" placeholder="https://founder.io"
+                                       class="form-input-clean pl-10 font-medium">
+                                <i data-lucide="globe" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="pt-4 border-t border-slate-100 flex justify-end">
-                        <button type="submit" class="px-7 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-xl shadow-md shadow-indigo-100 transition flex items-center space-x-2">
-                            <i data-lucide="check" class="w-4 h-4"></i>
+                    <div>
+                        <label class="form-label-clean">
+                            <span>Founder Narrative & Entrepreneurial Bio</span>
+                        </label>
+                        <textarea name="bio" rows="4" placeholder="Detail your background, prior startups founded, engineering patents, or key domain authority..."
+                                  class="form-input-clean font-normal leading-relaxed"><?= htmlspecialchars($founderProfile['bio'] ?? '') ?></textarea>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex justify-end">
+                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition flex items-center space-x-2">
+                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
+
                             <span>Save Profile Changes</span>
                         </button>
                     </div>
@@ -355,88 +402,71 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
             <!-- Associated Startup Entity Card -->
             <?php if ($company): ?>
-                <div class="clean-card rounded-2xl p-6 sm:p-7">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">
-                                <i data-lucide="building-2" class="w-4 h-4"></i>
-                            </div>
-                            <h3 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider">Associated Venture Entity</h3>
-                        </div>
-                        <a href="<?= url('founder/company.php') ?>" class="text-sm text-indigo-600 hover:text-indigo-800 font-bold flex items-center space-x-1">
-                            <span>Manage Company Profile</span>
-                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+
+                <div class="section-card p-6">
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-3">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Corporate Entity Affiliation</span>
+                        </h3>
+                        <a href="<?= url('founder/company.php') ?>" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold">
+                            Manage Startup Profile →
                         </a>
                     </div>
-                    <div class="p-5 rounded-xl bg-slate-50/80 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-13 h-13 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black text-lg shadow-xs">
-                                <?= strtoupper(substr($company['name'], 0, 2)) ?>
-                            </div>
+                    <div class="p-4 rounded-xl bg-slate-50/80 border border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center space-x-3.5">
+                            <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-xs">
                             <div>
-                                <div class="font-extrabold text-slate-900 text-base"><?= htmlspecialchars($company['name']) ?></div>
-                                <div class="text-xs sm:text-sm text-slate-600 font-medium mt-0.5"><?= htmlspecialchars($company['industry']) ?> • <?= htmlspecialchars($company['stage']) ?></div>
+                                <div class="font-bold text-slate-900 text-sm"><?= htmlspecialchars($company['name']) ?></div>
+                                <div class="text-xs text-slate-500 mt-0.5"><?= htmlspecialchars($company['industry']) ?> • <?= htmlspecialchars($company['stage']) ?></div>
                             </div>
                         </div>
-                        <div class="sm:text-right">
-                            <span class="text-xs text-slate-500 font-bold uppercase block tracking-wider">Cap Table Stake</span>
-                            <span class="font-black text-indigo-600 text-base sm:text-lg"><?= !empty($company['equity_percent']) ? $company['equity_percent'] . '%' : 'Founder' ?></span>
+                        <div class="text-right">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Equity Allocation</span>
+                            <span class="font-extrabold text-indigo-600 text-sm"><?= !empty($company['equity_percent']) ? $company['equity_percent'] . '%' : 'Founder Stake' ?></span>
+
                         </div>
                     </div>
                 </div>
             <?php endif; ?>
 
-            <!-- Password & Security Card -->
-            <div class="clean-card rounded-2xl p-6 sm:p-7">
-                <div class="flex items-center space-x-2.5 border-b border-slate-100 pb-3.5 mb-5">
-                    <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
-                        <i data-lucide="lock" class="w-4 h-4"></i>
-                    </div>
-                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider">Security & Account Password</h3>
+
+            <!-- Password Change Security Card -->
+            <div class="section-card p-6 sm:p-7 space-y-4">
+                <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+                    <i data-lucide="lock" class="w-4 h-4 text-slate-600"></i>
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Security & Account Password</h3>
                 </div>
 
-                <form action="<?= url('founder/profile.php') ?>" method="POST" class="space-y-4 text-sm">
+                <form action="<?= url('founder/profile.php') ?>" method="POST" class="space-y-4 text-xs">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="change_password">
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                         <div>
-                            <label class="block font-bold text-slate-800 text-sm mb-1.5">Current Password</label>
-                            <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                <input type="password" id="curr-pass" name="current_password" required
-                                       class="w-full pl-4 pr-10 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                <button type="button" onclick="togglePass('curr-pass', this)" class="absolute right-3.5 text-slate-400 hover:text-slate-600">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Current Password</label>
+                            <input type="password" name="current_password" required class="form-input-clean text-xs">
+
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-800 text-sm mb-1.5">New Password</label>
-                            <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                <input type="password" id="new-pass" name="new_password" required minlength="6"
-                                       class="w-full pl-4 pr-10 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                <button type="button" onclick="togglePass('new-pass', this)" class="absolute right-3.5 text-slate-400 hover:text-slate-600">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+
+                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">New Password</label>
+                            <input type="password" name="new_password" required class="form-input-clean text-xs">
+
                         </div>
 
                         <div>
-                            <label class="block font-bold text-slate-800 text-sm mb-1.5">Confirm New Password</label>
-                            <div class="relative flex items-center form-input-group border border-slate-200 rounded-xl bg-slate-50 transition">
-                                <input type="password" id="conf-pass" name="confirm_password" required minlength="6"
-                                       class="w-full pl-4 pr-10 py-3 bg-transparent rounded-xl text-sm text-slate-900 outline-none font-medium">
-                                <button type="button" onclick="togglePass('conf-pass', this)" class="absolute right-3.5 text-slate-400 hover:text-slate-600">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+
+                            <label class="block font-bold text-slate-700 text-[11px] mb-1 uppercase tracking-wider">Confirm Password</label>
+                            <input type="password" name="confirm_password" required class="form-input-clean text-xs">
                         </div>
                     </div>
 
-                    <div class="pt-3 flex justify-end">
-                        <button type="submit" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition shadow-sm">
-                            Update Password
+                    <div class="pt-2 flex justify-end">
+                        <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs">
+                            Update Security Password
+
                         </button>
                     </div>
                 </form>
@@ -451,6 +481,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
         function previewAvatar(input) {
             if (input.files && input.files[0]) {
+
+                const file = input.files[0];
+                const label = document.getElementById('file-chosen-name');
+                if (label) {
+                    label.textContent = 'Selected: ' + file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+                    label.className = 'text-xs text-emerald-600 font-bold';
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('avatar-form-img').src = e.target.result;

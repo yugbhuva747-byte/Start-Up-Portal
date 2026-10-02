@@ -1,6 +1,7 @@
 <?php
 /**
- * Founder Module: KYC & DigiLocker Document Verification
+ * Founder Module: KYC & DigiLocker Document Verification Studio
+ * Implements National Gateway Authentication, Statutory Compliance Stepper & Digital Vault
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('founder');
@@ -11,6 +12,7 @@ $company = null;
 $verificationRequest = null;
 $error = '';
 $flash = get_flash();
+$verificationDocs = [];
 
 if ($db) {
     // Get Company
@@ -25,26 +27,23 @@ if ($db) {
     $vrStmt = $db->prepare("SELECT * FROM verification_requests WHERE user_id = ? ORDER BY created_at DESC LIMIT 1");
     $vrStmt->execute([$user['id']]);
     $verificationRequest = $vrStmt->fetch();
-
-    $docStmt = $db->prepare("SELECT * FROM verification_documents WHERE user_id = ? ORDER BY created_at DESC");
-    $docStmt->execute([$user['id']]);
-    $verificationDocs = $docStmt->fetchAll();
 }
 
 // Handle DigiLocker Auth Simulation & KYC Document Upload POST
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-        $error = 'Invalid token.';
+        $error = 'Invalid security token. Please refresh and try again.';
     } else {
         $action = $_POST['form_action'] ?? '';
 
         if ($action === 'simulate_digilocker') {
             $refId = 'DL-KYC-' . rand(100000, 999999);
             $digiUri = 'in.gov.digilocker:aadhaar:' . hash('crc32b', $user['email']);
+            $oldStatus = $verificationRequest['status'] ?? 'pending';
 
             if ($verificationRequest) {
                 $upd = $db->prepare("
-                    UPDATE verification_requests 
+                    UPDATE verification_requests
                     SET status = 'verified', provider_name = 'DigiLocker National Gateway', provider_ref_id = ?, digilocker_uri = ?, remarks = 'Aadhaar, PAN & Corporate CIN verified with DigiLocker API certificate.', verified_at = NOW()
                     WHERE id = ?
                 ");
@@ -66,8 +65,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             }
 
             // Log status transition
-            $db->prepare("INSERT INTO verification_logs (verification_request_id, actor_user_id, old_status, new_status, remarks) VALUES (?, ?, 'pending', 'verified', ?)")
-               ->execute([$reqId, $user['id'], 'DigiLocker instant verification approved']);
+            $db->prepare("INSERT INTO verification_logs (verification_request_id, actor_user_id, old_status, new_status, remarks) VALUES (?, ?, ?, 'verified', ?)")
+                ->execute([$reqId, $user['id'], $oldStatus, 'DigiLocker instant verification approved']);
 
             log_audit($user['id'], 'DIGILOCKER_VERIFIED', 'verification_requests', $reqId, "DigiLocker verification completed. Ref: $refId");
             set_flash('success', 'DigiLocker KYC verification succeeded! Your founder identity and company are now verified.');
@@ -75,17 +74,30 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             exit;
 
         } elseif ($action === 'upload_kyc_doc') {
+            $allowedTypes = ['Founder PAN Card', 'Passport / Aadhaar ID', 'Certificate of Incorporation', 'GST Registration Certificate', 'Audited Financial Statement', 'Board Resolution', 'Startup Pitch Deck'];
             $docType = trim($_POST['doc_type'] ?? 'Founder PAN Card');
-            if (!empty($_FILES['doc_file']['name'])) {
+            if (!in_array($docType, $allowedTypes, true))
+                $docType = 'Founder PAN Card';
+
+            if (empty($_FILES['doc_file']['name'])) {
+                $error = 'Please select a document file.';
+            } else {
                 $file = $_FILES['doc_file'];
-                if ($file['error'] === UPLOAD_ERR_OK) {
+                if ($file['error'] !== UPLOAD_ERR_OK) {
+                    $error = ($file['error'] === UPLOAD_ERR_INI_SIZE || $file['error'] === UPLOAD_ERR_FORM_SIZE)
+                        ? 'File is larger than the server upload limit. Try a smaller file.'
+                        : 'Upload error (code ' . (int) $file['error'] . '). Please try again.';
+                } else {
                     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                     $allowed = ['pdf', 'jpg', 'jpeg', 'png'];
-                    if (in_array($ext, $allowed) && $file['size'] <= 15 * 1024 * 1024) {
+                    if (!in_array($ext, $allowed) || $file['size'] > 15 * 1024 * 1024) {
+                        $error = 'File must be PDF, JPG, or PNG under 15MB.';
+                    } else {
                         $targetDir = ROOT_PATH . '/uploads/documents';
-                        if (!is_dir($targetDir)) @mkdir($targetDir, 0777, true);
+                        if (!is_dir($targetDir))
+                            @mkdir($targetDir, 0755, true);
 
-                        $filename = 'founder_kyc_' . $user['id'] . '_' . time() . '.' . $ext;
+                        $filename = 'founder_kyc_' . $user['id'] . '_' . time() . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
                         if (move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) {
                             $publicPath = 'uploads/documents/' . $filename;
                             $sizeStr = round($file['size'] / (1024 * 1024), 2) . ' MB';
@@ -99,10 +111,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 ");
                                 $insReq->execute([$user['id'], $company['id'] ?? null, $refId]);
                                 $reqId = $db->lastInsertId();
-                            } else {
-                                if (in_array($verificationRequest['status'], ['rejected', 'additional_info'])) {
-                                    $db->prepare("UPDATE verification_requests SET status = 'pending', remarks = 'Updated with newly uploaded documents.' WHERE id = ?")->execute([$reqId]);
-                                }
+                            } elseif (in_array($verificationRequest['status'], ['rejected', 'additional_info'])) {
+                                $db->prepare("UPDATE verification_requests SET status = 'pending', remarks = 'Updated with newly uploaded documents.' WHERE id = ?")->execute([$reqId]);
                             }
 
                             $db->prepare("
@@ -114,259 +124,444 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                             log_audit($user['id'], 'UPLOAD_FOUNDER_KYC_DOC', 'verification_documents', $newDocId, "Founder uploaded $docType");
                             send_notification(1, 'New KYC Document Uploaded', "Founder {$user['name']} submitted {$docType} for compliance verification.", 'info', 'admin/verification_queue.php');
                             set_flash('success', "$docType uploaded for compliance review.");
+                            header('Location: ' . url('founder/verification.php'));
+                            exit;
                         } else {
-                            $error = 'Failed to save file.';
+                            $error = 'Failed to save file. Check folder permissions on uploads/documents.';
                         }
-                    } else {
-                        $error = 'File must be PDF, JPG, or PNG under 15MB.';
                     }
-                } else {
-                    $error = 'Upload error: ' . $file['error'];
                 }
-            } else {
-                $error = 'Please select a document file.';
             }
-            header('Location: ' . url('founder/verification.php'));
-            exit;
+            // On any error we fall through (no redirect) so the message is actually shown
         }
     }
 }
+
+// Load documents AFTER POST handling
+if ($db) {
+    $docStmt = $db->prepare("SELECT * FROM verification_documents WHERE user_id = ? ORDER BY created_at DESC");
+    $docStmt->execute([$user['id']]);
+    $verificationDocs = $docStmt->fetchAll();
+}
+
+$isVerified = ($verificationRequest['status'] ?? '') === 'verified';
+$cinOk = !empty($company['cin_number']);
+$step3Done = $cinOk || $isVerified;
+$stepsDone = ($isVerified ? 3 : 0) + ($step3Done ? 1 : 0);
+
+$flashStyles = [
+    'success' => ['bg-emerald-50 text-emerald-800 border-emerald-200', 'check-circle-2', 'text-emerald-600'],
+    'info' => ['bg-blue-50 text-blue-800 border-blue-200', 'info', 'text-blue-600'],
+    'error' => ['bg-rose-50 text-rose-800 border-rose-200', 'alert-circle', 'text-rose-600'],
+];
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KYC & DigiLocker • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title><?= htmlspecialchars($pageTitle ?? APP_NAME) ?> • <?= APP_NAME ?></title>
+    <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean {
-            background: #FFFFFF;
+        html:not(.dark) .hero-trust-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #EFF6FF 0%, #F8FAFC 50%, #F1F5F9 100%);
+            border: 1px solid #DBEAFE;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .hero-trust-banner {
+            border-radius: 1.5rem;
+            position: relative;
+        }
+
+        html.dark .hero-trust-banner {
+            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
+            border: 1px solid #1E293B !important;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* All cards solid white (light + dark mode) */
+        .section-card {
+            background-color: #FFFFFF !important;
+            color: #0F172A;
             border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+        }
+
+        .form-input-clean {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.75rem;
+            color: #0F172A;
+            font-size: 1rem;
+            line-height: 1.5rem;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+
+        .form-input-clean:hover {
+            background-color: #F1F5F9;
+            border-color: #CBD5E1;
+        }
+
+        .form-input-clean:focus {
+            background-color: #FFFFFF;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
-    
-    <!-- Founder Sidebar -->
+
+<body
+    class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="verify-main">
-            
-            <?php if ($flash): ?>
-                <div class="p-4 rounded-xl text-sm font-bold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0"></i>
-                    <span><?= htmlspecialchars($flash['message']) ?></span>
+        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="verify-main">
+
+            <!-- Flash Feedback -->
+            <?php if ($flash):
+                $fs = $flashStyles[$flash['type']] ?? $flashStyles['info']; ?>
+                <div
+                    class="p-4 rounded-2xl text-sm font-semibold border <?= $fs[0] ?> flex items-center justify-between shadow-sm">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="<?= $fs[1] ?>" class="w-5 h-5 flex-shrink-0 <?= $fs[2] ?>"></i>
+                        <span><?= htmlspecialchars($flash['message']) ?></span>
+                    </div>
+                    <span class="text-xs font-bold uppercase opacity-75">Status Update</span>
                 </div>
             <?php endif; ?>
 
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Identity & Document Verification</h1>
-                    <p class="text-xs sm:text-sm text-slate-600 mt-0.5 font-medium">DigiLocker-supported KYC workflow ensuring platform trust and legal compliance.</p>
+            <?php if ($error): ?>
+                <div
+                    class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-sm">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+                    <span><?= htmlspecialchars($error) ?></span>
                 </div>
-                <div>
-                    <?= render_status_badge($verificationRequest['status'] ?? 'PENDING') ?>
+            <?php endif; ?>
+
+            <!-- Hero Banner -->
+            <div class="hero-trust-banner p-6 sm:p-8 relative overflow-hidden">
+                <div
+                    class="absolute -right-16 -top-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none">
+                </div>
+                <div
+                    class="absolute right-32 -bottom-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none">
+                </div>
+
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                    <div class="space-y-2">
+                        <div class="flex flex-wrap items-center gap-2.5">
+                            <span
+                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold <?= $isVerified ? 'bg-emerald-600' : 'bg-blue-600' ?> text-white shadow-sm">
+                                <i data-lucide="<?= $isVerified ? 'shield-check' : 'shield-alert' ?>"
+                                    class="w-3.5 h-3.5"></i>
+                                <span><?= $isVerified ? 'DigiLocker Verified Compliance' : 'Official National KYC Gateway' ?></span>
+                            </span>
+                            <?php if ($company): ?>
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-700">
+                                    <i data-lucide="building" class="w-3.5 h-3.5 text-blue-600"></i>
+                                    <span><?= htmlspecialchars($company['name']) ?></span>
+                                    <span class="text-slate-300">•</span>
+                                    <span class="text-xs font-mono text-slate-500">CIN:
+                                        <?= htmlspecialchars(($company['cin_number'] ?? '') ?: 'Verification in Progress') ?></span>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <h1
+                            class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            Identity & DigiLocker Compliance Verification
+                        </h1>
+                        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                            Official statutory verification infrastructure backed by National DigiLocker API gateways,
+                            MCA Master Data matching, and SEBI angel investment regulatory standards.
+                        </p>
+                    </div>
+
+                    <!-- Platform Status Widget -->
+                    <div class="flex items-center space-x-3">
+                        <div
+                            class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <div
+                                class="w-11 h-11 rounded-xl <?= $isVerified ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-amber-50 text-amber-600 border border-amber-100' ?> flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="<?= $isVerified ? 'award' : 'clock' ?>" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Platform Status
+                                </div>
+                                <div
+                                    class="text-base font-extrabold <?= $isVerified ? 'text-emerald-700' : 'text-amber-700' ?>">
+                                    <?= $isVerified ? 'Verified Issuer' : 'Verification Required' ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- DigiLocker Integration Card -->
-            <div class="clean-card rounded-2xl p-5 sm:p-6 relative bg-gradient-to-r from-white via-blue-50/20 to-indigo-50/30">
+            <!-- Verification Progress Stepper -->
+            <div class="section-card p-6">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                    <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-indigo-600"></i>
+                        <span>Statutory Verification Progress Stepper</span>
+                    </h3>
+                    <span
+                        class="text-sm font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 px-3 py-0.5 rounded-full">
+                        <?= $stepsDone ?> of 4 Steps Complete (<?= $stepsDone * 25 ?>%)
+                    </span>
+                </div>
+
+                <?php
+                $stepBase = 'p-4 rounded-xl border space-y-1 relative ';
+                $stepDone = 'bg-emerald-50 border-emerald-200';
+                $stepTodo = 'bg-slate-50 border-slate-200';
+                ?>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <!-- Step 1 -->
+                    <div class="<?= $stepBase . ($isVerified ? $stepDone : $stepTodo) ?>">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step
+                                1</span>
+                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>"
+                                class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-indigo-600' ?>"></i>
+                        </div>
+                        <div class="text-base font-bold text-slate-900">Founder Aadhaar / ID</div>
+                        <p class="text-sm text-slate-500">UIDAI cryptographic consent via DigiLocker</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="<?= $stepBase . ($isVerified ? $stepDone : $stepTodo) ?>">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step
+                                2</span>
+                            <i data-lucide="<?= $isVerified ? 'check-circle' : 'circle-dot' ?>"
+                                class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-indigo-600' ?>"></i>
+                        </div>
+                        <div class="text-base font-bold text-slate-900">Income Tax PAN</div>
+                        <p class="text-sm text-slate-500">Permanent Account Number cross-check</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="<?= $stepBase . ($step3Done ? $stepDone : $stepTodo) ?>">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-bold <?= $step3Done ? 'text-emerald-700' : 'text-slate-500' ?>">Step
+                                3</span>
+                            <i data-lucide="<?= $step3Done ? 'check-circle' : 'clock' ?>"
+                                class="w-4 h-4 <?= $step3Done ? 'text-emerald-600' : 'text-amber-500' ?>"></i>
+                        </div>
+                        <div class="text-base font-bold text-slate-900">MCA Corporate CIN</div>
+                        <p class="text-sm text-slate-500">Ministry of Corporate Affairs registry</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="<?= $stepBase . ($isVerified ? $stepDone : $stepTodo) ?>">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="text-xs font-bold <?= $isVerified ? 'text-emerald-700' : 'text-slate-500' ?>">Step
+                                4</span>
+                            <i data-lucide="<?= $isVerified ? 'shield-check' : 'lock' ?>"
+                                class="w-4 h-4 <?= $isVerified ? 'text-emerald-600' : 'text-slate-400' ?>"></i>
+                        </div>
+                        <div class="text-base font-bold text-slate-900">Platform Trust Seal</div>
+                        <p class="text-sm text-slate-500">Unlocks investor syndicates & wire custody</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DigiLocker Gateway Card -->
+            <div class="section-card p-6 sm:p-7 relative overflow-hidden">
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                     <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center flex-shrink-0 shadow-xs">
+                        <div
+                            class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center flex-shrink-0 shadow-md">
                             <i data-lucide="shield-check" class="w-7 h-7"></i>
                         </div>
                         <div>
-                            <div class="flex flex-wrap items-center gap-2.5">
-                                <h2 class="text-base sm:text-lg font-bold text-slate-900">DigiLocker & MCA Instant Verification</h2>
-                                <span class="px-2.5 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 font-bold border border-blue-200">National E-Gov Gateway</span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="text-lg font-bold text-slate-900">DigiLocker National Authentication Gateway
+                                </h2>
+                                <span
+                                    class="px-2.5 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 font-bold border border-blue-200">MeitY
+                                    Gov. of India</span>
                             </div>
-                            <p class="text-xs sm:text-sm text-slate-600 mt-0.5 font-medium">Authenticate Aadhaar, PAN, and MCA corporate entity registration with cryptographic verification.</p>
+                            <p class="text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
+                                Instant, paperless KYC verification. Pulls verified Aadhaar XML, founder PAN
+                                verification, and incorporation certificate in one single secure workflow.
+                            </p>
                         </div>
                     </div>
 
-                    <?php if (($verificationRequest['status'] ?? '') === 'verified'): ?>
-                        <div class="px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold text-sm flex items-center space-x-2 shadow-2xs">
-                            <i data-lucide="check-circle" class="w-4.5 h-4.5 text-emerald-600"></i>
-                            <span>MCA & KYC Verified</span>
-                        </div>
-                    <?php else: ?>
-                        <form action="<?= url('founder/verification.php') ?>" method="POST">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="form_action" value="simulate_digilocker">
-                            <button type="submit" class="px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-200 hover:shadow-blue-300 transition flex items-center space-x-2">
-                                <i data-lucide="lock" class="w-4.5 h-4.5"></i>
-                                <span>Authenticate with DigiLocker</span>
-                            </button>
-                        </form>
-                    <?php endif; ?>
+                    <div>
+                        <?php if ($isVerified): ?>
+                            <div
+                                class="px-5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 font-bold text-sm flex items-center space-x-2 shadow-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                <span>Digitally Certified</span>
+                            </div>
+                        <?php else: ?>
+                            <form action="<?= url('founder/verification.php') ?>" method="POST">
+                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                <input type="hidden" name="form_action" value="simulate_digilocker">
+                                <button type="submit"
+                                    class="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition flex items-center space-x-2">
+                                    <i data-lucide="lock" class="w-4 h-4"></i>
+                                    <span>Authenticate with DigiLocker</span>
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
-                <?php if (($verificationRequest['status'] ?? '') === 'verified'): ?>
-                    <div class="mt-6 pt-5 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-3.5 text-sm">
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Verification Reference</div>
-                            <div class="font-mono font-bold text-slate-900 mt-1 text-sm"><?= htmlspecialchars($verificationRequest['provider_ref_id']) ?></div>
+                <?php if ($isVerified): ?>
+                    <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Gateway Reference ID
+                            </div>
+                            <div class="font-mono font-bold text-slate-900 mt-1 text-sm">
+                                <?= htmlspecialchars($verificationRequest['provider_ref_id'] ?? '—') ?></div>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Gateway Provider</div>
-                            <div class="font-bold text-indigo-600 mt-1 text-sm"><?= htmlspecialchars($verificationRequest['provider_name']) ?></div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Authentication Provider
+                            </div>
+                            <div class="font-bold text-indigo-600 mt-1 text-sm">
+                                <?= htmlspecialchars($verificationRequest['provider_name'] ?? '—') ?></div>
                         </div>
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Timestamp</div>
-                            <div class="text-slate-700 font-semibold mt-1 text-sm"><?= date('d M Y, H:i A', strtotime($verificationRequest['verified_at'])) ?></div>
+                        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                            <div class="text-slate-500 text-xs uppercase font-bold tracking-wider">Certified Timestamp</div>
+                            <div class="text-slate-700 mt-1 text-sm font-mono">
+                                <?= !empty($verificationRequest['verified_at']) ? date('d M Y • H:i:s', strtotime($verificationRequest['verified_at'])) : '—' ?>
+                            </div>
                         </div>
                     </div>
                 <?php endif; ?>
             </div>
 
-            <!-- Compliance Status Feedback Alert if Rejected or Additional Info Required -->
+            <!-- Rejected / Additional Info Alert -->
             <?php if (!empty($verificationRequest['remarks']) && in_array($verificationRequest['status'] ?? '', ['rejected', 'additional_info'])): ?>
-                <div class="p-5 rounded-2xl border <?= $verificationRequest['status'] === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800' ?> text-sm space-y-1.5">
-                    <div class="font-bold flex items-center space-x-2">
-                        <i data-lucide="alert-circle" class="w-5 h-5"></i>
-                        <span>Compliance Review Notice (<?= ucfirst($verificationRequest['status']) ?>)</span>
+                <div
+                    class="p-5 rounded-2xl border <?= $verificationRequest['status'] === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800' ?> space-y-1.5">
+                    <div class="font-bold text-base flex items-center space-x-2">
+                        <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+                        <span>Compliance Action Required:
+                            <?= htmlspecialchars($verificationRequest['status'] === 'rejected' ? 'Verification Rejected' : 'Additional Information Needed') ?></span>
                     </div>
-                    <p class="text-sm leading-relaxed pl-7 font-medium"><?= htmlspecialchars($verificationRequest['remarks']) ?></p>
-                    <p class="text-xs opacity-90 pl-7 font-medium">Please upload the requested or revised documents below to submit for re-evaluation.</p>
+                    <div class="text-sm pl-7 leading-relaxed">
+                        <?= nl2br(htmlspecialchars($verificationRequest['remarks'])) ?>
+                    </div>
                 </div>
             <?php endif; ?>
 
-            <!-- Required Verification Checklist -->
-            <div class="clean-card rounded-2xl p-6 sm:p-8">
-                <div class="flex items-center space-x-2.5 border-b border-slate-100 pb-3.5 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                        <i data-lucide="list-checks" class="w-4 h-4"></i>
+            <!-- Document Repository -->
+            <div class="section-card p-6 sm:p-7 space-y-5">
+                <div
+                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                    <div>
+                        <h3
+                            class="text-base font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                            <i data-lucide="file-check-2" class="w-4 h-4 text-indigo-600"></i>
+                            <span>Statutory Document Repository & Vault</span>
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-0.5">Submit supporting documents (MCA Certificate, PAN,
+                            GSTIN, Pitch Decks) for compliance audits.</p>
                     </div>
-                    <h3 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider">
-                        Founder Trust & Compliance Checklist
-                    </h3>
-                </div>
-
-                <div class="divide-y divide-slate-100 text-sm">
-                    <div class="py-4 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-slate-900 text-sm sm:text-base">1. Individual Identity KYC (Aadhaar / Passport)</div>
-                            <div class="text-slate-500 text-xs sm:text-sm mt-0.5 font-medium">Confirms legal founder persona and citizenship status</div>
-                        </div>
-                        <span class="<?= ($verificationRequest['status'] ?? '') === 'verified' ? 'text-emerald-800 bg-emerald-50 border-emerald-200' : 'text-amber-800 bg-amber-50 border-amber-200' ?> border px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1.5">
-                            <i data-lucide="<?= ($verificationRequest['status'] ?? '') === 'verified' ? 'check' : 'clock' ?>" class="w-3.5 h-3.5"></i>
-                            <span><?= ($verificationRequest['status'] ?? '') === 'verified' ? 'Completed' : 'Pending Review' ?></span>
-                        </span>
-                    </div>
-
-                    <div class="py-4 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-slate-900 text-sm sm:text-base">2. Tax Identification (PAN Card)</div>
-                            <div class="text-slate-500 text-xs sm:text-sm mt-0.5 font-medium">Essential for Indian direct tax and compliance reporting</div>
-                        </div>
-                        <span class="<?= ($verificationRequest['status'] ?? '') === 'verified' ? 'text-emerald-800 bg-emerald-50 border-emerald-200' : 'text-amber-800 bg-amber-50 border-amber-200' ?> border px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1.5">
-                            <i data-lucide="<?= ($verificationRequest['status'] ?? '') === 'verified' ? 'check' : 'clock' ?>" class="w-3.5 h-3.5"></i>
-                            <span><?= ($verificationRequest['status'] ?? '') === 'verified' ? 'Completed' : 'Pending Review' ?></span>
-                        </span>
-                    </div>
-
-                    <div class="py-4 flex items-center justify-between">
-                        <div>
-                            <div class="font-bold text-slate-900 text-sm sm:text-base">3. MCA Corporate Registration & CIN</div>
-                            <div class="text-slate-500 text-xs sm:text-sm mt-0.5 font-medium">Corporate entity verification with Ministry of Corporate Affairs</div>
-                        </div>
-                        <span class="<?= $company && !empty($company['cin_number']) ? 'text-emerald-800 bg-emerald-50 border border-emerald-200' : 'text-amber-800 bg-amber-50 border-amber-200' ?> px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1.5 border">
-                            <i data-lucide="<?= $company && !empty($company['cin_number']) ? 'check' : 'clock' ?>" class="w-3.5 h-3.5"></i>
-                            <span><?= $company && !empty($company['cin_number']) ? 'CIN Matched' : 'Pending CIN Input' ?></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- KYC Document Upload & Repository -->
-            <div class="clean-card rounded-2xl p-6 sm:p-8">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                            <i data-lucide="file-check" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-sm sm:text-base font-extrabold text-slate-900 uppercase tracking-wider">KYC & Compliance Documents</h3>
-                            <p class="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Upload official identity and statutory records for administrative audit</p>
-                        </div>
-                    </div>
+                    <span class="text-sm text-slate-500 font-mono">Total Documents:
+                        <?= count($verificationDocs) ?></span>
                 </div>
 
                 <!-- Upload Form -->
-                <form action="<?= url('founder/verification.php') ?>" method="POST" enctype="multipart/form-data" class="bg-slate-50/80 border border-slate-200/80 rounded-2xl p-6 mb-6 space-y-4">
+                <form action="<?= url('founder/verification.php') ?>" method="POST" enctype="multipart/form-data"
+                    class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <input type="hidden" name="form_action" value="upload_kyc_doc">
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block font-bold text-slate-800 text-sm mb-1.5">Document Type *</label>
-                            <div class="relative border border-slate-200 rounded-xl bg-white transition">
-                                <select name="doc_type" required class="w-full px-3.5 py-3 bg-transparent rounded-xl text-sm text-slate-900 font-semibold outline-none cursor-pointer">
-                                    <option value="Founder PAN Card">Founder PAN Card</option>
-                                    <option value="Passport / Aadhaar ID">Passport / Aadhaar ID</option>
-                                    <option value="Certificate of Incorporation">Certificate of Incorporation (MCA)</option>
-                                    <option value="GST Registration Certificate">GST Registration Certificate</option>
-                                    <option value="Audited Financial Statement">Audited Financial Statement</option>
-                                    <option value="Board Resolution">Board Resolution / MOA & AOA</option>
-                                    <option value="Startup Pitch Deck">Startup Pitch Deck</option>
-                                </select>
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                        <div class="md:col-span-4">
+                            <label
+                                class="block font-bold text-slate-700 text-sm mb-1.5 uppercase tracking-wider">Document
+                                Classification</label>
+                            <select name="doc_type" required class="form-input-clean font-medium cursor-pointer">
+                                <option value="Founder PAN Card">💳 Founder PAN Card</option>
+                                <option value="Passport / Aadhaar ID">🪪 Passport / Aadhaar ID</option>
+                                <option value="Certificate of Incorporation">🏛️ Certificate of Incorporation (MCA)
+                                </option>
+                                <option value="GST Registration Certificate">🧾 GST Registration Certificate</option>
+                                <option value="Audited Financial Statement">📊 Audited Financial Statement</option>
+                                <option value="Board Resolution">📑 Board Resolution / MOA & AOA</option>
+                                <option value="Startup Pitch Deck">🚀 Startup Pitch Deck</option>
+                            </select>
                         </div>
 
-                        <div>
-                            <label class="block font-bold text-slate-800 text-sm mb-1.5">Choose File (PDF, JPG, PNG)</label>
+                        <div class="md:col-span-5">
+                            <label
+                                class="block font-bold text-slate-700 text-sm mb-1.5 uppercase tracking-wider">Document
+                                File (PDF, JPG, PNG - Max 15MB)</label>
                             <input type="file" name="doc_file" required accept=".pdf,.jpg,.jpeg,.png"
-                                   class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm text-slate-700 outline-none">
+                                class="form-input-clean text-sm text-slate-700">
                         </div>
 
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md shadow-indigo-100 flex items-center justify-center space-x-2">
-                                <i data-lucide="upload-cloud" class="w-4.5 h-4.5"></i>
-                                <span>Upload Document</span>
+                        <div class="md:col-span-3">
+                            <button type="submit"
+                                class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm transition shadow-md flex items-center justify-center space-x-2">
+                                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                <span>Upload to Secure Vault</span>
                             </button>
                         </div>
                     </div>
                 </form>
 
-                <!-- Documents List -->
+                <!-- Document List -->
                 <div class="divide-y divide-slate-100">
                     <?php if (empty($verificationDocs)): ?>
-                        <div class="py-10 text-center text-sm text-slate-500 font-medium">
-                            No compliance documents uploaded yet. Submit your founder PAN or company incorporation above.
+                        <div class="py-12 text-center text-sm text-slate-500">
+                            <i data-lucide="folder-open" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                            <div class="font-semibold text-slate-700">No compliance documents stored in the vault yet.</div>
+                            <div class="text-sm text-slate-500 mt-0.5">Upload founder PAN, Aadhaar, or MCA incorporation
+                                certificate above.</div>
                         </div>
                     <?php else: ?>
-                        <?php foreach ($verificationDocs as $doc): ?>
-                            <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                                <div class="flex items-center space-x-3.5">
-                                    <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center flex-shrink-0">
-                                        <i data-lucide="<?= str_contains(strtolower($doc['file_path']), '.pdf') ? 'file-text' : 'image' ?>" class="w-5 h-5"></i>
+                        <?php foreach ($verificationDocs as $doc):
+                            $st = $doc['status'] ?? 'pending';
+                            $stClass = $st === 'verified' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : ($st === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-amber-50 text-amber-700 border border-amber-200');
+                            ?>
+                            <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div class="flex items-center space-x-3.5 min-w-0">
+                                    <div
+                                        class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center flex-shrink-0">
+                                        <i data-lucide="<?= str_contains(strtolower($doc['file_path'] ?? ''), '.pdf') ? 'file-text' : 'image' ?>"
+                                            class="w-5 h-5"></i>
                                     </div>
-                                    <div>
-                                        <div class="font-bold text-slate-900 text-sm sm:text-base"><?= htmlspecialchars($doc['document_type']) ?></div>
-                                        <div class="text-xs text-slate-500 mt-0.5 font-medium">
-                                            <?= htmlspecialchars($doc['file_size']) ?> • Uploaded <?= date('M d, Y, h:i A', strtotime($doc['created_at'])) ?>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-slate-900 text-base">
+                                            <?= htmlspecialchars($doc['document_type']) ?></div>
+                                        <div class="text-sm text-slate-500 mt-0.5 font-mono">
+                                            <?= htmlspecialchars($doc['file_size'] ?? '') ?> • Uploaded
+                                            <?= date('M d, Y • h:i A', strtotime($doc['created_at'])) ?>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2.5">
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold <?= $doc['status'] === 'verified' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : ($doc['status'] === 'rejected' ? 'bg-rose-50 text-rose-800 border border-rose-200' : 'bg-amber-50 text-amber-800 border border-amber-200') ?>">
-                                        <?= strtoupper($doc['status']) ?>
-                                    </span>
-                                    <a href="<?= url($doc['file_path']) ?>" target="_blank" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs sm:text-sm font-bold flex items-center space-x-1.5 transition shadow-sm" title="View Document in New Tab">
-                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                <div class="flex flex-wrap items-center gap-2.5">
+                                    <span
+                                        class="px-3 py-1 rounded-full text-xs font-bold <?= $stClass ?>"><?= htmlspecialchars(strtoupper($st)) ?></span>
+                                    <a href="<?= htmlspecialchars(url($doc['file_path'])) ?>" target="_blank" rel="noopener"
+                                        class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-sm font-semibold flex items-center space-x-1.5 transition shadow-sm">
+                                        <i data-lucide="eye" class="w-4 h-4 text-indigo-600"></i>
                                         <span>View</span>
                                     </a>
-                                    <a href="<?= url('download.php?id=' . $doc['id'] . '&type=verification') ?>" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold flex items-center space-x-1.5 transition shadow-sm" title="Download Document File">
+                                    <a href="<?= htmlspecialchars(url('download.php?id=' . (int) $doc['id'] . '&type=verification')) ?>"
+                                        class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold flex items-center space-x-1.5 transition shadow-sm">
                                         <i data-lucide="download" class="w-4 h-4"></i>
                                         <span>Download</span>
                                     </a>
@@ -381,8 +576,11 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     </div>
 
     <script>
-        lucide.createIcons();
-        gsap.from("#verify-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons();
+        if (window.gsap) {
+            gsap.fromTo("#verify-main", { y: 8, opacity: 0 }, { duration: 0.35, y: 0, opacity: 1, ease: "power2.out", clearProps: "all" });
+        }
     </script>
 </body>
+
 </html>
