@@ -176,12 +176,7 @@ require_once __DIR__ . '/theme.php';
 
         <?php if (($currentPage ?? basename($_SERVER['PHP_SELF'])) !== 'dashboard.php'): ?>
         <!-- Clean & Bold Back Icon Button -->
-        <button type="button" onclick="investorGoBack(this)"
-                id="investor-back-btn"
-                title="Go Back" aria-label="Go Back"
-                class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[#FAFBFD] hover:bg-[#123B7A] dark:bg-slate-800 dark:hover:bg-blue-600 border border-[#E4E8EF] dark:border-slate-700 hover:border-[#123B7A] dark:hover:border-blue-600 text-[#4B5563] dark:text-slate-200 hover:text-white dark:hover:text-white shadow-xs hover:shadow-md hover:shadow-blue-900/20 transition-all duration-200 flex items-center justify-center group cursor-pointer active:scale-95">
-            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200"></i>
-        </button>
+        
         <?php endif; ?>
 
     </div>
@@ -204,14 +199,7 @@ require_once __DIR__ . '/theme.php';
 
         <!-- Contact & Support Dropdown -->
         <div class="relative hidden xl:block" id="investor-contact-wrapper">
-            <button onclick="toggleInvestorContact()" type="button"
-                class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-[#FAFBFD] dark:bg-slate-800 border border-[#E4E8EF] dark:border-slate-700 text-xs shadow-2xs hover:bg-[#EAF2FF] dark:hover:bg-slate-700 hover:border-[#123B7A]/30 transition group cursor-pointer"
-                aria-label="Contact & Support">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100 dark:ring-emerald-900/30 flex-shrink-0"></span>
-                <i data-lucide="headphones" class="w-3.5 h-3.5 text-[#123B7A] dark:text-blue-400 group-hover:scale-110 transition-transform flex-shrink-0"></i>
-                <span class="text-slate-700 dark:text-slate-300 font-bold">Contact & Support</span>
-                <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-transform duration-200 flex-shrink-0" id="investor-contact-chevron"></i>
-            </button>
+          
 
             <!-- Contact Dropdown Panel -->
             <div id="investor-contact-menu"
@@ -306,13 +294,14 @@ require_once __DIR__ . '/theme.php';
 
         <!-- Notifications Bell -->
         <div class="relative" id="investor-notif-dropdown-wrapper">
-            <button onclick="toggleInvestorNotifs()" type="button"
+            <button id="investor-notif-btn" onclick="toggleInvestorNotifs(event)" type="button"
                 class="relative p-2.5 rounded-xl bg-[#FAFBFD] dark:bg-slate-800 hover:bg-[#EAF2FF] dark:hover:bg-slate-700 border border-[#E4E8EF] dark:border-slate-700 text-[#4B5563] dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-white transition cursor-pointer"
-                aria-label="Notifications">
-                <i data-lucide="bell" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                aria-label="Notifications"
+                aria-expanded="false">
+                <i data-lucide="bell" class="w-4 h-4 sm:w-5 sm:h-5 pointer-events-none"></i>
                 <?php if ($unreadCount > 0): ?>
                     <span
-                        class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#123B7A] dark:bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center">
+                        class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#123B7A] dark:bg-blue-600 text-white text-[11px] font-bold flex items-center justify-center pointer-events-none">
                         <?= $unreadCount ?>
                     </span>
                 <?php endif; ?>
@@ -320,7 +309,8 @@ require_once __DIR__ . '/theme.php';
 
             <!-- Notifications Dropdown -->
             <div id="investor-notif-menu"
-                class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl shadow-2xl p-4 z-50">
+                onclick="event.stopPropagation()"
+                class="hidden absolute right-0 mt-2 w-80 sm:w-96 max-w-[calc(100vw-24px)] bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div
                     class="flex items-center justify-between pb-3 border-b border-[#E4E8EF] dark:border-slate-800 text-sm font-extrabold text-[#0B1F3A] dark:text-white">
                     <span>Deal Alerts & Updates</span>
@@ -443,29 +433,41 @@ require_once __DIR__ . '/theme.php';
     }
 
     // Toggle Notifications Dropdown
-    function toggleInvestorNotifs() {
+    function toggleInvestorNotifs(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         const notifMenu = document.getElementById('investor-notif-menu');
+        const notifBtn = document.getElementById('investor-notif-btn');
         const profileMenu = document.getElementById('investor-profile-menu');
         if (profileMenu) profileMenu.classList.add('hidden');
-        if (notifMenu) {
-            notifMenu.classList.toggle('hidden');
-            if (!notifMenu.classList.contains('hidden') && window.lucide) {
-                lucide.createIcons();
-            }
+        if (!notifMenu) return;
+
+        const isHidden = notifMenu.classList.contains('hidden');
+        if (isHidden) {
+            notifMenu.classList.remove('hidden');
+            if (notifBtn) notifBtn.setAttribute('aria-expanded', 'true');
+        } else {
+            notifMenu.classList.add('hidden');
+            if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
         }
     }
 
     // Toggle Profile Dropdown
-    function toggleInvestorProfile() {
+    function toggleInvestorProfile(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         const profileMenu = document.getElementById('investor-profile-menu');
         const notifMenu = document.getElementById('investor-notif-menu');
+        const notifBtn = document.getElementById('investor-notif-btn');
         if (notifMenu) notifMenu.classList.add('hidden');
-        if (profileMenu) {
-            profileMenu.classList.toggle('hidden');
-            if (!profileMenu.classList.contains('hidden') && window.lucide) {
-                lucide.createIcons();
-            }
-        }
+        if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+        if (!profileMenu) return;
+
+        profileMenu.classList.toggle('hidden');
     }
 
     // Toggle Dark / Light Theme
@@ -515,8 +517,12 @@ require_once __DIR__ . '/theme.php';
     document.addEventListener('click', function (e) {
         const notifMenu = document.getElementById('investor-notif-menu');
         const notifWrapper = document.getElementById('investor-notif-dropdown-wrapper');
-        if (notifMenu && notifWrapper && !notifWrapper.contains(e.target)) {
-            notifMenu.classList.add('hidden');
+        const notifBtn = document.getElementById('investor-notif-btn');
+        if (notifMenu && !notifMenu.classList.contains('hidden')) {
+            if (!notifWrapper || !notifWrapper.contains(e.target)) {
+                notifMenu.classList.add('hidden');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+            }
         }
 
         const profileWrapper = document.getElementById('investor-profile-wrapper');
@@ -531,6 +537,27 @@ require_once __DIR__ . '/theme.php';
         if (contactWrapper && contactMenu && !contactWrapper.contains(e.target)) {
             contactMenu.classList.add('hidden');
             if (chevron) chevron.style.transform = '';
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const notifMenu = document.getElementById('investor-notif-menu');
+            const notifBtn = document.getElementById('investor-notif-btn');
+            if (notifMenu && !notifMenu.classList.contains('hidden')) {
+                notifMenu.classList.add('hidden');
+                if (notifBtn) notifBtn.setAttribute('aria-expanded', 'false');
+            }
+            const profileMenu = document.getElementById('investor-profile-menu');
+            if (profileMenu && !profileMenu.classList.contains('hidden')) {
+                profileMenu.classList.add('hidden');
+            }
+            const contactMenu = document.getElementById('investor-contact-menu');
+            const chevron = document.getElementById('investor-contact-chevron');
+            if (contactMenu && !contactMenu.classList.contains('hidden')) {
+                contactMenu.classList.add('hidden');
+                if (chevron) chevron.style.transform = '';
+            }
         }
     });
 

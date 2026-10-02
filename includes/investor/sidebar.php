@@ -301,38 +301,7 @@ require_once __DIR__ . '/theme.php';
 
         <?php
         $navGroups = [
-            'Dealflow & Portfolio' => [
-                [
-                    'title' => 'Discover Deals',
-                    'url' => url('investor/discover.php'),
-                    'icon' => 'sparkles',
-                    'active' => in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php'], true)
-                ],
-                [
-                    'title' => 'Dashboard',
-                    'url' => url('investor/dashboard.php'),
-                    'icon' => 'layout-dashboard',
-                    'active' => ($currentPage === 'dashboard.php')
-                ],
-                [
-                    'title' => 'Portfolio',
-                    'url' => url('investor/portfolio.php'),
-                    'icon' => 'briefcase',
-                    'active' => ($currentPage === 'portfolio.php')
-                ],
-                [
-                    'title' => 'Watchlist',
-                    'url' => url('investor/watchlist.php'),
-                    'icon' => 'bookmark',
-                    'active' => ($currentPage === 'watchlist.php')
-                ],
-                [
-                    'title' => 'Messages',
-                    'url' => url('investor/messages.php'),
-                    'icon' => 'message-circle',
-                    'active' => ($currentPage === 'messages.php')
-                ],
-            ],
+           
             'Identity & Trust' => [
                 [
                     'title' => 'Public Profile',
@@ -387,30 +356,7 @@ require_once __DIR__ . '/theme.php';
         </div>
     </div>
 
-    <!-- User Footer Profile & Logout -->
-    <div class="sidebar-footer-container p-3.5 border-t border-[#E4E8EF] dark:border-slate-800 bg-[#FAFBFD] dark:bg-slate-850">
-        <div class="sidebar-footer-inner flex items-center justify-between">
-            <a href="<?= url('investor/view.php') ?>" title="View Profile" data-tooltip="<?= htmlspecialchars($investorUser['name']) ?>"
-                class="sidebar-footer-user flex items-center space-x-2.5 overflow-hidden flex-1 p-1 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition group min-w-0">
-                <img src="<?= $investorUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>"
-                    class="w-9 h-9 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0 group-hover:ring-2 group-hover:ring-[#123B7A] dark:group-hover:ring-blue-400 transition">
-                <div class="truncate sidebar-text-item min-w-0">
-                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white truncate">
-                        <?= htmlspecialchars($investorUser['name']) ?>
-                    </div>
-                    <div class="text-[10px] text-slate-400 font-medium truncate">
-                        Investor Profile
-                    </div>
-                </div>
-            </a>
-            <div class="sidebar-logout-btn flex items-center">
-                <a href="<?= url('auth/logout.php') ?>" title="Sign Out" data-tooltip="Sign Out"
-                    class="p-2 text-[#4B5563] dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition">
-                    <i data-lucide="log-out" class="w-4.5 h-4.5"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+
 </aside>
 
 <script>
