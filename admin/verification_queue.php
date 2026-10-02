@@ -239,6 +239,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .filter-bar-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -246,6 +247,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
             padding: 0.875rem 1.25rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .filter-bar-clean, html.dark .filter-bar-clean { background: #111827 !important; border-color: #1e293b !important; }
         .table-card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -253,6 +255,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             overflow: hidden;
         }
+        .dark .table-card-clean, html.dark .table-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .tab-btn-clean.active {
             background-color: #4f46e5;
             color: #ffffff;
@@ -267,7 +270,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl mx-auto" id="queue-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="queue-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-medium border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-3 shadow-sm">

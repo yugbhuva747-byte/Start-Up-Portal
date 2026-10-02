@@ -41,6 +41,16 @@ require_once __DIR__ . '/theme.php';
     class="founder-navbar h-16 sm:h-20 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 sm:px-6 md:px-8 flex items-center justify-between sticky top-0 z-40 transition-colors duration-200 shadow-2xs">
     <!-- Left Section: Mobile Menu + Back Button + Title + Quick Search -->
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <!-- Desktop Sidebar Rail Toggle Button -->
+        <button type="button" 
+                onclick="toggleDesktopSidebar()" 
+                id="founder-sidebar-toggle-btn"
+                class="hidden lg:flex w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:border-indigo-300 dark:hover:border-indigo-700 active:scale-95 transition-all items-center justify-center shadow-2xs" 
+                title="Toggle Sidebar Rail (Collapse / Expand)"
+                aria-label="Toggle sidebar width">
+            <i data-lucide="panel-left" class="w-4.5 h-4.5"></i>
+        </button>
+
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
             class="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0 border border-slate-200 dark:border-slate-700"

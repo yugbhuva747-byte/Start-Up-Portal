@@ -161,12 +161,15 @@ if ($db) {
             box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); 
             transition: all 0.2s ease-in-out;
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .stat-card-clean:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
         }
         .table-card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); overflow: hidden; }
+        .dark .table-card-clean, html.dark .table-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .filter-bar-clean { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 0.875rem 1.25rem; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.02); }
+        .dark .filter-bar-clean, html.dark .filter-bar-clean { background: #111827 !important; border-color: #1e293b !important; }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">

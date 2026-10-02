@@ -103,16 +103,16 @@ $total = (float)$inv['total_payable'];
         }
     </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center bg-[#f8fafc] text-slate-900 font-sans antialiased">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-center bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans antialiased">
 
     <!-- Top Action Toolbar -->
-    <header class="no-print max-w-3xl w-full mb-6 flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+    <header class="no-print max-w-3xl w-full mb-6 flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs">
         <div class="flex items-center space-x-3">
-            <a href="<?= url('admin/revenue.php') ?>" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition flex items-center gap-1.5 text-xs font-semibold">
+            <a href="<?= url('admin/revenue.php') ?>" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center gap-1.5 text-xs font-semibold">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 <span>Back to Invoices Hub</span>
             </a>
-            <div class="h-4 w-px bg-slate-200"></div>
+            <div class="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
             <div>
                 <span class="text-xs font-bold text-slate-800"><?= htmlspecialchars($inv['company_name']) ?></span>
                 <span class="text-[10px] text-indigo-600 font-mono block">INVOICE #<?= htmlspecialchars($inv['invoice_number']) ?></span>

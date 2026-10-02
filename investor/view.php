@@ -132,7 +132,7 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="investor-view-main">
+        <main class="w-full px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="investor-view-main">
 
             <?php if ($flash): ?>
                 <div

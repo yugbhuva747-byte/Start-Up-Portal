@@ -186,6 +186,10 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             transition: all 0.2s ease-in-out;
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
         .stat-card-clean:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
@@ -197,6 +201,9 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: #ffffff;
             border-radius: 0 0 1rem 1rem;
+        }
+        .dark .template-preview-frame, html.dark .template-preview-frame {
+            background: #0f172a !important;
         }
         .tab-indicator {
             transition: all 0.2s ease;

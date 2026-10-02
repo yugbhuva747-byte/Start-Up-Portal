@@ -351,7 +351,7 @@ $roundLabels = [
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
 
-        <main class="w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6" id="discover-main">
+        <main class="w-full p-4 sm:p-6 lg:p-8 space-y-6" id="discover-main">
 
             <!-- 1. HERO / MARKET STATUS -->
             <div

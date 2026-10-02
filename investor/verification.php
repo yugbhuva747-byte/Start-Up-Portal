@@ -176,7 +176,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="verify-main">
+        <main class="w-full px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="verify-main">
 
             <?php if ($flash): ?>
                 <div

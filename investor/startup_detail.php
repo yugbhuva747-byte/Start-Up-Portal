@@ -100,7 +100,7 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="deal-room-main">
+        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="deal-room-main">
 
             <?php if ($flash): ?>
                 <div
@@ -217,12 +217,15 @@ $flash = get_flash();
                             <?= htmlspecialchars($company['state'] ?? '') ?>
                             <?= htmlspecialchars($company['country']) ?></span>
                     </div>
-                    <?php if (!empty($company['website_url'])): ?>
+                    <?php 
+                        $compWebsite = !empty($company['website']) ? $company['website'] : ($company['website_url'] ?? '');
+                        if (!empty($compWebsite)): 
+                    ?>
                         <div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                             <span class="text-[#667085] font-medium sm:w-1/3">Official Website</span>
-                            <a href="<?= htmlspecialchars($company['website_url']) ?>" target="_blank"
+                            <a href="<?= htmlspecialchars($compWebsite) ?>" target="_blank"
                                 class="text-[#123B7A] font-bold hover:underline flex items-center gap-1">
-                                <span><?= htmlspecialchars($company['website_url']) ?></span>
+                                <span><?= htmlspecialchars($compWebsite) ?></span>
                                 <i data-lucide="external-link" class="w-3 h-3"></i>
                             </a>
                         </div>

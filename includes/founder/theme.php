@@ -344,6 +344,15 @@
     html.dark .section-card,
     html.dark .studio-card,
     html.dark .cap-card,
+    html.dark .stat-card-clean,
+    html.dark .table-card-clean,
+    html.dark .filter-bar-clean,
+    html.dark .section-card-clean,
+    html.dark .dashboard-card,
+    html.dark [class*="stat-card"],
+    html.dark [class*="table-card"],
+    html.dark [class*="filter-bar"],
+    html.dark [class*="card-clean"],
     html.dark .bg-white {
         background-color: #111827 !important;
         border-color: #1E293B !important;

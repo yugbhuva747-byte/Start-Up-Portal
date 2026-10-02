@@ -367,17 +367,36 @@
         color: #60A5FA !important;
     }
 
-    /* Dark Cards & Surfaces */
+    /* Dark Cards & Surfaces - Complete Coverage for All Admin Pages */
     html.dark .bg-white,
     html.dark .card-clean,
     html.dark .dashboard-card,
-    html.dark .stat-card {
+    html.dark .stat-card,
+    html.dark .stat-card-clean,
+    html.dark .table-card-clean,
+    html.dark .filter-bar-clean,
+    html.dark .section-card-clean,
+    html.dark .section-card,
+    html.dark .network-row,
+    html.dark .metric-card,
+    html.dark .table-container,
+    html.dark [class*="stat-card"],
+    html.dark [class*="table-card"],
+    html.dark [class*="filter-bar"],
+    html.dark [class*="section-card"],
+    html.dark [class*="card-clean"],
+    html.dark [class*="dashboard-card"] {
         background-color: #111827 !important;
+        background: #111827 !important;
         background-image: none !important;
         border-color: #1E293B !important;
+        color: #F8FAFC !important;
     }
 
-    html.dark .card-clean {
+    html.dark .card-clean,
+    html.dark .stat-card-clean,
+    html.dark .table-card-clean,
+    html.dark .section-card-clean {
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
     }
 
@@ -402,11 +421,17 @@
     /* Dark Borders & Dividers */
     html.dark .border-slate-200,
     html.dark .border-slate-100,
+    html.dark .border-slate-50,
     html.dark .border-gray-200,
+    html.dark .border-gray-100,
     html.dark [class*="border-slate-100"],
     html.dark [class*="border-slate-200"],
+    html.dark [class*="border-gray-100"],
+    html.dark [class*="border-gray-200"],
     html.dark .divide-slate-200> :not([hidden])~ :not([hidden]),
-    html.dark .divide-slate-100> :not([hidden])~ :not([hidden]) {
+    html.dark .divide-slate-100> :not([hidden])~ :not([hidden]),
+    html.dark .divide-gray-200> :not([hidden])~ :not([hidden]),
+    html.dark .divide-gray-100> :not([hidden])~ :not([hidden]) {
         border-color: #1E293B !important;
     }
 
@@ -421,11 +446,15 @@
 
     html.dark .text-slate-600,
     html.dark .text-slate-500,
-    html.dark .text-slate-400,
     html.dark .text-gray-600,
     html.dark .text-gray-500 {
         color: #CBD5E1 !important;
         font-weight: 500 !important;
+    }
+
+    html.dark .text-slate-400,
+    html.dark .text-gray-400 {
+        color: #94A3B8 !important;
     }
 
     /* Dark Tables */
@@ -434,6 +463,7 @@
     }
 
     html.dark table thead,
+    html.dark table thead tr,
     html.dark table th {
         background-color: #0F172A !important;
         color: #94A3B8 !important;
@@ -441,6 +471,7 @@
     }
 
     html.dark table tbody tr {
+        background-color: transparent !important;
         border-color: #1E293B !important;
     }
 
@@ -453,6 +484,15 @@
         color: #E2E8F0 !important;
     }
 
+    /* Modals & Dialogs in Dark Mode */
+    html.dark [id*="Modal"] > div,
+    html.dark .modal-content,
+    html.dark [class*="modal"] > div {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+    }
+
     /* Inputs, Selects & Forms in Dark Mode */
     html.dark input,
     html.dark select,
@@ -460,6 +500,11 @@
         background-color: #1E293B !important;
         border-color: #334155 !important;
         color: #F8FAFC !important;
+    }
+
+    html.dark input::placeholder,
+    html.dark textarea::placeholder {
+        color: #64748B !important;
     }
 
     html.dark input:focus,
@@ -471,7 +516,7 @@
 
     html.dark select option,
     html.dark select optgroup {
-        background-color: #1E293B !important;
+        background-color: #0F172A !important;
         color: #F8FAFC !important;
     }
 
@@ -494,35 +539,67 @@
         background: #475569;
     }
 
-    /* Dark Mode Status Badges & Pills */
+    /* Dark Mode Status Badges & Pill Holders */
+    html.dark .bg-\[\#faf5ff\],
+    html.dark .bg-\[\#f3e8ff\],
+    html.dark .bg-purple-50 {
+        background-color: rgba(147, 51, 234, 0.2) !important;
+        color: #D8B4FE !important;
+        border-color: rgba(147, 51, 234, 0.35) !important;
+    }
+    html.dark .text-\[\#9333ea\],
+    html.dark .text-\[\#a855f7\] {
+        color: #C084FC !important;
+    }
+
+    html.dark .bg-\[\#f0fdf4\],
+    html.dark .bg-\[\#dcfce7\],
+    html.dark .bg-emerald-50,
+    html.dark .bg-green-50 {
+        background-color: rgba(22, 163, 74, 0.2) !important;
+        color: #4ADE80 !important;
+        border-color: rgba(22, 163, 74, 0.35) !important;
+    }
+    html.dark .text-\[\#16a34a\] {
+        color: #4ADE80 !important;
+    }
+
+    html.dark .bg-\[\#eff6ff\],
+    html.dark .bg-\[\#dbeafe\],
     html.dark .bg-blue-50 {
         background-color: rgba(37, 99, 235, 0.2) !important;
         color: #93C5FD !important;
-        border-color: rgba(59, 130, 246, 0.35) !important;
+        border-color: rgba(37, 99, 235, 0.35) !important;
+    }
+    html.dark .text-\[\#2563eb\] {
+        color: #93C5FD !important;
     }
 
-    html.dark .bg-emerald-50 {
-        background-color: rgba(16, 185, 129, 0.18) !important;
-        color: #6EE7B7 !important;
-        border-color: rgba(16, 185, 129, 0.35) !important;
-    }
-
-    html.dark .bg-amber-50 {
-        background-color: rgba(245, 158, 11, 0.18) !important;
+    html.dark .bg-\[\#fefce8\],
+    html.dark .bg-\[\#fef9c3\],
+    html.dark .bg-amber-50,
+    html.dark .bg-yellow-50 {
+        background-color: rgba(202, 138, 4, 0.2) !important;
         color: #FCD34D !important;
-        border-color: rgba(245, 158, 11, 0.35) !important;
+        border-color: rgba(202, 138, 4, 0.35) !important;
+    }
+    html.dark .text-\[\#ca8a04\] {
+        color: #FCD34D !important;
     }
 
-    html.dark .bg-rose-50 {
-        background-color: rgba(244, 63, 94, 0.18) !important;
+    html.dark .bg-\[\#fff1f2\],
+    html.dark .bg-\[\#ffe4e6\],
+    html.dark .bg-rose-50,
+    html.dark .bg-red-50 {
+        background-color: rgba(244, 63, 94, 0.2) !important;
         color: #FDA4AF !important;
         border-color: rgba(244, 63, 94, 0.35) !important;
     }
 
-    html.dark .bg-blue-50 {
-        background-color: rgba(59, 130, 246, 0.18) !important;
-        color: #93C5FD !important;
-        border-color: rgba(59, 130, 246, 0.35) !important;
+    html.dark .bg-indigo-50 {
+        background-color: rgba(99, 102, 241, 0.2) !important;
+        color: #A5B4FC !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
     }
 
     /* Theme Toggle Button Micro-Animation */

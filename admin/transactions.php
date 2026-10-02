@@ -62,6 +62,7 @@ if ($db) {
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .filter-bar-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -69,6 +70,7 @@ if ($db) {
             padding: 0.875rem 1.25rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .filter-bar-clean, html.dark .filter-bar-clean { background: #111827 !important; border-color: #1e293b !important; }
         .table-card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -76,6 +78,7 @@ if ($db) {
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             overflow: hidden;
         }
+        .dark .table-card-clean, html.dark .table-card-clean { background: #111827 !important; border-color: #1e293b !important; }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
@@ -86,7 +89,7 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl mx-auto" id="tx-admin-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="tx-admin-main">
 
             <!-- Page Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

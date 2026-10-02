@@ -70,7 +70,7 @@ if ($db) {
     try {
         $stmt = $db->query("
             SELECT fr.*, 
-                   c.name as company_name, c.cin_number, c.industry, c.stage, c.city, c.state, c.website_url, c.logo_url,
+                   c.name as company_name, c.cin_number, c.industry, c.stage, c.city, c.state, c.website as website_url, c.website, c.logo_url,
                    u.id as founder_user_id, u.name as founder_name, u.email as founder_email, u.phone as founder_phone,
                    COALESCE(inv.investor_count, 0) as investor_count,
                    COALESCE(inv.actual_invested, 0) as actual_invested
@@ -131,6 +131,7 @@ if ($db) {
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .filter-bar-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -138,6 +139,7 @@ if ($db) {
             padding: 0.875rem 1.25rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .filter-bar-clean, html.dark .filter-bar-clean { background: #111827 !important; border-color: #1e293b !important; }
         .table-card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -145,6 +147,7 @@ if ($db) {
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             overflow: hidden;
         }
+        .dark .table-card-clean, html.dark .table-card-clean { background: #111827 !important; border-color: #1e293b !important; }
         .badge-status {
             display: inline-flex;
             align-items: center;
@@ -164,7 +167,7 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6 max-w-7xl mx-auto" id="funding-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="funding-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-medium border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-3 shadow-sm">

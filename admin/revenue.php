@@ -180,6 +180,12 @@ if ($db) {
             border-radius: 1rem;
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .stat-card-clean,
+        html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
         }
         .section-card-clean {
             background: #ffffff;
@@ -188,6 +194,11 @@ if ($db) {
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .section-card-clean,
+        html.dark .section-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
         .table-card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -195,9 +206,14 @@ if ($db) {
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             overflow: hidden;
         }
+        .dark .table-card-clean,
+        html.dark .table-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 flex min-h-screen font-sans antialiased">
+<body class="bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex min-h-screen font-sans antialiased">
 
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
@@ -207,7 +223,7 @@ if ($db) {
         <!-- Top Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="revenue-admin-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="revenue-admin-main">
             
             <!-- Page Header (Matching Screenshot Exactly) -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

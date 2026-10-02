@@ -142,6 +142,7 @@
     /* ----------------------------------------------------
        2. FULL-SCREEN EXPANSIVE DASHBOARD CONTAINER FIT
     ---------------------------------------------------- */
+    body > div > main,
     main,
     #workspace-main,
     #discover-main,
@@ -150,11 +151,13 @@
     #deal-room-main,
     #verify-main,
     #profile-main,
-    #investor-view-main {
-        max-width: 1480px !important;
+    #investor-view-main,
+    #invest-main {
         width: 100% !important;
-        margin-left: auto !important;
-        margin-right: auto !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
     }
 
     /* Fixed / Sticky Header Across All Investor Pages */
@@ -417,9 +420,18 @@
     html.dark .network-row,
     html.dark .card-clean,
     html.dark .dashboard-card,
-    html.dark .metric-card {
+    html.dark .metric-card,
+    html.dark .stat-card-clean,
+    html.dark .table-card-clean,
+    html.dark .filter-bar-clean,
+    html.dark .section-card-clean,
+    html.dark [class*="stat-card"],
+    html.dark [class*="table-card"],
+    html.dark [class*="filter-bar"],
+    html.dark [class*="card-clean"] {
         background-color: #111827 !important;
         border-color: #1E293B !important;
+        color: #F8FAFC !important;
     }
 
     /* Secondary surfaces and subtle container fills (covers all opacities) */

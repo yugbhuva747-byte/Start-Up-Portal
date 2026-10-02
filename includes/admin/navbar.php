@@ -29,8 +29,9 @@ require_once __DIR__ . '/theme.php';
         <!-- Desktop Sidebar Rail Toggle Button -->
         <button type="button" 
                 onclick="toggleDesktopSidebar()" 
-                class="hidden lg:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" 
-                title="Toggle Sidebar"
+                id="sidebar-toggle-btn"
+                class="hidden lg:flex w-8 h-8 rounded-lg border border-slate-200/80 dark:border-slate-700/80 bg-slate-50 dark:bg-slate-800 text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:border-blue-300 dark:hover:border-blue-700 active:scale-95 transition-all items-center justify-center shadow-2xs" 
+                title="Toggle Sidebar Rail (Collapse / Expand)"
                 aria-label="Toggle sidebar width">
             <i data-lucide="panel-left" class="w-4 h-4"></i>
         </button>

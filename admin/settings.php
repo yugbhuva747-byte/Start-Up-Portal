@@ -155,12 +155,20 @@ $flashClasses = match ($flashType) {
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
 
         .card-clean {
             background: #fff;
             border: 1px solid #E2E8F0;
             border-radius: 1rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+        .dark .card-clean, html.dark .card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
         }
 
         /* FIX: never let a card stay faded if the animation script fails */

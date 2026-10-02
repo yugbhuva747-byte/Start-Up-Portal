@@ -288,6 +288,12 @@ try {
             border-radius: 1rem;
             padding: 1.25rem 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease-in-out;
+        }
+        .dark .stat-card-clean,
+        html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
         }
         .filter-bar-clean {
             background: #ffffff;
@@ -296,6 +302,11 @@ try {
             padding: 0.875rem 1.25rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         }
+        .dark .filter-bar-clean,
+        html.dark .filter-bar-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
         .table-card-clean {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -303,9 +314,14 @@ try {
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             overflow: hidden;
         }
+        .dark .table-card-clean,
+        html.dark .table-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 flex min-h-screen font-sans antialiased">
+<body class="bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex min-h-screen font-sans antialiased">
 
     <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
@@ -315,7 +331,7 @@ try {
         <!-- Top Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="subscriptions-admin-main">
+        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="subscriptions-admin-main">
             
             <!-- Page Header (Identical to reference screenshot) -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -360,73 +376,73 @@ try {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 
                 <!-- 1. Total Plan Revenue -->
-                <div class="stat-card-clean">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">TOTAL PLAN REVENUE</span>
-                        <div class="w-8 h-8 rounded-lg bg-[#faf5ff] text-[#9333ea] flex items-center justify-center font-bold text-sm">
+                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">TOTAL PLAN REVENUE</span>
+                        <div class="w-8 h-8 rounded-lg bg-[#faf5ff] dark:bg-purple-950/60 text-[#9333ea] dark:text-purple-300 flex items-center justify-center font-bold text-sm">
                             ₹
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         ₹<?= number_format($totalRevenue, 2) ?>
                     </div>
-                    <div class="mt-1 text-xs font-semibold text-[#a855f7]">
+                    <div class="mt-1 text-xs font-semibold text-[#a855f7] dark:text-purple-400">
                         Lifetime completed charges
                     </div>
                 </div>
 
                 <!-- 2. Active Subscribers -->
-                <div class="stat-card-clean">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">ACTIVE SUBSCRIBERS</span>
-                        <div class="w-8 h-8 rounded-lg bg-[#f0fdf4] text-[#16a34a] flex items-center justify-center">
+                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">ACTIVE SUBSCRIBERS</span>
+                        <div class="w-8 h-8 rounded-lg bg-[#f0fdf4] dark:bg-emerald-950/60 text-[#16a34a] dark:text-emerald-300 flex items-center justify-center">
                             <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($activePaidSubscribers) ?>
                     </div>
-                    <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a]">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a]"></span>
+                    <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a] dark:text-emerald-400">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a] dark:bg-emerald-400"></span>
                         <span>Paying founders &amp; angels</span>
                     </div>
                 </div>
 
                 <!-- 3. Annual Pass Holders -->
-                <div class="stat-card-clean">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">ANNUAL PASS HOLDERS</span>
-                        <div class="w-8 h-8 rounded-lg bg-[#eff6ff] text-[#2563eb] flex items-center justify-center">
+                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">ANNUAL PASS HOLDERS</span>
+                        <div class="w-8 h-8 rounded-lg bg-[#eff6ff] dark:bg-blue-950/60 text-[#2563eb] dark:text-blue-300 flex items-center justify-center">
                             <i data-lucide="calendar" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($annualSubscribers) ?>
                     </div>
-                    <div class="mt-1 text-xs font-medium text-slate-500">
+                    <div class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
                         High-retention 1-year commitments
                     </div>
                 </div>
 
                 <!-- 4. Level 4 VIP Spotlight -->
-                <div class="stat-card-clean">
+                <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400">LEVEL 4 VIP SPOTLIGHT</span>
-                        <div class="w-8 h-8 rounded-lg bg-[#fefce8] text-[#ca8a04] flex items-center justify-center">
+                        <span class="text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">LEVEL 4 VIP SPOTLIGHT</span>
+                        <div class="w-8 h-8 rounded-lg bg-[#fefce8] dark:bg-amber-950/60 text-[#ca8a04] dark:text-amber-300 flex items-center justify-center">
                             <i data-lucide="crown" class="w-4 h-4 text-amber-500"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($level4VipSubscribers) ?>
                     </div>
-                    <div class="mt-1 text-xs font-semibold text-[#ca8a04]">
+                    <div class="mt-1 text-xs font-semibold text-[#ca8a04] dark:text-amber-400">
                         Top tier VIP founders &amp; VCs
                     </div>
                 </div>
             </div>
 
             <!-- Filter Bar (Matching Screenshot Exactly) -->
-            <div class="filter-bar-clean">
+            <div class="filter-bar-clean dark:bg-slate-900 dark:border-slate-800">
                 <form method="GET" action="<?= url('admin/subscriptions.php') ?>" class="flex flex-wrap items-center gap-2.5 w-full">
                     
                     <!-- Search Input -->
@@ -434,11 +450,11 @@ try {
                         <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                         <input type="text" name="q" value="<?= htmlspecialchars($searchQuery) ?>" 
                                placeholder="Search user name, email, tx ref, company..." 
-                               class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
+                               class="w-full pl-10 pr-3.5 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
                     </div>
 
                     <!-- Plan Filter -->
-                    <select name="plan" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
+                    <select name="plan" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
                         <option value="">All Plan Tiers</option>
                         <option value="6_months" <?= $filterPlan === '6_months' ? 'selected' : '' ?>>6 Months Dealmaker</option>
                         <option value="1_year" <?= $filterPlan === '1_year' ? 'selected' : '' ?>>1 Year Scale Pro</option>
@@ -447,14 +463,14 @@ try {
                     </select>
 
                     <!-- Role Filter -->
-                    <select name="role" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
+                    <select name="role" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
                         <option value="">All Roles</option>
                         <option value="founder" <?= $filterRole === 'founder' ? 'selected' : '' ?>>Founder</option>
                         <option value="investor" <?= $filterRole === 'investor' ? 'selected' : '' ?>>Investor</option>
                     </select>
 
                     <!-- Priority Level Filter -->
-                    <select name="priority" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
+                    <select name="priority" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
                         <option value="0">All Priorities</option>
                         <option value="4" <?= $filterPriority === 4 ? 'selected' : '' ?>>Level 4 (VIP Spotlight)</option>
                         <option value="3" <?= $filterPriority === 3 ? 'selected' : '' ?>>Level 3 (Featured)</option>
@@ -463,7 +479,7 @@ try {
                     </select>
 
                     <!-- Status Filter -->
-                    <select name="status" class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold text-slate-700 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
+                    <select name="status" class="px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-hidden focus:ring-2 focus:ring-purple-500">
                         <option value="">All Statuses</option>
                         <option value="active" <?= $filterStatus === 'active' ? 'selected' : '' ?>>Active</option>
                         <option value="expired" <?= $filterStatus === 'expired' ? 'selected' : '' ?>>Expired</option>
@@ -471,12 +487,12 @@ try {
                         <option value="trial" <?= $filterStatus === 'trial' ? 'selected' : '' ?>>Trial</option>
                     </select>
 
-                    <button type="submit" class="px-5 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 text-white text-xs font-bold transition shadow-xs">
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-[#0f172a] hover:bg-slate-800 dark:bg-purple-600 dark:hover:bg-purple-700 text-white text-xs font-bold transition shadow-xs">
                         Filter
                     </button>
 
                     <?php if (!empty($filterPlan) || !empty($filterRole) || $filterPriority > 0 || !empty($filterStatus) || !empty($searchQuery)): ?>
-                        <a href="<?= url('admin/subscriptions.php') ?>" class="px-3 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition">
+                        <a href="<?= url('admin/subscriptions.php') ?>" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
                             Clear
                         </a>
                     <?php endif; ?>
@@ -484,16 +500,16 @@ try {
             </div>
 
             <!-- Subscriptions Table (Matching Screenshot Exactly) -->
-            <div class="table-card-clean">
-                <div class="px-6 py-4 border-b border-slate-100">
-                    <h2 class="text-sm font-bold text-slate-900">Registered Subscriptions &amp; Priority Records</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Showing <?= count($subscriptions) ?> record(s)</p>
+            <div class="table-card-clean dark:bg-slate-900 dark:border-slate-800">
+                <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+                    <h2 class="text-sm font-bold text-slate-900 dark:text-white">Registered Subscriptions &amp; Priority Records</h2>
+                    <p class="text-xs text-slate-400 dark:text-slate-400 mt-0.5">Showing <?= count($subscriptions) ?> record(s)</p>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
-                            <tr class="bg-white border-b border-slate-100 text-[10.5px] font-bold uppercase tracking-wider text-slate-400">
+                            <tr class="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 text-[10.5px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
                                 <th class="py-3 px-6">USER &amp; ORGANIZATION</th>
                                 <th class="py-3 px-4">ROLE</th>
                                 <th class="py-3 px-4">PLAN TIER &amp; BILLING</th>
@@ -504,7 +520,7 @@ try {
                                 <th class="py-3 px-6 text-right">ACTIONS</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                             <?php if (empty($subscriptions)): ?>
                                 <tr>
                                     <td colspan="8" class="py-14 text-center text-slate-400">

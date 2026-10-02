@@ -225,7 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
 
-        <div class="flex-1 flex overflow-hidden min-h-0">
+        <main class="flex-1 flex overflow-hidden min-h-0" id="messages-main">
 
             <!-- Conversation Threads List (Left Pane) -->
             <div
@@ -403,7 +403,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                 <?php endif; ?>
             </div>
 
-        </div>
+        </main>
     </div>
 
     <script>

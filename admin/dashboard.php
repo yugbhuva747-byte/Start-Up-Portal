@@ -75,6 +75,10 @@ $flash = get_flash();
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
             transition: all 0.2s ease-in-out;
         }
+        .dark .stat-card-clean, html.dark .stat-card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
+        }
         .stat-card-clean:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.05);
@@ -84,6 +88,10 @@ $flash = get_flash();
             border: 1px solid #e2e8f0;
             border-radius: 1rem;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+        }
+        .dark .card-clean, html.dark .card-clean {
+            background: #111827 !important;
+            border-color: #1e293b !important;
         }
     </style>
 </head>

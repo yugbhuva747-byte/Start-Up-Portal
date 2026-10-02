@@ -151,7 +151,7 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="portfolio-main">
+        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="portfolio-main">
 
             <?php if ($flash): ?>
                 <div

@@ -99,7 +99,7 @@ if ($hour < 12) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10 w-full mx-auto" id="workspace-main">
+        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="workspace-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">

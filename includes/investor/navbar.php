@@ -157,6 +157,16 @@ require_once __DIR__ . '/theme.php';
     class="investor-navbar h-16 sm:h-20 border-b border-[#E4E8EF] dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 px-3 sm:px-6 md:px-8 flex items-center justify-between transition-colors duration-200 shadow-2xs">
     <!-- Left Section: Hamburger Menu + Back Button -->
     <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+        <!-- Desktop Sidebar Rail Toggle Button -->
+        <button type="button" 
+                onclick="toggleDesktopSidebar()" 
+                id="investor-sidebar-toggle-btn"
+                class="hidden lg:flex w-9 h-9 sm:w-10 sm:h-10 rounded-xl border border-[#E4E8EF] dark:border-slate-700 bg-[#FAFBFD] dark:bg-slate-800 text-[#4B5563] hover:text-[#123B7A] dark:text-slate-400 dark:hover:text-blue-400 hover:bg-[#EAF2FF] dark:hover:bg-blue-950/50 hover:border-blue-300 dark:hover:border-blue-700 active:scale-95 transition-all items-center justify-center shadow-2xs" 
+                title="Toggle Sidebar Rail (Collapse / Expand)"
+                aria-label="Toggle sidebar width">
+            <i data-lucide="panel-left" class="w-4.5 h-4.5"></i>
+        </button>
+
         <!-- Hamburger Menu Button (Mobile & Tablet) -->
         <button type="button" onclick="toggleMobileSidebar()"
             class="lg:hidden p-2 rounded-xl text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800 border border-transparent hover:border-[#E4E8EF] dark:hover:border-slate-700 transition flex-shrink-0"
@@ -177,11 +187,11 @@ require_once __DIR__ . '/theme.php';
     </div>
 
     <!-- Center Section: Main Nav (Discover first) -->
-    <nav
+    <nav id="investor-top-nav"
         class="hidden md:flex items-center space-x-1 lg:space-x-1.5 px-2 py-1 rounded-2xl bg-[#FAFBFD] dark:bg-slate-800/80 border border-[#E4E8EF] dark:border-slate-800">
         <?php foreach ($navItems as $item): ?>
             <a href="<?= $item['href'] ?>"
-                class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $item['active'] ? $navActive : $navInactive ?>"
+                class="top-nav-link flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $item['active'] ? $navActive : $navInactive ?>"
                 title="<?= htmlspecialchars($item['title']) ?>" <?= $item['active'] ? 'aria-current="page"' : '' ?>>
                 <i data-lucide="<?= $item['icon'] ?>" class="w-3.5 h-3.5 flex-shrink-0"></i>
                 <span><?= htmlspecialchars($item['label']) ?></span>
