@@ -451,13 +451,6 @@ require_once __DIR__ . '/theme.php';
                 <span class="whitespace-nowrap sidebar-text-item">Broadcasts</span>
             </a>
 
-            <a href="<?= url('admin/email_templates.php') ?>" 
-               data-tooltip="Email Templates"
-               title="Email Templates"
-               class="sidebar-link <?= $currentPage === 'email_templates.php' ? 'is-active' : '' ?>">
-                <i data-lucide="mail-check" class="nav-icon text-blue-500"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Email Templates</span>
-            </a>
 
             <a href="<?= url('admin/audit_logs.php') ?>" 
                data-tooltip="Audit Trail"
@@ -467,13 +460,7 @@ require_once __DIR__ . '/theme.php';
                 <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
             </a>
 
-            <a href="<?= url('admin/settings.php') ?>" 
-               data-tooltip="Settings &amp; Security"
-               title="Settings &amp; Security"
-               class="sidebar-link <?= $currentPage === 'settings.php' ? 'is-active' : '' ?>">
-                <i data-lucide="settings" class="nav-icon text-slate-400"></i>
-                <span class="whitespace-nowrap sidebar-text-item">Settings &amp; Security</span>
-            </a>
+           
 
         </nav>
     </div>
