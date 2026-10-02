@@ -100,7 +100,7 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="deal-room-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="deal-room-main">
 
             <?php if ($flash): ?>
                 <div
@@ -131,7 +131,7 @@ $flash = get_flash();
                             class="w-20 h-20 rounded-2xl object-cover border border-[#E4E8EF] flex-shrink-0">
                         <div>
                             <div class="flex flex-wrap items-center gap-2.5">
-                                <h1 class="text-2xl sm:text-3xl font-extrabold text-[#0B1F3A] tracking-tight">
+                                <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                                     <?= htmlspecialchars($company['name']) ?>
                                 </h1>
                                 <?= render_status_badge($company['verified_status']) ?>

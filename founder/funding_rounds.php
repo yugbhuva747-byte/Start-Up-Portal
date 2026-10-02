@@ -193,7 +193,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="rounds-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="rounds-main">
 
             <!-- Flash Feedback -->
             <?php if ($flash):
@@ -253,7 +253,7 @@ $flashStyles = [
                             <?php endif; ?>
                         </div>
                         <h1
-                            class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Funding Rounds & Capital Architecture
                         </h1>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
@@ -277,7 +277,7 @@ $flashStyles = [
                 <div class="section-card p-5">
                     <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Total Capital Raised
                     </div>
-                    <div class="text-2xl font-black text-emerald-600 mt-1">
+                    <div class="text-lg sm:text-xl font-bold text-emerald-600 mt-1">
                         <?= format_inr($totalCapitalRaisedAcrossAll) ?></div>
                     <div class="text-xs text-slate-500 mt-1">Across all confirmed allotments</div>
                 </div>
@@ -285,20 +285,20 @@ $flashStyles = [
                 <div class="section-card p-5">
                     <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Target Capital Across
                         Rounds</div>
-                    <div class="text-2xl font-black text-slate-900 mt-1"><?= format_inr($totalCapitalTargeted) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1"><?= format_inr($totalCapitalTargeted) ?></div>
                     <div class="text-xs text-slate-500 mt-1">Total aggregated target size</div>
                 </div>
 
                 <div class="section-card p-5">
                     <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Active Rounds</div>
-                    <div class="text-2xl font-black text-indigo-600 mt-1"><?= $activeRounds ?> <span
+                    <div class="text-lg sm:text-xl font-bold text-indigo-600 mt-1"><?= $activeRounds ?> <span
                             class="text-sm font-semibold text-slate-400">/ <?= count($rounds) ?></span></div>
                     <div class="text-xs text-indigo-600 font-semibold mt-1">Instrument: Equity & SAFE Notes</div>
                 </div>
 
                 <div class="section-card p-5">
                     <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Capital Fulfillment</div>
-                    <div class="text-2xl font-black text-slate-900 mt-1"><?= $overallPct ?>%</div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1"><?= $overallPct ?>%</div>
                     <div class="text-xs text-emerald-600 font-semibold mt-1">Portfolio subscription rate</div>
                 </div>
             </div>

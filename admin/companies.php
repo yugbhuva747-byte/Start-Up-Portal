@@ -149,7 +149,7 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="comp-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="comp-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-medium border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-3 shadow-sm">
@@ -172,7 +172,7 @@ if ($db) {
                         <i data-lucide="building-2" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                             Startup Company Management
                         </h1>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -201,7 +201,7 @@ if ($db) {
                             <i data-lucide="building" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($totalCompanies) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($totalCompanies) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Registered entities</div>
                 </div>
 
@@ -212,7 +212,7 @@ if ($db) {
                             <i data-lucide="badge-check" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= number_format($verifiedCompanies) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= number_format($verifiedCompanies) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Compliant for funding</div>
                 </div>
 
@@ -223,7 +223,7 @@ if ($db) {
                             <i data-lucide="clock" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold <?= $pendingCompanies > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= number_format($pendingCompanies) ?></div>
+                    <div class="text-lg sm:text-xl font-bold <?= $pendingCompanies > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= number_format($pendingCompanies) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pending verification</div>
                 </div>
 
@@ -234,7 +234,7 @@ if ($db) {
                             <i data-lucide="layers" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRoundsCount) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRoundsCount) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Syndicate campaigns</div>
                 </div>
             </div>

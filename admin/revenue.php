@@ -223,7 +223,7 @@ if ($db) {
         <!-- Top Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="revenue-admin-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="revenue-admin-main">
             
             <!-- Page Header (Matching Screenshot Exactly) -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -232,7 +232,7 @@ if ($db) {
                         <i data-lucide="receipt" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Platform Revenue &amp; Invoices
                         </h1>
                         <p class="text-xs text-slate-500 mt-0.5">
@@ -275,7 +275,7 @@ if ($db) {
                             <i data-lucide="trending-up" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                         <?= format_inr_short($gtv) ?>
                     </div>
                     <div class="mt-1 text-xs font-medium text-slate-500">
@@ -291,7 +291,7 @@ if ($db) {
                             <i data-lucide="receipt" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-indigo-700 tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-indigo-700 tracking-tight">
                         <?= format_inr_short($totalPlatformRevenue) ?>
                     </div>
                     <div class="mt-1 text-xs font-medium text-slate-500">
@@ -307,7 +307,7 @@ if ($db) {
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-emerald-600 tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-emerald-600 tracking-tight">
                         <?= format_inr_short($netRevenue) ?>
                     </div>
                     <div class="mt-1 text-xs font-medium text-slate-500">
@@ -323,7 +323,7 @@ if ($db) {
                             <i data-lucide="clock" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
                         <?= format_inr_short($pendingRevenue) ?>
                     </div>
                     <div class="mt-1 text-xs font-medium text-slate-500">
@@ -399,7 +399,7 @@ if ($db) {
 
                     <div class="p-4 rounded-xl bg-[#f8fafc] border border-slate-100 mb-3.5 text-center">
                         <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">SETTLED &amp; REALIZED FUNDS</div>
-                        <div class="text-2xl font-black text-[#059669] mt-1"><?= format_inr_short($settledRevenue) ?></div>
+                        <div class="text-lg sm:text-xl font-bold text-[#059669] mt-1"><?= format_inr_short($settledRevenue) ?></div>
                         <div class="text-[11px] text-slate-400 mt-0.5">
                             <?= round(($totalPlatformRevenue > 0 ? ($settledRevenue / $totalPlatformRevenue) * 100 : 100)) ?>% realized
                         </div>

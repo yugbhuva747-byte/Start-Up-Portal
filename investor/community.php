@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Investor Module: Syndicate Community & Venture Forum
  * Angel Network Discussions, Demo Day Schedules, and Peer Co-Investment
@@ -73,7 +73,7 @@ if ($db) {
                         <i data-lucide="users" class="w-3.5 h-3.5"></i>
                         <span>Institutional Syndicate Network</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight">Investor Community & Demo Days</h1>
+                    <h1 class="text-lg sm:text-xl font-bold tracking-tight">Investor Community & Demo Days</h1>
                     <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
                         Connect with verified family offices, angel networks, and venture funds. Co-invest in curated rounds and participate in private pitch sessions.
                     </p>

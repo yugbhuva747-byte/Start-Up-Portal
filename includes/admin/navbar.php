@@ -143,14 +143,7 @@ require_once __DIR__ . '/theme.php';
 
                 <!-- Navigation Links -->
                 <div class="py-1 space-y-0.5 text-xs font-semibold">
-                    <a href="<?= url('admin/settings.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
-                        <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
-                        <span>Settings &amp; Security</span>
-                    </a>
-                    <a href="<?= url('admin/email_templates.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
-                        <i data-lucide="mail-check" class="w-4 h-4 text-blue-500"></i>
-                        <span>Email Templates &amp; Logs</span>
-                    </a>
+                    
                     <a href="<?= url('admin/audit_logs.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition">
                         <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
                         <span>Security Audit Trail</span>

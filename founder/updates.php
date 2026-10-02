@@ -244,7 +244,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
         <!-- Full-screen Dynamic Main Container -->
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="updates-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="updates-main">
             
             <!-- Toast / Flash Feedback Banner -->
             <?php if ($flash): ?>
@@ -290,7 +290,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 </span>
                             <?php endif; ?>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Investor Updates & Traction Studio
                         </h1>
                         <p class="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
@@ -321,7 +321,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="flex items-center justify-between">
                         <div>
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Broadcast History</div>
-                            <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1"><?= $totalUpdates ?></div>
+                            <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1"><?= $totalUpdates ?></div>
                             <div class="text-xs text-indigo-600 font-bold mt-1.5 flex items-center gap-1">
                                 <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
                                 <span>Published Updates</span>
@@ -341,7 +341,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="flex items-center justify-between">
                         <div>
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Stakeholder Reach</div>
-                            <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1"><?= max(1, $totalStakeholders) ?></div>
+                            <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1"><?= max(1, $totalStakeholders) ?></div>
                             <div class="text-xs text-emerald-600 font-bold mt-1.5 flex items-center gap-1">
                                 <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                                 <span>Direct Inboxes</span>
@@ -361,7 +361,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="flex items-center justify-between">
                         <div>
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Reporting Cadence</div>
-                            <div class="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                            <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1">
                                 <?= $totalUpdates > 0 ? 'Consistent 🟢' : 'Kickoff 🟡' ?>
                             </div>
                             <div class="text-xs text-slate-500 font-medium mt-1.5 flex items-center gap-1.5">

@@ -283,7 +283,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-5 space-y-5" id="company-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-5 space-y-5" id="company-main">
 
             <!-- Flash Notification -->
             <?php if ($flash):
@@ -311,7 +311,7 @@ $flashStyles = [
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                         <span>Investor Due Diligence Core</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         Startup Company Profile</h1>
                     <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                         Verified master company dossier, market positioning, and confidential data room reviewed by
@@ -334,12 +334,12 @@ $flashStyles = [
                     <!-- Left: Brand Identity & Chips -->
                     <div class="flex items-start sm:items-center space-x-3.5 min-w-0 flex-1">
                         <div
-                            class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-sm flex-shrink-0">
+                            class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-bold text-lg sm:text-xl shadow-sm flex-shrink-0">
                             <?= htmlspecialchars($companyInitials) ?>
                         </div>
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
+                                <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
                                     <?= htmlspecialchars($company['name'] ?? 'Your Startup Name') ?>
                                 </h2>
                                 <?php if (!empty($company['legal_name'])): ?>

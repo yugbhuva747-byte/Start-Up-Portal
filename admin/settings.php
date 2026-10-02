@@ -189,7 +189,7 @@ $flashClasses = match ($flashType) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="settings-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="settings-main">
 
 
             <!-- Alerts -->
@@ -222,7 +222,7 @@ $flashClasses = match ($flashType) {
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 Platform Settings &amp; Security
                             </h1>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">

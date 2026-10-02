@@ -56,7 +56,7 @@ if ($db) {
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="audit-admin-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="audit-admin-main">
 
             
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -65,7 +65,7 @@ if ($db) {
                         <i data-lucide="history" class="w-5 h-5"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                        <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Security Audit Trail
                         </h1>
                         <p class="text-xs text-slate-500 mt-0.5">Immutable administrative audit log for verification, funding, investment, and access events.</p>

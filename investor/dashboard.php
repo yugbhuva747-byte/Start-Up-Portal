@@ -99,7 +99,7 @@ if ($hour < 12) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="workspace-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="workspace-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-2xl text-xs sm:text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-[#EAF2FF] dark:bg-blue-950/40 text-[#123B7A] dark:text-blue-300 border-[#123B7A]/20' : 'bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200' ?> flex items-center space-x-2.5 shadow-2xs">
@@ -122,10 +122,10 @@ if ($hour < 12) {
                             <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-beacon"></span>
                             <span class="text-[#667085] dark:text-slate-400 font-semibold">Active Institutional Session</span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight leading-tight">
+                        <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight leading-tight">
                             <?= $greetingTime ?>, <?= htmlspecialchars(explode(' ', $user['name'])[0]) ?>.
                         </h1>
-                        <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-2 max-w-3xl leading-relaxed">
+                        <p class="text-xs sm:text-sm text-[#667085] dark:text-slate-400 mt-1 max-w-3xl leading-relaxed">
                             Discover high-growth startups, evaluate verified institutional due diligence, and deploy venture capital into active syndicate rounds.
                         </p>
                     </div>
@@ -156,7 +156,7 @@ if ($hour < 12) {
                             <i data-lucide="wallet" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                    <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                         <?= format_inr($totalInvested) ?>
                     </div>
                     <div class="mt-2.5 flex items-center space-x-1.5 text-xs font-semibold text-[#123B7A] dark:text-blue-400">
@@ -173,8 +173,8 @@ if ($hour < 12) {
                             <i data-lucide="briefcase" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
-                        <?= count($portfolioInvestments) ?> <span class="text-base sm:text-lg font-bold text-[#667085] dark:text-slate-400">Ventures</span>
+                    <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
+                        <?= count($portfolioInvestments) ?> <span class="text-xs sm:text-sm font-semibold text-[#667085] dark:text-slate-400">Ventures</span>
                     </div>
                     <div class="mt-2.5 flex items-center space-x-1.5 text-xs text-[#667085] dark:text-slate-400 font-medium">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
@@ -190,8 +190,8 @@ if ($hour < 12) {
                             <i data-lucide="sparkles" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
-                        <?= count($recommendedStartups) ?> <span class="text-base sm:text-lg font-bold text-[#667085] dark:text-slate-400">Opportunities</span>
+                    <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
+                        <?= count($recommendedStartups) ?> <span class="text-xs sm:text-sm font-semibold text-[#667085] dark:text-slate-400">Opportunities</span>
                     </div>
                     <div class="mt-2.5 flex items-center space-x-1.5 text-xs text-[#667085] dark:text-slate-400 font-medium">
                         <span class="w-2 h-2 rounded-full bg-purple-500 pulse-beacon inline-block"></span>
@@ -207,8 +207,8 @@ if ($hour < 12) {
                             <i data-lucide="bookmark" class="w-5 h-5"></i>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
-                        <?= $watchlistCount ?> <span class="text-base sm:text-lg font-bold text-[#667085] dark:text-slate-400">Companies</span>
+                    <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
+                        <?= $watchlistCount ?> <span class="text-xs sm:text-sm font-semibold text-[#667085] dark:text-slate-400">Companies</span>
                     </div>
                     <div class="mt-2.5 flex items-center space-x-1.5 text-xs text-[#667085] dark:text-slate-400 font-medium">
                         <i data-lucide="eye" class="w-3.5 h-3.5 text-amber-500"></i>

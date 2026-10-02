@@ -351,7 +351,7 @@ $roundLabels = [
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
 
-        <main class="w-full p-4 sm:p-6 lg:p-8 space-y-6" id="discover-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="discover-main">
 
             <!-- 1. HERO / MARKET STATUS -->
             <div
@@ -367,7 +367,7 @@ $roundLabels = [
                             Allocations</span>
                     </div>
                     <h1
-                        class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                         Discover High-Growth Startups
                     </h1>
                     <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -585,7 +585,7 @@ $roundLabels = [
                                                     <?= htmlspecialchars($s['round_name'] ?? 'Funding Round') ?>
                                                 </div>
                                                 <div
-                                                    class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+                                                    class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
                                                     <?= format_inr($raisedAmount) ?>
                                                     <span
                                                         class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">raised
@@ -593,7 +593,7 @@ $roundLabels = [
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="text-2xl font-black text-[#0A66C2] dark:text-blue-400"><?= $pct ?>%
+                                                <div class="text-lg sm:text-xl font-bold text-[#0A66C2] dark:text-blue-400"><?= $pct ?>%
                                                 </div>
                                             </div>
                                         </div>
@@ -682,7 +682,7 @@ $roundLabels = [
                                                     class="w-full h-full object-cover">
                                                 <div
                                                     class="<?= $moreCount > 0 ? 'flex' : 'hidden' ?> absolute inset-0 bg-slate-900/65 hover:bg-slate-900/75 transition flex-col items-center justify-center text-white text-center">
-                                                    <span class="text-2xl font-black leading-none">+<?= $moreCount ?></span>
+                                                    <span class="text-lg font-bold leading-none">+<?= $moreCount ?></span>
                                                     <span
                                                         class="text-[11px] font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1 mt-1">
                                                         <i data-lucide="images"

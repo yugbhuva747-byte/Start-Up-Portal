@@ -41,7 +41,7 @@
        1. UNIVERSAL "VAY PORTAL" TYPOGRAPHY & READABILITY SCALE
     ---------------------------------------------------- */
     html {
-        font-size: 16.5px !important;
+        font-size: 15px !important;
         scroll-behavior: smooth;
     }
 
@@ -68,7 +68,7 @@
     dt,
     dd,
     div {
-        font-family: "Vay Portal", Sans-serif !important;
+        font-family: "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;
@@ -76,11 +76,19 @@
 
     /* Base Body Readability & Typography Boost */
     body {
-        font-size: 1.05rem !important;
-        line-height: 1.65 !important;
+        font-size: 0.9375rem;
+        line-height: 1.55;
     }
 
-    /* Boost ultra-small Tailwind text classes across all admin pages for easy reading */
+    /* Standard responsive SaaS container for laptop/desktop screen perfection */
+    main:not([id*="messages"]) {
+        max-width: 80rem !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+    }
+
+    /* Small badge & label styling - crisp & legible */
     .text-\[7px\],
     .text-\[7\.5px\],
     .text-\[8px\],
@@ -91,27 +99,9 @@
     .text-\[10\.5px\],
     .text-\[11px\],
     .text-\[11\.5px\] {
-        font-size: 0.875rem !important; /* ~14px */
-        line-height: 1.5 !important;
+        font-size: 0.75rem !important;
+        line-height: 1.4 !important;
         font-weight: 600 !important;
-    }
-
-    .text-xs {
-        font-size: 0.95rem !important; /* ~15.2px */
-        line-height: 1.55 !important;
-        font-weight: 500 !important;
-    }
-
-    .text-sm {
-        font-size: 1.075rem !important; /* ~17.2px */
-        line-height: 1.6 !important;
-        font-weight: 500 !important;
-    }
-
-    .text-base {
-        font-size: 1.175rem !important; /* ~18.8px */
-        line-height: 1.65 !important;
-        font-weight: 500 !important;
     }
 
     /* Universal medium readability for descriptions, body text, tables, and muted labels */

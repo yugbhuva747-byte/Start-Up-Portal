@@ -104,7 +104,7 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="admin-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="admin-main">
 
             <?php if ($flash): ?>
                 <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
@@ -121,7 +121,7 @@ $flash = get_flash();
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 Governance & Compliance Dashboard
                             </h1>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -168,7 +168,7 @@ $flash = get_flash();
                             <i data-lucide="dollar-sign" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= format_inr($totalVolumeRaised) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"><?= format_inr($totalVolumeRaised) ?></div>
                     <div class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 mt-1">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Escrow Secured &amp; Reconciled
                     </div>
@@ -181,7 +181,7 @@ $flash = get_flash();
                             <i data-lucide="shield-alert" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black <?= $pendingVerifications > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?>"><?= $pendingVerifications ?></div>
+                    <div class="text-lg sm:text-xl font-bold <?= $pendingVerifications > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?>"><?= $pendingVerifications ?></div>
                     <div class="text-xs <?= $pendingVerifications > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400' ?> font-semibold flex items-center gap-1 mt-1">
                         <i data-lucide="clock" class="w-3.5 h-3.5"></i> <?= $pendingVerifications > 0 ? 'Awaiting Identity Review' : 'All Clear' ?>
                     </div>
@@ -194,7 +194,7 @@ $flash = get_flash();
                             <i data-lucide="building-2" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= number_format($totalCompanies) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"><?= number_format($totalCompanies) ?></div>
                     <div class="text-xs text-sky-600 dark:text-sky-400 font-semibold flex items-center gap-1 mt-1">
                         <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> <?= $pendingRounds ?> Active Funding Rounds
                     </div>
@@ -207,7 +207,7 @@ $flash = get_flash();
                             <i data-lucide="trending-up" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white"><?= number_format($totalInvestors) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white"><?= number_format($totalInvestors) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1 mt-1">
                         <i data-lucide="users" class="w-3.5 h-3.5"></i> <?= number_format($totalFounders) ?> Founders Active
                     </div>

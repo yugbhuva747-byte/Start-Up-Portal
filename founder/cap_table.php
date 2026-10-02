@@ -288,7 +288,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-cap-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-cap-main">
 
             <!-- Flash Feedback -->
             <?php if ($flash):
@@ -351,10 +351,10 @@ $flashStyles = [
                                 </span>
                             </div>
                             <h1
-                                class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 Master Cap Table & Share Allotments
                             </h1>
-                            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
                                 Live statutory ownership register, electronic share certificate custody, ESOP option pool
                                 reserves, and interactive dilution modeling under the Indian Companies Act & SEBI
                                 frameworks.
@@ -385,7 +385,7 @@ $flashStyles = [
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="section-card p-5">
                         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Authorized Capital</div>
-                        <div class="text-xl sm:text-2xl font-black text-slate-900"><?= format_inr($authorizedCapital) ?>
+                        <div class="text-lg sm:text-xl font-bold text-slate-900"><?= format_inr($authorizedCapital) ?>
                         </div>
                         <div class="text-xs text-slate-500 mt-1 font-mono"><?= number_format($totalAuthorizedShares) ?> Max
                             Shares @ ₹<?= number_format($faceValue, 2) ?> FV</div>
@@ -393,7 +393,7 @@ $flashStyles = [
                     <div class="section-card p-5">
                         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Total Subscribed Capital
                         </div>
-                        <div class="text-xl sm:text-2xl font-black text-emerald-600"><?= format_inr($totalCapitalRaised) ?>
+                        <div class="text-lg sm:text-xl font-bold text-emerald-600"><?= format_inr($totalCapitalRaised) ?>
                         </div>
                         <div class="text-xs text-slate-500 mt-1">Raised across <?= count($investments) ?>
                             allotment<?= count($investments) !== 1 ? 's' : '' ?></div>
@@ -401,7 +401,7 @@ $flashStyles = [
                     <div class="section-card p-5">
                         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Founder Equity Holdings
                         </div>
-                        <div class="text-xl sm:text-2xl font-black text-indigo-600">
+                        <div class="text-lg sm:text-xl font-bold text-indigo-600">
                             <?= number_format($foundersTotalEquity, 2) ?>%</div>
                         <div class="text-xs text-slate-500 mt-1">Common voting stock
                             (<?= number_format($founderTotalShares) ?> sh)</div>
@@ -409,7 +409,7 @@ $flashStyles = [
                     <div class="section-card p-5">
                         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">ESOP Pool Allocated
                         </div>
-                        <div class="text-xl sm:text-2xl font-black text-amber-600"><?= number_format($esopPercent, 2) ?>%
+                        <div class="text-lg sm:text-xl font-bold text-amber-600"><?= number_format($esopPercent, 2) ?>%
                         </div>
                         <div class="text-xs text-slate-500 mt-1">Talent incentive reserve
                             (<?= number_format($esopTotalShares) ?> sh)</div>

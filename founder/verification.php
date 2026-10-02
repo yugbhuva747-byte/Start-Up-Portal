@@ -224,7 +224,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="verify-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="verify-main">
 
             <!-- Flash Feedback -->
             <?php if ($flash):
@@ -277,10 +277,10 @@ $flashStyles = [
                             <?php endif; ?>
                         </div>
                         <h1
-                            class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                            class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Identity & DigiLocker Compliance Verification
                         </h1>
-                        <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
                             Official statutory verification infrastructure backed by National DigiLocker API gateways,
                             MCA Master Data matching, and SEBI angel investment regulatory standards.
                         </p>

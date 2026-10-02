@@ -182,7 +182,7 @@ if ($db) {
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="broadcasts-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="broadcasts-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2 shadow-xs">
@@ -206,7 +206,7 @@ if ($db) {
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 Platform Broadcasts
                             </h1>
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
@@ -237,7 +237,7 @@ if ($db) {
                             <i data-lucide="megaphone" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= $totalBroadcasts ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2"><?= $totalBroadcasts ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Platform announcements</div>
                 </div>
 
@@ -248,7 +248,7 @@ if ($db) {
                             <i data-lucide="radio" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><?= $activeBanners ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= $activeBanners ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Live on user dashboards</div>
                 </div>
 
@@ -259,7 +259,7 @@ if ($db) {
                             <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRecipientsReach) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($totalRecipientsReach) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Cumulative inbox deliveries</div>
                 </div>
 
@@ -270,7 +270,7 @@ if ($db) {
                             <i data-lucide="alert-triangle" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black <?= $urgentAlertsCount > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= $urgentAlertsCount ?></div>
+                    <div class="text-lg sm:text-xl font-bold <?= $urgentAlertsCount > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= $urgentAlertsCount ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">High-priority compliance</div>
                 </div>
             </div>

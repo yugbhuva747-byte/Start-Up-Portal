@@ -35,16 +35,24 @@
        1. UNIVERSAL TYPOGRAPHY & SMOOTH TRANSITIONS
     ---------------------------------------------------- */
     html {
-        font-size: 16.5px !important;
+        font-size: 15px !important;
         scroll-behavior: smooth;
     }
 
     body {
-        font-size: 1rem;
-        line-height: 1.65;
+        font-size: 0.9375rem;
+        line-height: 1.55;
     }
 
-    /* Boost ultra-small Tailwind text classes for high legibility */
+    /* Standard responsive SaaS container for laptop/desktop screen perfection */
+    main:not([id*="messages"]) {
+        max-width: 80rem !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        width: 100% !important;
+    }
+
+    /* Small badge & label styling - crisp & legible */
     .text-\[7px\],
     .text-\[7\.5px\],
     .text-\[8px\],
@@ -55,27 +63,9 @@
     .text-\[10\.5px\],
     .text-\[11px\],
     .text-\[11\.5px\] {
-        font-size: 0.85rem !important; /* ~14px */
-        line-height: 1.5 !important;
-        font-weight: 550 !important;
-    }
-
-    .text-xs {
-        font-size: 0.925rem !important; /* ~15.2px */
-        line-height: 1.55 !important;
-        font-weight: 500 !important;
-    }
-
-    .text-sm {
-        font-size: 1.025rem !important; /* ~16.9px */
-        line-height: 1.65 !important;
-        font-weight: 500 !important;
-    }
-
-    .text-base {
-        font-size: 1.125rem !important; /* ~18.5px */
-        line-height: 1.65 !important;
-        font-weight: 500 !important;
+        font-size: 0.75rem !important;
+        line-height: 1.4 !important;
+        font-weight: 600 !important;
     }
 
     /* Universal medium readability for descriptions, body text, tables, and muted labels */

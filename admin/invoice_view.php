@@ -160,7 +160,7 @@ $total = (float)$inv['total_payable'];
                 <div class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider mb-2 <?= $inv['settlement_status'] === 'SETTLED' ? 'bg-[#ecfdf5] text-[#059669] border border-[#a7f3d0]' : 'bg-rose-50 text-rose-700 border border-rose-200' ?>">
                     Tax Invoice &bull; <?= $inv['settlement_status'] ?>
                 </div>
-                <h1 class="text-2xl font-black text-slate-900 tracking-tight font-mono">
+                <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight font-mono">
                     <?= htmlspecialchars($inv['invoice_number']) ?>
                 </h1>
                 <div class="text-xs text-slate-500 mt-1">

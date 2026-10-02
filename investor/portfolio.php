@@ -151,7 +151,7 @@ $flash = get_flash();
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="portfolio-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="portfolio-main">
 
             <?php if ($flash): ?>
                 <div
@@ -173,11 +173,11 @@ $flash = get_flash();
                                 Holdings</span>
                         </div>
                         <h1
-                            class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                            class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                             Portfolio Holdings & Allotments
                         </h1>
                         <p
-                            class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5 max-w-3xl leading-relaxed">
+                            class="text-xs sm:text-sm text-[#667085] dark:text-slate-400 mt-1 max-w-3xl leading-relaxed">
                             Verified equity stakes, share allotment records, institutional cap table positions, and
                             escrow transactions across your backed companies.
                         </p>
@@ -199,7 +199,7 @@ $flash = get_flash();
                         <span
                             class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Total
                             Capital Deployed</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                             <?= format_inr($totalInvested) ?></div>
                         <div
                             class="mt-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
@@ -212,9 +212,9 @@ $flash = get_flash();
                         <span
                             class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Backed
                             Ventures</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                             <?= $totalStartups ?> <span
-                                class="text-base font-bold text-[#667085] dark:text-slate-400">Companies</span></div>
+                                class="text-xs sm:text-sm font-semibold text-[#667085] dark:text-slate-400">Companies</span></div>
                         <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Active Cap Table Equity
                         </div>
                     </div>
@@ -223,7 +223,7 @@ $flash = get_flash();
                         <span
                             class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Combined
                             Ownership</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#123B7A] dark:text-blue-400 tracking-tight">
+                        <div class="text-lg sm:text-xl font-bold text-[#123B7A] dark:text-blue-400 tracking-tight">
                             <?= number_format($totalEquity, 2) ?>%</div>
                         <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Allotted Share Equity
                         </div>
@@ -233,7 +233,7 @@ $flash = get_flash();
                         <span
                             class="text-xs font-bold text-[#667085] dark:text-slate-400 uppercase tracking-wider block mb-2">Average
                             Check Size</span>
-                        <div class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        <div class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                             <?= format_inr($avgTicket) ?></div>
                         <div class="mt-2 text-xs text-[#667085] dark:text-slate-400 font-medium">Per Syndicate
                             Allocation</div>

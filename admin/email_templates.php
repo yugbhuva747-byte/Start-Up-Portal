@@ -219,7 +219,7 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
         <!-- Admin Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
             <!-- Modern Header with Live Badge -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
@@ -229,7 +229,7 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
                     </div>
                     <div>
                         <div class="flex items-center gap-2.5">
-                            <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                 Email Templates &amp; Dispatcher
                             </h1>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10.5px] font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
@@ -312,7 +312,7 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
                             <i data-lucide="layers" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-slate-900 dark:text-white mt-2"><?= number_format($totalLogsCount) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($totalLogsCount) ?></div>
                     <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         <span class="text-emerald-600 font-semibold"><?= $sentLogsCount ?> sent</span> &bull; <span class="text-rose-600 font-semibold"><?= $failedLogsCount ?> failed</span>
                     </div>
@@ -326,7 +326,7 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
                             <i data-lucide="activity" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-2"><?= $successRate ?>%</div>
+                    <div class="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= $successRate ?>%</div>
                     <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
                         Audit trail enabled &amp; archived
                     </div>

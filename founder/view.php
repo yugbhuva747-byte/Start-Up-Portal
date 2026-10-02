@@ -108,7 +108,7 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-view-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="founder-view-main">
             
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5">
@@ -166,7 +166,7 @@ $flash = get_flash();
                             </div>
                             <div class="pt-2">
                                 <div class="flex flex-wrap items-center gap-2.5">
-                                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($founder['name']) ?></h1>
+                                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($founder['name']) ?></h1>
                                     <?php if ($founder['is_verified']): ?>
                                         <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
                                             KYC VERIFIED

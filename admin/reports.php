@@ -130,12 +130,12 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="reports-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="reports-main">
 
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Platform Reports & Analytics</h1>
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Platform Reports & Analytics</h1>
                     <p class="text-xs text-slate-500 mt-0.5">Aggregate platform metrics, funding activity, user trends, and verification pipeline health.</p>
                 </div>
                 <div class="flex items-center space-x-3">

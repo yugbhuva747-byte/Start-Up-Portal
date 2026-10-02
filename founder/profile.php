@@ -171,7 +171,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
         <!-- Full-screen Dynamic Main Container -->
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="profile-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="profile-main">
             
             <!-- Flash Feedback -->
             <?php if ($flash): ?>
@@ -211,7 +211,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
 
                         <div class="text-center sm:text-left space-y-1.5">
                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                                     <?= htmlspecialchars($user['name']) ?>
                                 </h1>
                                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold <?= $user['is_verified'] ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800' ?>">

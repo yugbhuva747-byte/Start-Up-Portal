@@ -270,7 +270,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="queue-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="queue-main">
 
             <?php if ($flash): ?>
                 <div class="p-4 rounded-xl text-sm font-medium border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-3 shadow-sm">
@@ -293,7 +293,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
                         <i data-lucide="shield-check" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                             KYC & Document Review
                         </h1>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -320,7 +320,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
                             <i data-lucide="clock" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold <?= $stats['pending_reqs'] > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2 flex items-center gap-2">
+                    <div class="text-lg sm:text-xl font-bold <?= $stats['pending_reqs'] > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-2 flex items-center gap-2">
                         <?= number_format($stats['pending_reqs']) ?>
                         <?php if ($stats['pending_reqs'] > 0): ?>
                             <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-300 animate-pulse">Needs Action</span>
@@ -336,7 +336,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
                             <i data-lucide="user-check" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($stats['total_reqs']) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($stats['total_reqs']) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Founders & Angels</div>
                 </div>
 
@@ -347,7 +347,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
                             <i data-lucide="files" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($stats['total_docs']) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= number_format($stats['total_docs']) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Identity & Company files</div>
                 </div>
 
@@ -358,7 +358,7 @@ $activeTab = $_GET['tab'] ?? 'queue';
                             <i data-lucide="alert-circle" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold <?= $stats['pending_docs'] > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= number_format($stats['pending_docs']) ?></div>
+                    <div class="text-lg sm:text-xl font-bold <?= $stats['pending_docs'] > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?> mt-2"><?= number_format($stats['pending_docs']) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Pending review</div>
                 </div>
             </div>

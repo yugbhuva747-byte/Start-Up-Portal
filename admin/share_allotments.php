@@ -433,7 +433,7 @@ function initials($name)
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="allotment-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="allotment-main">
 
             <?php if ($flash):
                 $ok = ($flash['type'] ?? '') === 'success'; ?>
@@ -458,7 +458,7 @@ function initials($name)
                             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-[11px] font-bold tracking-wide uppercase">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Demat &amp; MCA Registry
                         </span>
-                        <h1 class="text-2xl sm:text-3xl font-black tracking-tight">Share Allotments &amp; Cap Table</h1>
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight">Share Allotments &amp; Cap Table</h1>
                         <p class="text-sm text-indigo-100">Issue digital share certificates, track distinctive share
                             ranges and govern each startup's equity structure under Sec. 56 of the Companies Act, 2013.
                         </p>
@@ -476,7 +476,7 @@ function initials($name)
                         <div class="sa-ico bg-sky-100 text-sky-600 dark:bg-sky-950 dark:text-sky-400"><i
                                 data-lucide="layers" class="w-5 h-5"></i></div>
                     </div>
-                    <div class="text-3xl font-black mt-3"><?= number_format($totalSharesAllotted) ?></div>
+                    <div class="text-lg sm:text-xl font-bold mt-2.5"><?= number_format($totalSharesAllotted) ?></div>
                     <div class="text-xs sa-muted mt-1">Units of equity &amp; CCPS</div>
                 </div>
                 <div class="sa-card sa-kpi">
@@ -484,7 +484,7 @@ function initials($name)
                         <div class="sa-ico bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"><i
                                 data-lucide="trending-up" class="w-5 h-5"></i></div>
                     </div>
-                    <div class="text-3xl font-black mt-3 text-emerald-600 dark:text-emerald-400">
+                    <div class="text-lg sm:text-xl font-bold mt-2.5 text-emerald-600 dark:text-emerald-400">
                         <?= format_inr($totalCapitalAllotted) ?></div>
                     <div class="text-xs sa-muted mt-1">Investor subscriptions</div>
                 </div>
@@ -494,7 +494,7 @@ function initials($name)
                         <div class="sa-ico bg-indigo-100 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"><i
                                 data-lucide="award" class="w-5 h-5"></i></div>
                     </div>
-                    <div class="text-3xl font-black mt-3"><?= number_format($totalCertificatesCount) ?></div>
+                    <div class="text-lg sm:text-xl font-bold mt-2.5"><?= number_format($totalCertificatesCount) ?></div>
                     <div class="text-xs sa-muted mt-1">Digitally signed &amp; verified</div>
                 </div>
                 <div class="sa-card sa-kpi">
@@ -502,7 +502,7 @@ function initials($name)
                         <div class="sa-ico bg-violet-100 text-violet-600 dark:bg-violet-950 dark:text-violet-400"><i
                                 data-lucide="shield-check" class="w-5 h-5"></i></div>
                     </div>
-                    <div class="text-2xl font-black mt-3 text-violet-600 dark:text-violet-400">SEBI &amp; MCA 2013</div>
+                    <div class="text-lg sm:text-xl font-bold mt-2.5 text-violet-600 dark:text-violet-400">SEBI &amp; MCA 2013</div>
                     <div class="text-xs sa-muted mt-1">Sec. 56 Companies Act</div>
                 </div>
             </section>

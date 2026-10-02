@@ -89,7 +89,7 @@ if ($db) {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="tx-admin-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="tx-admin-main">
 
             <!-- Page Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -98,7 +98,7 @@ if ($db) {
                         <i data-lucide="banknote" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                             Escrow & Payment Transfers
                         </h1>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
@@ -131,7 +131,7 @@ if ($db) {
                             <i data-lucide="shield-check" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= format_inr($totalEscrow) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-2"><?= format_inr($totalEscrow) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">100% Escrow Reconciled</div>
                 </div>
 
@@ -142,7 +142,7 @@ if ($db) {
                             <i data-lucide="receipt" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($totalTxCount) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2"><?= number_format($totalTxCount) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= $successCount ?> successful settlements</div>
                 </div>
 
@@ -153,7 +153,7 @@ if ($db) {
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= format_inr($avgInvestment) ?></div>
+                    <div class="text-lg sm:text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-2"><?= format_inr($avgInvestment) ?></div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">Per transaction ticket</div>
                 </div>
 
@@ -164,7 +164,7 @@ if ($db) {
                             <i data-lucide="zap" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2 flex items-center gap-1.5">
+                    <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mt-2 flex items-center gap-1.5">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span class="text-lg">Online</span>
                     </div>

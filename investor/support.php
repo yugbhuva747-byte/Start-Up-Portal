@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Investor Module: Support & Helpdesk Center
  * Interactive Ticket Submission, FAQ Knowledgebase, and SEBI Compliance Guidance
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                         <i data-lucide="life-buoy" class="w-3.5 h-3.5"></i>
                         <span>Investor Concierge & Operations</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-black text-[#0B1F3A] dark:text-white tracking-tight">Support & Helpdesk Desk</h1>
+                    <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">Support & Helpdesk Desk</h1>
                     <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Direct assistance for escrow settlements, share certificate delivery, DigiLocker KYC, and syndicate participation.</p>
                 </div>
                 <div class="flex items-center gap-2">

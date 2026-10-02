@@ -182,7 +182,7 @@ $old = $openModal ? $_POST : [];
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="blogs-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 py-6 space-y-6" id="blogs-main">
 
             <?php if ($flash): ?>
                 <div
@@ -211,7 +211,7 @@ $old = $openModal ? $_POST : [];
             <!-- Header -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Company Blog
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Company Blog
                         & Trust Stories</h1>
                     <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Share company
                         stories, milestone proof, customer case studies, and team photos to build investor trust.</p>
@@ -230,7 +230,7 @@ $old = $openModal ? $_POST : [];
                 <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-5">
                     <div class="text-xs font-bold text-slate-600 uppercase tracking-wider">Published Stories</div>
                     <div
-                        class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1 flex items-center justify-between">
+                        class="text-lg sm:text-xl font-bold text-slate-900 mt-1 flex items-center justify-between">
                         <span><?= count($blogs) ?></span>
                         <i data-lucide="book-open" class="w-4 h-4 text-indigo-500"></i>
                     </div>
@@ -238,7 +238,7 @@ $old = $openModal ? $_POST : [];
                 <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-5">
                     <div class="text-xs font-bold text-slate-600 uppercase tracking-wider">Total Reader Views</div>
                     <div
-                        class="text-xl sm:text-2xl font-extrabold text-emerald-600 mt-1 flex items-center justify-between">
+                        class="text-lg sm:text-xl font-bold text-emerald-600 mt-1 flex items-center justify-between">
                         <span><?= (int) array_sum(array_map(fn($b) => (int) ($b['views_count'] ?? 0), $blogs)) ?></span>
                         <i data-lucide="eye" class="w-4 h-4 text-emerald-500"></i>
                     </div>
@@ -246,7 +246,7 @@ $old = $openModal ? $_POST : [];
                 <div class="bg-white border border-slate-200 shadow-sm rounded-2xl p-4 sm:p-5">
                     <div class="text-xs font-bold text-slate-600 uppercase tracking-wider">Verified Credibility</div>
                     <div
-                        class="text-xl sm:text-2xl font-extrabold text-indigo-600 mt-1 flex items-center justify-between">
+                        class="text-lg sm:text-xl font-bold text-indigo-600 mt-1 flex items-center justify-between">
                         <span>100% Genuineness</span>
                         <i data-lucide="shield-check" class="w-5 h-5 text-indigo-500"></i>
                     </div>

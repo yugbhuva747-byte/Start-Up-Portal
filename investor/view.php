@@ -132,7 +132,7 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="investor-view-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="investor-view-main">
 
             <?php if ($flash): ?>
                 <div
@@ -203,7 +203,7 @@ $flash = get_flash();
 
                             <div class="pt-2">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($investor['name']) ?></h1>
+                                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($investor['name']) ?></h1>
                                     <span class="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold">
                                         <?= strtoupper($profile['investor_type'] ?? 'ANGEL INVESTOR') ?>
                                     </span>

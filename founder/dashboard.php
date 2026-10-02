@@ -149,7 +149,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="dashboard-content">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="dashboard-content">
 
             <!-- Flash notification -->
             <?php if ($flash): ?>
@@ -167,7 +167,7 @@ $flashStyles = [
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
                 <div>
                     <h1
-                        class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                         <span>Welcome, <?= htmlspecialchars($user['name']) ?></span>
                     </h1>
                     <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mt-1">Here is a quick overview of
@@ -225,7 +225,7 @@ $flashStyles = [
                             <div class="p-2 rounded-xl bg-indigo-50 text-indigo-600"><i data-lucide="wallet"
                                     class="w-4 h-4"></i></div>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900">
+                        <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                             <?= format_inr($stats['total_raised']) ?></div>
                     </div>
                     <div class="text-xs sm:text-sm text-slate-500 font-medium mt-2">Across <?= $stats['total_rounds'] ?>
@@ -256,7 +256,7 @@ $flashStyles = [
                             <div class="p-2 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="users"
                                     class="w-4 h-4"></i></div>
                         </div>
-                        <div class="text-2xl sm:text-3xl font-black text-slate-900">
+                        <div class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                             <?= (int) $stats['investors_count'] ?></div>
                     </div>
                     <div class="text-xs sm:text-sm text-slate-500 font-medium mt-2">Unique investors committed</div>
@@ -290,19 +290,19 @@ $flashStyles = [
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
                         <div>
                             <div class="flex flex-wrap items-center gap-3">
-                                <h2 class="text-lg sm:text-xl font-bold text-slate-900">
+                                <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
                                     <?= htmlspecialchars($activeRound['round_name']) ?></h2>
                                 <?= render_status_badge($activeRound['status']) ?>
                             </div>
-                            <p class="text-sm text-slate-600 mt-1">Valuation: <strong
-                                    class="text-slate-900"><?= format_inr($activeRound['valuation']) ?></strong> • Equity
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1">Valuation: <strong
+                                    class="text-slate-900 dark:text-white"><?= format_inr($activeRound['valuation']) ?></strong> • Equity
                                 Offered: <strong
-                                    class="text-slate-900"><?= htmlspecialchars($activeRound['equity_offered']) ?>%</strong>
+                                    class="text-slate-900 dark:text-white"><?= htmlspecialchars($activeRound['equity_offered']) ?>%</strong>
                             </p>
                         </div>
                         <div class="text-left md:text-right">
                             <span
-                                class="text-2xl sm:text-3xl font-black text-emerald-600"><?= $stats['round_progress'] ?>%</span>
+                                class="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400"><?= $stats['round_progress'] ?>%</span>
                             <span class="text-xs sm:text-sm text-slate-500 block font-medium">funded of
                                 <?= format_inr($activeRound['target_amount']) ?></span>
                         </div>

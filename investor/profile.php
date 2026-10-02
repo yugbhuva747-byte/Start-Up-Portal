@@ -227,7 +227,7 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="profile-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="profile-main">
 
             <?php if ($flash): ?>
                 <div
@@ -251,9 +251,9 @@ $flashStyles = [
                 <div class="space-y-1">
                     <span class="text-sm font-bold text-[#123B7A] dark:text-blue-300 uppercase tracking-wider">Identity
                         & Thesis</span>
-                    <h1 class="text-3xl sm:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">Investor
+                    <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">Investor
                         Profile & Thesis Settings</h1>
-                    <p class="text-base text-[#667085] dark:text-slate-400">Define your syndicate investment criteria,
+                    <p class="text-xs sm:text-sm text-[#667085] dark:text-slate-400">Define your syndicate investment criteria,
                         check allocation boundaries, and verified credentials.</p>
                 </div>
                 <a href="<?= url('investor/view.php') ?>"

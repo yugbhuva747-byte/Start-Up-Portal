@@ -331,7 +331,7 @@ try {
         <!-- Top Navbar -->
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6" id="subscriptions-admin-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="subscriptions-admin-main">
             
             <!-- Page Header (Identical to reference screenshot) -->
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -341,7 +341,7 @@ try {
                         <i data-lucide="crown" class="w-3.5 h-3.5 text-[#9333ea]"></i>
                         <span>TIER &amp; PRIORITY MANAGEMENT</span>
                     </div>
-                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         Subscriptions &amp; Priority Center
                     </h1>
                     <p class="text-xs sm:text-sm text-slate-500 mt-1">
@@ -383,7 +383,7 @@ try {
                             ₹
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         ₹<?= number_format($totalRevenue, 2) ?>
                     </div>
                     <div class="mt-1 text-xs font-semibold text-[#a855f7] dark:text-purple-400">
@@ -399,7 +399,7 @@ try {
                             <i data-lucide="users" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($activePaidSubscribers) ?>
                     </div>
                     <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a] dark:text-emerald-400">
@@ -416,7 +416,7 @@ try {
                             <i data-lucide="calendar" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($annualSubscribers) ?>
                     </div>
                     <div class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -432,7 +432,7 @@ try {
                             <i data-lucide="crown" class="w-4 h-4 text-amber-500"></i>
                         </div>
                     </div>
-                    <div class="mt-2 text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <div class="mt-2 text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                         <?= number_format($level4VipSubscribers) ?>
                     </div>
                     <div class="mt-1 text-xs font-semibold text-[#ca8a04] dark:text-amber-400">

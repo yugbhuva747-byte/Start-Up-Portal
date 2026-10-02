@@ -176,7 +176,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 lg:px-10 py-6 sm:py-8 space-y-8" id="verify-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="verify-main">
 
             <?php if ($flash): ?>
                 <div
@@ -201,7 +201,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <div class="space-y-1">
                     <span class="text-[11px] font-bold text-[#123B7A] uppercase tracking-wider">Accreditation &
                         Compliance</span>
-                    <h1 class="text-2xl sm:text-3xl font-black text-[#0B1F3A] tracking-tight">Investor Verification
+                    <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">Investor Verification
                         Center</h1>
                     <p class="text-xs text-[#667085]">SEBI Angel Syndicate Compliance, DigiLocker National Gateway & KYC
                         Records.</p>

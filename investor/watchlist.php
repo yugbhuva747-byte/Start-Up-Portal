@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
-        <main class="w-full p-4 sm:p-6 md:p-8 lg:p-10 space-y-8 sm:space-y-10" id="watchlist-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="watchlist-main">
 
             <?php if ($flash): ?>
                 <div
@@ -89,9 +89,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <span class="text-[#667085] dark:text-slate-400 font-semibold">Shortlisted Deals</span>
                     </div>
                     <h1
-                        class="text-2xl sm:text-3xl md:text-4xl font-black text-[#0B1F3A] dark:text-white tracking-tight">
+                        class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">
                         Saved Companies & Deals</h1>
-                    <p class="text-sm sm:text-base text-[#667085] dark:text-slate-300 mt-1.5">Startups and live
+                    <p class="text-xs sm:text-sm text-[#667085] dark:text-slate-400 mt-1">Startups and live
                         syndicates you are actively monitoring and evaluating.</p>
                 </div>
                 <div class="flex items-center space-x-3">
