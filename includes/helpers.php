@@ -82,9 +82,188 @@ function decode_id(?string $hash): int {
     return hash_id_decode($hash);
 }
 
-// 3. Authentication & Role Control
+// 3. Authentication & Persistent Cookie Sessions
+function set_remember_me_cookie(int $userId, int $days = 30): bool {
+    $db = get_db();
+    if (!$db || $userId <= 0) return false;
+
+    try {
+        // Generate secure 128-bit selector and 256-bit validator
+        $selector = bin2hex(random_bytes(16));
+        $validator = bin2hex(random_bytes(32));
+        $tokenHash = hash('sha256', $validator);
+        $expiresAt = date('Y-m-d H:i:s', time() + ($days * 86400));
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $userAgent = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+
+        // Delete any existing tokens for this user on this IP to avoid stale duplicate rows
+        $db->prepare("DELETE FROM remember_tokens WHERE user_id = ? AND ip_address = ?")->execute([$userId, $clientIp]);
+
+        $stmt = $db->prepare("
+            INSERT INTO remember_tokens (user_id, selector, token_hash, ip_address, user_agent, expires_at, created_at, last_used_at)
+            VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+        ");
+        $stmt->execute([$userId, $selector, $tokenHash, $clientIp, $userAgent, $expiresAt]);
+
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        $cookieValue = $selector . ':' . $validator;
+
+        return setcookie('remember_token', $cookieValue, [
+            'expires'  => time() + ($days * 86400),
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function check_remember_me_cookie(): ?array {
+    // If already active in PHP session, return current user
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        return current_user();
+    }
+
+    if (empty($_COOKIE['remember_token'])) {
+        return null;
+    }
+
+    $cookieVal = (string)$_COOKIE['remember_token'];
+    $parts = explode(':', $cookieVal, 2);
+    if (count($parts) !== 2 || strlen($parts[0]) !== 32 || strlen($parts[1]) !== 64) {
+        clear_remember_me_cookie();
+        return null;
+    }
+
+    $selector = $parts[0];
+    $validator = $parts[1];
+
+    $db = get_db();
+    if (!$db) return null;
+
+    try {
+        $stmt = $db->prepare("SELECT * FROM remember_tokens WHERE selector = ? AND expires_at > NOW() LIMIT 1");
+        $stmt->execute([$selector]);
+        $tokenRow = $stmt->fetch();
+
+        if (!$tokenRow) {
+            clear_remember_me_cookie();
+            return null;
+        }
+
+        // Constant-time hash verification
+        $calculatedHash = hash('sha256', $validator);
+        if (!hash_equals($tokenRow['token_hash'], $calculatedHash)) {
+            // Compromised token detected! Invalidate this selector and clear cookie
+            $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$selector]);
+            clear_remember_me_cookie();
+            log_security_event($tokenRow['user_id'] ?? null, 'REMEMBER_TOKEN_TAMPERED', 'high', 'Invalid remember token validator detected');
+            return null;
+        }
+
+        // Fetch user record
+        $uStmt = $db->prepare("SELECT * FROM users WHERE id = ? LIMIT 1");
+        $uStmt->execute([$tokenRow['user_id']]);
+        $user = $uStmt->fetch();
+
+        if (!$user || $user['status'] === 'suspended') {
+            $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$selector]);
+            clear_remember_me_cookie();
+            return null;
+        }
+
+        // Token is valid! Rotate validator to prevent replay attacks
+        $newValidator = bin2hex(random_bytes(32));
+        $newTokenHash = hash('sha256', $newValidator);
+        $newExpiry = date('Y-m-d H:i:s', time() + (30 * 86400));
+
+        $db->prepare("UPDATE remember_tokens SET token_hash = ?, expires_at = ?, last_used_at = NOW() WHERE id = ?")
+           ->execute([$newTokenHash, $newExpiry, $tokenRow['id']]);
+
+        $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+        setcookie('remember_token', $selector . ':' . $newValidator, [
+            'expires'  => time() + (30 * 86400),
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $isSecure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
+        // Restore authenticated PHP session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_regenerate_id(true);
+        $_SESSION['user_id'] = (int)$user['id'];
+        $_SESSION['user_role'] = $user['role'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['is_remembered'] = true;
+
+        if ($user['role'] === 'admin') {
+            $_SESSION['2fa_verified'] = true;
+        }
+
+        // Track active login session
+        $sessionToken = bin2hex(random_bytes(32));
+        $_SESSION['session_token'] = $sessionToken;
+        $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+        $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$user['id'], $sessionToken, $clientIp, $ua]);
+
+        log_audit($user['id'], 'SESSION_RESTORED_COOKIE', 'users', $user['id'], 'Restored session via persistent remember-me cookie');
+        return $user;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function clear_remember_me_cookie(): void {
+    if (!empty($_COOKIE['remember_token'])) {
+        $parts = explode(':', (string)$_COOKIE['remember_token'], 2);
+        if (!empty($parts[0])) {
+            $db = get_db();
+            if ($db) {
+                try {
+                    $db->prepare("DELETE FROM remember_tokens WHERE selector = ?")->execute([$parts[0]]);
+                } catch (Exception $e) {}
+            }
+        }
+    }
+
+    if (isset($_SESSION['user_id'])) {
+        $db = get_db();
+        if ($db) {
+            try {
+                $db->prepare("DELETE FROM remember_tokens WHERE user_id = ? AND expires_at < NOW()")->execute([$_SESSION['user_id']]);
+            } catch (Exception $e) {}
+        }
+    }
+
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
+    setcookie('remember_token', '', [
+        'expires'  => time() - 86400,
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => $isSecure,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    unset($_COOKIE['remember_token']);
+}
+
 function auth_check(): bool {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+    if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+        return true;
+    }
+    if (!empty($_COOKIE['remember_token'])) {
+        $user = check_remember_me_cookie();
+        return !empty($user);
+    }
+    return false;
 }
 
 function is_logged_in(): bool {
@@ -419,6 +598,48 @@ function log_security_event(?int $userId, string $eventType, string $severity = 
             VALUES (?, ?, ?, ?, ?, ?, NOW())
         ");
         $stmt->execute([$userId, $eventType, $severity, $ip, $userAgent, $details]);
+    } catch (Exception $e) {}
+}
+
+/**
+ * Brute-Force Rate Limiting Engine:
+ * Blocks IP/account if more than 5 failed login attempts in last 15 minutes
+ */
+function is_login_rate_limited(string $ip, string $email): bool {
+    $db = get_db();
+    if (!$db) return false;
+    try {
+        $stmt = $db->prepare("
+            SELECT COUNT(*) 
+            FROM security_events 
+            WHERE event_type = 'LOGIN_FAILED' 
+              AND (ip_address = ? OR details LIKE ?)
+              AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)
+        ");
+        $emailPattern = '%' . $email . '%';
+        $stmt->execute([$ip, $emailPattern]);
+        $failures = (int)$stmt->fetchColumn();
+        return $failures >= 5;
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function record_failed_login(string $ip, string $email): void {
+    log_security_event(null, 'LOGIN_FAILED', 'medium', "Failed credentials attempt for email: {$email}");
+}
+
+function clear_failed_logins(string $ip, string $email): void {
+    $db = get_db();
+    if (!$db) return;
+    try {
+        $emailPattern = '%' . $email . '%';
+        $stmt = $db->prepare("
+            DELETE FROM security_events 
+            WHERE event_type = 'LOGIN_FAILED' 
+              AND (ip_address = ? OR details LIKE ?)
+        ");
+        $stmt->execute([$ip, $emailPattern]);
     } catch (Exception $e) {}
 }
 

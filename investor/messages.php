@@ -18,24 +18,33 @@ if ($db) {
         $targetFounderId = hash_id_decode($_GET['founder']);
         $targetCompanyId = hash_id_decode($_GET['company']);
 
-        if ($targetFounderId > 0 && $targetCompanyId > 0) {
-            $chkC = $db->prepare("SELECT id FROM conversations WHERE ((user_one_id = ? AND user_two_id = ?) OR (user_one_id = ? AND user_two_id = ?)) AND company_id = ?");
-            $chkC->execute([$user['id'], $targetFounderId, $targetFounderId, $user['id'], $targetCompanyId]);
-            $existingC = $chkC->fetch();
+        if ($targetFounderId > 0 && $targetCompanyId > 0 && $targetFounderId !== (int)$user['id']) {
+            // Verify that target user is indeed an active founder of this company
+            $vStmt = $db->prepare("
+                SELECT 1 FROM company_founders cf
+                JOIN users u ON cf.user_id = u.id
+                WHERE cf.user_id = ? AND cf.company_id = ? AND u.role = 'founder' AND u.status != 'suspended'
+            ");
+            $vStmt->execute([$targetFounderId, $targetCompanyId]);
+            if ($vStmt->fetchColumn()) {
+                $chkC = $db->prepare("SELECT id FROM conversations WHERE ((user_one_id = ? AND user_two_id = ?) OR (user_one_id = ? AND user_two_id = ?)) AND company_id = ?");
+                $chkC->execute([$user['id'], $targetFounderId, $targetFounderId, $user['id'], $targetCompanyId]);
+                $existingC = $chkC->fetch();
 
-            if ($existingC) {
-                $selectedConvId = (int)$existingC['id'];
-            } else {
-                $insC = $db->prepare("INSERT INTO conversations (user_one_id, user_two_id, company_id, last_message_at, created_at) VALUES (?, ?, ?, NOW(), NOW())");
-                $insC->execute([$user['id'], $targetFounderId, $targetCompanyId]);
-                $selectedConvId = (int)$db->lastInsertId();
+                if ($existingC) {
+                    $selectedConvId = (int)$existingC['id'];
+                } else {
+                    $insC = $db->prepare("INSERT INTO conversations (user_one_id, user_two_id, company_id, last_message_at, created_at) VALUES (?, ?, ?, NOW(), NOW())");
+                    $insC->execute([$user['id'], $targetFounderId, $targetCompanyId]);
+                    $selectedConvId = (int)$db->lastInsertId();
 
-                // Initial greeting message
-                $insM = $db->prepare("INSERT INTO messages (conversation_id, sender_user_id, message_text, is_read, created_at) VALUES (?, ?, 'Hello, I reviewed your startup profile and would like to learn more about your traction and current round.', 0, NOW())");
-                $insM->execute([$selectedConvId, $user['id']]);
+                    // Initial greeting message
+                    $insM = $db->prepare("INSERT INTO messages (conversation_id, sender_user_id, message_text, is_read, created_at) VALUES (?, ?, 'Hello, I reviewed your startup profile and would like to learn more about your traction and current round.', 0, NOW())");
+                    $insM->execute([$selectedConvId, $user['id']]);
+                }
+                header('Location: ' . url('investor/messages.php?conv=' . hash_id_encode($selectedConvId)));
+                exit;
             }
-            header('Location: ' . url('investor/messages.php?conv=' . hash_id_encode($selectedConvId)));
-            exit;
         }
     }
 

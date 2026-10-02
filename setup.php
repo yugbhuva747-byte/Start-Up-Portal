@@ -31,6 +31,23 @@ try {
         throw new Exception("Could not connect to database `" . DB_NAME . "`. Error: " . (Database::getLastError() ?? 'Please verify your .env credentials.'));
     }
 
+    // Security Lock: If database already exists and has users, require CLI or Admin session or secret setup key
+    $isCli = (php_sapi_name() === 'cli');
+    $isAdmin = (function_exists('auth_check') && auth_check() && function_exists('current_user') && (current_user()['role'] ?? '') === 'admin');
+    $providedKey = $_GET['setup_key'] ?? ($_POST['setup_key'] ?? '');
+    $validKey = (defined('APP_KEY') && !empty($providedKey) && hash_equals(APP_KEY, $providedKey));
+
+    try {
+        $hasUsers = (int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+    } catch (Exception $e) {
+        $hasUsers = 0;
+    }
+
+    if ($hasUsers > 0 && !$isCli && !$isAdmin && !$validKey) {
+        http_response_code(403);
+        throw new Exception("Setup is locked: System is already initialized. To re-run migrations, please sign in as Administrator or run via CLI: `php setup.php`.");
+    }
+
     // 3. Read and execute database.sql
     $sqlContent = file_get_contents(__DIR__ . '/database.sql');
     $db->exec($sqlContent);

@@ -1151,8 +1151,13 @@
       try {
         const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/json',
+            'X-CSRF-Token': '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
+          },
           body: JSON.stringify({
+            csrf_token: '<?= function_exists('csrf_token') ? csrf_token() : '' ?>',
             plan_code: selectedPlanCode,
             billing_cycle: isAnnual ? 'annually' : 'monthly'
           })
@@ -1193,13 +1198,19 @@
       modalSubmitBtn.innerHTML = '<span>⚡ Processing Plan Activation...</span>';
 
       const formData = new FormData(modalForm);
-      const payload = {};
+      const payload = {
+        csrf_token: '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
+      };
       formData.forEach((value, key) => { payload[key] = value; });
 
       try {
         const res = await fetch('<?= function_exists('url') ? url('api/register.php') : 'api/register.php' ?>', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/json',
+            'X-CSRF-Token': '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
+          },
           body: JSON.stringify(payload)
         });
 

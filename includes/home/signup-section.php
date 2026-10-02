@@ -957,13 +957,16 @@
           payload.preferred_industries = investorSectors ? investorSectors.value.trim() : 'AI & DeepTech, SaaS, FinTech';
         }
 
+        payload.csrf_token = '<?= function_exists('csrf_token') ? csrf_token() : '' ?>';
+
         try {
           const registerEndpoint = '<?= function_exists('url') ? url('api/register.php') : 'api/register.php' ?>';
           const response = await fetch(registerEndpoint, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Accept': 'application/json'
+              'Accept': 'application/json',
+              'X-CSRF-Token': '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
             },
             body: JSON.stringify(payload)
           });

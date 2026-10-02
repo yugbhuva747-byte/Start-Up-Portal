@@ -77,29 +77,33 @@ if ($docType === 'company') {
     $downloadFilename = $cleanDocName . ($ext ? '.' . $ext : '');
 }
 
-$fullPath = ROOT_PATH . '/' . ltrim($relativePath, '/\\');
+$fullPath = ROOT_PATH . '/' . ltrim(str_replace(['../', '..\\'], '', $relativePath), '/\\');
+$realUploads = realpath(ROOT_PATH . '/uploads');
+$realFile = realpath($fullPath);
 
-if (!file_exists($fullPath) || is_dir($fullPath)) {
+if (!$realFile || !$realUploads || !str_starts_with(str_replace('\\', '/', $realFile), str_replace('\\', '/', $realUploads)) || is_dir($realFile)) {
     http_response_code(404);
-    die("The requested document file could not be found on the server storage.");
+    die("The requested document file could not be found or access is restricted.");
 }
 
 // Log download audit
-log_audit($user['id'], 'DOWNLOAD_DOCUMENT', $docType === 'company' ? 'company_documents' : 'verification_documents', $docId, "Downloaded document: " . basename($fullPath));
+log_audit($user['id'], 'DOWNLOAD_DOCUMENT', $docType === 'company' ? 'company_documents' : 'verification_documents', $docId, "Downloaded document: " . basename($realFile));
 
 // Determine content type
 $finfo = finfo_open(FILEINFO_MIME_TYPE);
-$mimeType = finfo_file($finfo, $fullPath) ?: 'application/octet-stream';
+$mimeType = finfo_file($finfo, $realFile) ?: 'application/octet-stream';
 finfo_close($finfo);
 
-// Force download headers
+// Force download headers & strict download CSP
+header('X-Content-Type-Options: nosniff');
+header("Content-Security-Policy: default-src 'none'");
 header('Content-Description: File Transfer');
 header('Content-Type: ' . $mimeType);
-header('Content-Disposition: attachment; filename="' . str_replace('"', '', $downloadFilename) . '"');
+header('Content-Disposition: attachment; filename="' . str_replace(['"', "\r", "\n"], '', $downloadFilename) . '"');
 header('Expires: 0');
-header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0, private');
 header('Pragma: public');
-header('Content-Length: ' . filesize($fullPath));
+header('Content-Length: ' . filesize($realFile));
 
 // Clear output buffer if any
 if (ob_get_level()) {
