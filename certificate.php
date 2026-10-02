@@ -64,16 +64,22 @@ if (!$cert) {
     exit;
 }
 
-// Access Control: Must be the investor, a founder of that company, or an admin
+// Access Control: Must be the investor, a company founder, an admin, or have a valid verification token
 if (!$user) {
-    // Guest or public access via QR code: allow viewing in read-only verification mode
+    $providedToken = trim($_GET['token'] ?? '');
+    if (empty($providedToken) || empty($cert['verification_token']) || !hash_equals($cert['verification_token'], $providedToken)) {
+        set_flash('error', 'Authentication or valid verification token required to view this confidential share certificate.');
+        header('Location: ' . url('auth/login.php'));
+        exit;
+    }
+    // Verified public viewer with cryptographic token
     $isPublicViewer = true;
 } else {
     $isPublicViewer = false;
     $isAuthorized = false;
     if ($user['role'] === 'admin') {
         $isAuthorized = true;
-    } elseif ($user['role'] === 'investor' && $user['id'] == $cert['investor_user_id']) {
+    } elseif ($user['role'] === 'investor' && (int)$user['id'] === (int)$cert['investor_user_id']) {
         $isAuthorized = true;
     } elseif ($user['role'] === 'founder') {
         $checkFounder = $db->prepare("SELECT COUNT(*) FROM company_founders WHERE company_id = ? AND user_id = ?");

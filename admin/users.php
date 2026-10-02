@@ -27,6 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newStatus = trim($_POST['new_status'] ?? 'active');
 
         if ($targetUserId > 0 && in_array($newStatus, ['active', 'suspended'])) {
+            if ($targetUserId === (int)$user['id'] && $newStatus === 'suspended') {
+                set_flash('error', 'Action Aborted: You cannot suspend your own administrative account.');
+                header('Location: ' . url('admin/users.php'));
+                exit;
+            }
             try {
                 $db->prepare("UPDATE users SET status = ?, updated_at = NOW() WHERE id = ?")->execute([$newStatus, $targetUserId]);
                 log_audit($user['id'], 'UPDATE_USER_STATUS', 'users', $targetUserId, "Admin toggled user status to {$newStatus}");

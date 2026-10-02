@@ -102,26 +102,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $fpStmt = $db->prepare("INSERT INTO founder_profiles (user_id, designation, bio, created_at) VALUES (?, ?, ?, NOW())");
                         $fpStmt->execute([$userId, $designation ?: 'Founder & CEO', $pitch]);
 
-                        // Create Company Record if Company Name was provided
-                        if (!empty($companyName)) {
-                            $compStmt = $db->prepare("
-                                INSERT INTO companies (name, industry, stage, pitch, description, city, country, verified_status, created_at)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
-                            ");
-                            $compStmt->execute([
-                                $companyName,
-                                $industry ?: 'AI/SaaS',
-                                $stage ?: 'Seed',
-                                $pitch ?: "Building scalable solutions in {$industry}",
-                                $pitch ?: "High-growth venture focused on {$industry} innovations.",
-                                $city ?: 'Bengaluru',
-                                $country ?: 'India'
-                            ]);
-                            $companyId = (int)$db->lastInsertId();
+                        // Create Company Record (guaranteed creation with fallback)
+                        $cName = !empty($companyName) ? $companyName : ($name . "'s Venture");
+                        $compStmt = $db->prepare("
+                            INSERT INTO companies (name, industry, stage, pitch, description, city, country, verified_status, created_at)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', NOW())
+                        ");
+                        $compStmt->execute([
+                            $cName,
+                            $industry ?: 'AI/SaaS',
+                            $stage ?: 'Seed',
+                            $pitch ?: "Building scalable solutions in {$industry}",
+                            $pitch ?: "High-growth venture focused on {$industry} innovations.",
+                            $city ?: 'Bengaluru',
+                            $country ?: 'India'
+                        ]);
+                        $companyId = (int)$db->lastInsertId();
 
-                            $cfStmt = $db->prepare("INSERT INTO company_founders (company_id, user_id, designation, is_signatory, created_at) VALUES (?, ?, ?, 1, NOW())");
-                            $cfStmt->execute([$companyId, $userId, $designation ?: 'Founder & CEO']);
-                        }
+                        $cfStmt = $db->prepare("INSERT INTO company_founders (company_id, user_id, designation, is_signatory, created_at) VALUES (?, ?, ?, 1, NOW())");
+                        $cfStmt->execute([$companyId, $userId, $designation ?: 'Founder & CEO']);
                     } elseif ($role === 'investor') {
                         // Create Investor Profile
                         $ipStmt = $db->prepare("INSERT INTO investor_profiles (user_id, investor_type, experience_years, risk_disclosure_accepted, created_at) VALUES (?, ?, 3, 1, NOW())");
@@ -132,10 +131,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $prefStmt->execute([$userId, $preferredIndustries, $minTicket, $maxTicket]);
                     }
 
+                    // Activate Free Trial plan subscription
+                    if (function_exists('activate_user_subscription')) {
+                        activate_user_subscription($userId, 'free_trial', 'monthly');
+                    }
+
                     session_regenerate_id(true);
                     $_SESSION['user_id'] = $userId;
                     $_SESSION['user_role'] = $role;
                     $_SESSION['user_name'] = $name;
+
+                    // Register active login session
+                    $sessionToken = bin2hex(random_bytes(32));
+                    $_SESSION['session_token'] = $sessionToken;
+                    $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+                    $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+                    $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$userId, $sessionToken, $clientIp, $ua]);
+
+                    // Set persistent 30-day cookie session
+                    if (function_exists('set_remember_me_cookie')) {
+                        set_remember_me_cookie($userId, 30);
+                    }
 
                     log_audit($userId, 'USER_REGISTERED', 'users', $userId, "User registered as {$role}");
                     set_flash('success', "Welcome to the portal, " . htmlspecialchars($name) . "! Your " . ucfirst($role) . " account is ready.");

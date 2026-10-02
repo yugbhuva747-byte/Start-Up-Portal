@@ -79,46 +79,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $docTitle = trim($_POST['title'] ?? 'Company Document');
             $accessLevel = $_POST['access_level'] ?? 'registered_investors';
 
-            $filePath = 'uploads/documents/sample_doc.pdf';
-            $fileSizeStr = '1.8 MB';
+            $filePath = '';
+            $fileSizeStr = '';
 
-            if (!empty($_FILES['doc_file']['name'])) {
+            if (empty($_FILES['doc_file']['name'])) {
+                $error = 'Please select a document file to upload.';
+            } else {
                 $file = $_FILES['doc_file'];
-                if ($file['error'] === UPLOAD_ERR_OK) {
+                if ($file['error'] !== UPLOAD_ERR_OK) {
+                    $error = 'File upload failed with error code ' . $file['error'];
+                } else {
                     $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
                     $allowed = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'];
-                    if (in_array($ext, $allowed) && $file['size'] <= 25 * 1024 * 1024) {
+                    if (!in_array($ext, $allowed)) {
+                        $error = 'Unsupported file type. Allowed formats: PDF, DOC, DOCX, PPT, PPTX, JPG, PNG.';
+                    } elseif ($file['size'] > 25 * 1024 * 1024) {
+                        $error = 'File size exceeds maximum limit of 25MB.';
+                    } else {
                         $targetDir = ROOT_PATH . '/uploads/documents';
                         if (!is_dir($targetDir))
                             @mkdir($targetDir, 0777, true);
 
-                        $filename = 'comp_' . $company['id'] . '_' . time() . '_' . bin2hex(random_bytes(3)) . '.' . $ext;
+                        $filename = 'comp_' . $company['id'] . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
                         if (move_uploaded_file($file['tmp_name'], $targetDir . '/' . $filename)) {
                             $filePath = 'uploads/documents/' . $filename;
                             $fileSizeStr = round($file['size'] / (1024 * 1024), 2) . ' MB';
+
+                            $insDoc = $db->prepare("
+                                INSERT INTO company_documents (company_id, document_type, title, file_path, file_size, access_level, is_verified)
+                                VALUES (?, ?, ?, ?, ?, ?, 0)
+                            ");
+                            $insDoc->execute([$company['id'], $docType, $docTitle, $filePath, $fileSizeStr, $accessLevel]);
+                            $compDocId = $db->lastInsertId();
+
+                            // Also register in verification_documents for Admin review queue
+                            $db->prepare("
+                                INSERT INTO verification_documents (user_id, company_id, document_type, file_path, file_size, status)
+                                VALUES (?, ?, ?, ?, ?, 'pending')
+                            ")->execute([$user['id'], $company['id'], $docType, $filePath, $fileSizeStr]);
+
+                            log_audit($user['id'], 'UPLOAD_DOCUMENT', 'company_documents', $compDocId, "Uploaded company document: $docTitle ($docType)");
+                            send_notification(1, 'New Company Document Uploaded', "Startup {$company['name']} uploaded {$docTitle} ({$docType}) for compliance review.", 'info', 'admin/verification_queue.php');
+                            set_flash('success', 'Document uploaded successfully and queued for compliance review.');
+                            header('Location: ' . url('founder/company.php'));
+                            exit;
+                        } else {
+                            $error = 'Failed to save uploaded file to storage. Please check directory permissions.';
                         }
                     }
                 }
             }
-
-            $insDoc = $db->prepare("
-                INSERT INTO company_documents (company_id, document_type, title, file_path, file_size, access_level, is_verified)
-                VALUES (?, ?, ?, ?, ?, ?, 0)
-            ");
-            $insDoc->execute([$company['id'], $docType, $docTitle, $filePath, $fileSizeStr, $accessLevel]);
-            $compDocId = $db->lastInsertId();
-
-            // Also register in verification_documents for Admin review queue
-            $db->prepare("
-                INSERT INTO verification_documents (user_id, company_id, document_type, file_path, file_size, status)
-                VALUES (?, ?, ?, ?, ?, 'pending')
-            ")->execute([$user['id'], $company['id'], $docType, $filePath, $fileSizeStr]);
-
-            log_audit($user['id'], 'UPLOAD_DOCUMENT', 'company_documents', $compDocId, "Uploaded company document: $docTitle ($docType)");
-            send_notification(1, 'New Company Document Uploaded', "Startup {$company['name']} uploaded {$docTitle} ({$docType}) for compliance review.", 'info', 'admin/verification_queue.php');
-            set_flash('success', 'Document uploaded successfully and queued for compliance review.');
-            header('Location: ' . url('founder/company.php'));
-            exit;
         }
     }
 }
