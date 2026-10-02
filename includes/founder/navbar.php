@@ -58,22 +58,6 @@ require_once __DIR__ . '/theme.php';
             <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <?php if (($currentPage ?? basename($_SERVER['PHP_SELF'])) !== 'dashboard.php'): ?>
-        <!-- Clean & Bold Back Icon Button -->
-        <button type="button" onclick="founderGoBack(this)"
-                id="founder-back-btn"
-                title="Go Back" aria-label="Go Back"
-                class="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-indigo-600 dark:bg-slate-800 dark:hover:bg-indigo-600 border border-slate-200 dark:border-slate-700 hover:border-indigo-600 dark:hover:border-indigo-600 text-slate-700 dark:text-slate-200 hover:text-white dark:hover:text-white shadow-xs hover:shadow-md hover:shadow-indigo-500/25 transition-all duration-200 flex items-center justify-center group cursor-pointer active:scale-95">
-            <i data-lucide="arrow-left" class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform duration-200"></i>
-        </button>
-        <?php endif; ?>
-
-        <?php if (!empty($pageTitle)): ?>
-        <h2 class="hidden lg:flex text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 tracking-tight items-center space-x-2 truncate max-w-[200px] xl:max-w-xs">
-            <span class="truncate"><?= htmlspecialchars($pageTitle) ?></span>
-        </h2>
-        <?php endif; ?>
-
         <!-- Quick Platform Search -->
         <form action="<?= url('founder/funding_rounds.php') ?>" method="GET"
             class="relative hidden sm:block w-52 md:w-64 lg:w-72 m-0">
@@ -85,21 +69,8 @@ require_once __DIR__ . '/theme.php';
 
     <!-- Right Section: Verification Badge + Actions + Theme Toggle + Notifs + Profile Dropdown -->
     <div class="flex items-center space-x-2 sm:space-x-3.5 flex-shrink-0">
-        <!-- Verification Status Indicator -->
-        <div
-            class="hidden xl:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs shadow-2xs">
-            <span
-                class="w-2.5 h-2.5 rounded-full <?= !empty($currentUser['is_verified']) ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500' ?>"></span>
-            <span
-                class="text-slate-700 dark:text-slate-300 font-bold text-xs"><?= !empty($currentUser['is_verified']) ? 'MCA & DigiLocker Verified' : 'KYC Under Review' ?></span>
-        </div>
 
-        <!-- Create Round Quick Action Button -->
-        <a href="<?= url('founder/funding_rounds.php?action=new') ?>"
-            class="hidden sm:inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold shadow-sm transition">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>New Round</span>
-        </a>
+
 
         <!-- Dark / Light Theme Toggle Switcher -->
         <button id="founder-theme-toggle-btn" onclick="toggleFounderTheme()" type="button"

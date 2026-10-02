@@ -239,26 +239,37 @@ $flashStyles = [
             align-items: center;
             justify-content: space-between;
             gap: 0.5rem;
-            font-size: 1rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             color: #1E293B;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.35rem;
+        }
+        .dark .form-label-clean, html.dark .form-label-clean {
+            color: #E2E8F0 !important;
         }
 
         .form-hint {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: #64748B;
-            margin-top: 0.4rem;
-            line-height: 1.4rem;
+            margin-top: 0.3rem;
+            line-height: 1.25rem;
+        }
+        .dark .form-hint, html.dark .form-hint {
+            color: #94A3B8 !important;
         }
 
-        /* Cards stay solid white */
+        /* Cards clean styling */
         .section-card {
             background-color: #FFFFFF;
             color: #0F172A;
             border: 1px solid #E2E8F0;
             border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+        }
+        .dark .section-card, html.dark .section-card {
+            background-color: #111827 !important;
+            color: #F8FAFC !important;
+            border-color: #1E293B !important;
         }
     </style>
 </head>
@@ -272,46 +283,46 @@ $flashStyles = [
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full px-4 sm:px-6 md:px-8 py-6 space-y-6" id="company-main">
+        <main class="w-full px-4 sm:px-6 md:px-8 py-5 space-y-5" id="company-main">
 
             <!-- Flash Notification -->
             <?php if ($flash):
                 $fs = $flashStyles[$flash['type']] ?? $flashStyles['info']; ?>
                 <div
-                    class="p-4 rounded-2xl text-base font-semibold border <?= $fs[0] ?> flex items-center space-x-3 shadow-sm">
-                    <i data-lucide="<?= $fs[1] ?>" class="w-5 h-5 flex-shrink-0 <?= $fs[2] ?>"></i>
+                    class="p-3.5 rounded-xl text-xs sm:text-sm font-semibold border <?= $fs[0] ?> flex items-center space-x-2.5 shadow-xs">
+                    <i data-lucide="<?= $fs[1] ?>" class="w-4 h-4 flex-shrink-0 <?= $fs[2] ?>"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
                 <div
-                    class="p-4 rounded-2xl text-base font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-3 shadow-sm">
-                    <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+                    class="p-3.5 rounded-xl text-xs sm:text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center space-x-2.5 shadow-xs">
+                    <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
                     <span><?= htmlspecialchars($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <!-- Page Title Bar -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
                 <div>
                     <div
-                        class="flex items-center space-x-2 text-sm font-semibold text-indigo-600 uppercase tracking-wider mb-1">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        class="flex items-center space-x-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
                         <span>Investor Due Diligence Core</span>
                     </div>
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         Startup Company Profile</h1>
-                    <p class="text-base text-slate-600 dark:text-slate-300 mt-1.5 max-w-2xl leading-relaxed">
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
                         Verified master company dossier, market positioning, and confidential data room reviewed by
                         institutional and angel investors.
                     </p>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <?= $company ? render_status_badge($company['verified_status']) : '<span class="text-sm font-bold text-slate-600 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Not Initialized</span>' ?>
+                <div class="flex items-center space-x-2.5 flex-shrink-0">
+                    <?= $company ? render_status_badge($company['verified_status']) : '<span class="text-xs font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Not Initialized</span>' ?>
                     <a href="#company-data-room"
-                        class="px-4 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-bold transition flex items-center space-x-1.5 border border-indigo-200">
-                        <i data-lucide="folder-lock" class="w-4 h-4"></i>
+                        class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 border border-indigo-200 dark:border-indigo-800 shadow-2xs">
+                        <i data-lucide="folder-lock" class="w-3.5 h-3.5"></i>
                         <span>Data Room (<?= count($documents) ?>)</span>
                     </a>
                 </div>
@@ -319,60 +330,60 @@ $flashStyles = [
 
             <!-- Executive Startup Card with Profile Readiness Bar -->
             <div class="section-card p-5 sm:p-6 relative overflow-hidden">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                     <!-- Left: Brand Identity & Chips -->
-                    <div class="flex items-start sm:items-center space-x-4">
+                    <div class="flex items-start sm:items-center space-x-3.5 min-w-0 flex-1">
                         <div
-                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-black text-2xl sm:text-3xl shadow-md flex-shrink-0">
+                            class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-black text-xl sm:text-2xl shadow-sm flex-shrink-0">
                             <?= htmlspecialchars($companyInitials) ?>
                         </div>
-                        <div>
+                        <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight truncate">
                                     <?= htmlspecialchars($company['name'] ?? 'Your Startup Name') ?>
                                 </h2>
                                 <?php if (!empty($company['legal_name'])): ?>
                                     <span
-                                        class="text-sm px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-600 font-medium border border-slate-200">
+                                        class="text-xs px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700">
                                         <?= htmlspecialchars($company['legal_name']) ?>
                                     </span>
                                 <?php endif; ?>
                             </div>
 
-                            <p class="text-base text-slate-600 mt-1 max-w-xl line-clamp-2 leading-relaxed">
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 mt-1 max-w-xl line-clamp-2 leading-relaxed">
                                 <?= !empty($company['pitch']) ? htmlspecialchars($company['pitch']) : '<span class="italic text-slate-400">Add an elevator pitch below to summarize your value proposition to investors.</span>' ?>
                             </p>
 
                             <!-- Quick Attribute Tags -->
-                            <div class="flex flex-wrap items-center gap-2 mt-3">
+                            <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2.5">
                                 <?php if (!empty($company['industry'])): ?>
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-semibold border border-indigo-100">
-                                        <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold border border-indigo-200/80 dark:border-indigo-800/60">
+                                        <i data-lucide="tag" class="w-3 h-3"></i>
                                         <?= htmlspecialchars($company['industry']) ?>
                                     </span>
                                 <?php endif; ?>
 
                                 <?php if (!empty($company['stage'])): ?>
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-50 text-amber-800 text-sm font-semibold border border-amber-200">
-                                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-amber-600"></i>
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-xs font-semibold border border-amber-200 dark:border-amber-800/60">
+                                        <i data-lucide="trending-up" class="w-3 h-3 text-amber-600 dark:text-amber-400"></i>
                                         <?= htmlspecialchars($company['stage']) ?>
                                     </span>
                                 <?php endif; ?>
 
                                 <?php if (!empty($company['city'])): ?>
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 text-slate-700 text-sm font-medium">
-                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i>
-                                        <?= htmlspecialchars($company['city']) ?>    <?= !empty($company['country']) ? ', ' . htmlspecialchars($company['country']) : '' ?>
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-medium border border-slate-200 dark:border-slate-700">
+                                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
+                                        <?= htmlspecialchars($company['city']) ?><?= !empty($company['country']) ? ', ' . htmlspecialchars($company['country']) : '' ?>
                                     </span>
                                 <?php endif; ?>
 
                                 <?php if (!empty($company['cin_number'])): ?>
                                     <span
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 text-slate-600 font-mono text-sm">
-                                        <i data-lucide="file-check" class="w-3.5 h-3.5 text-slate-500"></i>
+                                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono text-xs border border-slate-200 dark:border-slate-700">
+                                        <i data-lucide="file-check" class="w-3 h-3 text-slate-400"></i>
                                         CIN: <?= htmlspecialchars($company['cin_number']) ?>
                                     </span>
                                 <?php endif; ?>
@@ -382,22 +393,22 @@ $flashStyles = [
 
                     <!-- Right: Profile Strength Meter -->
                     <div
-                        class="lg:w-80 bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between flex-shrink-0">
-                        <div class="flex items-center justify-between text-sm mb-2">
-                            <span class="font-bold text-slate-700 flex items-center gap-1.5">
-                                <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                        class="lg:w-72 bg-slate-50 dark:bg-slate-800/60 rounded-xl p-3.5 border border-slate-200 dark:border-slate-700/80 flex flex-col justify-between flex-shrink-0">
+                        <div class="flex items-center justify-between text-xs mb-1.5">
+                            <span class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
                                 Profile Completeness
                             </span>
-                            <span class="font-extrabold text-indigo-600 text-lg"><?= $profileStrength ?>%</span>
+                            <span class="font-black text-indigo-600 dark:text-indigo-400 text-sm sm:text-base"><?= $profileStrength ?>%</span>
                         </div>
-                        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mb-2">
+                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mb-1.5">
                             <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-700"
                                 style="width: <?= $profileStrength ?>%"></div>
                         </div>
-                        <div class="flex items-center justify-between text-sm text-slate-600">
+                        <div class="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                             <span><?= $completedChecks ?> of <?= count($checks) ?> fields ready</span>
                             <span
-                                class="<?= $profileStrength >= 80 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-medium' ?>">
+                                class="<?= $profileStrength >= 80 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-medium' ?>">
                                 <?= $profileStrength >= 80 ? 'Investor Ready ✓' : 'Details Pending' ?>
                             </span>
                         </div>
@@ -405,31 +416,31 @@ $flashStyles = [
                 </div>
 
                 <!-- Navigation Jump Bar -->
-                <div class="mt-5 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2 text-sm">
-                    <span class="text-slate-500 font-medium mr-1 text-xs uppercase tracking-wider">Quick Jump:</span>
+                <div class="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span class="text-slate-400 font-bold mr-1 text-[10.5px] uppercase tracking-wider">Quick Jump:</span>
                     <a href="#sec-identity"
-                        class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:border-indigo-300 hover:text-indigo-600 transition flex items-center gap-1.5">
-                        <i data-lucide="building" class="w-3.5 h-3.5"></i>
+                        class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="building" class="w-3 h-3 text-slate-400"></i>
                         <span>1. Corporate Identity</span>
                     </a>
                     <a href="#sec-market"
-                        class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:border-indigo-300 hover:text-indigo-600 transition flex items-center gap-1.5">
-                        <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
-                        <span>2. Market & Model</span>
+                        class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="pie-chart" class="w-3 h-3 text-slate-400"></i>
+                        <span>2. Market &amp; Model</span>
                     </a>
                     <a href="#sec-pitch"
-                        class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:border-indigo-300 hover:text-indigo-600 transition flex items-center gap-1.5">
-                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
-                        <span>3. Pitch & Traction</span>
+                        class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="message-square" class="w-3 h-3 text-slate-400"></i>
+                        <span>3. Pitch &amp; Traction</span>
                     </a>
                     <a href="#sec-team"
-                        class="px-3 py-2 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold hover:border-indigo-300 hover:text-indigo-600 transition flex items-center gap-1.5">
-                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                        <span>4. Headquarters & Team</span>
+                        class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
+                        <span>4. Headquarters &amp; Team</span>
                     </a>
                     <a href="#company-data-room"
-                        class="px-3 py-2 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold hover:bg-indigo-100 transition flex items-center gap-1.5">
-                        <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="lock" class="w-3 h-3 text-indigo-500"></i>
                         <span>5. Confidential Data Room</span>
                     </a>
                 </div>
