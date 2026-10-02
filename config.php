@@ -147,3 +147,8 @@ define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? APP_NAME);
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
 require_once __DIR__ . '/includes/mailer.php';
+
+// Auto-restore session from persistent remember-me cookie if not logged in
+if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {
+    check_remember_me_cookie();
+}

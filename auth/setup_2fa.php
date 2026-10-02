@@ -45,7 +45,8 @@ $flash = get_flash();
 // Generate / retrieve Base32 secret
 $secret = get_or_create_totp_secret($userId);
 $totpUri = get_totp_auth_url($userEmail, $secret);
-$currentTotpCode = get_totp_code($secret); // For demo auto-fill convenience
+$allowDemoBypass = (defined('IS_LOCALHOST') && IS_LOCALHOST && defined('APP_ENV') && APP_ENV === 'development' && (getenv('ALLOW_DEMO_2FA_BYPASS') === 'true' || ($_ENV['ALLOW_DEMO_2FA_BYPASS'] ?? '') === 'true'));
+$currentTotpCode = $allowDemoBypass ? get_totp_code($secret) : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
@@ -213,6 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <!-- Demo Quick-Fill Helper -->
+            <?php if (!empty($currentTotpCode)): ?>
             <div class="mb-6 p-3 rounded-xl bg-indigo-50/70 border border-indigo-100 text-xs">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-1.5 text-[10.5px] font-bold text-indigo-800">
@@ -225,6 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </button>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Confirmation 6-Digit Form -->
             <form action="<?= url('auth/setup_2fa.php') ?>" method="POST" id="confirmForm" class="space-y-4">

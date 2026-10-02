@@ -42,6 +42,14 @@ if (!empty($raw)) {
     }
 }
 
+// Check CSRF
+$token = $input['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+if (!verify_csrf($token)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Invalid or missing CSRF security token.']);
+    exit;
+}
+
 $planCode = trim((string)($input['plan_code'] ?? '1_month'));
 $billingCycle = strtolower(trim((string)($input['billing_cycle'] ?? 'monthly'))) === 'annually' ? 'annually' : 'monthly';
 $paymentMethod = trim((string)($input['payment_method'] ?? 'Instant Gateway'));
