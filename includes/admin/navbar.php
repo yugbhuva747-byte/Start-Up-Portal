@@ -62,6 +62,15 @@ require_once __DIR__ . '/theme.php';
                 <?= $pageTitle ?? 'Overview' ?>
             </h1>
         </div>
+
+        <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
+        <a href="<?= url('admin/settings.php#maintenance-card') ?>" 
+           class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-700 dark:text-amber-300 text-[11px] font-bold hover:bg-amber-500/25 transition animate-pulse" 
+           title="Platform Maintenance is ACTIVE. Only Admins can access. Click to manage.">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+            <span>Maintenance Mode ON</span>
+        </a>
+        <?php endif; ?>
     </div>
 
     <!-- Right Header Actions -->

@@ -30,11 +30,53 @@ unset($_SESSION['new_backup_codes']);
 // ---------------------------------------------------------------------------
 // Handle POST actions FIRST (so page data below is always fresh)
 // ---------------------------------------------------------------------------
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $db) {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid security token.';
     } else {
         $action = $_POST['form_action'] ?? '';
+
+        if ($action === 'toggle_maintenance_mode') {
+            $maintenanceMode = (int)($_POST['maintenance_mode'] ?? 0);
+            $maintenanceTitle = trim($_POST['maintenance_title'] ?? 'Scheduled Platform Maintenance');
+            $maintenanceMessage = trim($_POST['maintenance_message'] ?? 'Our platform is currently undergoing scheduled infrastructure upgrades. We will be back online shortly.');
+            $maintenanceEstimatedEnd = trim($_POST['maintenance_estimated_end'] ?? '');
+            $maintenanceAllowedIps = trim($_POST['maintenance_allowed_ips'] ?? '');
+
+            set_platform_setting('maintenance_mode', (string)$maintenanceMode, (int)$user['id']);
+            set_platform_setting('maintenance_title', $maintenanceTitle, (int)$user['id']);
+            set_platform_setting('maintenance_message', $maintenanceMessage, (int)$user['id']);
+            set_platform_setting('maintenance_estimated_end', $maintenanceEstimatedEnd, (int)$user['id']);
+            set_platform_setting('maintenance_allowed_ips', $maintenanceAllowedIps, (int)$user['id']);
+
+            log_security_event($user['id'], $maintenanceMode ? 'MAINTENANCE_MODE_ENABLED' : 'MAINTENANCE_MODE_DISABLED', 'high', "Platform maintenance mode " . ($maintenanceMode ? "ACTIVATED by Admin" : "DEACTIVATED by Admin"));
+            log_audit($user['id'], $maintenanceMode ? 'ENABLE_MAINTENANCE' : 'DISABLE_MAINTENANCE', 'platform_settings', null, "Maintenance mode set to " . ($maintenanceMode ? 'ACTIVE' : 'INACTIVE'));
+
+            if ($maintenanceMode) {
+                set_flash('success', '⚠️ Platform Maintenance Mode is now ACTIVE. Public visitors, Founders, and Investors are blocked. Only Administrators have access.');
+            } else {
+                set_flash('success', '✓ Maintenance Mode DEACTIVATED. Platform is LIVE and fully accessible to all Founders, Investors, and visitors.');
+            }
+            header('Location: ' . url('admin/settings.php'));
+            exit;
+        }
+
+        if ($action === 'quick_toggle_maintenance') {
+            $currentState = is_maintenance_mode() ? 1 : 0;
+            $newState = $currentState ? 0 : 1;
+
+            set_platform_setting('maintenance_mode', (string)$newState, (int)$user['id']);
+            log_security_event($user['id'], $newState ? 'MAINTENANCE_MODE_ENABLED' : 'MAINTENANCE_MODE_DISABLED', 'high', "Quick toggle: Maintenance mode " . ($newState ? "ACTIVATED" : "DEACTIVATED"));
+            log_audit($user['id'], $newState ? 'ENABLE_MAINTENANCE' : 'DISABLE_MAINTENANCE', 'platform_settings', null, "Maintenance mode quick-toggled to " . ($newState ? 'ACTIVE' : 'INACTIVE'));
+
+            if ($newState) {
+                set_flash('success', '⚠️ Platform Maintenance Mode is now ACTIVE. Only Administrators can access.');
+            } else {
+                set_flash('success', '✓ Platform is now LIVE. Normal operations restored for Founders & Investors.');
+            }
+            header('Location: ' . url('admin/settings.php'));
+            exit;
+        }
 
         if ($action === 'generate_backup_codes') {
             $plainCodes = generate_2fa_backup_codes($user['id'], 5);
@@ -127,6 +169,15 @@ if ($db) {
     $twoFactorRec = get_2fa_record($user['id']);
     $backupCodesRemaining = get_remaining_backup_codes_count($user['id']);
 }
+
+$maintenanceInfo = function_exists('get_maintenance_info') ? get_maintenance_info() : [
+    'is_active' => false,
+    'title' => 'Scheduled Platform Maintenance',
+    'message' => 'Our platform is currently undergoing scheduled infrastructure upgrades. We will be back online shortly.',
+    'estimated_end' => '',
+    'allowed_ips' => ''
+];
+$isMaintenanceActive = $maintenanceInfo['is_active'];
 
 $is2faEnabled = !empty($twoFactorRec['is_enabled']);
 $isTotpSetup = $db ? is_admin_totp_setup($user['id']) : false;
@@ -248,12 +299,16 @@ $flashClasses = match ($flashType) {
                 <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Environment</span>
-                        <div class="w-9 h-9 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                            <i data-lucide="server" class="w-4 h-4"></i>
+                        <div class="w-9 h-9 rounded-xl <?= $isMaintenanceActive ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400' : 'bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400' ?> flex items-center justify-center">
+                            <i data-lucide="<?= $isMaintenanceActive ? 'alert-triangle' : 'server' ?>" class="w-4 h-4"></i>
                         </div>
                     </div>
-                    <div class="text-xl font-black text-slate-900 dark:text-white mt-1">Development</div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1"><?= php_uname('s') ?> / Apache Server</div>
+                    <div class="text-xl font-black <?= $isMaintenanceActive ? 'text-amber-600 dark:text-amber-400' : 'text-slate-900 dark:text-white' ?> mt-1">
+                        <?= $isMaintenanceActive ? 'Maintenance' : 'Production' ?>
+                    </div>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <?= $isMaintenanceActive ? '⚠️ Restricted to Admins' : php_uname('s') . ' / Apache' ?>
+                    </div>
                 </div>
 
                 <div class="stat-card-clean dark:bg-slate-900 dark:border-slate-800">
@@ -292,6 +347,153 @@ $flashClasses = match ($flashType) {
                 </div>
             </div>
 
+            <!-- Platform Maintenance Mode Administration Card -->
+            <div id="maintenance-card" class="card-clean rounded-2xl p-6 transition-colors <?= $isMaintenanceActive ? 'border-amber-300 dark:border-amber-700/80 bg-amber-50/20 dark:bg-amber-950/10' : 'border-slate-200 dark:border-slate-800' ?>">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer select-none group"
+                    onclick="toggleCollapsibleCard('section-maintenance-body', this)"
+                    title="Click to expand/collapse Maintenance Mode controls">
+                    <div class="flex items-start space-x-3.5 min-w-0 pr-2">
+                        <div class="w-10 h-10 rounded-xl <?= $isMaintenanceActive ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/30' : 'bg-slate-800 text-slate-200' ?> flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="<?= $isMaintenanceActive ? 'alert-triangle' : 'wrench' ?>" class="w-5 h-5"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-sm font-bold text-slate-900 dark:text-white">
+                                    System Maintenance Mode Control
+                                </h3>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap flex-shrink-0 <?= $isMaintenanceActive ? 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse' : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800' ?>">
+                                    <?= $isMaintenanceActive ? '● Maintenance Active (Admin Only)' : '● System Live (Normal Operations)' ?>
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2 md:line-clamp-1">
+                                When enabled, all Founders, Investors, and public visitors are blocked with a 503 Maintenance page. Only Platform Administrators can sign in.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Header Quick Toggle & Section Arrow -->
+                    <div class="flex items-center space-x-2.5 flex-shrink-0 self-start md:self-auto">
+                        <form method="POST" class="inline-flex items-center" onclick="event.stopPropagation()">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="quick_toggle_maintenance">
+                            <button type="submit"
+                                onclick="return confirm('<?= $isMaintenanceActive ? 'Disable Maintenance Mode and bring the platform LIVE for all Founders & Investors?' : 'Enable Maintenance Mode? All Founders, Investors, and public visitors will be blocked immediately!' ?>')"
+                                class="<?= $isMaintenanceActive ? 'admin-btn-danger' : 'admin-btn-primary' ?>">
+                                <i data-lucide="<?= $isMaintenanceActive ? 'power-off' : 'power' ?>" class="w-3.5 h-3.5"></i>
+                                <span><?= $isMaintenanceActive ? 'Disable Maintenance (Go Live)' : 'Turn Maintenance ON' ?></span>
+                            </button>
+                        </form>
+                        <div class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                            <i data-lucide="chevron-down" data-chevron class="w-4 h-4 transition-transform duration-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Maintenance Form Details Body -->
+                <div id="section-maintenance-body" class="pt-5 space-y-4">
+                    
+                    <!-- Dynamic Alert Banner -->
+                    <?php if ($isMaintenanceActive): ?>
+                    <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-start space-x-3 text-xs">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold block">Active Restriction Notice</span>
+                            <span class="text-amber-800 dark:text-amber-300 leading-relaxed font-normal">
+                                Maintenance mode is currently <strong>ACTIVE</strong>. Any requests to Founder dashboards, Investor portals, deal discover, or public pages will automatically show the Maintenance screen. Only logged-in administrators are permitted.
+                            </span>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <form method="POST" class="space-y-4">
+                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                        <input type="hidden" name="form_action" value="toggle_maintenance_mode">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Toggle Mode Radio / Selector -->
+                            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/80">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                    Maintenance State
+                                </label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center space-x-2 p-2.5 rounded-lg border cursor-pointer transition <?= !$isMaintenanceActive ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400' ?>">
+                                        <input type="radio" name="maintenance_mode" value="0" <?= !$isMaintenanceActive ? 'checked' : '' ?> class="text-emerald-600 focus:ring-emerald-500">
+                                        <span class="text-xs font-bold">OFF (Live)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 p-2.5 rounded-lg border cursor-pointer transition <?= $isMaintenanceActive ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-200' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400' ?>">
+                                        <input type="radio" name="maintenance_mode" value="1" <?= $isMaintenanceActive ? 'checked' : '' ?> class="text-amber-600 focus:ring-amber-500">
+                                        <span class="text-xs font-bold">ON (Restricted)</span>
+                                    </label>
+                                </div>
+                                <span class="block text-[10px] text-slate-400 mt-2">
+                                    When ON, Founders & Investors cannot log in or view pages.
+                                </span>
+                            </div>
+
+                            <!-- Estimated End Time -->
+                            <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/80">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                    Estimated Reopening Time
+                                </label>
+                                <input type="text" name="maintenance_estimated_end" 
+                                       value="<?= htmlspecialchars($maintenanceInfo['estimated_end'] ?? '') ?>" 
+                                       placeholder="e.g., Today at 4:00 PM IST or In 2 hours"
+                                       class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
+                                <span class="block text-[10px] text-slate-400 mt-2">
+                                    Displayed to visitors on the maintenance screen. Leave blank if indefinite.
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Notice Title -->
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                Public Maintenance Title
+                            </label>
+                            <input type="text" name="maintenance_title" required
+                                   value="<?= htmlspecialchars($maintenanceInfo['title'] ?? 'Scheduled Platform Maintenance') ?>"
+                                   class="w-full px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none font-medium">
+                        </div>
+
+                        <!-- Public Message -->
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                Public Maintenance Explanation Message
+                            </label>
+                            <textarea name="maintenance_message" rows="3" required
+                                      class="w-full px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none font-medium"><?= htmlspecialchars($maintenanceInfo['message'] ?? 'Our platform is currently undergoing scheduled infrastructure upgrades. We will be back online shortly.') ?></textarea>
+                        </div>
+
+                        <!-- Whitelisted IPs -->
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-1.5">
+                                Allowed IP Whitelist (Developer / Compliance Bypass)
+                            </label>
+                            <input type="text" name="maintenance_allowed_ips" 
+                                   value="<?= htmlspecialchars($maintenanceInfo['allowed_ips'] ?? '') ?>" 
+                                   placeholder="Comma-separated IPs (e.g. 192.168.1.5, 103.21.244.1)"
+                                   class="w-full px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-mono placeholder-slate-400 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600/10 outline-none">
+                            <span class="block text-[10px] text-slate-400 mt-1">
+                                Your current IP is: <strong class="text-slate-600 dark:text-slate-300"><?= htmlspecialchars($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1') ?></strong> (Admins always have automatic bypass).
+                            </span>
+                        </div>
+
+                        <!-- Save & Preview Buttons -->
+                        <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+                            <button type="submit" class="admin-btn-primary">
+                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                <span>Save Maintenance Configuration</span>
+                            </button>
+
+                            <a href="<?= url('maintenance.php?preview=1') ?>" target="_blank" class="admin-btn-secondary">
+                                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                                <span>Preview Maintenance Page</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <!-- Two-Factor Authentication (2FA) Administration Card -->
             <!-- FIX: removed transition-all / duration-300 (it fought the GSAP animation and left the card faded) -->
             <div class="card-clean rounded-2xl p-6 border-blue-100 dark:border-slate-800">
@@ -326,10 +528,9 @@ $flashClasses = match ($flashType) {
                             <input type="hidden" name="form_action" value="toggle_2fa">
                             <input type="hidden" name="enable_2fa" value="<?= $is2faEnabled ? '0' : '1' ?>">
                             <button type="submit"
-                                class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 whitespace-nowrap <?= $is2faEnabled ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-xs' ?>">
+                                class="<?= $is2faEnabled ? 'admin-btn-secondary' : 'admin-btn-primary' ?>">
                                 <i data-lucide="<?= $is2faEnabled ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= $is2faEnabled ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
-
                             </button>
                         </form>
                         <div
@@ -386,7 +587,7 @@ $flashClasses = match ($flashType) {
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="form_action" value="generate_backup_codes">
                                 <button type="submit"
-                                    class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
+                                    class="admin-btn-primary">
                                     <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                                     <span>Generate</span>
                                 </button>
@@ -456,7 +657,7 @@ $flashClasses = match ($flashType) {
                             </span>
                             <button type="button"
                                 onclick="event.stopPropagation(); toggleCollapsibleCard('form-add-cat');"
-                                class="inline-flex items-center space-x-1 text-[11px] text-blue-600 hover:text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                                class="admin-btn-secondary"
                                 style="white-space: nowrap !important; flex-shrink: 0 !important;">
                                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                                 <span>Add New</span>
@@ -485,7 +686,7 @@ $flashClasses = match ($flashType) {
                                 <input type="text" name="cat_description" placeholder="Description (optional)"
                                     class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none">
                                 <button type="submit"
-                                    class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-xs">
+                                    class="admin-btn-primary">
                                     <i data-lucide="plus" class="w-3 h-3"></i>
                                     <span>Save</span>
                                 </button>

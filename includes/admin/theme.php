@@ -38,10 +38,10 @@
     }
 
     /* ----------------------------------------------------
-       1. UNIVERSAL "VAY PORTAL" TYPOGRAPHY & READABILITY SCALE
+       1. UNIVERSAL "VAY PORTAL" TYPOGRAPHY & READABILITY SCALE (MEDIUM, CLEAN DESKTOP SCALE)
     ---------------------------------------------------- */
     html {
-        font-size: 15px !important;
+        font-size: 14px !important;
         scroll-behavior: smooth;
     }
 
@@ -74,21 +74,22 @@
         text-rendering: optimizeLegibility;
     }
 
-    /* Base Body Readability & Typography Boost */
+    /* Base Body Readability & Typography */
     body {
-        font-size: 0.9375rem;
-        line-height: 1.55;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        color: #1e293b;
     }
 
     /* Standard responsive SaaS container for laptop/desktop screen perfection */
     main:not([id*="messages"]) {
-        max-width: 80rem !important;
+        max-width: 84rem !important;
         margin-left: auto !important;
         margin-right: auto !important;
         width: 100% !important;
     }
 
-    /* Small badge & label styling - crisp & legible */
+    /* Small badge & micro label styling - crisp & legible */
     .text-\[7px\],
     .text-\[7\.5px\],
     .text-\[8px\],
@@ -99,69 +100,77 @@
     .text-\[10\.5px\],
     .text-\[11px\],
     .text-\[11\.5px\] {
-        font-size: 0.75rem !important;
-        line-height: 1.4 !important;
+        font-size: 0.6875rem !important; /* ~9.6px - 10px */
+        line-height: 1.35 !important;
         font-weight: 600 !important;
     }
 
-    /* Universal medium readability for descriptions, body text, tables, and muted labels */
-    p, 
-    .text-slate-600, 
-    .text-slate-500, 
-    .text-slate-700,
-    .text-gray-600,
-    .text-gray-500,
-    .text-gray-700,
-    .font-normal,
-    td,
-    label {
-        font-weight: 500 !important;
+    /* Clean Proportional Medium Scale for Admin Panels */
+    .text-xs {
+        font-size: 0.75rem !important; /* ~10.5px - 11px */
+        line-height: 1.35 !important;
+    }
+
+    .text-sm {
+        font-size: 0.8125rem !important; /* ~11.5px - 12px */
+        line-height: 1.4 !important;
+    }
+
+    .text-base {
+        font-size: 0.875rem !important; /* ~12.25px - 13px */
+        line-height: 1.45 !important;
     }
 
     .text-lg {
-        font-size: 1.35rem !important; /* ~21.6px */
-        line-height: 1.5 !important;
+        font-size: 1.05rem !important; /* ~14.7px */
+        line-height: 1.35 !important;
         font-weight: 700 !important;
     }
 
     .text-xl {
-        font-size: 1.6rem !important; /* ~25.6px */
-        line-height: 1.4 !important;
-        font-weight: 800 !important;
+        font-size: 1.1875rem !important; /* ~16.6px */
+        line-height: 1.3 !important;
+        font-weight: 700 !important;
     }
 
     .text-2xl {
-        font-size: 1.95rem !important; /* ~31.2px */
-        line-height: 1.35 !important;
+        font-size: 1.375rem !important; /* ~19.2px */
+        line-height: 1.25 !important;
         font-weight: 800 !important;
     }
 
     .text-3xl {
-        font-size: 2.45rem !important; /* ~39.2px */
-        line-height: 1.25 !important;
-        font-weight: 900 !important;
+        font-size: 1.625rem !important; /* ~22.7px */
+        line-height: 1.2 !important;
+        font-weight: 800 !important;
     }
 
     .text-4xl {
-        font-size: 2.95rem !important;
-        line-height: 1.2 !important;
-        font-weight: 900 !important;
+        font-size: 1.875rem !important; /* ~26.2px */
+        line-height: 1.15 !important;
+        font-weight: 800 !important;
     }
 
-    /* Table headers, cells, and form inputs readability */
+    /* Table headers, cells, and form inputs readability - Clean Enterprise Polish */
     table th {
-        font-size: 0.925rem !important;
+        font-size: 0.6875rem !important;
         font-weight: 700 !important;
-        letter-spacing: 0.025em;
+        letter-spacing: 0.05em !important;
+        text-transform: uppercase !important;
+        padding-top: 0.65rem !important;
+        padding-bottom: 0.65rem !important;
     }
 
     table td {
-        font-size: 0.975rem !important;
-        line-height: 1.55 !important;
+        font-size: 0.8125rem !important;
+        line-height: 1.45 !important;
+        padding-top: 0.65rem !important;
+        padding-bottom: 0.65rem !important;
     }
 
     input, select, textarea {
-        font-size: 1rem !important;
+        font-size: 0.8125rem !important;
+        line-height: 1.4 !important;
     }
 
     /* Badges, Pills & Action Headers - Strictly single-line everywhere */
@@ -178,6 +187,171 @@
     .card-clean .card-header-actions * {
         white-space: nowrap !important;
         flex-shrink: 0 !important;
+    }
+
+    /* ----------------------------------------------------
+       BUTTON UTILITIES - CONSISTENT, POLISHED & PROPORTIONAL
+    ---------------------------------------------------- */
+    .admin-btn-primary,
+    a.admin-btn-primary,
+    button.admin-btn-primary {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 0.625rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        background-color: #2563eb !important;
+        background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important;
+        border: 1px solid #1d4ed8 !important;
+        box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-btn-primary:hover,
+    a.admin-btn-primary:hover,
+    button.admin-btn-primary:hover {
+        background-color: #1d4ed8 !important;
+        background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important;
+        border-color: #1e40af !important;
+        box-shadow: 0 3px 10px -1px rgba(37, 99, 235, 0.35) !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+    }
+
+    .admin-btn-primary:active,
+    a.admin-btn-primary:active,
+    button.admin-btn-primary:active {
+        transform: translateY(0) scale(0.98) !important;
+    }
+
+    .admin-btn-secondary,
+    a.admin-btn-secondary,
+    button.admin-btn-secondary {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 0.625rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        color: #334155 !important;
+        background-color: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-btn-secondary:hover,
+    a.admin-btn-secondary:hover,
+    button.admin-btn-secondary:hover {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #94a3b8 !important;
+        box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.08) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .admin-btn-secondary:active,
+    a.admin-btn-secondary:active,
+    button.admin-btn-secondary:active {
+        transform: translateY(0) scale(0.98) !important;
+    }
+
+    html.dark .admin-btn-secondary,
+    html.dark a.admin-btn-secondary,
+    html.dark button.admin-btn-secondary {
+        color: #e2e8f0 !important;
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+    }
+
+    html.dark .admin-btn-secondary:hover,
+    html.dark a.admin-btn-secondary:hover,
+    html.dark button.admin-btn-secondary:hover {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+        border-color: #475569 !important;
+    }
+
+    .admin-btn-danger,
+    a.admin-btn-danger,
+    button.admin-btn-danger {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 0.625rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        background-color: #dc2626 !important;
+        background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%) !important;
+        border: 1px solid #b91c1c !important;
+        box-shadow: 0 1px 2px 0 rgba(220, 38, 38, 0.25) !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-btn-danger:hover,
+    a.admin-btn-danger:hover,
+    button.admin-btn-danger:hover {
+        background-color: #b91c1c !important;
+        background: linear-gradient(180deg, #dc2626 0%, #b91c1c 100%) !important;
+        border-color: #991b1b !important;
+        box-shadow: 0 3px 10px -1px rgba(220, 38, 38, 0.35) !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+    }
+
+    .admin-btn-success,
+    a.admin-btn-success,
+    button.admin-btn-success {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 0.625rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        background-color: #16a34a !important;
+        background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%) !important;
+        border: 1px solid #15803d !important;
+        box-shadow: 0 1px 2px 0 rgba(22, 163, 74, 0.25) !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-btn-success:hover,
+    a.admin-btn-success:hover,
+    button.admin-btn-success:hover {
+        background-color: #15803d !important;
+        background: linear-gradient(180deg, #16a34a 0%, #15803d 100%) !important;
+        border-color: #166534 !important;
+        box-shadow: 0 3px 10px -1px rgba(22, 163, 74, 0.35) !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
     }
 
     /* ----------------------------------------------------
@@ -232,16 +406,24 @@
         box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.55) !important;
     }
 
-    /* Admin Sidebar Sizing & Layout */
+    /* Admin Sidebar Sizing & Layout (16rem / 256px for clean desktop proportions) */
     #main-sidebar,
     aside#main-sidebar {
-        width: 18rem !important; /* 288px - prevents navigation items from wrapping */
-        min-width: 18rem !important;
-        max-width: 18rem !important;
+        width: 16rem !important;
+        min-width: 16rem !important;
+        max-width: 16rem !important;
+        transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    #main-sidebar.is-collapsed,
+    aside#main-sidebar.is-collapsed {
+        width: 4.5rem !important;
+        min-width: 4.5rem !important;
+        max-width: 4.5rem !important;
     }
 
     #main-sidebar nav a {
-        font-size: 0.875rem !important; /* ~14px - crisp & legible */
+        font-size: 0.8125rem !important; /* ~11.5px - 12px clean medium */
         line-height: 1.4 !important;
         font-weight: 600 !important;
     }
