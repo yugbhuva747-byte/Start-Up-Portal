@@ -378,7 +378,7 @@ $flashClasses = match ($flashType) {
                             <input type="hidden" name="form_action" value="quick_toggle_maintenance">
                             <button type="submit"
                                 onclick="return confirm('<?= $isMaintenanceActive ? 'Disable Maintenance Mode and bring the platform LIVE for all Founders & Investors?' : 'Enable Maintenance Mode? All Founders, Investors, and public visitors will be blocked immediately!' ?>')"
-                                class="px-3.5 py-1.5 rounded-lg border text-xs font-bold transition flex items-center space-x-1.5 whitespace-nowrap shadow-xs <?= $isMaintenanceActive ? 'bg-amber-600 hover:bg-amber-700 text-white border-amber-600' : 'bg-slate-900 dark:bg-slate-100 hover:bg-slate-800 dark:hover:bg-white text-white dark:text-slate-900 border-slate-900 dark:border-slate-100' ?>">
+                                class="<?= $isMaintenanceActive ? 'admin-btn-danger' : 'admin-btn-primary' ?>">
                                 <i data-lucide="<?= $isMaintenanceActive ? 'power-off' : 'power' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= $isMaintenanceActive ? 'Disable Maintenance (Go Live)' : 'Turn Maintenance ON' ?></span>
                             </button>
@@ -480,12 +480,12 @@ $flashClasses = match ($flashType) {
 
                         <!-- Save & Preview Buttons -->
                         <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-1.5">
+                            <button type="submit" class="admin-btn-primary">
                                 <i data-lucide="save" class="w-3.5 h-3.5"></i>
                                 <span>Save Maintenance Configuration</span>
                             </button>
 
-                            <a href="<?= url('maintenance.php?preview=1') ?>" target="_blank" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-xl transition flex items-center space-x-1.5">
+                            <a href="<?= url('maintenance.php?preview=1') ?>" target="_blank" class="admin-btn-secondary">
                                 <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                                 <span>Preview Maintenance Page</span>
                             </a>
@@ -528,10 +528,9 @@ $flashClasses = match ($flashType) {
                             <input type="hidden" name="form_action" value="toggle_2fa">
                             <input type="hidden" name="enable_2fa" value="<?= $is2faEnabled ? '0' : '1' ?>">
                             <button type="submit"
-                                class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition flex items-center space-x-1.5 whitespace-nowrap <?= $is2faEnabled ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' : 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700 shadow-xs' ?>">
+                                class="<?= $is2faEnabled ? 'admin-btn-secondary' : 'admin-btn-primary' ?>">
                                 <i data-lucide="<?= $is2faEnabled ? 'shield-off' : 'shield' ?>" class="w-3.5 h-3.5"></i>
                                 <span><?= $is2faEnabled ? 'Disable 2FA' : 'Enforce 2FA' ?></span>
-
                             </button>
                         </form>
                         <div
@@ -588,7 +587,7 @@ $flashClasses = match ($flashType) {
                                 <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                                 <input type="hidden" name="form_action" value="generate_backup_codes">
                                 <button type="submit"
-                                    class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition flex items-center space-x-1">
+                                    class="admin-btn-primary">
                                     <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                                     <span>Generate</span>
                                 </button>
@@ -658,7 +657,7 @@ $flashClasses = match ($flashType) {
                             </span>
                             <button type="button"
                                 onclick="event.stopPropagation(); toggleCollapsibleCard('form-add-cat');"
-                                class="inline-flex items-center space-x-1 text-[11px] text-blue-600 hover:text-blue-700 font-bold px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-800 transition"
+                                class="admin-btn-secondary"
                                 style="white-space: nowrap !important; flex-shrink: 0 !important;">
                                 <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                                 <span>Add New</span>
@@ -687,7 +686,7 @@ $flashClasses = match ($flashType) {
                                 <input type="text" name="cat_description" placeholder="Description (optional)"
                                     class="flex-1 px-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-xs placeholder-slate-400 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/10 outline-none">
                                 <button type="submit"
-                                    class="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition flex items-center space-x-1 shadow-xs">
+                                    class="admin-btn-primary">
                                     <i data-lucide="plus" class="w-3 h-3"></i>
                                     <span>Save</span>
                                 </button>
