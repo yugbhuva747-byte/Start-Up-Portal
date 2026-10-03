@@ -67,6 +67,25 @@ if ($db) {
     $bStmt = $db->prepare("SELECT * FROM company_blogs WHERE company_id = ? AND is_published = 1 ORDER BY published_at DESC");
     $bStmt->execute([$companyId]);
     $companyBlogs = $bStmt->fetchAll();
+
+    // 8. Check Existing Investor Interest
+    $existingInterest = null;
+    $connectedConvId = 0;
+    if ($user && $user['role'] === 'investor') {
+        $iStmt = $db->prepare("SELECT * FROM investor_interests WHERE investor_id = ? AND company_id = ?");
+        $iStmt->execute([$user['id'], $companyId]);
+        $existingInterest = $iStmt->fetch();
+
+        if ($existingInterest && $existingInterest['status'] === 'accepted') {
+            $convStmt = $db->prepare("
+                SELECT id FROM conversations 
+                WHERE company_id = ? AND (user_one_id = ? OR user_two_id = ?)
+                ORDER BY last_message_at DESC LIMIT 1
+            ");
+            $convStmt->execute([$companyId, $user['id'], $user['id']]);
+            $connectedConvId = (int)$convStmt->fetchColumn();
+        }
+    }
 }
 
 $flash = get_flash();
@@ -155,18 +174,36 @@ $flash = get_flash();
 
                     <!-- Primary Actions -->
                     <div class="flex flex-wrap items-center gap-3 flex-shrink-0">
-                        <?php if (!empty($founders)): ?>
-                            <a href="<?= url('investor/messages.php?founder=' . hash_id_encode($founders[0]['id']) . '&company=' . $hashId) ?>"
-                                class="px-4 py-2.5 rounded-lg bg-white hover:bg-[#FAFBFD] border border-[#E4E8EF] text-[#111827] text-xs font-bold transition flex items-center space-x-2">
-                                <i data-lucide="message-circle" class="w-4 h-4 text-[#667085]"></i>
-                                <span>Message Founder</span>
-                            </a>
+                        <?php if ($existingInterest): ?>
+                            <?php if ($existingInterest['status'] === 'accepted'): ?>
+                                <a href="<?= url('investor/messages.php?conv=' . hash_id_encode($connectedConvId)) ?>"
+                                    class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm">
+                                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                    <span>Connected • Open Conversation →</span>
+                                </a>
+                            <?php elseif ($existingInterest['status'] === 'pending'): ?>
+                                <div class="px-4 py-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-semibold flex items-center space-x-2">
+                                    <i data-lucide="clock" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                                    <span>Interest Sent • Awaiting Founder Response</span>
+                                </div>
+                            <?php elseif ($existingInterest['status'] === 'declined'): ?>
+                                <div class="px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-xs font-semibold flex items-center space-x-2">
+                                    <i data-lucide="slash" class="w-4 h-4 text-slate-400"></i>
+                                    <span>Interest Declined</span>
+                                </div>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <button type="button" onclick="openExpressInterestModal()" id="btn-open-express-interest"
+                                class="px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
+                                <span>Express Interest →</span>
+                            </button>
                         <?php endif; ?>
 
                         <?php if ($activeRound): ?>
                             <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>"
-                                class="px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm">
-                                <i data-lucide="zap" class="w-4 h-4"></i>
+                                class="px-4 py-2.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-[#FAFBFD] dark:hover:bg-slate-700 border border-[#E4E8EF] dark:border-slate-700 text-[#111827] dark:text-slate-100 text-xs font-bold transition flex items-center space-x-2">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
                                 <span>Participate / Invest</span>
                             </a>
                         <?php endif; ?>
@@ -511,9 +548,165 @@ $flash = get_flash();
         </main>
     </div>
 
+    <!-- ==========================================
+         EXPRESS INTEREST MODAL
+         ========================================== -->
+    <div id="express-interest-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button type="button" onclick="closeExpressInterestModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-[#123B7A] dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Express Interest</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Discover and connect directly with the founder</p>
+                </div>
+            </div>
+
+            <form id="express-interest-form" onsubmit="submitExpressInterest(event)" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
+                <input type="hidden" name="company_id" value="<?= htmlspecialchars($hashId) ?>">
+
+                <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3.5 flex items-center space-x-3">
+                    <img src="<?= $company['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100' ?>" class="w-10 h-10 rounded-lg object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                    <div class="min-w-0">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Startup</div>
+                        <div class="text-sm font-bold text-slate-900 dark:text-white truncate"><?= htmlspecialchars($company['name']) ?></div>
+                        <div class="text-xs text-slate-500"><?= htmlspecialchars($company['industry']) ?> • <?= htmlspecialchars($company['stage']) ?></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="interest-message" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                        Why are you interested? <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea id="interest-message" name="message" rows="4" required minlength="10" maxlength="2000"
+                        placeholder="Briefly describe what caught your attention (e.g. market thesis, traction, technology synergies, or potential check size)..."
+                        class="w-full text-xs sm:text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white p-3 focus:ring-2 focus:ring-[#123B7A] focus:border-transparent outline-none transition placeholder-slate-400"></textarea>
+                    <div class="flex justify-between items-center mt-1 text-[11px] text-slate-400">
+                        <span>Keep the message short and useful.</span>
+                        <span id="char-count">0 / 2000</span>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50/70 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 rounded-xl p-3 text-[11px] text-slate-600 dark:text-slate-300 flex items-start space-x-2">
+                    <i data-lucide="info" class="w-4 h-4 text-[#123B7A] dark:text-blue-400 flex-shrink-0 mt-0.5"></i>
+                    <span><strong>Nexora helps startups and investors discover opportunities and connect directly.</strong> Expressing interest notifies the founder. When accepted, direct conversation unlocks.</span>
+                </div>
+
+                <div id="interest-error" class="hidden p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-semibold"></div>
+                <div id="interest-success" class="hidden p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-xs font-semibold"></div>
+
+                <div class="flex items-center justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeExpressInterestModal()"
+                        class="px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btn-submit-interest"
+                        class="px-5 py-2.5 rounded-lg bg-[#123B7A] hover:bg-[#0B1F3A] text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm disabled:opacity-50">
+                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                        <span>Express Interest →</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         lucide.createIcons();
         gsap.from("#deal-room-main", { duration: 0.4, y: 8, opacity: 0, ease: "power2.out" });
+
+        const modal = document.getElementById('express-interest-modal');
+        const messageInput = document.getElementById('interest-message');
+        const charCount = document.getElementById('char-count');
+        const errorBox = document.getElementById('interest-error');
+        const successBox = document.getElementById('interest-success');
+        const submitBtn = document.getElementById('btn-submit-interest');
+
+        function openExpressInterestModal() {
+            if (modal) {
+                modal.classList.remove('hidden');
+                if (errorBox) errorBox.classList.add('hidden');
+                if (successBox) successBox.classList.add('hidden');
+                if (messageInput) {
+                    messageInput.focus();
+                }
+                lucide.createIcons();
+            }
+        }
+
+        function closeExpressInterestModal() {
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        if (messageInput && charCount) {
+            messageInput.addEventListener('input', () => {
+                charCount.textContent = `${messageInput.value.length} / 2000`;
+            });
+        }
+
+        async function submitExpressInterest(e) {
+            e.preventDefault();
+            if (!messageInput || messageInput.value.trim().length < 10) {
+                showError('Please write at least 10 characters explaining why you are interested.');
+                return;
+            }
+
+            const form = document.getElementById('express-interest-form');
+            const formData = new FormData(form);
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⟳</span> Submitting...';
+            }
+            if (errorBox) errorBox.classList.add('hidden');
+            if (successBox) successBox.classList.add('hidden');
+
+            try {
+                const response = await fetch('<?= url("api/investor/express-interest.php") ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    if (successBox) {
+                        successBox.textContent = result.message || 'Interest sent successfully. The founder has been notified.';
+                        successBox.classList.remove('hidden');
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1400);
+                } else {
+                    showError(result.error || 'Failed to submit interest.');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Express Interest →</span>';
+                        lucide.createIcons();
+                    }
+                }
+            } catch (err) {
+                showError('Network error. Please check your connection and try again.');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Express Interest →</span>';
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        function showError(msg) {
+            if (errorBox) {
+                errorBox.textContent = msg;
+                errorBox.classList.remove('hidden');
+            }
+        }
     </script>
 </body>
 

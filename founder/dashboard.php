@@ -89,6 +89,11 @@ if ($db) {
         $docStmt = $db->prepare("SELECT COUNT(*) FROM verification_documents WHERE user_id = ? AND status = 'pending'");
         $docStmt->execute([$user['id']]);
         $pendingDocs = (int) $docStmt->fetchColumn();
+
+        // 6b. Pending investor interests count
+        $intStmt = $db->prepare("SELECT COUNT(*) FROM investor_interests WHERE company_id = ? AND status = 'pending'");
+        $intStmt->execute([$company['id']]);
+        $pendingInterests = (int) $intStmt->fetchColumn();
     }
 
     // 7. Recent messages
@@ -211,6 +216,28 @@ $flashStyles = [
                     <a href="<?= url('founder/verification.php') ?>"
                         class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-sm whitespace-nowrap transition flex items-center justify-center space-x-1.5 self-start sm:self-auto shadow-sm">
                         <span>Verify Now</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
+
+            <!-- Pending Investor Interests Alert Banner -->
+            <?php if (!empty($pendingInterests) && $pendingInterests > 0): ?>
+                <div class="p-4 sm:p-5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+                    <div class="flex items-start space-x-3.5">
+                        <div class="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 flex-shrink-0 mt-0.5">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-indigo-950 dark:text-white">New Investor Interest Received</div>
+                            <div class="text-xs sm:text-sm text-indigo-800 dark:text-indigo-300 mt-1">
+                                You have <strong><?= $pendingInterests ?></strong> pending expression<?= $pendingInterests > 1 ? 's' : '' ?> of interest from investors looking to connect with your startup.
+                            </div>
+                        </div>
+                    </div>
+                    <a href="<?= url('founder/investor_interests.php') ?>"
+                        class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm whitespace-nowrap transition flex items-center justify-center space-x-1.5 self-start sm:self-auto shadow-sm">
+                        <span>Review Interests</span>
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>

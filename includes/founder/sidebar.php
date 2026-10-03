@@ -277,6 +277,15 @@ require_once __DIR__ . '/theme.php';
                 <span class="sidebar-text-item whitespace-nowrap">KYC & DigiLocker</span>
             </a>
 
+            <a href="<?= url('founder/investor_interests.php') ?>"
+               data-tooltip="Investor Interest"
+               title="Investor Interest"
+               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'investor_interests.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                <i data-lucide="handshake"
+                    class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'investor_interests.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
+                <span class="sidebar-text-item whitespace-nowrap">Investor Interest</span>
+            </a>
+
             <a href="<?= url('founder/messages.php') ?>"
                data-tooltip="Investor Chat"
                title="Investor Chat"

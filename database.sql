@@ -591,3 +591,22 @@ CREATE TABLE IF NOT EXISTS `remember_tokens` (
     INDEX `idx_expires` (`expires_at`),
     INDEX `idx_user_remember` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 34. Investor Interests (Direct Connection & Expression of Interest)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `investor_interests` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `investor_id` INT NOT NULL,
+    `company_id` INT NOT NULL,
+    `message` TEXT NOT NULL,
+    `status` ENUM('pending', 'accepted', 'declined') NOT NULL DEFAULT 'pending',
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_investor_company_interest` (`investor_id`, `company_id`),
+    INDEX `idx_company_status` (`company_id`, `status`),
+    INDEX `idx_investor_status` (`investor_id`, `status`),
+    FOREIGN KEY (`investor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
