@@ -9,6 +9,10 @@ require_once __DIR__ . '/../config.php';
 
 if (auth_check()) {
     $u = current_user();
+    if ($u && $u['role'] !== 'admin' && function_exists('is_maintenance_mode') && is_maintenance_mode()) {
+        header('Location: ' . url('maintenance.php'));
+        exit;
+    }
     if ($u && $u['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int)$u['id'])) {
         if (!is_admin_totp_setup((int)$u['id'])) {
             header('Location: ' . url('auth/setup_2fa.php'));
@@ -63,6 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($user['status'] === 'suspended') {
                             $error = 'Your account has been suspended. Please contact portal compliance.';
                             log_security_event($user['id'], 'LOGIN_SUSPENDED_USER', 'medium', "Suspended user tried to log in: {$email}");
+                        } elseif (function_exists('is_maintenance_mode') && is_maintenance_mode() && $user['role'] !== 'admin') {
+                            $error = 'Access Restricted: The platform is currently in Maintenance Mode. Only administrators are permitted to sign in.';
+                            log_security_event($user['id'], 'MAINTENANCE_LOGIN_BLOCKED', 'medium', "Non-admin user ({$user['role']}) tried to log in during maintenance mode: {$email}");
                         } elseif ($user['role'] === 'admin' && is_admin_2fa_enforced((int)$user['id'])) {
                             // Admin 2FA Verification Flow
                             unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_name'], $_SESSION['2fa_verified']);
@@ -415,6 +422,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
                 <!-- Alerts (Flash & Errors) -->
+                <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
+                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 text-amber-600 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold block">Maintenance Mode Active</span>
+                            <span class="text-[11px] text-amber-800 leading-relaxed font-normal">Public, Founder &amp; Investor access is temporarily paused. Only Platform Administrators may sign in.</span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($flash): ?>
                     <div class="mb-4 p-3 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2 shadow-sm">
                         <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0 text-emerald-600"></i>
@@ -423,9 +440,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <?php if (!empty($error)): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-2 shadow-sm">
-                        <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
-                        <span><?= htmlspecialchars($error) ?></span>
+                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
+                            <span><?= htmlspecialchars($error) ?></span>
+                        </div>
+                        <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-[11px] text-indigo-700 hover:text-indigo-900 font-bold underline whitespace-nowrap ml-2">
+                            Reset Password?
+                        </a>
                     </div>
                 <?php endif; ?>
 
@@ -451,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                                 Password
                             </label>
-                            <a href="<?= url('auth/forgot_password.php') ?>" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold transition">
+                            <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold transition">
                                 Forgot Password?
                             </a>
                         </div>
@@ -566,6 +588,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 btnText.textContent = 'Verifying credentials...';
             }
         });
+
+        // Dynamic forward of typed email to Forgot Password page
+        const forgotPassLink = document.getElementById('forgotPassLink');
+        if (forgotPassLink) {
+            forgotPassLink.addEventListener('click', function() {
+                const emailInput = document.getElementById('email');
+                if (emailInput && emailInput.value.trim()) {
+                    this.href = '<?= url('auth/forgot_password.php') ?>?email=' + encodeURIComponent(emailInput.value.trim());
+                }
+            });
+        }
     </script>
 </body>
 </html>

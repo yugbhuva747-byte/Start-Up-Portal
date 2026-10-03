@@ -591,3 +591,22 @@ CREATE TABLE IF NOT EXISTS `remember_tokens` (
     INDEX `idx_expires` (`expires_at`),
     INDEX `idx_user_remember` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 34. Platform Settings & Maintenance Configuration
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `platform_settings` (
+    `setting_key` VARCHAR(100) PRIMARY KEY,
+    `setting_value` LONGTEXT NULL,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by` INT NULL,
+    INDEX `idx_setting_key` (`setting_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT IGNORE INTO `platform_settings` (`setting_key`, `setting_value`) VALUES
+('maintenance_mode', '0'),
+('maintenance_title', 'Scheduled Platform Maintenance'),
+('maintenance_message', 'Our platform is currently undergoing scheduled infrastructure upgrades. We will be back online shortly.'),
+('maintenance_estimated_end', ''),
+('maintenance_allowed_ips', '');
+

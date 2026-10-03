@@ -122,6 +122,63 @@ function send_system_email(
 }
 
 /**
+ * Dispatch an email via EmailJS REST API
+ * Supports service_id, template_id, user_id (public key) with dynamic template params
+ */
+function send_via_emailjs(string $toEmail, string $toName, array $templateParams = []): array {
+    $toEmail = trim($toEmail);
+    if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Invalid email address: ' . $toEmail];
+    }
+
+    $serviceId = defined('EMAILJS_SERVICE_ID') ? EMAILJS_SERVICE_ID : 'service_vhn18xd';
+    $templateId = defined('EMAILJS_TEMPLATE_ID') ? EMAILJS_TEMPLATE_ID : 'template_fpdqjwe';
+    $publicKey = defined('EMAILJS_PUBLIC_KEY') ? EMAILJS_PUBLIC_KEY : 'H5UX1F22-jBkc8RZP';
+
+    $payload = [
+        'service_id' => $serviceId,
+        'template_id' => $templateId,
+        'user_id' => $publicKey,
+        'template_params' => array_merge([
+            'to_email' => $toEmail,
+            'to_name' => $toName,
+            'email' => $toEmail,
+            'name' => $toName,
+            'user_email' => $toEmail,
+            'user_name' => $toName,
+            'app_name' => defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR'
+        ], $templateParams)
+    ];
+
+    $origin = defined('BASE_URL') ? BASE_URL : 'http://localhost';
+
+    $ch = curl_init('https://api.emailjs.com/api/v1.0/email/send');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Origin: ' . $origin,
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) StartupPortal/1.0'
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+
+    $isOk = ($httpCode >= 200 && $httpCode < 300);
+    return [
+        'success' => $isOk,
+        'http_code' => $httpCode,
+        'response' => $response,
+        'message' => $isOk ? 'Email sent successfully via EmailJS.' : ($response ?: $curlErr ?: 'EmailJS HTTP ' . $httpCode)
+    ];
+}
+
+/**
  * Pure PHP SMTP socket transport (Zero external dependencies)
  */
 function send_via_pure_smtp(

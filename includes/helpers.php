@@ -309,6 +309,11 @@ function require_auth(?string $allowedRole = null): array
         header('Location: ' . url('auth/login.php?error=account_suspended'));
         exit;
     }
+    // Enforce Maintenance Mode: Block non-admins (Founders, Investors) from accessing any authenticated area
+    if ($user['role'] !== 'admin' && function_exists('is_maintenance_mode') && is_maintenance_mode()) {
+        header('Location: ' . url('maintenance.php'));
+        exit;
+    }
     // Enforce 2FA verification for Admin sessions
     if ($user['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int) $user['id'])) {
         $_SESSION['2fa_pending_user_id'] = (int) $user['id'];
@@ -1438,5 +1443,189 @@ function activate_user_subscription(int $userId, string $planCode, string $billi
         'transaction_ref' => $txRef
     ];
 }
+
+/**
+ * ====================================================================
+ * Platform Settings & Maintenance Mode Engine
+ * ====================================================================
+ */
+
+function init_platform_settings_table(PDO $db): void
+{
+    static $initialized = false;
+    if ($initialized) return;
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `platform_settings` (
+                `setting_key` VARCHAR(100) PRIMARY KEY,
+                `setting_value` LONGTEXT NULL,
+                `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                `updated_by` INT NULL,
+                INDEX `idx_setting_key` (`setting_key`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+        $initialized = true;
+    } catch (\Throwable $e) {
+        // Table may already exist
+    }
+}
+
+function get_platform_setting(string $key, mixed $default = null): mixed
+{
+    global $PLATFORM_SETTINGS_CACHE;
+    if (!is_array($PLATFORM_SETTINGS_CACHE)) {
+        $PLATFORM_SETTINGS_CACHE = [];
+    }
+    if (array_key_exists($key, $PLATFORM_SETTINGS_CACHE)) {
+        return $PLATFORM_SETTINGS_CACHE[$key];
+    }
+
+    $db = get_db();
+    if (!$db) return $default;
+
+    try {
+        init_platform_settings_table($db);
+        $stmt = $db->prepare("SELECT setting_value FROM platform_settings WHERE setting_key = ? LIMIT 1");
+        $stmt->execute([$key]);
+        $val = $stmt->fetchColumn();
+
+        if ($val === false) {
+            $PLATFORM_SETTINGS_CACHE[$key] = $default;
+            return $default;
+        }
+
+        $PLATFORM_SETTINGS_CACHE[$key] = $val;
+        return $val;
+    } catch (\Throwable $e) {
+        return $default;
+    }
+}
+
+function set_platform_setting(string $key, mixed $value, ?int $updatedBy = null): bool
+{
+    global $PLATFORM_SETTINGS_CACHE;
+    $db = get_db();
+    if (!$db) return false;
+
+    try {
+        init_platform_settings_table($db);
+        $valStr = (string)$value;
+        $stmt = $db->prepare("
+            INSERT INTO platform_settings (setting_key, setting_value, updated_at, updated_by)
+            VALUES (?, ?, NOW(), ?)
+            ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW(), updated_by = VALUES(updated_by)
+        ");
+        $ok = $stmt->execute([$key, $valStr, $updatedBy]);
+
+        if (!is_array($PLATFORM_SETTINGS_CACHE)) {
+            $PLATFORM_SETTINGS_CACHE = [];
+        }
+        $PLATFORM_SETTINGS_CACHE[$key] = $valStr;
+        return $ok;
+    } catch (\Throwable $e) {
+        error_log("set_platform_setting error: " . $e->getMessage());
+        return false;
+    }
+}
+
+function is_maintenance_mode(): bool
+{
+    $mode = (string) get_platform_setting('maintenance_mode', '0');
+    return in_array(strtolower(trim($mode)), ['1', 'true', 'on', 'yes'], true);
+}
+
+function get_maintenance_info(): array
+{
+    return [
+        'is_active' => is_maintenance_mode(),
+        'title' => get_platform_setting('maintenance_title', 'Scheduled Platform Maintenance'),
+        'message' => get_platform_setting('maintenance_message', 'Our platform is currently undergoing scheduled infrastructure upgrades. We will be back online shortly.'),
+        'estimated_end' => get_platform_setting('maintenance_estimated_end', ''),
+        'allowed_ips' => get_platform_setting('maintenance_allowed_ips', ''),
+        'updated_at' => get_platform_setting('maintenance_updated_at', '')
+    ];
+}
+
+function enforce_maintenance_mode(): void
+{
+    if (php_sapi_name() === 'cli') {
+        return;
+    }
+
+    if (!is_maintenance_mode()) {
+        return;
+    }
+
+    // 1. If user is logged in as admin, permit full platform bypass
+    if (!empty($_SESSION['user_id'])) {
+        $u = current_user();
+        if ($u && $u['role'] === 'admin') {
+            return;
+        }
+    }
+
+    // 2. IP Whitelist check
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? '';
+    $allowedIps = get_platform_setting('maintenance_allowed_ips', '');
+    if (!empty($allowedIps)) {
+        $ipList = array_filter(array_map('trim', explode(',', $allowedIps)));
+        if (in_array($clientIp, $ipList, true)) {
+            return;
+        }
+    }
+
+    // 3. Inspect requested script & URI
+    $scriptName = strtolower(str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? ''));
+    $requestUri = strtolower(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '');
+
+    // Allow static asset requests
+    if (preg_match('/\.(css|js|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|eot|map)$/i', $requestUri)) {
+        return;
+    }
+
+    // Allow maintenance page itself to prevent redirect loop
+    if (str_ends_with($scriptName, 'maintenance.php') || str_ends_with(rtrim($requestUri, '/'), '/maintenance')) {
+        return;
+    }
+
+    // Allow essential authentication scripts so administrators can sign in
+    $allowedAuthScripts = [
+        'login.php',
+        'logout.php',
+        'verify_2fa.php',
+        'setup_2fa.php'
+    ];
+    foreach ($allowedAuthScripts as $allowed) {
+        if (str_ends_with($scriptName, $allowed) || str_ends_with(rtrim($requestUri, '/'), '/' . pathinfo($allowed, PATHINFO_FILENAME))) {
+            return;
+        }
+    }
+
+    // 4. API Endpoints: Return 503 JSON
+    $isJson = (str_starts_with($requestUri, '/api/') || str_contains($requestUri, '/api/')) 
+           || (!empty($_SERVER['HTTP_ACCEPT']) && str_contains($_SERVER['HTTP_ACCEPT'], 'application/json'))
+           || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+
+    if ($isJson) {
+        http_response_code(503);
+        header('Content-Type: application/json; charset=utf-8');
+        header('Retry-After: 3600');
+        $info = get_maintenance_info();
+        echo json_encode([
+            'success' => false,
+            'error' => 'Service Unavailable: Platform is in maintenance mode.',
+            'maintenance' => true,
+            'title' => $info['title'],
+            'message' => $info['message'],
+            'estimated_end' => $info['estimated_end']
+        ]);
+        exit;
+    }
+
+    // 5. Standard Web Pages: Redirect to maintenance.php
+    header('Location: ' . url('maintenance.php'), true, 307);
+    exit;
+}
+
 
 
