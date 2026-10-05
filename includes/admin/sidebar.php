@@ -433,8 +433,33 @@ require_once __DIR__ . '/theme.php';
 
             <!-- SECTION 4: COMMUNICATIONS & SYSTEM -->
             <div class="sidebar-section-title mt-2">
-                <span>Communications &amp; System</span>
+                <span>System &amp; Settings</span>
             </div>
+
+            <?php $isMaintActive = function_exists('is_maintenance_mode') && is_maintenance_mode(); ?>
+
+            <a href="<?= url('admin/settings.php') ?>" 
+               data-tooltip="Platform Settings &amp; Security"
+               title="Platform Settings &amp; Security"
+               class="sidebar-link <?= ($currentPage === 'settings.php' && (!isset($_GET['tab']) || $_GET['tab'] !== 'maintenance')) ? 'is-active' : '' ?>">
+                <i data-lucide="settings" class="nav-icon text-slate-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Settings &amp; Security</span>
+                <?php if ($isMaintActive): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700 animate-pulse sidebar-text-item">MAINTENANCE</span>
+                    <span class="sidebar-badge-dot !bg-amber-500"></span>
+                <?php endif; ?>
+            </a>
+
+            <a href="<?= url('admin/settings.php?tab=maintenance#maintenance-card') ?>" 
+               data-tooltip="Maintenance Mode (<?= $isMaintActive ? 'ACTIVE' : 'OFF' ?>)"
+               title="Maintenance Mode Control"
+               class="sidebar-link <?= ($currentPage === 'settings.php' && isset($_GET['tab']) && $_GET['tab'] === 'maintenance') ? 'is-active' : '' ?>">
+                <i data-lucide="wrench" class="nav-icon <?= $isMaintActive ? 'text-amber-500' : 'text-slate-400' ?>"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Maintenance Mode</span>
+                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold <?= $isMaintActive ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' ?> sidebar-text-item">
+                    <?= $isMaintActive ? '● ON' : 'OFF' ?>
+                </span>
+            </a>
 
             <a href="<?= url('admin/broadcasts.php') ?>" 
                data-tooltip="Broadcasts"
@@ -444,10 +469,21 @@ require_once __DIR__ . '/theme.php';
                 <span class="whitespace-nowrap sidebar-text-item">Broadcasts</span>
             </a>
 
+            <a href="<?= url('admin/email_templates.php') ?>" 
+               data-tooltip="Email Templates &amp; Logs"
+               title="Email Templates &amp; Logs"
+               class="sidebar-link <?= $currentPage === 'email_templates.php' ? 'is-active' : '' ?>">
+                <i data-lucide="mail" class="nav-icon text-blue-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Email Templates</span>
+            </a>
 
-           
-
-           
+            <a href="<?= url('admin/audit_logs.php') ?>" 
+               data-tooltip="Audit Trail &amp; Logs"
+               title="Audit Trail &amp; Logs"
+               class="sidebar-link <?= $currentPage === 'audit_logs.php' ? 'is-active' : '' ?>">
+                <i data-lucide="shield-alert" class="nav-icon text-emerald-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item">Audit Trail</span>
+            </a>
 
         </nav>
     </div>

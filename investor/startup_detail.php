@@ -72,18 +72,24 @@ if ($db) {
     $existingInterest = null;
     $connectedConvId = 0;
     if ($user && $user['role'] === 'investor') {
-        $iStmt = $db->prepare("SELECT * FROM investor_interests WHERE investor_id = ? AND company_id = ?");
-        $iStmt->execute([$user['id'], $companyId]);
-        $existingInterest = $iStmt->fetch();
+        try {
+            $iStmt = $db->prepare("SELECT * FROM investor_interests WHERE investor_id = ? AND company_id = ?");
+            $iStmt->execute([$user['id'], $companyId]);
+            $existingInterest = $iStmt->fetch();
 
-        if ($existingInterest && $existingInterest['status'] === 'accepted') {
-            $convStmt = $db->prepare("
-                SELECT id FROM conversations 
-                WHERE company_id = ? AND (user_one_id = ? OR user_two_id = ?)
-                ORDER BY last_message_at DESC LIMIT 1
-            ");
-            $convStmt->execute([$companyId, $user['id'], $user['id']]);
-            $connectedConvId = (int)$convStmt->fetchColumn();
+            if ($existingInterest && $existingInterest['status'] === 'accepted') {
+                $convStmt = $db->prepare("
+                    SELECT id FROM conversations 
+                    WHERE company_id = ? AND (user_one_id = ? OR user_two_id = ?)
+                    ORDER BY last_message_at DESC LIMIT 1
+                ");
+                $convStmt->execute([$companyId, $user['id'], $user['id']]);
+                $connectedConvId = (int)$convStmt->fetchColumn();
+            }
+        } catch (\Throwable $e) {
+            // Self-heal table if missing
+            $existingInterest = null;
+            $connectedConvId = 0;
         }
     }
 }

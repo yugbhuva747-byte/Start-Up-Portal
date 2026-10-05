@@ -91,9 +91,14 @@ if ($db) {
         $pendingDocs = (int) $docStmt->fetchColumn();
 
         // 6b. Pending investor interests count
-        $intStmt = $db->prepare("SELECT COUNT(*) FROM investor_interests WHERE company_id = ? AND status = 'pending'");
-        $intStmt->execute([$company['id']]);
-        $pendingInterests = (int) $intStmt->fetchColumn();
+        $pendingInterests = 0;
+        try {
+            $intStmt = $db->prepare("SELECT COUNT(*) FROM investor_interests WHERE company_id = ? AND status = 'pending'");
+            $intStmt->execute([$company['id']]);
+            $pendingInterests = (int) $intStmt->fetchColumn();
+        } catch (\Throwable $e) {
+            $pendingInterests = 0;
+        }
     }
 
     // 7. Recent messages

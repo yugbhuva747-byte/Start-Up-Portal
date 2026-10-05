@@ -354,6 +354,54 @@
         color: #ffffff !important;
     }
 
+    .admin-btn-warning,
+    a.admin-btn-warning,
+    button.admin-btn-warning {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.45rem !important;
+        padding: 0.45rem 0.85rem !important;
+        border-radius: 0.625rem !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.2 !important;
+        color: #ffffff !important;
+        background-color: #d97706 !important;
+        background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%) !important;
+        border: 1px solid #b45309 !important;
+        box-shadow: 0 1px 2px 0 rgba(217, 119, 6, 0.25) !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        white-space: nowrap !important;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
+    .admin-btn-warning:hover,
+    a.admin-btn-warning:hover,
+    button.admin-btn-warning:hover {
+        background-color: #b45309 !important;
+        background: linear-gradient(180deg, #d97706 0%, #b45309 100%) !important;
+        border-color: #92400e !important;
+        box-shadow: 0 3px 10px -1px rgba(217, 119, 6, 0.35) !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+    }
+
+    /* Universal Button Scale & Tactile Polish Across All Admin Pages */
+    button:not([class*="w-"]):not([class*="h-"]):not([class*="p-0"]):not([class*="p-1"]):not([class*="rounded-full"]),
+    button[type="submit"],
+    a[class*="rounded-"][class*="bg-"] {
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        line-height: 1.25 !important;
+    }
+
+    button:hover:not(:disabled),
+    a[class*="rounded-"][class*="bg-"]:hover {
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+
     /* ----------------------------------------------------
        2. SMOOTH COLOR TRANSITIONS WHEN SWITCHING THEMES
     ---------------------------------------------------- */

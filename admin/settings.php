@@ -1064,6 +1064,28 @@ $flashClasses = match ($flashType) {
                 }
             });
         }
+
+        // Auto-scroll and highlight Maintenance Mode Card if targeted via URL tab or hash
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMaintTarget = urlParams.get('tab') === 'maintenance' || window.location.hash === '#maintenance-card';
+            if (isMaintTarget) {
+                setTimeout(() => {
+                    const card = document.getElementById('maintenance-card');
+                    if (card) {
+                        const body = document.getElementById('section-maintenance-body');
+                        if (body && body.classList.contains('hidden')) {
+                            body.classList.remove('hidden');
+                        }
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        card.classList.add('ring-2', 'ring-indigo-500', 'ring-offset-2', 'dark:ring-offset-slate-900');
+                        setTimeout(() => {
+                            card.classList.remove('ring-2', 'ring-indigo-500', 'ring-offset-2', 'dark:ring-offset-slate-900');
+                        }, 2500);
+                    }
+                }, 200);
+            }
+        })();
     </script>
 </body>
 

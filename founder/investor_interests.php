@@ -65,16 +65,20 @@ if ($db && !empty($companyIds)) {
             ii.created_at DESC
     ";
 
-    $params = array_merge([$user['id'], $user['id']], $companyIds);
-    $iStmt = $db->prepare($query);
-    $iStmt->execute($params);
-    $interests = $iStmt->fetchAll();
+    try {
+        $params = array_merge([$user['id'], $user['id']], $companyIds);
+        $iStmt = $db->prepare($query);
+        $iStmt->execute($params);
+        $interests = $iStmt->fetchAll();
 
-    foreach ($interests as $item) {
-        $stats['total']++;
-        if ($item['status'] === 'pending') $stats['pending']++;
-        elseif ($item['status'] === 'accepted') $stats['accepted']++;
-        elseif ($item['status'] === 'declined') $stats['declined']++;
+        foreach ($interests as $item) {
+            $stats['total']++;
+            if ($item['status'] === 'pending') $stats['pending']++;
+            elseif ($item['status'] === 'accepted') $stats['accepted']++;
+            elseif ($item['status'] === 'declined') $stats['declined']++;
+        }
+    } catch (\Throwable $e) {
+        $interests = [];
     }
 }
 
