@@ -37,6 +37,8 @@ $flash = get_flash();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid security token. Please try again.';
+    } elseif (function_exists('security_check_honeypot') && security_check_honeypot()) {
+        $error = 'Suspicious automated request rejected by security shield.';
     } else {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -454,6 +456,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Sign In Form -->
                 <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-3.5" id="loginForm">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <?= security_honeypot_field() ?>
 
                     <!-- Email Field -->
                     <div>

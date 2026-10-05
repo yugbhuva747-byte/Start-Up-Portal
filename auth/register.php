@@ -28,6 +28,8 @@ if (!in_array($selectedRole, ['founder', 'investor'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid security token. Please try again.';
+    } elseif (function_exists('security_check_honeypot') && security_check_honeypot()) {
+        $error = 'Suspicious automated registration attempt blocked by security shield.';
     } else {
         $name = trim($_POST['name'] ?? '');
         $email = trim($_POST['email'] ?? '');
@@ -527,6 +529,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      ============================================== -->
                 <form action="<?= url('auth/register.php') ?>" method="POST" class="space-y-3.5" id="registrationForm">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <?= security_honeypot_field() ?>
                     <input type="hidden" name="role" id="form-role" value="<?= htmlspecialchars($selectedRole) ?>">
 
                     <!-- Shared: Full Legal Name -->

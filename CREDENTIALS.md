@@ -76,6 +76,7 @@ On the login screen ([http://localhost/start%20up%20portal/auth/login.php](http:
 - **User:** `root`
 - **Password:** *(empty)*
 - **Reset/Re-seed URL:** [http://localhost/start%20up%20portal/setup.php](http://localhost/start%20up%20portal/setup.php)
+- **Security Operations Center (WAF/Firewall):** [http://localhost/start%20up%20portal/admin/security.php](http://localhost/start%20up%20portal/admin/security.php)
 
 
 back up 2fa code 

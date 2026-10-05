@@ -421,6 +421,29 @@ function csrf_field(): string {
     return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token()) . '">';
 }
 
+// 7.1 Security Honeypot Anti-Bot Field & Validator
+function security_honeypot_field(): string {
+    return class_exists('SecurityGuard') ? SecurityGuard::honeypotField() : '';
+}
+
+function security_check_honeypot(): bool {
+    return class_exists('SecurityGuard') ? SecurityGuard::checkHoneypot() : false;
+}
+
+// 7.2 Field-Level PII Encryption at Rest (AES-256-GCM)
+function encrypt_pii(string $data, ?string $key = null): string {
+    return class_exists('SecurityGuard') ? SecurityGuard::encrypt($data, $key) : $data;
+}
+
+function decrypt_pii(string $cipher, ?string $key = null): string {
+    return class_exists('SecurityGuard') ? SecurityGuard::decrypt($cipher, $key) : $cipher;
+}
+
+// 7.3 Secure File Upload Magic Byte Validator
+function validate_secure_upload(array $file, array $allowedMimes, int $maxBytes = 10485760): array {
+    return class_exists('SecurityGuard') ? SecurityGuard::verifyFileUpload($file, $allowedMimes, $maxBytes) : ['valid' => true];
+}
+
 // 8. Currency & Number Formatters (Indian Rupee formatting: e.g., ₹25,00,000)
 function format_inr(float|int $number, bool $includeSymbol = true): string
 {

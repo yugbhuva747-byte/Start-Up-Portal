@@ -154,7 +154,11 @@ define('EMAILJS_PUBLIC_KEY', $env['EMAILJS_PUBLIC_KEY'] ?? (getenv('EMAILJS_PUBL
 // Include database, helpers & mailer
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/security_guard.php';
 require_once __DIR__ . '/includes/mailer.php';
+
+// Boot Multi-Layer Security Guard & WAF
+SecurityGuard::init();
 
 // Auto-restore session from persistent remember-me cookie if not logged in
 if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {

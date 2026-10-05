@@ -24,6 +24,7 @@ if (isset($db) && $db instanceof PDO) {
         $activeSubsCount = (int)$db->query("SELECT COUNT(*) FROM subscriptions WHERE status = 'active'")->fetchColumn();
         $totalCompaniesCount = (int)$db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
         $pendingInvoicesCount = (int)$db->query("SELECT COUNT(*) FROM platform_invoices WHERE settlement_status != 'SETTLED'")->fetchColumn();
+        $activeFirewallBansCount = (int)$db->query("SELECT COUNT(*) FROM security_firewall_blocks WHERE blocked_until > NOW()")->fetchColumn();
     } catch (Exception $e) {}
 }
 
@@ -475,6 +476,20 @@ require_once __DIR__ . '/theme.php';
                class="sidebar-link <?= $currentPage === 'email_templates.php' ? 'is-active' : '' ?>">
                 <i data-lucide="mail" class="nav-icon text-blue-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Email Templates</span>
+            </a>
+
+            <a href="<?= url('admin/security.php') ?>" 
+               data-tooltip="Security Operations &amp; WAF"
+               title="Security Operations &amp; WAF"
+               class="sidebar-link <?= $currentPage === 'security.php' ? 'is-active' : '' ?>">
+                <i data-lucide="shield-check" class="nav-icon text-indigo-500"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Security &amp; WAF</span>
+                <?php if (!empty($activeFirewallBansCount) && $activeFirewallBansCount > 0): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-300 sidebar-text-item">
+                        <?= $activeFirewallBansCount ?> BANNED
+                    </span>
+                    <span class="sidebar-badge-dot"></span>
+                <?php endif; ?>
             </a>
 
             <a href="<?= url('admin/audit_logs.php') ?>" 
