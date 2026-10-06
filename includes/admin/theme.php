@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Global Admin Theme Controller (Dark & Light Mode Support)
  * Standardized for "Vay Portal", Sans-serif typography
@@ -41,7 +41,7 @@
        1. UNIVERSAL "VAY PORTAL" TYPOGRAPHY & READABILITY SCALE (MEDIUM, CLEAN DESKTOP SCALE)
     ---------------------------------------------------- */
     html {
-        font-size: 14px !important;
+        font-size: 15.5px !important;
         scroll-behavior: smooth;
     }
 
@@ -76,8 +76,8 @@
 
     /* Base Body Readability & Typography */
     body {
-        font-size: 0.875rem;
-        line-height: 1.5;
+        font-size: 0.9375rem;
+        line-height: 1.55;
         color: #1e293b;
     }
 
@@ -100,60 +100,60 @@
     .text-\[10\.5px\],
     .text-\[11px\],
     .text-\[11\.5px\] {
-        font-size: 0.6875rem !important; /* ~9.6px - 10px */
+        font-size: 0.75rem !important; /* ~11.6px medium */
         line-height: 1.35 !important;
         font-weight: 600 !important;
     }
 
     /* Clean Proportional Medium Scale for Admin Panels */
     .text-xs {
-        font-size: 0.75rem !important; /* ~10.5px - 11px */
-        line-height: 1.35 !important;
-    }
-
-    .text-sm {
-        font-size: 0.8125rem !important; /* ~11.5px - 12px */
+        font-size: 0.8125rem !important; /* ~12.6px */
         line-height: 1.4 !important;
     }
 
-    .text-base {
-        font-size: 0.875rem !important; /* ~12.25px - 13px */
+    .text-sm {
+        font-size: 0.875rem !important; /* ~13.6px - 14px */
         line-height: 1.45 !important;
     }
 
+    .text-base {
+        font-size: 0.95rem !important; /* ~14.7px - 15px */
+        line-height: 1.5 !important;
+    }
+
     .text-lg {
-        font-size: 1.05rem !important; /* ~14.7px */
+        font-size: 1.15rem !important; /* ~17.8px */
         line-height: 1.35 !important;
         font-weight: 700 !important;
     }
 
     .text-xl {
-        font-size: 1.1875rem !important; /* ~16.6px */
+        font-size: 1.3rem !important; /* ~20.1px */
         line-height: 1.3 !important;
         font-weight: 700 !important;
     }
 
     .text-2xl {
-        font-size: 1.375rem !important; /* ~19.2px */
+        font-size: 1.5rem !important; /* ~23.2px */
         line-height: 1.25 !important;
         font-weight: 800 !important;
     }
 
     .text-3xl {
-        font-size: 1.625rem !important; /* ~22.7px */
+        font-size: 1.8rem !important; /* ~27.9px */
         line-height: 1.2 !important;
         font-weight: 800 !important;
     }
 
     .text-4xl {
-        font-size: 1.875rem !important; /* ~26.2px */
+        font-size: 2.15rem !important; /* ~33.3px */
         line-height: 1.15 !important;
         font-weight: 800 !important;
     }
 
     /* Table headers, cells, and form inputs readability - Clean Enterprise Polish */
     table th {
-        font-size: 0.6875rem !important;
+        font-size: 0.75rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.05em !important;
         text-transform: uppercase !important;
@@ -162,14 +162,14 @@
     }
 
     table td {
-        font-size: 0.8125rem !important;
+        font-size: 0.875rem !important;
         line-height: 1.45 !important;
         padding-top: 0.65rem !important;
         padding-bottom: 0.65rem !important;
     }
 
     input, select, textarea {
-        font-size: 0.8125rem !important;
+        font-size: 0.875rem !important;
         line-height: 1.4 !important;
     }
 
@@ -199,9 +199,9 @@
         align-items: center !important;
         justify-content: center !important;
         gap: 0.45rem !important;
-        padding: 0.45rem 0.85rem !important;
+        padding: 0.5rem 0.95rem !important;
         border-radius: 0.625rem !important;
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
@@ -239,9 +239,9 @@
         align-items: center !important;
         justify-content: center !important;
         gap: 0.45rem !important;
-        padding: 0.45rem 0.85rem !important;
+        padding: 0.5rem 0.95rem !important;
         border-radius: 0.625rem !important;
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.2 !important;
         color: #334155 !important;
@@ -293,9 +293,9 @@
         align-items: center !important;
         justify-content: center !important;
         gap: 0.45rem !important;
-        padding: 0.45rem 0.85rem !important;
+        padding: 0.5rem 0.95rem !important;
         border-radius: 0.625rem !important;
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
@@ -327,9 +327,9 @@
         align-items: center !important;
         justify-content: center !important;
         gap: 0.45rem !important;
-        padding: 0.45rem 0.85rem !important;
+        padding: 0.5rem 0.95rem !important;
         border-radius: 0.625rem !important;
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
@@ -361,9 +361,9 @@
         align-items: center !important;
         justify-content: center !important;
         gap: 0.45rem !important;
-        padding: 0.45rem 0.85rem !important;
+        padding: 0.5rem 0.95rem !important;
         border-radius: 0.625rem !important;
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.2 !important;
         color: #ffffff !important;
@@ -392,7 +392,7 @@
     button:not([class*="w-"]):not([class*="h-"]):not([class*="p-0"]):not([class*="p-1"]):not([class*="rounded-full"]),
     button[type="submit"],
     a[class*="rounded-"][class*="bg-"] {
-        font-size: 0.75rem !important;
+        font-size: 0.8125rem !important;
         font-weight: 600 !important;
         line-height: 1.25 !important;
     }
@@ -471,7 +471,7 @@
     }
 
     #main-sidebar nav a {
-        font-size: 0.8125rem !important; /* ~11.5px - 12px clean medium */
+        font-size: 0.875rem !important; /* ~11.5px - 12px clean medium */
         line-height: 1.4 !important;
         font-weight: 600 !important;
     }

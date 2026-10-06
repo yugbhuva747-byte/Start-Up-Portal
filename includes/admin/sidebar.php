@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Admin Sidebar Navigation Component
  * Enhanced – Categorized Page Sections, Dynamic Database Badges, Rich Hover Effects, Dark Mode & Premium Aesthetics
@@ -55,7 +55,7 @@ require_once __DIR__ . '/theme.php';
 
     /* ── Section Title ── */
     .sidebar-section-title {
-        font-size: 0.6875rem;
+        font-size: 0.75rem;
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -76,7 +76,7 @@ require_once __DIR__ . '/theme.php';
         gap: 0.75rem;
         padding: 0.55rem 0.8rem;
         border-radius: 0.625rem;
-        font-size: 0.8125rem;
+        font-size: 0.875rem;
         font-weight: 600;
         letter-spacing: 0.01em;
         color: #475569;
@@ -222,7 +222,7 @@ require_once __DIR__ . '/theme.php';
         transform: translateY(-50%) scale(0.92);
         background: #0f172a;
         color: #ffffff;
-        font-size: 0.75rem;
+        font-size: 0.8125rem;
         font-weight: 700;
         letter-spacing: 0.01em;
         padding: 0.4rem 0.75rem;
@@ -439,17 +439,6 @@ require_once __DIR__ . '/theme.php';
 
             <?php $isMaintActive = function_exists('is_maintenance_mode') && is_maintenance_mode(); ?>
 
-          
-            <a href="<?= url('admin/settings.php?tab=maintenance#maintenance-card') ?>" 
-               data-tooltip="Maintenance Mode (<?= $isMaintActive ? 'ACTIVE' : 'OFF' ?>)"
-               title="Maintenance Mode Control"
-               class="sidebar-link <?= ($currentPage === 'settings.php' && isset($_GET['tab']) && $_GET['tab'] === 'maintenance') ? 'is-active' : '' ?>">
-                <i data-lucide="wrench" class="nav-icon <?= $isMaintActive ? 'text-amber-500' : 'text-slate-400' ?>"></i>
-                <span class="whitespace-nowrap sidebar-text-item flex-1">Maintenance Mode</span>
-                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold <?= $isMaintActive ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border border-amber-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' ?> sidebar-text-item">
-                    <?= $isMaintActive ? '● ON' : 'OFF' ?>
-                </span>
-            </a>
 
             <a href="<?= url('admin/broadcasts.php') ?>" 
                data-tooltip="Broadcasts"
