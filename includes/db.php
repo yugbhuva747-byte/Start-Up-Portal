@@ -9,6 +9,16 @@ class Database {
     private static ?string $lastError = null;
 
     public static function getConnection(): ?PDO {
+        // Check if existing connection is still responsive
+        if (self::$instance !== null) {
+            try {
+                self::$instance->query('SELECT 1');
+            } catch (\Throwable $e) {
+                // Server went away or connection dropped -> reset to reconnect
+                self::$instance = null;
+            }
+        }
+
         if (self::$instance === null) {
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -80,8 +90,10 @@ class Database {
                     return self::$instance;
                 } catch (PDOException $e) {
                     self::$lastError = $e->getMessage();
+                    error_log("Database connection attempt failed ({$strat['desc']}): " . $e->getMessage());
                 }
             }
+            return self::$instance;
         }
         return self::$instance;
     }

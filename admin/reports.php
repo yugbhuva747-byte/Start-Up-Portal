@@ -1,12 +1,12 @@
 <?php
 /**
  * Admin Module: Reports & Platform Analytics
- * Clean, Minimalist Aggregate Platform Stats & Performance Metrics
+ * Aggregate platform stats, funding metrics, user trends, verification pipeline
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('admin');
 $db = get_db();
-$pageTitle = 'Reports & Analytics';
+$pageTitle = 'Platform Reports & Analytics';
 
 $stats = [
     'total_users' => 0, 'founders' => 0, 'investors' => 0,
@@ -57,7 +57,7 @@ if ($db) {
         LEFT JOIN funding_rounds fr ON c.id = fr.company_id
         GROUP BY c.id
         ORDER BY total_raised DESC
-        LIMIT 6
+        LIMIT 8
     ")->fetchAll();
     
     // Recent users
@@ -65,7 +65,7 @@ if ($db) {
         SELECT name, email, role, avatar_url, created_at 
         FROM users 
         ORDER BY created_at DESC 
-        LIMIT 5
+        LIMIT 6
     ")->fetchAll();
     
     // Industry distribution
@@ -79,7 +79,19 @@ if ($db) {
         ) fr_data ON c.id = fr_data.company_id
         GROUP BY industry
         ORDER BY count DESC
-        LIMIT 6
+        LIMIT 8
+    ")->fetchAll();
+    
+    // Monthly user registrations (last 6 months)
+    $monthlyRegistrations = $db->query("
+        SELECT DATE_FORMAT(created_at, '%b %Y') as month, 
+               COUNT(*) as count,
+               SUM(CASE WHEN role = 'founder' THEN 1 ELSE 0 END) as founders,
+               SUM(CASE WHEN role = 'investor' THEN 1 ELSE 0 END) as investors
+        FROM users 
+        WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+        GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+        ORDER BY MIN(created_at) ASC
     ")->fetchAll();
     
     // Recent audit entries
@@ -88,10 +100,11 @@ if ($db) {
         FROM audit_logs al
         LEFT JOIN users u ON al.actor_user_id = u.id
         ORDER BY al.created_at DESC
-        LIMIT 5
+        LIMIT 8
     ")->fetchAll();
 }
 
+$flash = get_flash();
 $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_kyc'];
 ?>
 <!DOCTYPE html>
@@ -100,222 +113,277 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports & Analytics • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/admin/head.php'; ?>
+    <style>
+        .stat-card-clean { background: #fff; border: 1px solid #E2E8F0; border-radius: 1rem; padding: 1.25rem 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
+        .dark .stat-card-clean, html.dark .stat-card-clean { background: #111827 !important; border-color: #1e293b !important; }
+        .card-clean { background: #fff; border: 1px solid #E2E8F0; border-radius: 1rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.02); }
+        .dark .card-clean, html.dark .card-clean { background: #111827 !important; border-color: #1e293b !important; }
+        .mini-bar { height: 24px; border-radius: 4px; transition: width 0.8s ease; }
+        .donut-ring { fill: none; stroke-width: 4; stroke-linecap: round; }
+    </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 flex min-h-screen">
+<body class="bg-[#f8fafc] text-slate-800 flex min-h-screen dark:bg-[#0b0f19] dark:text-slate-100 font-sans antialiased">
     
-    <!-- Admin Sidebar -->
     <?php include __DIR__ . '/../includes/admin/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/admin/navbar.php'; ?>
 
-        <main class="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl w-full mx-auto" id="reports-main">
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="reports-main">
 
             <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="admin-page-icon">
-                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Platform Reports & Analytics</h1>
-                        <p class="text-xs text-slate-500 mt-0.5">Platform metrics, funding activity, user trends, and verification pipeline health.</p>
-                    </div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div>
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">Platform Reports & Analytics</h1>
+                    <p class="text-xs text-slate-500 mt-0.5">Aggregate platform metrics, funding activity, user trends, and verification pipeline health.</p>
                 </div>
-                <div class="text-xs text-slate-400 font-medium flex items-center space-x-1.5">
-                    <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
-                    <span>Updated: <?= date('d M Y, H:i') ?></span>
-                </div>
-            </div>
-
-            <!-- Platform Primary KPI Row -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Total Capital Raised</span>
-                        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                            <i data-lucide="trending-up" class="w-4 h-4"></i>
-                        </div>
+                <div class="flex items-center space-x-3">
+                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition shadow-xs flex items-center space-x-1.5 cursor-pointer">
+                        <i data-lucide="printer" class="w-3.5 h-3.5 text-indigo-600"></i>
+                        <span>Print / Export PDF</span>
+                    </button>
+                    <div class="flex items-center space-x-1.5 text-[11px] text-slate-400 font-medium">
+                        <i data-lucide="clock" class="w-3 h-3"></i>
+                        <span>Last updated: <?= date('d M Y, H:i') ?></span>
                     </div>
-                    <div class="admin-stat-value stat-value-indigo"><?= format_inr($stats['total_raised']) ?></div>
-                    <div class="admin-stat-sub">Across <?= $stats['funding_rounds'] ?> funding rounds</div>
-                </div>
-
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Platform Accounts</span>
-                        <div class="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center">
-                            <i data-lucide="users" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="admin-stat-value stat-value-sky"><?= $stats['total_users'] ?></div>
-                    <div class="admin-stat-sub"><?= $stats['founders'] ?> founders • <?= $stats['investors'] ?> investors</div>
-                </div>
-
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Startup Companies</span>
-                        <div class="w-8 h-8 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center">
-                            <i data-lucide="building-2" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="admin-stat-value stat-value-violet"><?= $stats['companies'] ?></div>
-                    <div class="admin-stat-sub"><?= $stats['verified_companies'] ?> MCA/CIN verified</div>
-                </div>
-
-                <div class="admin-stat-card">
-                    <div class="flex items-center justify-between">
-                        <span class="admin-stat-label">Average Cheque Size</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                            <i data-lucide="wallet" class="w-4 h-4"></i>
-                        </div>
-                    </div>
-                    <div class="admin-stat-value stat-value-emerald"><?= format_inr($stats['avg_ticket']) ?></div>
-                    <div class="admin-stat-sub"><?= $stats['total_transactions'] ?> completed orders</div>
                 </div>
             </div>
 
-            <!-- Funding & Pipeline Row -->
+            <!-- Platform KPI Row -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <?php
+                $kpis = [
+                    ['label' => 'Total Users', 'value' => $stats['total_users'], 'icon' => 'users', 'color' => 'indigo', 'fmt' => false],
+                    ['label' => 'Founders', 'value' => $stats['founders'], 'icon' => 'rocket', 'color' => 'emerald', 'fmt' => false],
+                    ['label' => 'Investors', 'value' => $stats['investors'], 'icon' => 'briefcase', 'color' => 'blue', 'fmt' => false],
+                    ['label' => 'Companies', 'value' => $stats['companies'], 'icon' => 'building-2', 'color' => 'amber', 'fmt' => false],
+                    ['label' => 'Total Raised', 'value' => $stats['total_raised'], 'icon' => 'wallet', 'color' => 'teal', 'fmt' => true],
+                    ['label' => 'Avg Ticket', 'value' => $stats['avg_ticket'], 'icon' => 'trending-up', 'color' => 'rose', 'fmt' => true],
+                ];
+                foreach ($kpis as $kpi):
+                ?>
+                <div class="card-clean rounded-xl p-4">
+                    <div class="flex items-center space-x-1.5 mb-1.5">
+                        <div class="p-1 rounded-md bg-<?= $kpi['color'] ?>-50 text-<?= $kpi['color'] ?>-600">
+                            <i data-lucide="<?= $kpi['icon'] ?>" class="w-3 h-3"></i>
+                        </div>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider"><?= $kpi['label'] ?></span>
+                    </div>
+                    <div class="text-lg font-black text-slate-900">
+                        <?= $kpi['fmt'] ? format_inr($kpi['value']) : number_format($kpi['value']) ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Funding & Verification Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 
-                <!-- Funding Performance -->
-                <div class="admin-card p-5">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 mb-4 border-b border-slate-100 flex items-center space-x-1.5">
+                <!-- Funding Overview -->
+                <div class="card-clean rounded-2xl p-6">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
                         <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-indigo-600"></i>
-                        <span>Funding Activity</span>
+                        <span>Funding Overview</span>
                     </h3>
-                    <div class="space-y-2 text-xs">
-                        <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl">
-                            <span class="text-slate-600 font-medium">Total Registered Rounds</span>
-                            <span class="font-bold text-slate-900"><?= $stats['funding_rounds'] ?></span>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <span class="text-xs text-slate-600 font-medium">Total Rounds</span>
+                            <span class="text-sm font-black text-slate-900"><?= $stats['funding_rounds'] ?></span>
                         </div>
-                        <div class="flex justify-between items-center p-2.5 bg-emerald-50/70 border border-emerald-100 rounded-xl">
-                            <span class="text-emerald-800 font-medium">Live on Discovery</span>
-                            <span class="font-bold text-emerald-700"><?= $stats['live_rounds'] ?></span>
+                        <div class="flex justify-between items-center p-3 bg-emerald-50 rounded-lg border border-emerald-100">
+                            <span class="text-xs text-emerald-700 font-medium">Live Rounds</span>
+                            <span class="text-sm font-black text-emerald-600"><?= $stats['live_rounds'] ?></span>
                         </div>
-                        <div class="flex justify-between items-center p-2.5 bg-indigo-50/70 border border-indigo-100 rounded-xl">
-                            <span class="text-indigo-800 font-medium">Total Invested</span>
-                            <span class="font-bold text-indigo-700"><?= format_inr($stats['total_invested']) ?></span>
+                        <div class="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border border-indigo-100">
+                            <span class="text-xs text-indigo-700 font-medium">Total Invested</span>
+                            <span class="text-sm font-black text-indigo-600"><?= format_inr($stats['total_invested']) ?></span>
                         </div>
-                        <div class="flex justify-between items-center p-2.5 bg-slate-100 rounded-xl">
-                            <span class="text-slate-700 font-medium">Orders Executed</span>
-                            <span class="font-bold text-slate-900"><?= number_format($stats['total_transactions']) ?></span>
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+                            <span class="text-xs text-blue-700 font-medium">Transactions</span>
+                            <span class="text-sm font-black text-blue-600"><?= number_format($stats['total_transactions']) ?></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Verification Pipeline -->
-                <div class="admin-card p-5">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 mb-4 border-b border-slate-100 flex items-center space-x-1.5">
+                <div class="card-clean rounded-2xl p-6">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
                         <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
                         <span>Verification Pipeline</span>
                     </h3>
-                    <div class="space-y-3.5 text-xs">
+                    <div class="space-y-3">
+                        <?php 
+                        $pipeItems = [
+                            ['label' => 'Pending Review', 'value' => $stats['pending_kyc'], 'color' => 'amber', 'icon' => 'clock'],
+                            ['label' => 'Approved / Verified', 'value' => $stats['approved_kyc'], 'color' => 'emerald', 'icon' => 'check-circle'],
+                            ['label' => 'Rejected', 'value' => $stats['rejected_kyc'], 'color' => 'rose', 'icon' => 'x-circle'],
+                        ];
+                        foreach ($pipeItems as $pi):
+                            $barPct = $kycTotal > 0 ? round(($pi['value'] / $kycTotal) * 100) : 0;
+                        ?>
                         <div>
                             <div class="flex justify-between items-center mb-1">
-                                <span class="font-medium text-slate-700">Pending Review</span>
-                                <span class="font-bold text-amber-600"><?= $stats['pending_kyc'] ?></span>
+                                <span class="text-xs font-semibold text-slate-700 flex items-center space-x-1">
+                                    <i data-lucide="<?= $pi['icon'] ?>" class="w-3 h-3 text-<?= $pi['color'] ?>-500"></i>
+                                    <span><?= $pi['label'] ?></span>
+                                </span>
+                                <span class="text-xs font-bold text-slate-900"><?= $pi['value'] ?></span>
                             </div>
                             <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-amber-500 rounded-full" style="width: <?= $kycTotal > 0 ? round(($stats['pending_kyc'] / $kycTotal) * 100) : 0 ?>%"></div>
+                                <div class="h-full bg-<?= $pi['color'] ?>-500 rounded-full transition-all duration-700" style="width: <?= $barPct ?>%"></div>
                             </div>
                         </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-medium text-slate-700">Verified & Approved</span>
-                                <span class="font-bold text-emerald-600"><?= $stats['approved_kyc'] ?></span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-emerald-500 rounded-full" style="width: <?= $kycTotal > 0 ? round(($stats['approved_kyc'] / $kycTotal) * 100) : 0 ?>%"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-medium text-slate-700">Rejected</span>
-                                <span class="font-bold text-rose-600"><?= $stats['rejected_kyc'] ?></span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-rose-500 rounded-full" style="width: <?= $kycTotal > 0 ? round(($stats['rejected_kyc'] / $kycTotal) * 100) : 0 ?>%"></div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
+                    <?php if ($stats['pending_kyc'] > 0): ?>
+                        <a href="<?= url('admin/verification_queue.php') ?>" class="mt-4 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-[11px] font-semibold hover:bg-amber-100 transition">
+                            <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                            <span>Review Pending Queue</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Industry Distribution -->
-                <div class="admin-card p-5">
-                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider pb-3 mb-4 border-b border-slate-100 flex items-center space-x-1.5">
-                        <i data-lucide="layers" class="w-3.5 h-3.5 text-slate-600"></i>
-                        <span>Industry Breakdown</span>
+                <div class="card-clean rounded-2xl p-6">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center space-x-1.5">
+                        <i data-lucide="layers" class="w-3.5 h-3.5 text-blue-600"></i>
+                        <span>Industry Distribution</span>
                     </h3>
-                    <div class="space-y-2 text-xs">
-                        <?php foreach ($industryStats as $is): ?>
-                            <div class="flex items-center justify-between py-1">
-                                <span class="font-medium text-slate-700 truncate mr-2"><?= htmlspecialchars($is['industry']) ?></span>
-                                <span class="font-semibold text-slate-900 font-mono text-[11px] whitespace-nowrap"><?= format_inr($is['total_raised']) ?></span>
+                    <div class="space-y-2.5">
+                        <?php 
+                        $indColors = ['indigo', 'emerald', 'blue', 'amber', 'rose', 'teal', 'cyan', 'orange'];
+                        foreach ($industryStats as $idx => $is): 
+                            $color = $indColors[$idx % count($indColors)];
+                        ?>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-<?= $color ?>-500 flex-shrink-0"></span>
+                                <span class="text-xs font-medium text-slate-700"><?= htmlspecialchars($is['industry']) ?></span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] text-slate-400"><?= $is['count'] ?> co.</span>
+                                <span class="text-xs font-bold text-slate-900"><?= format_inr($is['total_raised']) ?></span>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Startups Table -->
+            <div class="card-clean rounded-2xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i>
+                        <span>Top Startups by Capital Raised</span>
+                    </h3>
+                    <a href="<?= url('admin/companies.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                        <span>View All</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+                <?php if (empty($topStartups)): ?>
+                    <div class="py-8 text-center text-xs text-slate-400">No startup data available yet.</div>
+                <?php else: ?>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="border-b border-slate-100 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                    <th class="pb-2.5">#</th>
+                                    <th class="pb-2.5">Startup</th>
+                                    <th class="pb-2.5">Industry</th>
+                                    <th class="pb-2.5">Stage</th>
+                                    <th class="pb-2.5">Rounds</th>
+                                    <th class="pb-2.5">Total Raised</th>
+                                    <th class="pb-2.5">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <?php foreach ($topStartups as $rank => $s): ?>
+                                    <tr class="hover:bg-slate-50/70 transition">
+                                        <td class="py-3 text-slate-400 font-bold"><?= $rank + 1 ?></td>
+                                        <td class="py-3 flex items-center space-x-2.5">
+                                            <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-7 h-7 rounded-lg object-cover border border-slate-200">
+                                            <span class="font-bold text-slate-900"><?= htmlspecialchars($s['name']) ?></span>
+                                        </td>
+                                        <td class="py-3">
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-600 font-medium border border-slate-200"><?= htmlspecialchars($s['industry']) ?></span>
+                                        </td>
+                                        <td class="py-3 text-slate-600 font-medium"><?= htmlspecialchars($s['stage']) ?></td>
+                                        <td class="py-3 font-bold text-slate-800"><?= $s['round_count'] ?></td>
+                                        <td class="py-3 font-black text-emerald-600"><?= format_inr($s['total_raised']) ?></td>
+                                        <td class="py-3"><?= render_status_badge(strtoupper($s['verified_status'])) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Bottom Row: Recent Users + Recent Audit -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Recent User Registrations -->
+                <div class="card-clean rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5 text-blue-600"></i>
+                            <span>Recent Registrations</span>
+                        </h3>
+                        <a href="<?= url('admin/users.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                            <span>View All</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                    <div class="space-y-2.5">
+                        <?php foreach ($recentUsers as $ru): ?>
+                            <div class="flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition">
+                                <div class="flex items-center space-x-2.5">
+                                    <img src="<?= $ru['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-7 h-7 rounded-full object-cover border border-slate-200">
+                                    <div>
+                                        <div class="text-xs font-bold text-slate-900"><?= htmlspecialchars($ru['name']) ?></div>
+                                        <div class="text-[10px] text-slate-400"><?= htmlspecialchars($ru['email']) ?></div>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <?= render_status_badge(strtoupper($ru['role'])) ?>
+                                    <div class="text-[10px] text-slate-400 mt-0.5"><?= date('d M', strtotime($ru['created_at'])) ?></div>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- Top Startups Table -->
-            <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-bold text-slate-900 tracking-tight">Top Funded Startups</h3>
-                    <a href="<?= url('admin/companies.php') ?>" class="admin-btn-ghost text-xs">
-                        <span>View Registry</span>
-                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                    </a>
-                </div>
-
-                <div class="admin-table-container">
-                    <div class="overflow-x-auto">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Startup</th>
-                                    <th>Industry</th>
-                                    <th>Stage</th>
-                                    <th>Rounds</th>
-                                    <th>Total Raised</th>
-                                    <th class="text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($topStartups)): ?>
-                                    <tr>
-                                        <td colspan="7" class="py-12 text-center text-slate-400">No startup data available yet.</td>
-                                    </tr>
-                                <?php else: ?>
-                                    <?php foreach ($topStartups as $rank => $s): ?>
-                                        <tr>
-                                            <td class="text-slate-400 font-semibold"><?= $rank + 1 ?></td>
-                                            <td>
-                                                <div class="flex items-center space-x-2.5">
-                                                    <img src="<?= $s['logo_url'] ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=80' ?>" class="w-7 h-7 rounded-lg object-cover border border-slate-200">
-                                                    <span class="font-semibold text-slate-900"><?= htmlspecialchars($s['name']) ?></span>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <span class="admin-badge admin-badge-neutral text-[10px]"><?= htmlspecialchars($s['industry']) ?></span>
-                                            </td>
-                                            <td class="text-slate-600"><?= htmlspecialchars($s['stage']) ?></td>
-                                            <td class="font-semibold text-slate-800"><?= $s['round_count'] ?></td>
-                                            <td class="font-bold text-slate-900 font-mono"><?= format_inr($s['total_raised']) ?></td>
-                                            <td class="text-right"><?= render_status_badge(strtoupper($s['verified_status'])) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </tbody>
-                        </table>
+                <!-- Recent Audit Trail -->
+                <div class="card-clean rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                            <i data-lucide="history" class="w-3.5 h-3.5 text-blue-600"></i>
+                            <span>Recent Audit Activity</span>
+                        </h3>
+                        <a href="<?= url('admin/audit_logs.php') ?>" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-700 font-bold whitespace-nowrap">
+                            <span>View All</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </a>
+                    </div>
+                    <div class="space-y-2">
+                        <?php foreach ($recentAudit as $al): ?>
+                            <div class="flex items-start space-x-2.5 p-2 rounded-lg hover:bg-slate-50 transition">
+                                <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <i data-lucide="activity" class="w-3 h-3 text-slate-500"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[11px] text-slate-700">
+                                        <strong class="text-slate-900"><?= htmlspecialchars($al['actor_name'] ?? 'System') ?></strong>
+                                        <span class="text-slate-500"><?= htmlspecialchars($al['action']) ?></span>
+                                        <span class="text-blue-600 font-medium"><?= htmlspecialchars($al['entity_type']) ?></span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400"><?= date('d M Y, H:i', strtotime($al['created_at'])) ?></div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -325,7 +393,7 @@ $kycTotal = $stats['pending_kyc'] + $stats['approved_kyc'] + $stats['rejected_ky
 
     <script>
         lucide.createIcons();
-        gsap.from("#reports-main", { duration: 0.3, y: 8, opacity: 0, ease: "power2.out" });
+        gsap.from("#reports-main > *", { duration: 0.5, y: 15, opacity: 0, stagger: 0.08, ease: "power2.out" });
     </script>
 </body>
 </html>

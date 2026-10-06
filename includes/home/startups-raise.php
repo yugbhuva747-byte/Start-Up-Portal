@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 /**
  * ============================================================================
  * include/home/startups-raise.php
  * ----------------------------------------------------------------------------
- * SECTION 06 — FOR STARTUPS (COLORFUL PASTEL 3D CAROUSEL EDITION)
+ * SECTION 06 â€” FOR STARTUPS (COLORFUL PASTEL 3D CAROUSEL EDITION)
  *
  * Features:
  * - 2-Second Auto-Rotation Loop
@@ -391,7 +391,7 @@
                 NG</div>
               <div>
                 <span class="text-[12.5px] font-bold nx-inner-title block leading-tight">NovaGrid</span>
-                <span class="text-[10px] nx-inner-sub">Clean Energy · Ahmedabad</span>
+                <span class="text-[10px] nx-inner-sub">Clean Energy Â· Ahmedabad</span>
               </div>
             </div>
             <span class="text-[10px] font-mono uppercase tracking-wider text-amber-200 font-bold">STARTUP</span>
@@ -470,12 +470,12 @@
               <span class="text-[9px] font-mono nx-inner-sub block">STAGE</span>
               <span class="text-[11px] font-bold nx-inner-title">STARTUP</span>
             </div>
-            <span class="text-[11px] text-purple-600">→</span>
+            <span class="text-[11px] text-purple-600">â†’</span>
             <div class="flex-1 p-2 rounded-xl border nx-inner-pill">
               <span class="text-[9px] font-mono nx-inner-sub block">DIALOGUE</span>
               <span class="text-[11px] font-bold nx-inner-title">CONNECT</span>
             </div>
-            <span class="text-[11px] text-purple-600">→</span>
+            <span class="text-[11px] text-purple-600">â†’</span>
             <div class="flex-1 p-2 rounded-xl border nx-inner-pill">
               <span class="text-[9px] font-mono nx-inner-sub block">DECIDE</span>
               <span class="text-[11px] font-bold nx-inner-title">NEXT</span>
@@ -504,26 +504,26 @@
     <div
       class="max-w-[960px] mx-auto py-5 mb-10 border-y border-purple-200/80 flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-[10.5px] sm:text-[11.5px] font-bold text-slate-500 tracking-widest uppercase">
       <span>BUILD YOUR PRESENCE</span>
-      <span class="text-purple-600">→</span>
+      <span class="text-purple-600">â†’</span>
       <span>SHARE YOUR STORY</span>
-      <span class="text-pink-600">→</span>
+      <span class="text-pink-600">â†’</span>
       <span class="text-purple-900 font-extrabold">GET DISCOVERED</span>
-      <span class="text-amber-600">→</span>
+      <span class="text-amber-600">â†’</span>
       <span>CONNECT</span>
     </div>
 
     <!-- CTAs with Pastel Colors -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
-      <a href="login.php?role=startup"
+      <a href="auth/login.php?role=startup"
         class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2.5 shadow-md shadow-pink-500/25 transition-all duration-200 hover:brightness-105 hover:shadow-lg">
         <span>Create Your Company Profile</span>
-        <span class="transition-transform duration-200 group-hover:translate-x-1 text-sm">→</span>
+        <span class="transition-transform duration-200 group-hover:translate-x-1 text-sm">â†’</span>
       </a>
 
-      <a href="login.php?role=startup"
+      <a href="auth/login.php?role=startup"
         class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-white text-purple-700 border border-purple-200 font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2 transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 shadow-xs">
         <span>Learn How It Works</span>
-        <span class="text-purple-500 transition-transform duration-200 group-hover:translate-x-0.5 text-sm">→</span>
+        <span class="text-purple-500 transition-transform duration-200 group-hover:translate-x-0.5 text-sm">â†’</span>
       </a>
     </div>
 

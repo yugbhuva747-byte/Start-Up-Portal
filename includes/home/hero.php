@@ -466,12 +466,12 @@
 
       <!-- Action Buttons -->
       <div class="nx-hero-ctas" id="hero-ctas">
-        <a href="login.php?role=investor" class="nx-btn-primary" id="hero-btn-investor" aria-label="Access as Investor">
+        <a href="auth/login.php?role=investor" class="nx-btn-primary" id="hero-btn-investor" aria-label="Access as Investor">
           <span>Explore Opportunities</span>
           <span class="nx-arrow" aria-hidden="true">&rarr;</span>
         </a>
 
-        <a href="login.php?role=startup" class="nx-btn-secondary" id="hero-btn-startup" aria-label="Sign in as Startup">
+        <a href="auth/login.php?role=startup" class="nx-btn-secondary" id="hero-btn-startup" aria-label="Sign in as Startup">
           <span>For Startups</span>
           <span class="nx-arrow" aria-hidden="true">&rarr;</span>
         </a>

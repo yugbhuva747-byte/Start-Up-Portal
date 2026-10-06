@@ -51,7 +51,7 @@ All demo accounts share the same default password: **`password123`**
 - **Type:** Angel Syndicate Lead (DeepTech / AI / FinTech)
 - **Email:** `investor@venturecapital.com`
 - **Password:** `password123`
-- **Dashboard:** [http://localhost/start%20up%20portal/investor/dashboard.php](http://localhost/start%20up%20portal/investor/dashboard.php)
+- **Dashboard:** [http://localhost/start%20up%20portal/investor/discover.php](http://localhost/start%20up%20portal/investor/discover.php)
 - **Full Profile View:** [http://localhost/start%20up%20portal/investor/view.php](http://localhost/start%20up%20portal/investor/view.php)
 
 ### Investor 2 (Venture Capital Partner)
@@ -59,7 +59,7 @@ All demo accounts share the same default password: **`password123`**
 - **Type:** Venture Capital Partner (HealthTech / CleanTech / SaaS)
 - **Email:** `ananya@angelsyn.io`
 - **Password:** `password123`
-- **Dashboard:** [http://localhost/start%20up%20portal/investor/dashboard.php](http://localhost/start%20up%20portal/investor/dashboard.php)
+- **Dashboard:** [http://localhost/start%20up%20portal/investor/discover.php](http://localhost/start%20up%20portal/investor/discover.php)
 - **Full Profile View:** [http://localhost/start%20up%20portal/investor/view.php](http://localhost/start%20up%20portal/investor/view.php)
 
 ---
@@ -76,6 +76,7 @@ On the login screen ([http://localhost/start%20up%20portal/auth/login.php](http:
 - **User:** `root`
 - **Password:** *(empty)*
 - **Reset/Re-seed URL:** [http://localhost/start%20up%20portal/setup.php](http://localhost/start%20up%20portal/setup.php)
+- **Security Operations Center (WAF/Firewall):** [http://localhost/start%20up%20portal/admin/security.php](http://localhost/start%20up%20portal/admin/security.php)
 
 
 back up 2fa code 

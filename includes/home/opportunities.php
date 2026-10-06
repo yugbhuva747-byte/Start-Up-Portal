@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 /**
  * ============================================================================
  * include/home/opportunities.php
  * ----------------------------------------------------------------------------
- * SECTION 03 — INVESTMENT OPPORTUNITIES
+ * SECTION 03 â€” INVESTMENT OPPORTUNITIES
  *
  * Heading: OPPORTUNITIES WORTH DISCOVERING.
  * Background: #FFFFFF / #FAFAF8
@@ -12,7 +12,7 @@
  * - Unique Dynamic GSAP Clip-Path Viewport Expansion on Scroll Scrub
  * - Staggered polygon clip-path entrance reveal on cards
  * - Geometric architectural clip-path badges and metrics containers
- * - Seamless 360° Infinite Continuous Horizontal Scroll (Infinite Time)
+ * - Seamless 360Â° Infinite Continuous Horizontal Scroll (Infinite Time)
  * - Pause on hover for effortless reading and interaction
  * - Drag/touch scroll support with manual Prev/Next navigation controls
  * - High-end editorial card architecture with metrics, verified tags & dark blue accents
@@ -25,15 +25,15 @@ $opportunities = [
     'name' => 'Kinetix Robotics',
     'logo_initial' => 'KR',
     'sector' => 'Industrial Robotics',
-    'subsector' => 'Autonomous Logistics · AI Fleet Sync',
+    'subsector' => 'Autonomous Logistics Â· AI Fleet Sync',
     'stage' => 'Series A',
     'location' => 'Bengaluru',
     'image' => 'assets/images/opportunities/kinetix-robotics.jpg',
-    'founders' => 'Ex-ISRO · IISc Robotics Lab',
+    'founders' => 'Ex-ISRO Â· IISc Robotics Lab',
     'backer' => 'Peak XV Surge',
     'desc' => 'Building autonomous fleet coordination systems for high-throughput supply chains and e-commerce distribution centers across South Asia.',
-    'target' => '₹8.5 Cr',
-    'arr' => '₹6.2 Cr',
+    'target' => 'â‚¹8.5 Cr',
+    'arr' => 'â‚¹6.2 Cr',
     'booked' => '82% Booked',
     'booked_pct' => 82,
     'badge' => 'FEATURED DEAL',
@@ -43,15 +43,15 @@ $opportunities = [
     'name' => 'GreenLeaf Health',
     'logo_initial' => 'GL',
     'sector' => 'HealthTech',
-    'subsector' => 'Point-of-Care Diagnostics · Pathology',
+    'subsector' => 'Point-of-Care Diagnostics Â· Pathology',
     'stage' => 'Seed Round',
     'location' => 'Pune',
     'image' => 'assets/images/opportunities/greenleaf-health.jpg',
-    'founders' => 'AIIMS Clinicians · IIT-B Bio',
+    'founders' => 'AIIMS Clinicians Â· IIT-B Bio',
     'backer' => 'Blume Ventures',
     'desc' => 'Affordable preventive diagnostic devices and automated remote pathology access designed for emerging tier-2 & tier-3 urban corridors.',
-    'target' => '₹2.5 Cr',
-    'arr' => '₹1.4 Cr',
+    'target' => 'â‚¹2.5 Cr',
+    'arr' => 'â‚¹1.4 Cr',
     'booked' => '65% Booked',
     'booked_pct' => 65,
     'badge' => 'DILIGENCE READY',
@@ -61,15 +61,15 @@ $opportunities = [
     'name' => 'Aerovex Mobility',
     'logo_initial' => 'AM',
     'sector' => 'CleanTech',
-    'subsector' => 'Heavy Electric Powertrains · Fleet Tech',
+    'subsector' => 'Heavy Electric Powertrains Â· Fleet Tech',
     'stage' => 'Pre-Series A',
     'location' => 'Chennai',
     'image' => 'assets/images/opportunities/aerovex-mobility.jpg',
     'founders' => 'Ex-Tata Motors EV Team',
     'backer' => 'Elev8 Capital',
     'desc' => 'Next-generation high-efficiency electric commercial powertrains built for demanding multi-shift freight delivery and industrial haulage.',
-    'target' => '₹4.0 Cr',
-    'arr' => '₹3.1 Cr',
+    'target' => 'â‚¹4.0 Cr',
+    'arr' => 'â‚¹3.1 Cr',
     'booked' => '90% Booked',
     'booked_pct' => 90,
     'badge' => 'FINAL ALLOCATION',
@@ -79,15 +79,15 @@ $opportunities = [
     'name' => 'NovaGrid Energy',
     'logo_initial' => 'NG',
     'sector' => 'ClimateTech',
-    'subsector' => 'Grid-Scale Storage · Smart Metering',
+    'subsector' => 'Grid-Scale Storage Â· Smart Metering',
     'stage' => 'Series A',
     'location' => 'Ahmedabad',
     'image' => 'assets/images/opportunities/novagrid-energy.jpg',
-    'founders' => 'Ex-Adani Green · IIT-D Power',
+    'founders' => 'Ex-Adani Green Â· IIT-D Power',
     'backer' => 'Institutional Lead',
     'desc' => 'Decentralized battery energy storage systems with algorithmic power arbitrating for commercial microgrids and green data centers.',
-    'target' => '₹12.0 Cr',
-    'arr' => '₹9.5 Cr',
+    'target' => 'â‚¹12.0 Cr',
+    'arr' => 'â‚¹9.5 Cr',
     'booked' => '74% Booked',
     'booked_pct' => 74,
     'badge' => 'INSTITUTIONAL LEAD',
@@ -97,15 +97,15 @@ $opportunities = [
     'name' => 'Veloce Photonics',
     'logo_initial' => 'VP',
     'sector' => 'DeepTech',
-    'subsector' => 'Silicon Optical Chips · AI Interconnects',
+    'subsector' => 'Silicon Optical Chips Â· AI Interconnects',
     'stage' => 'Seed Round',
     'location' => 'Hyderabad',
     'image' => 'assets/images/opportunities/veloce-photonics.jpg',
-    'founders' => 'Ex-Intel Photonics · PhD Caltech',
+    'founders' => 'Ex-Intel Photonics Â· PhD Caltech',
     'backer' => 'Accel Atoms',
     'desc' => 'Ultra-low latency silicon optical interconnects cutting GPU compute cluster latency by 80% with proprietary micro-ring resonators.',
-    'target' => '₹6.0 Cr',
-    'arr' => '₹2.8 Cr',
+    'target' => 'â‚¹6.0 Cr',
+    'arr' => 'â‚¹2.8 Cr',
     'booked' => '88% Booked',
     'booked_pct' => 88,
     'badge' => '8 PATENTS GRANTED',
@@ -115,15 +115,15 @@ $opportunities = [
     'name' => 'AgroPulse AI',
     'logo_initial' => 'AP',
     'sector' => 'AgriTech',
-    'subsector' => 'Satellite Hyperspectral · Yield Forensics',
+    'subsector' => 'Satellite Hyperspectral Â· Yield Forensics',
     'stage' => 'Pre-Series A',
     'location' => 'Chandigarh',
     'image' => 'assets/images/opportunities/agropulse-ai.jpg',
     'founders' => 'ISRO Remote Sensing Fellows',
     'backer' => 'Kalaari Capital',
     'desc' => 'Sub-meter satellite radar data combined with farm IoT telemetry for real-time crop resilience and institutional underwriting.',
-    'target' => '₹3.5 Cr',
-    'arr' => '₹2.2 Cr',
+    'target' => 'â‚¹3.5 Cr',
+    'arr' => 'â‚¹2.2 Cr',
     'booked' => '70% Booked',
     'booked_pct' => 70,
     'badge' => 'COMMERCIAL PILOT',
@@ -370,7 +370,7 @@ $opportunities = [
           </button>
         </div>
 
-        <a href="login.php?role=investor" class="inline-flex items-center gap-2 h-[44px] px-5 rounded-full bg-white border border-purple-200 text-[13.5px] font-bold text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all nx-hoverable shadow-xs">
+        <a href="auth/login.php?role=investor" class="inline-flex items-center gap-2 h-[44px] px-5 rounded-full bg-white border border-purple-200 text-[13.5px] font-bold text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all nx-hoverable shadow-xs">
           <span>View all opportunities</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
@@ -398,7 +398,7 @@ $opportunities = [
                 <div class="nx-opp-img-wrap relative">
                   <img
                     src="<?php echo htmlspecialchars(function_exists('url') ? url($opp['image']) : $opp['image']); ?>"
-                    alt="<?php echo htmlspecialchars($opp['name']); ?> — <?php echo htmlspecialchars($opp['sector']); ?>"
+                    alt="<?php echo htmlspecialchars($opp['name']); ?> â€” <?php echo htmlspecialchars($opp['sector']); ?>"
                     loading="lazy"
                   />
                   <!-- Gradient Vignette -->
@@ -408,7 +408,7 @@ $opportunities = [
                   <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 z-10">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold tracking-wider text-white uppercase border border-white/20">
                       <span class="w-1.5 h-1.5 rounded-full bg-[#60A5FA] animate-pulse"></span>
-                      <?php echo htmlspecialchars($opp['stage']); ?> · <?php echo htmlspecialchars($opp['location']); ?>
+                      <?php echo htmlspecialchars($opp['stage']); ?> Â· <?php echo htmlspecialchars($opp['location']); ?>
                     </span>
 
                     <span class="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r from-purple-600 to-pink-600 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/25 shadow-xs">
@@ -450,7 +450,7 @@ $opportunities = [
                     <span class="text-slate-400">Founders:</span> <?php echo htmlspecialchars($opp['founders']); ?>
                   </span>
                   <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-purple-50 border border-purple-200 text-purple-700 font-bold">
-                    <span>⚡ <?php echo htmlspecialchars($opp['backer']); ?></span>
+                    <span>âš¡ <?php echo htmlspecialchars($opp['backer']); ?></span>
                   </span>
                 </div>
 
@@ -492,7 +492,7 @@ $opportunities = [
                   VERIFIED DATA ROOM
                 </span>
 
-                <a href="login.php?role=investor" class="inline-flex items-center gap-1.5 font-bold text-purple-600 hover:text-purple-800 transition-colors">
+                <a href="auth/login.php?role=investor" class="inline-flex items-center gap-1.5 font-bold text-purple-600 hover:text-purple-800 transition-colors">
                   <span>View Deal</span>
                   <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
                 </a>
@@ -512,7 +512,7 @@ $opportunities = [
   <div class="max-w-[1440px] mx-auto px-6 lg:px-14 mt-6 flex flex-col sm:flex-row items-center justify-between text-[11.5px] font-mono text-[#686868]/80 gap-3">
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-      <span>REAL-TIME PIPELINE UPDATES · HOVER TO PAUSE</span>
+      <span>REAL-TIME PIPELINE UPDATES Â· HOVER TO PAUSE</span>
     </div>
     <div class="hidden md:block">
       DRAG OR USE ARROWS TO BROWSE DEALS

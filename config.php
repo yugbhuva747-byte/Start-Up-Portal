@@ -4,6 +4,9 @@
  * Automatically loads .env and defines standard constants & session setup
  */
 
+// Set Global Timezone (IST - India / Asia/Kolkata)
+date_default_timezone_set('Asia/Kolkata');
+
 // 1. Secure Session Cookie Configuration
 if (session_status() === PHP_SESSION_NONE) {
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443);
@@ -143,7 +146,27 @@ define('MAIL_ENCRYPTION', $env['MAIL_ENCRYPTION'] ?? 'tls');
 define('MAIL_FROM_ADDRESS', $env['MAIL_FROM_ADDRESS'] ?? 'notifications@startupportal.com');
 define('MAIL_FROM_NAME', $env['MAIL_FROM_NAME'] ?? APP_NAME);
 
+// EmailJS Service Configuration (Client-side & Server API)
+define('EMAILJS_SERVICE_ID', $env['EMAILJS_SERVICE_ID'] ?? (getenv('EMAILJS_SERVICE_ID') ?: 'service_vhn18xd'));
+define('EMAILJS_TEMPLATE_ID', $env['EMAILJS_TEMPLATE_ID'] ?? (getenv('EMAILJS_TEMPLATE_ID') ?: 'template_fpdqjwe'));
+define('EMAILJS_PUBLIC_KEY', $env['EMAILJS_PUBLIC_KEY'] ?? (getenv('EMAILJS_PUBLIC_KEY') ?: 'H5UX1F22-jBkc8RZP'));
+
 // Include database, helpers & mailer
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/security_guard.php';
 require_once __DIR__ . '/includes/mailer.php';
+
+// Boot Multi-Layer Security Guard & WAF
+SecurityGuard::init();
+
+// Auto-restore session from persistent remember-me cookie if not logged in
+if (empty($_SESSION['user_id']) && !empty($_COOKIE['remember_token'])) {
+    check_remember_me_cookie();
+}
+
+// Enforce global maintenance mode across all public and non-admin routes
+if (function_exists('enforce_maintenance_mode')) {
+    enforce_maintenance_mode();
+}
+

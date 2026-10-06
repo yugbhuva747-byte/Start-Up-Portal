@@ -9,6 +9,10 @@ require_once __DIR__ . '/../config.php';
 
 if (auth_check()) {
     $u = current_user();
+    if ($u && $u['role'] !== 'admin' && function_exists('is_maintenance_mode') && is_maintenance_mode()) {
+        header('Location: ' . url('maintenance.php'));
+        exit;
+    }
     if ($u && $u['role'] === 'admin' && empty($_SESSION['2fa_verified']) && is_admin_2fa_enforced((int)$u['id'])) {
         if (!is_admin_totp_setup((int)$u['id'])) {
             header('Location: ' . url('auth/setup_2fa.php'));
@@ -33,56 +37,93 @@ $flash = get_flash();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
         $error = 'Invalid security token. Please try again.';
+    } elseif (function_exists('security_check_honeypot') && security_check_honeypot()) {
+        $error = 'Suspicious automated request rejected by security shield.';
     } else {
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        $remember = !empty($_POST['remember']);
 
         if (empty($email) || empty($password)) {
             $error = 'Please enter both email and password.';
         } else {
             $db = get_db();
             if ($db) {
-                $stmt = $db->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
-                $stmt->execute([$email]);
-                $user = $stmt->fetch();
+                $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 
-                if ($user && password_verify($password, $user['password_hash'])) {
-                    if ($user['status'] === 'suspended') {
-                        $error = 'Your account has been suspended. Please contact portal compliance.';
-                    } elseif ($user['role'] === 'admin' && is_admin_2fa_enforced((int)$user['id'])) {
-                        // Admin 2FA Verification Flow
-                        unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_name'], $_SESSION['2fa_verified']);
-                        $_SESSION['2fa_pending_user_id'] = (int)$user['id'];
-                        $_SESSION['2fa_pending_email'] = $user['email'];
-                        $_SESSION['2fa_pending_role'] = $user['role'];
-                        $_SESSION['2fa_pending_name'] = $user['name'];
+                // Check Brute-Force Rate Limiting
+                if (function_exists('is_login_rate_limited') && is_login_rate_limited($clientIp, $email)) {
+                    $error = 'Security Alert: Too many failed login attempts. Please wait 15 minutes before trying again.';
+                    log_security_event(null, 'LOGIN_LOCKED_OUT', 'high', "Temporary lockout triggered for IP: {$clientIp}, Email: {$email}");
+                } else {
+                    $stmt = $db->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
+                    $stmt->execute([$email]);
+                    $user = $stmt->fetch();
 
-                        if (!is_admin_totp_setup((int)$user['id'])) {
-                            header('Location: ' . url('auth/setup_2fa.php'));
-                            exit;
+                    if ($user && password_verify($password, $user['password_hash'])) {
+                        // Clear failure count on success
+                        if (function_exists('clear_failed_logins')) {
+                            clear_failed_logins($clientIp, $email);
                         }
 
-                        header('Location: ' . url('auth/verify_2fa.php'));
-                        exit;
+                        if ($user['status'] === 'suspended') {
+                            $error = 'Your account has been suspended. Please contact portal compliance.';
+                            log_security_event($user['id'], 'LOGIN_SUSPENDED_USER', 'medium', "Suspended user tried to log in: {$email}");
+                        } elseif (function_exists('is_maintenance_mode') && is_maintenance_mode() && $user['role'] !== 'admin') {
+                            $error = 'Access Restricted: The platform is currently in Maintenance Mode. Only administrators are permitted to sign in.';
+                            log_security_event($user['id'], 'MAINTENANCE_LOGIN_BLOCKED', 'medium', "Non-admin user ({$user['role']}) tried to log in during maintenance mode: {$email}");
+                        } elseif ($user['role'] === 'admin' && is_admin_2fa_enforced((int)$user['id'])) {
+                            // Admin 2FA Verification Flow
+                            unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_name'], $_SESSION['2fa_verified']);
+                            $_SESSION['2fa_pending_user_id'] = (int)$user['id'];
+                            $_SESSION['2fa_pending_email'] = $user['email'];
+                            $_SESSION['2fa_pending_role'] = $user['role'];
+                            $_SESSION['2fa_pending_name'] = $user['name'];
+                            $_SESSION['2fa_pending_remember'] = $remember;
+
+                            if (!is_admin_totp_setup((int)$user['id'])) {
+                                header('Location: ' . url('auth/setup_2fa.php'));
+                                exit;
+                            }
+
+                            header('Location: ' . url('auth/verify_2fa.php'));
+                            exit;
+                        } else {
+                            session_regenerate_id(true);
+                            $_SESSION['user_id'] = $user['id'];
+                            $_SESSION['user_role'] = $user['role'];
+                            $_SESSION['user_name'] = $user['name'];
+
+                            // Persistent Cookie Session ("Remember Me")
+                            if ($remember) {
+                                set_remember_me_cookie((int)$user['id'], 30);
+                            } else {
+                                clear_remember_me_cookie();
+                            }
+
+                            log_audit($user['id'], 'USER_LOGIN', 'users', $user['id'], 'User logged into portal' . ($remember ? ' (Remember Me activated)' : ''));
+
+                            // Register active login session
+                            $sessionToken = bin2hex(random_bytes(32));
+                            $_SESSION['session_token'] = $sessionToken;
+                            $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
+                            $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$user['id'], $sessionToken, $clientIp, $ua]);
+
+                            $redirect = match($user['role']) {
+                                'founder' => 'founder/dashboard.php',
+                                'investor' => 'investor/dashboard.php',
+                                'admin' => 'admin/dashboard.php',
+                                default => 'index.php'
+                            };
+                            header('Location: ' . url($redirect));
+                            exit;
+                        }
                     } else {
-                        session_regenerate_id(true);
-                        $_SESSION['user_id'] = $user['id'];
-                        $_SESSION['user_role'] = $user['role'];
-                        $_SESSION['user_name'] = $user['name'];
-
-                        log_audit($user['id'], 'USER_LOGIN', 'users', $user['id'], 'User logged into portal');
-
-                        $redirect = match($user['role']) {
-                            'founder' => 'founder/dashboard.php',
-                            'investor' => 'investor/dashboard.php',
-                            'admin' => 'admin/dashboard.php',
-                            default => 'index.php'
-                        };
-                        header('Location: ' . url($redirect));
-                        exit;
+                        if (function_exists('record_failed_login')) {
+                            record_failed_login($clientIp, $email);
+                        }
+                        $error = 'Invalid email address or password.';
                     }
-                } else {
-                    $error = 'Invalid email address or password.';
                 }
             } else {
                 $error = 'Database connection error. Please run setup.php.';
@@ -381,44 +422,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </p>
                 </div>
 
-                <!-- ==============================================
-                     FAST DEMO FILL SELECTOR (UPGRADED)
-                     ============================================== -->
-                <div class="mb-5 p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="text-slate-600 font-bold flex items-center space-x-1.5 text-[10px] uppercase tracking-wider">
-                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                            <span>Fast Demo Fill:</span>
-                        </div>
-                        <span class="text-[9.5px] text-slate-400 font-medium">One-click auto fill</span>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-1.5 text-center" id="demo-buttons">
-                        <button type="button" 
-                                onclick="fillCreds('founder', 'founder@techpulse.io', 'password123')" 
-                                id="demo-btn-founder"
-                                class="px-2 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                            <i data-lucide="rocket" class="w-3.5 h-3.5 text-indigo-600"></i>
-                            <span>Founder</span>
-                        </button>
-                        <button type="button" 
-                                onclick="fillCreds('investor', 'investor@venturecapital.com', 'password123')" 
-                                id="demo-btn-investor"
-                                class="px-2 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
-                            <span>Investor</span>
-                        </button>
-                        <button type="button" 
-                                onclick="fillCreds('admin', 'admin@portal.com', 'password123')" 
-                                id="demo-btn-admin"
-                                class="px-2 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                            <i data-lucide="shield" class="w-3.5 h-3.5 text-violet-600"></i>
-                            <span>Admin</span>
-                        </button>
-                    </div>
-                </div>
 
                 <!-- Alerts (Flash & Errors) -->
+                <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
+                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 text-amber-600 mt-0.5"></i>
+                        <div>
+                            <span class="font-bold block">Maintenance Mode Active</span>
+                            <span class="text-[11px] text-amber-800 leading-relaxed font-normal">Public, Founder &amp; Investor access is temporarily paused. Only Platform Administrators may sign in.</span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <?php if ($flash): ?>
                     <div class="mb-4 p-3 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2 shadow-sm">
                         <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0 text-emerald-600"></i>
@@ -427,15 +442,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <?php if (!empty($error)): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-2 shadow-sm">
-                        <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
-                        <span><?= htmlspecialchars($error) ?></span>
+                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
+                            <span><?= htmlspecialchars($error) ?></span>
+                        </div>
+                        <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-[11px] text-indigo-700 hover:text-indigo-900 font-bold underline whitespace-nowrap ml-2">
+                            Reset Password?
+                        </a>
                     </div>
                 <?php endif; ?>
 
                 <!-- Sign In Form -->
                 <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-3.5" id="loginForm">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <?= security_honeypot_field() ?>
 
                     <!-- Email Field -->
                     <div>
@@ -455,7 +476,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                                 Password
                             </label>
-                            <a href="<?= url('auth/forgot_password.php') ?>" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold transition">
+                            <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-[11px] text-indigo-600 hover:text-indigo-800 font-bold transition">
                                 Forgot Password?
                             </a>
                         </div>
@@ -545,36 +566,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ease: "power2.out" 
         });
 
-        // Fast Demo Credentials Filler
-        function fillCreds(role, email, password) {
-            const emailInput = document.getElementById('email');
-            const passInput = document.getElementById('password');
-
-            emailInput.value = email;
-            passInput.value = password;
-
-            // Highlight animation on inputs
-            [emailInput, passInput].forEach(el => {
-                el.classList.remove('input-highlight');
-                void el.offsetWidth; // trigger reflow
-                el.classList.add('input-highlight');
-            });
-
-            // Update button styles
-            const roles = ['founder', 'investor', 'admin'];
-            roles.forEach(r => {
-                const btn = document.getElementById('demo-btn-' + r);
-                if (btn) {
-                    if (r === role) {
-                        btn.classList.add('bg-indigo-50', 'border-indigo-300', 'text-indigo-700');
-                        btn.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
-                    } else {
-                        btn.classList.remove('bg-indigo-50', 'border-indigo-300', 'text-indigo-700');
-                        btn.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
-                    }
-                }
-            });
-        }
 
         // Toggle Password Visibility
         function togglePasswordVisibility() {
@@ -600,6 +591,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 btnText.textContent = 'Verifying credentials...';
             }
         });
+
+        // Dynamic forward of typed email to Forgot Password page
+        const forgotPassLink = document.getElementById('forgotPassLink');
+        if (forgotPassLink) {
+            forgotPassLink.addEventListener('click', function() {
+                const emailInput = document.getElementById('email');
+                if (emailInput && emailInput.value.trim()) {
+                    this.href = '<?= url('auth/forgot_password.php') ?>?email=' + encodeURIComponent(emailInput.value.trim());
+                }
+            });
+        }
     </script>
 </body>
 </html>

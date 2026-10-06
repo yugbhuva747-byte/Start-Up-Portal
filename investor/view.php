@@ -1,7 +1,7 @@
 <?php
 /**
  * Investor Module: Full Public / Detail Investor Profile
- * Clean White / Light Theme, Small Crisp Typography
+ * LinkedIn Professional Profile + Premium Investor Network Experience
  */
 require_once __DIR__ . '/../config.php';
 $currentUser = require_auth(); // Accessible by founder, investor, admin
@@ -63,7 +63,7 @@ if ($db) {
     $portfolio = $pStmt->fetchAll();
 
     foreach ($portfolio as $item) {
-        $totalDeployed += (float)$item['amount_invested'];
+        $totalDeployed += (float) $item['amount_invested'];
     }
 }
 
@@ -73,27 +73,45 @@ $flash = get_flash();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?> • <?= APP_NAME ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .card-clean {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+        @font-face {
+            font-family: "Vay Portal", Sans-serif;
+            src: local('Vay Portal - Regular'), local('Vay Portal'), local('Plus Jakarta Sans');
+        }
+
+        :root {
+            --inv-primary: #123B7A;
+            --inv-navy: #0B1F3A;
+            --inv-secondary: #315F9F;
+            --inv-light-blue: #EAF2FF;
+            --inv-bg: #F4F2EE;
+            --inv-text: #111827;
+            --inv-text-sec: #667085;
+            --inv-border: #E4E8EF;
+        }
+
+        body {
+            font-family: 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+            background-color: var(--inv-bg);
+            color: var(--inv-text);
+        }
+
+        .profile-row-hover:hover {
+            background-color: #FAFBFD;
         }
     </style>
 </head>
-<body class="bg-[#FAFAFB] text-slate-900 flex min-h-screen">
-    
+
+<body class="bg-[#F4F2EE] text-[#111827] flex min-h-screen antialiased dark:bg-[#0B0F19] dark:text-slate-100">
+
     <!-- Sidebar Navigation based on current user role -->
-    <?php 
+    <?php
     if ($currentUser['role'] === 'founder') {
         include __DIR__ . '/../includes/founder/sidebar.php';
     } elseif ($currentUser['role'] === 'investor') {
@@ -103,8 +121,8 @@ $flash = get_flash();
     }
     ?>
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
-        <?php 
+    <div class="flex-1 flex flex-col min-w-0">
+        <?php
         if ($currentUser['role'] === 'founder') {
             include __DIR__ . '/../includes/founder/navbar.php';
         } elseif ($currentUser['role'] === 'investor') {
@@ -114,14 +132,16 @@ $flash = get_flash();
         }
         ?>
 
-        <main class="p-3.5 sm:p-6 md:p-8 space-y-6 max-w-5xl w-full mx-auto" id="investor-view-main">
-            
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="investor-view-main">
+
             <?php if ($flash): ?>
-                <div class="p-3.5 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200' ?> flex items-center space-x-2">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                <div
+                    class="p-4 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2">
+                    <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
                 </div>
             <?php endif; ?>
+
 
             <!-- Breadcrumb Navigation -->
             <div class="flex items-center justify-between text-xs sm:text-sm text-slate-500">
@@ -146,15 +166,25 @@ $flash = get_flash();
                         <i data-lucide="edit-3" class="w-4 h-4"></i>
                         <span>Edit Thesis & Profile</span>
                     </a>
+
                 <?php endif; ?>
             </div>
 
-            <!-- Master Profile Header Card -->
-            <div class="card-clean rounded-2xl overflow-hidden relative">
+            <!-- LINKEDIN-STYLE PROFESSIONAL PROFILE HEADER -->
+            <div class="bg-white border border-[#E4E8EF] rounded-2xl overflow-hidden shadow-sm">
                 <!-- Cover Banner Strip -->
-                <div class="h-28 bg-gradient-to-r from-slate-100 via-teal-50/60 to-slate-100 border-b border-slate-200/80 relative">
-                    <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#0f172a_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                <div class="h-36 sm:h-44 bg-gradient-to-r from-[#0B1F3A] via-[#123B7A] to-[#315F9F] relative">
+                    <div
+                        class="absolute inset-0 opacity-15 bg-[radial-gradient(#FFFFFF_1px,transparent_1px)] [background-size:20px_20px]">
+                    </div>
+                    <div class="absolute top-4 right-4 flex items-center space-x-2">
+                        <span
+                            class="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-[10.5px] font-semibold border border-white/20 uppercase tracking-wider">
+                            SEBI Accredited Syndicate
+                        </span>
+                    </div>
                 </div>
+
 
                 <div class="px-5 sm:px-6 pb-6 pt-0 relative">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
@@ -162,15 +192,18 @@ $flash = get_flash();
                             <div class="relative -mt-12 flex-shrink-0">
                                 <img src="<?= $investor['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160' ?>" 
                                      class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md bg-white">
+
                                 <?php if ($investor['is_verified']): ?>
-                                    <div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-white shadow-sm" title="Verified Investor">
-                                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                    <div class="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-[#123B7A] border-2 border-white flex items-center justify-center text-white shadow-md"
+                                        title="SEBI Verified Investor">
+                                        <i data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
                                     </div>
                                 <?php endif; ?>
                             </div>
+
                             <div class="pt-2">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($investor['name']) ?></h1>
+                                    <h1 class="text-lg sm:text-xl font-bold text-slate-900 tracking-tight leading-tight"><?= htmlspecialchars($investor['name']) ?></h1>
                                     <span class="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold">
                                         <?= strtoupper($profile['investor_type'] ?? 'ANGEL INVESTOR') ?>
                                     </span>
@@ -190,14 +223,16 @@ $flash = get_flash();
                                     <span class="flex items-center space-x-1.5">
                                         <i data-lucide="calendar" class="w-3.5 h-3.5 text-slate-400"></i>
                                         <span>Member since <?= date('M Y', strtotime($investor['created_at'])) ?></span>
+
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Actions -->
-                        <div class="flex items-center space-x-2.5 pt-2 md:pt-0">
+                        <!-- Top Level Action Buttons -->
+                        <div class="flex items-center space-x-3 pt-2 md:pt-0">
                             <?php if (!$isSelf): ?>
+
                                 <a href="<?= url('founder/messages.php') ?>" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-sm transition flex items-center space-x-2">
                                     <i data-lucide="message-square" class="w-4 h-4"></i>
                                     <span>Pitch Startup / Chat</span>
@@ -206,10 +241,12 @@ $flash = get_flash();
                                 <a href="<?= url('investor/profile.php') ?>" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2">
                                     <i data-lucide="settings" class="w-4 h-4"></i>
                                     <span>Thesis & Preferences</span>
+
                                 </a>
                             <?php endif; ?>
                         </div>
                     </div>
+
 
                     <!-- Quick Metrics Strip -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 pt-4 text-xs sm:text-sm">
@@ -225,18 +262,24 @@ $flash = get_flash();
                             <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Check Size Range</span>
                             <div class="text-xs sm:text-sm font-extrabold text-slate-800 mt-1">
                                 <?= format_inr($preferences['min_ticket'] ?? 250000) ?> - <?= format_inr($preferences['max_ticket'] ?? 5000000) ?>
+
                             </div>
+                            <span class="text-[10.5px] text-[#667085]">Per company round</span>
                         </div>
+
                         <div class="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-100">
                             <span class="text-xs uppercase font-bold text-slate-500 tracking-wider">Accreditation</span>
                             <div class="text-lg sm:text-xl font-extrabold text-emerald-600 mt-1 flex items-center space-x-1.5">
                                 <i data-lucide="shield-check" class="w-5 h-5"></i>
                                 <span>Verified</span>
+
                             </div>
+                            <span class="text-[10.5px] text-[#667085]">DigiLocker verified</span>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- Two-Column Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -321,9 +364,11 @@ $flash = get_flash();
                                     <span>PAN Verification</span>
                                 </span>
                                 <span class="font-mono text-xs font-bold text-slate-800"><?= htmlspecialchars($profile['pan_number'] ?? 'VERIFIED_ON_FILE') ?></span>
+
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Contact & Web Links -->
                     <div class="card-clean rounded-2xl p-5 sm:p-6">
@@ -341,12 +386,19 @@ $flash = get_flash();
                                 <div class="p-3 rounded-xl bg-slate-50 text-slate-600">
                                     <span class="text-xs text-slate-500 font-bold block uppercase tracking-wider">Direct Phone</span>
                                     <span class="text-xs sm:text-sm font-bold text-slate-900 mt-0.5 block"><?= htmlspecialchars($investor['phone']) ?></span>
+
                                 </div>
                             <?php endif; ?>
+
+                            <div
+                                class="p-3 rounded-xl bg-[#EAF2FF]/60 border border-[#123B7A]/15 text-[#123B7A] text-[11px] flex items-center space-x-2">
+                                <i data-lucide="lock" class="w-3.5 h-3.5 flex-shrink-0"></i>
+                                <span>Verified angel communications routed through Nexora Escrow Protocol.</span>
+                            </div>
                         </div>
                     </div>
-
                 </div>
+
 
                 <!-- Right Content (2 Cols): Backed Portfolio Companies -->
                 <div class="lg:col-span-2 space-y-6">
@@ -409,12 +461,14 @@ $flash = get_flash();
 
             </div>
 
+
         </main>
     </div>
 
     <script>
         lucide.createIcons();
-        gsap.from("#investor-view-main", { duration: 0.4, y: 10, opacity: 0, ease: "power2.out" });
+        gsap.from("#investor-view-main > *", { duration: 0.45, y: 15, opacity: 0, stagger: 0.08, ease: "power2.out" });
     </script>
 </body>
+
 </html>

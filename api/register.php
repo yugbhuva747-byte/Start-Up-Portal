@@ -26,6 +26,14 @@ if (!empty($raw)) {
     }
 }
 
+// Check CSRF
+$token = $input['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+if (!empty($token) && !verify_csrf($token)) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => 'Invalid or expired security token. Please refresh the page and try again.']);
+    exit;
+}
+
 $name = trim((string)($input['name'] ?? ''));
 $email = trim((string)($input['email'] ?? ''));
 $phone = trim((string)($input['phone'] ?? ''));
@@ -173,6 +181,11 @@ try {
     $_SESSION['user_role'] = $role;
     $_SESSION['user_name'] = $name;
 
+    // Set persistent 30-day cookie session
+    if (function_exists('set_remember_me_cookie')) {
+        set_remember_me_cookie($userId, 30);
+    }
+
     if (function_exists('log_audit')) {
         log_audit($userId, 'USER_REGISTERED', 'users', $userId, "Registered via registration form as {$role} on {$planCode} plan");
     }
@@ -195,8 +208,9 @@ try {
     ]);
 } catch (Exception $e) {
     http_response_code(500);
+    $isDev = (defined('APP_ENV') && APP_ENV === 'development');
     echo json_encode([
         'success' => false,
-        'error' => 'An error occurred during registration. ' . $e->getMessage()
+        'error' => $isDev ? ('Registration failed: ' . $e->getMessage()) : 'An unexpected error occurred during account creation. Please verify your details and try again.'
     ]);
 }
