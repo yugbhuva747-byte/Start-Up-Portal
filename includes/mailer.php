@@ -1777,4 +1777,135 @@ function send_interest_declined_email_to_investor(PDO $db, int $interestId): arr
     }
 }
 
+/**
+ * Email Dispatcher: Sends Founder Invitation Email to recipient
+ */
+function send_founder_invite_email(PDO $db, int $inviteId): array {
+    try {
+        $stmt = $db->prepare("
+            SELECT fi.*, 
+                   f.name as founder_name, f.email as founder_email, f.avatar_url as founder_avatar,
+                   c.name as company_name, c.industry as company_industry, c.stage as company_stage, c.pitch as company_pitch
+            FROM founder_invites fi
+            JOIN users f ON fi.founder_id = f.id
+            JOIN companies c ON fi.company_id = c.id
+            WHERE fi.id = ?
+        ");
+        $stmt->execute([$inviteId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row || empty($row['recipient_email'])) {
+            return ['success' => false, 'message' => 'Invite or recipient email not found.'];
+        }
+
+        $recipientName = htmlspecialchars($row['recipient_name'] ?: 'Partner');
+        $founderName = htmlspecialchars($row['founder_name']);
+        $companyName = htmlspecialchars($row['company_name']);
+        $industry = htmlspecialchars($row['company_industry'] ?? 'Technology');
+        $stage = htmlspecialchars($row['company_stage'] ?? 'Seed');
+        $compHash = hash_id_encode($row['company_id']);
+        $inviteUrl = rtrim(BASE_URL, '/') . '/company.php?id=' . $compHash . '&invite=' . urlencode($row['invite_code']);
+        $customNote = !empty($row['custom_note']) ? nl2br(htmlspecialchars($row['custom_note'])) : '';
+        $typeLabel = match($row['invite_type']) {
+            'investor' => 'Investor Diligence & Deal Room Access',
+            'co_founder' => 'Co-Founder Equity & Partnership Invitation',
+            'advisor' => 'Strategic Advisory & Board Role',
+            default => 'Startup Dossier & Presentation'
+        };
+
+        $subject = "{$founderName} has invited you to {$companyName} on " . APP_NAME;
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{$subject}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0b0f19;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#050811;padding:30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);border:1px solid #1e293b;">
+                    <tr>
+                        <td style="background:linear-gradient(135deg,#1e1b4b 0%,#2563eb 100%);padding:36px 32px 28px 32px;text-align:left;">
+                            <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:12px;">
+                                <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                                    {$typeLabel}
+                                </span>
+                            </div>
+                            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;line-height:1.3;">
+                                Exclusive Invitation from {$founderName}
+                            </h1>
+                            <p style="margin:6px 0 0 0;color:#e0e7ff;font-size:13px;">
+                                {$companyName} &bull; {$industry} &bull; {$stage} Stage
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 32px 24px 32px;">
+                            <p style="margin:0 0 16px 0;font-size:15px;color:#334155;line-height:1.6;">
+                                Hello <strong>{$recipientName}</strong>,
+                            </p>
+                            <p style="margin:0 0 16px 0;font-size:14px;color:#475569;line-height:1.6;">
+                                <strong>{$founderName}</strong>, founder of <strong>{$companyName}</strong>, has shared an invitation link for you to review their venture on Nexora.
+                            </p>
+HTML;
+
+        if ($customNote) {
+            $html .= <<<HTML
+                            <div style="background-color:#f8fafc;border-left:4px solid #4f46e5;padding:14px 16px;border-radius:6px;margin:18px 0;font-size:13px;color:#334155;line-height:1.5;">
+                                <strong>Personal Note from {$founderName}:</strong><br>
+                                {$customNote}
+                            </div>
+HTML;
+        }
+
+        $html .= <<<HTML
+                            <p style="margin:0 0 24px 0;font-size:14px;color:#475569;line-height:1.6;">
+                                You can review the company overview, data room documents, verified cap table metrics, and connect directly with zero login friction.
+                            </p>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:24px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$inviteUrl}" style="display:inline-block;background:linear-gradient(135deg,#2563eb 0%,#4f46e5 100%);color:#ffffff;text-decoration:none;font-size:14px;font-weight:700;padding:14px 32px;border-radius:10px;box-shadow:0 4px 12px rgba(37,99,235,0.3);">
+                                            Open Founder Invite &amp; Dossier &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="background-color:#f1f5f9;border-radius:8px;padding:12px;font-size:11px;color:#64748b;word-break:break-all;">
+                                <strong>Direct Link:</strong><br>
+                                <a href="{$inviteUrl}" style="color:#2563eb;">{$inviteUrl}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">
+                            &copy; {$companyName} &amp; Nexora Venture Network. All rights reserved.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+
+        $res = send_system_email(
+            $row['recipient_email'],
+            $row['recipient_name'] ?: 'Invitee',
+            $subject,
+            $html,
+            'founder_invite'
+        );
+
+        return ['success' => true, 'result' => $res];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
+
 

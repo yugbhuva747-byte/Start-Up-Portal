@@ -137,6 +137,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $prefStmt->execute([$userId, $preferredIndustries, $minTicket, $maxTicket]);
                     }
 
+                    // Connect Founder Invite if registered through an invite link
+                    $inviteCode = $_SESSION['active_founder_invite'] ?? trim($_GET['invite'] ?? ($_GET['ref'] ?? ''));
+                    if (!empty($inviteCode)) {
+                        try {
+                            $db->prepare("
+                                UPDATE founder_invites 
+                                SET invited_user_id = ?, 
+                                    status = 'registered', 
+                                    updated_at = NOW() 
+                                WHERE invite_code = ?
+                            ")->execute([$userId, $inviteCode]);
+                        } catch (\Throwable $e) {}
+                    }
+
                     // Activate Free Trial plan subscription
                     if (function_exists('activate_user_subscription')) {
                         activate_user_subscription($userId, 'free_trial', 'monthly');

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Admin Sidebar Navigation Component
  * Enhanced – Categorized Page Sections, Dynamic Database Badges, Rich Hover Effects, Dark Mode & Premium Aesthetics
@@ -23,6 +23,7 @@ if (isset($db) && $db instanceof PDO) {
         $pendingFundingCount = (int)$db->query("SELECT COUNT(*) FROM funding_rounds WHERE status IN ('SUBMITTED', 'UNDER_REVIEW', 'under_review')")->fetchColumn();
         $activeSubsCount = (int)$db->query("SELECT COUNT(*) FROM subscriptions WHERE status = 'active'")->fetchColumn();
         $totalCompaniesCount = (int)$db->query("SELECT COUNT(*) FROM companies")->fetchColumn();
+        $totalInvitesCount = (int)$db->query("SELECT COUNT(*) FROM founder_invites")->fetchColumn();
         $pendingInvoicesCount = (int)$db->query("SELECT COUNT(*) FROM platform_invoices WHERE settlement_status != 'SETTLED'")->fetchColumn();
         $activeFirewallBansCount = (int)$db->query("SELECT COUNT(*) FROM security_firewall_blocks WHERE blocked_until > NOW()")->fetchColumn();
     } catch (Exception $e) {}
@@ -370,6 +371,17 @@ require_once __DIR__ . '/theme.php';
                 <span class="whitespace-nowrap sidebar-text-item flex-1">Startup Companies</span>
                 <?php if ($totalCompaniesCount > 0): ?>
                     <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 sidebar-text-item"><?= $totalCompaniesCount ?></span>
+                <?php endif; ?>
+            </a>
+
+            <a href="<?= url('admin/founder_invites.php') ?>" 
+               data-tooltip="Founder Share Invites<?= !empty($totalInvitesCount) && $totalInvitesCount > 0 ? " ({$totalInvitesCount})" : '' ?>"
+               title="Founder Share Invites & Attribution"
+               class="sidebar-link <?= $currentPage === 'founder_invites.php' ? 'is-active' : '' ?>">
+                <i data-lucide="share-2" class="nav-icon text-teal-600"></i>
+                <span class="whitespace-nowrap sidebar-text-item flex-1">Founder Share Invites</span>
+                <?php if (!empty($totalInvitesCount) && $totalInvitesCount > 0): ?>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800 sidebar-text-item"><?= $totalInvitesCount ?></span>
                 <?php endif; ?>
             </a>
 

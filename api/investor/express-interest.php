@@ -138,6 +138,19 @@ try {
     $ins->execute([$user['id'], $companyId, $message]);
     $interestId = (int)$db->lastInsertId();
 
+    // 8.1 Mark Founder Invite as Converted if reached through invite
+    $inviteCode = $_SESSION['active_founder_invite'] ?? trim($_POST['invite_ref'] ?? '');
+    if (!empty($inviteCode)) {
+        try {
+            $db->prepare("
+                UPDATE founder_invites 
+                SET status = 'converted', 
+                    updated_at = NOW() 
+                WHERE invite_code = ?
+            ")->execute([$inviteCode]);
+        } catch (\Throwable $e) {}
+    }
+
     // 9. In-App Notification to Startup Founder(s)
     $fStmt = $db->prepare("
         SELECT u.id, u.name, u.email

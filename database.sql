@@ -628,3 +628,28 @@ CREATE TABLE IF NOT EXISTS `investor_interests` (
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================================
+-- 36. Founder Invites & Share Links Tracking
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `founder_invites` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `founder_id` INT NOT NULL,
+    `company_id` INT NOT NULL,
+    `invite_code` VARCHAR(64) NOT NULL UNIQUE,
+    `invite_type` ENUM('investor', 'co_founder', 'advisor', 'general_share') NOT NULL DEFAULT 'general_share',
+    `recipient_name` VARCHAR(150) NULL DEFAULT NULL,
+    `recipient_email` VARCHAR(190) NULL DEFAULT NULL,
+    `invited_user_id` INT NULL DEFAULT NULL,
+    `status` ENUM('pending', 'viewed', 'registered', 'converted', 'expired') NOT NULL DEFAULT 'pending',
+    `views_count` INT NOT NULL DEFAULT 0,
+    `custom_note` TEXT NULL DEFAULT NULL,
+    `expires_at` DATETIME NULL DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_founder` (`founder_id`),
+    INDEX `idx_company` (`company_id`),
+    INDEX `idx_code` (`invite_code`),
+    INDEX `idx_status` (`status`),
+    FOREIGN KEY (`founder_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
