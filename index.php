@@ -46,35 +46,43 @@ require_once $basePath . '/includes/layout/header.php';
 <main id="nx-page" class="nx-page relative w-full overflow-x-clip bg-[#F8FAFC] text-[#0F172A]">
 
     <?php
-    // ------------------------------------------------------------
-    // 01. Hero Section
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/hero.php';
+    if ($currentRole === 'founder') {
+        // ------------------------------------------------------------
+        // FOUNDER HOME EXPERIENCE: 4 Growth Sections
+        // ------------------------------------------------------------
+        // 01. Founder Hero & Live Raise Room Engine
+        require_once $basePath . '/includes/founder_home/hero.php';
 
-    // ------------------------------------------------------------
-    // 02. Location — Investment Opportunities (India & UAE Deals)
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/opportunities.php';
+        // 02. The 4-Pillar Founder Growth Flywheel (How NEXORA scales your business)
+        require_once $basePath . '/includes/founder_home/growth-pillars.php';
 
-    // ------------------------------------------------------------
-    // 03. About — Ecosystem & How It Works
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/ecosystem.php';
+        // 03. 3-Step Journey from Pitch to Wire
+        require_once $basePath . '/includes/founder_home/raise-steps.php';
 
-    // ------------------------------------------------------------
-    // 04. Investor — Institutional Diligence Dossier & 3D Terminal
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/investors.php';
+        // 04. Proof Metrics & Grand Final Founder CTA
+        require_once $basePath . '/includes/founder_home/perks-cta.php';
+    } else {
+        // ------------------------------------------------------------
+        // INVESTOR HOME EXPERIENCE
+        // ------------------------------------------------------------
+        // 01. Hero Section
+        require_once $basePath . '/includes/home/hero.php';
 
-    // ------------------------------------------------------------
-    // 05. Founder — For Startups Raise Flow
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/startups-raise.php';
+        // 02. Location — Investment Opportunities (India & UAE Deals)
+        require_once $basePath . '/includes/home/opportunities.php';
 
-    // ------------------------------------------------------------
-    // 06. Pricing — Transparent Venture Pricing Plans
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/pricing.php';
+        // 03. About — Ecosystem & How It Works
+        require_once $basePath . '/includes/home/ecosystem.php';
+
+        // 04. Investor — Institutional Diligence Dossier & 3D Terminal
+        require_once $basePath . '/includes/home/investors.php';
+
+        // 05. Founder — For Startups Raise Flow
+        require_once $basePath . '/includes/home/startups-raise.php';
+
+        // 06. Pricing — Transparent Venture Pricing Plans
+        require_once $basePath . '/includes/home/pricing.php';
+    }
     ?>
 
 </main>
