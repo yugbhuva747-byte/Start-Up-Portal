@@ -97,11 +97,28 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
             <span class="w-2 h-2 rounded-full bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.6)]"></span>
         </a>
 
-        <!-- Fast Skip / Direct Explore -->
-        <a href="<?= url('index.php?role=investor') ?>" class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">
-            <span>Explore Portal</span>
-            <span>&rarr;</span>
-        </a>
+        <!-- Right: Log In Button for Existing Clients / Members -->
+        <div>
+            <?php if (function_exists('auth_check') && auth_check()): 
+                $u = current_user();
+                $dash = $u['role'] === 'founder' ? url('founder/dashboard.php') : ($u['role'] === 'investor' ? url('investor/dashboard.php') : url('admin/dashboard.php'));
+            ?>
+                <a href="<?= $dash ?>" 
+                   class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-all font-satoshi">
+                    <span>Dashboard (<?= htmlspecialchars(ucfirst($u['role'])) ?>)</span>
+                    <span>&rarr;</span>
+                </a>
+            <?php else: ?>
+                <div class="flex items-center gap-3">
+                    <span class="hidden sm:inline text-xs text-slate-500 font-medium">Already have an account?</span>
+                    <a href="<?= url('auth/login.php') ?>" 
+                       class="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-slate-900 hover:bg-blue-600 shadow-sm hover:shadow-md transition-all font-satoshi">
+                        <span>Log In</span>
+                        <span>&rarr;</span>
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
     </header>
 
     <!-- Main Content Center Hero -->
