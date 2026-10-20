@@ -543,7 +543,18 @@
       </nav>
 
       <!-- Right: Action Button -->
-      <div class="hidden md:flex items-center gap-2">
+      <div class="hidden md:flex items-center gap-2.5">
+        <?php 
+          $activePersona = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
+        ?>
+        <a href="<?= function_exists('url') ? url('index.php?choose=1') : 'index.php?choose=1' ?>" 
+           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-all"
+           title="Click to change your experience between Investor and Founder">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>Role: <?= htmlspecialchars(ucfirst($activePersona)) ?></span>
+          <span class="text-[10px] text-slate-400">⇄</span>
+        </a>
+
         <?php if (function_exists('auth_check') && auth_check()): 
           $u = current_user();
           $dashUrl = $u['role'] === 'founder' ? url('founder/dashboard.php') : ($u['role'] === 'investor' ? url('investor/dashboard.php') : url('admin/dashboard.php'));

@@ -14,6 +14,30 @@ require_once __DIR__ . '/config.php';
 $basePath = __DIR__;
 
 // ------------------------------------------------------------
+// 00. Role Selection Flow for First-Time Visitors
+// ------------------------------------------------------------
+if (isset($_GET['choose']) && $_GET['choose'] === '1') {
+    unset($_SESSION['portal_role']);
+    setcookie('portal_role', '', time() - 3600, '/');
+    require_once __DIR__ . '/welcome.php';
+    exit;
+}
+
+if (isset($_GET['role']) && in_array($_GET['role'], ['investor', 'founder'], true)) {
+    $currentRole = $_GET['role'];
+    $_SESSION['portal_role'] = $currentRole;
+    setcookie('portal_role', $currentRole, time() + (86400 * 30), '/');
+} else {
+    $currentRole = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? null;
+}
+
+// First-time visitor: display Upwork-style Welcome / Role selection screen
+if ($currentRole === null) {
+    require_once __DIR__ . '/welcome.php';
+    exit;
+}
+
+// ------------------------------------------------------------
 // Layout: Header
 // ------------------------------------------------------------
 require_once $basePath . '/includes/layout/header.php';
