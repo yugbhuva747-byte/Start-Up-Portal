@@ -62,6 +62,14 @@
           </a>
         </div>
 
+        <!-- Existing User Prompt -->
+        <div class="pt-2.5 text-xs text-slate-500 font-medium flex items-center gap-1.5">
+          <span>Already registered?</span>
+          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="font-bold text-blue-600 hover:text-blue-800 underline transition">
+            Log in to your Founder Portal &rarr;
+          </a>
+        </div>
+
         <!-- Trust Badges Row -->
         <div class="pt-5 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs text-slate-500 font-medium">
           <span class="inline-flex items-center gap-1.5">
