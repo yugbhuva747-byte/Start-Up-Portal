@@ -30,19 +30,16 @@ require_once $basePath . '/includes/layout/header.php';
     // INVESTOR HOME EXPERIENCE: Curated Institutional Journey
     // ------------------------------------------------------------
     // 01. Hero — Value Proposition & Live Dealroom Showcase
-    require_once $basePath . '/includes/home/hero.php';
+    require_once $basePath . '/includes/investor_home/hero.php';
 
-    // 02. Opportunities — Live Regional & Sector Dealflow
-    require_once $basePath . '/includes/home/opportunities.php';
+    // 02. Curated Dealflow & Investment Flywheel
+    require_once $basePath . '/includes/investor_home/dealflow-pillars.php';
 
-    // 03. Ecosystem — How It Works (Proof, Trust, Co-Investing)
-    require_once $basePath . '/includes/home/ecosystem.php';
+    // 03. 3-Step Journey from Accreditation to Wire
+    require_once $basePath . '/includes/investor_home/investment-steps.php';
 
-    // 04. Investor — Institutional Diligence Dossier & 3D Terminal
-    require_once $basePath . '/includes/home/investors.php';
-
-    // 05. Pricing — Institutional & Accredited Angel Subscriptions
-    require_once $basePath . '/includes/home/pricing.php';
+    // 04. Proof Metrics, Live Deals, FAQ & Grand Syndicate CTA
+    require_once $basePath . '/includes/investor_home/syndicate-cta.php';
     ?>
 
 </main>

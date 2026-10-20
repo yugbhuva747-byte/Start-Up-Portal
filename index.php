@@ -63,22 +63,19 @@ require_once $basePath . '/includes/layout/header.php';
         require_once $basePath . '/includes/founder_home/perks-cta.php';
     } else {
         // ------------------------------------------------------------
-        // INVESTOR HOME EXPERIENCE
+        // INVESTOR HOME EXPERIENCE: Curated Institutional Journey
         // ------------------------------------------------------------
-        // 01. Hero Section
-        require_once $basePath . '/includes/home/hero.php';
+        // 01. Hero — Value Proposition & Live Dealroom Showcase
+        require_once $basePath . '/includes/investor_home/hero.php';
 
-        // 02. Location — Investment Opportunities (India & UAE Deals)
-        require_once $basePath . '/includes/home/opportunities.php';
+        // 02. Curated Dealflow & Investment Flywheel
+        require_once $basePath . '/includes/investor_home/dealflow-pillars.php';
 
-        // 03. About — Ecosystem & How It Works
-        require_once $basePath . '/includes/home/ecosystem.php';
+        // 03. 3-Step Journey from Accreditation to Wire
+        require_once $basePath . '/includes/investor_home/investment-steps.php';
 
-        // 04. Investor — Institutional Diligence Dossier & 3D Terminal
-        require_once $basePath . '/includes/home/investors.php';
-
-        // 05. Pricing — Transparent Venture Pricing Plans
-        require_once $basePath . '/includes/home/pricing.php';
+        // 04. Proof Metrics, Live Deals, FAQ & Grand Syndicate CTA
+        require_once $basePath . '/includes/investor_home/syndicate-cta.php';
     }
     ?>
 
