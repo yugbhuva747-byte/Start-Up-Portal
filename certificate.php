@@ -64,16 +64,22 @@ if (!$cert) {
     exit;
 }
 
-// Access Control: Must be the investor, a founder of that company, or an admin
+// Access Control: Must be the investor, a company founder, an admin, or have a valid verification token
 if (!$user) {
-    // Guest or public access via QR code: allow viewing in read-only verification mode
+    $providedToken = trim($_GET['token'] ?? '');
+    if (empty($providedToken) || empty($cert['verification_token']) || !hash_equals($cert['verification_token'], $providedToken)) {
+        set_flash('error', 'Authentication or valid verification token required to view this confidential share certificate.');
+        header('Location: ' . url('auth/login.php'));
+        exit;
+    }
+    // Verified public viewer with cryptographic token
     $isPublicViewer = true;
 } else {
     $isPublicViewer = false;
     $isAuthorized = false;
     if ($user['role'] === 'admin') {
         $isAuthorized = true;
-    } elseif ($user['role'] === 'investor' && $user['id'] == $cert['investor_user_id']) {
+    } elseif ($user['role'] === 'investor' && (int)$user['id'] === (int)$cert['investor_user_id']) {
         $isAuthorized = true;
     } elseif ($user['role'] === 'founder') {
         $checkFounder = $db->prepare("SELECT COUNT(*) FROM company_founders WHERE company_id = ? AND user_id = ?");
@@ -120,9 +126,10 @@ if ($user) {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0F172A; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; background-color: #0F172A; }
         .font-serif-title { font-family: 'Cinzel', serif; }
         .font-body-formal { font-family: 'Libre Baskerville', Georgia, serif; }
         .font-script { font-family: 'Playfair Display', serif; }

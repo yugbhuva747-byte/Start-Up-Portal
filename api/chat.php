@@ -67,10 +67,22 @@ if ($action === 'fetch') {
     exit;
 
 } elseif ($action === 'send') {
+    $token = $_POST['csrf_token'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? '');
+    if (!verify_csrf($token)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Invalid or missing CSRF token.']);
+        exit;
+    }
+
     $text = trim($_POST['message_text'] ?? '');
 
     if (empty($text)) {
         echo json_encode(['success' => false, 'error' => 'Message cannot be empty']);
+        exit;
+    }
+
+    if (mb_strlen($text) > 4000) {
+        echo json_encode(['success' => false, 'error' => 'Message exceeds maximum length (4,000 characters)']);
         exit;
     }
 

@@ -122,6 +122,63 @@ function send_system_email(
 }
 
 /**
+ * Dispatch an email via EmailJS REST API
+ * Supports service_id, template_id, user_id (public key) with dynamic template params
+ */
+function send_via_emailjs(string $toEmail, string $toName, array $templateParams = []): array {
+    $toEmail = trim($toEmail);
+    if (!filter_var($toEmail, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Invalid email address: ' . $toEmail];
+    }
+
+    $serviceId = defined('EMAILJS_SERVICE_ID') ? EMAILJS_SERVICE_ID : 'service_vhn18xd';
+    $templateId = defined('EMAILJS_TEMPLATE_ID') ? EMAILJS_TEMPLATE_ID : 'template_fpdqjwe';
+    $publicKey = defined('EMAILJS_PUBLIC_KEY') ? EMAILJS_PUBLIC_KEY : 'H5UX1F22-jBkc8RZP';
+
+    $payload = [
+        'service_id' => $serviceId,
+        'template_id' => $templateId,
+        'user_id' => $publicKey,
+        'template_params' => array_merge([
+            'to_email' => $toEmail,
+            'to_name' => $toName,
+            'email' => $toEmail,
+            'name' => $toName,
+            'user_email' => $toEmail,
+            'user_name' => $toName,
+            'app_name' => defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR'
+        ], $templateParams)
+    ];
+
+    $origin = defined('BASE_URL') ? BASE_URL : 'http://localhost';
+
+    $ch = curl_init('https://api.emailjs.com/api/v1.0/email/send');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+        'Origin: ' . $origin,
+        'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) StartupPortal/1.0'
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curlErr = curl_error($ch);
+    curl_close($ch);
+
+    $isOk = ($httpCode >= 200 && $httpCode < 300);
+    return [
+        'success' => $isOk,
+        'http_code' => $httpCode,
+        'response' => $response,
+        'message' => $isOk ? 'Email sent successfully via EmailJS.' : ($response ?: $curlErr ?: 'EmailJS HTTP ' . $httpCode)
+    ];
+}
+
+/**
  * Pure PHP SMTP socket transport (Zero external dependencies)
  */
 function send_via_pure_smtp(
@@ -1196,4 +1253,528 @@ function send_funding_round_status_email(
         ];
     }
 }
+
+/**
+ * ====================================================================
+ * EMAIL TEMPLATE 5: FOUNDER NEW INVESTOR INTEREST ALERT
+ * ====================================================================
+ */
+function render_founder_new_interest_email(
+    array $founder,
+    array $investor,
+    array $company,
+    array $interest
+): string {
+    $founderName = htmlspecialchars($founder['name'] ?? 'Founder');
+    $companyName = htmlspecialchars($company['name'] ?? 'Your Startup');
+    $investorName = htmlspecialchars($investor['name'] ?? 'Investor');
+    $investorType = htmlspecialchars($investor['investor_type'] ?? 'Angel Investor');
+    $investorLocation = htmlspecialchars(trim(($investor['city'] ?? '') . ', ' . ($investor['country'] ?? 'India'), ', '));
+    $interestMessage = nl2br(htmlspecialchars($interest['message'] ?? ''));
+    $dateStr = date('d M Y, h:i A', strtotime($interest['created_at'] ?? 'now'));
+
+    $portalUrl = rtrim(BASE_URL, '/');
+    $interestUrl = $portalUrl . '/founder/investor_interests.php';
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Investor Interest - {$companyName}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid #1e293b;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #090e1a 0%, #1e1b4b 60%, #312e81 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #6366f1;">
+                            <div style="display: inline-block; background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
+                                <span style="color: #a5b4fc; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    ✦ NEW INVESTOR INTEREST
+                                </span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
+                                New Investor Interest on Nexora
+                            </h1>
+                            <p style="margin: 6px 0 0 0; color: #cbd5e1; font-size: 14px;">
+                                An investor has expressed interest in discovering and connecting with <strong>{$companyName}</strong>.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 32px 32px 24px 32px;">
+                            
+                            <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.6;">
+                                Hello <strong>{$founderName}</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 24px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                                <strong>{$investorName}</strong> ({$investorType}) has reviewed <strong>{$companyName}</strong> on Nexora and submitted an expression of interest to connect with you.
+                            </p>
+
+                            <!-- Investor Summary Card -->
+                            <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; margin-bottom: 10px;">
+                                Investor Profile Summary
+                            </div>
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; margin-bottom: 24px; background: #ffffff;">
+                                <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; width: 38%; font-weight: 600;">Investor Name:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #0f172a; font-weight: 700;">{$investorName}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Investor Type:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #1e293b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">{$investorType}</td>
+                                </tr>
+                                <tr style="background: #f8fafc;">
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Location:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #334155; font-weight: 500; border-bottom: 1px solid #f1f5f9;">{$investorLocation}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600;">Submitted:</td>
+                                    <td style="padding: 12px 16px; font-size: 13px; color: #334155; font-weight: 500;">{$dateStr}</td>
+                                </tr>
+                            </table>
+
+                            <!-- Interest Message Box -->
+                            <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #64748b; margin-bottom: 10px;">
+                                Why they are interested:
+                            </div>
+
+                            <div style="background: #f8fafc; border-left: 4px solid #6366f1; padding: 16px; border-radius: 8px; margin-bottom: 28px; font-size: 14px; color: #334155; line-height: 1.6; font-style: italic;">
+                                “{$interestMessage}”
+                            </div>
+
+                            <!-- CTA Button -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 16px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$interestUrl}" style="display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);">
+                                            View Investor Interest →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0; text-align: center; font-size: 12px; color: #64748b;">
+                                You can review their full profile and choose to <strong>Accept &amp; Connect</strong> or <strong>Decline</strong>.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b;">
+                                Nexora helps startups and investors discover opportunities and connect directly.
+                            </p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                                Nexora Platform • {$portalUrl}
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+}
+
+/**
+ * ====================================================================
+ * EMAIL TEMPLATE 6: INVESTOR INTEREST ACCEPTED
+ * ====================================================================
+ */
+function render_investor_interest_accepted_email(
+    array $investor,
+    array $founder,
+    array $company,
+    string $convUrl
+): string {
+    $investorName = htmlspecialchars($investor['name'] ?? 'Investor');
+    $founderName = htmlspecialchars($founder['name'] ?? 'The Founder');
+    $companyName = htmlspecialchars($company['name'] ?? 'Startup');
+    $portalUrl = rtrim(BASE_URL, '/');
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Interest Was Accepted on Nexora</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid #1e293b;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #090e1a 0%, #064e3b 60%, #047857 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #10b981;">
+                            <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
+                                <span style="color: #6ee7b7; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    ✦ CONNECTION ESTABLISHED
+                                </span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
+                                Your Interest Was Accepted on Nexora
+                            </h1>
+                            <p style="margin: 6px 0 0 0; color: #cbd5e1; font-size: 14px;">
+                                The founder of <strong>{$companyName}</strong> has accepted your expression of interest.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 32px 32px 24px 32px;">
+                            
+                            <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.6;">
+                                Dear <strong>{$investorName}</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 20px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                                Great news! The founder of <strong>{$companyName}</strong>, <strong>{$founderName}</strong>, has accepted your expression of interest.
+                            </p>
+
+                            <!-- Success Banner -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; margin-bottom: 24px;">
+                                <tr>
+                                    <td style="padding: 20px 24px; text-align: center;">
+                                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #15803d; margin-bottom: 4px;">
+                                            Direct Connection Open
+                                        </div>
+                                        <div style="font-size: 18px; font-weight: 800; color: #047857; margin-bottom: 4px;">
+                                            {$companyName} × {$investorName}
+                                        </div>
+                                        <div style="font-size: 13px; color: #166534;">
+                                            You can now continue the conversation through Nexora.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- CTA Button -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 16px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$convUrl}" style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 32px; border-radius: 8px; box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3);">
+                                            Open Conversation →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b;">
+                                Nexora helps startups and investors discover opportunities and connect directly.
+                            </p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                                Nexora Platform • {$portalUrl}
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+}
+
+/**
+ * ====================================================================
+ * EMAIL TEMPLATE 7: INVESTOR INTEREST DECLINED (Polite & Respectful)
+ * ====================================================================
+ */
+function render_investor_interest_declined_email(
+    array $investor,
+    array $company
+): string {
+    $investorName = htmlspecialchars($investor['name'] ?? 'Investor');
+    $companyName = htmlspecialchars($company['name'] ?? 'The Startup');
+    $portalUrl = rtrim(BASE_URL, '/');
+    $discoverUrl = $portalUrl . '/investor/discover.php';
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Update on Your Interest - {$companyName}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6); border: 1px solid #1e293b;">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #090e1a 0%, #1e293b 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #64748b;">
+                            <div style="display: inline-block; background: rgba(148, 163, 184, 0.2); border: 1px solid #94a3b8; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
+                                <span style="color: #cbd5e1; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                                    ✦ INTEREST UPDATE
+                                </span>
+                            </div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
+                                Update on Your Interest on Nexora
+                            </h1>
+                            <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 14px;">
+                                Information regarding your interest in {$companyName}.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 32px 32px 24px 32px;">
+                            
+                            <p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.6;">
+                                Dear <strong>{$investorName}</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 20px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                                Thank you for your interest in <strong>{$companyName}</strong> on Nexora. The startup has reviewed your expression of interest and decided not to continue with this connection at this time.
+                            </p>
+
+                            <p style="margin: 0 0 24px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                                We appreciate your engagement on Nexora and invite you to explore other vetted startups that match your investment thesis and criteria.
+                            </p>
+
+                            <!-- CTA Button -->
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 16px;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="{$discoverUrl}" style="display: inline-block; background: #0f172a; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 700; padding: 14px 28px; border-radius: 8px;">
+                                            Explore Discover Opportunities →
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px 32px; text-align: center;">
+                            <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b;">
+                                Nexora helps startups and investors discover opportunities and connect directly.
+                            </p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                                Nexora Platform • {$portalUrl}
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+}
+
+/**
+ * High-level dispatcher: Sends email to founder(s) when an investor expresses interest
+ */
+function send_new_interest_email_to_founder(PDO $db, int $interestId): array {
+    try {
+        $stmt = $db->prepare("
+            SELECT ii.*, 
+                   c.name as company_name, c.industry as company_industry,
+                   u.id as inv_id, u.name as investor_name, u.email as investor_email, u.phone as investor_phone, u.city as investor_city, u.country as investor_country,
+                   ip.investor_type, ip.experience_years
+            FROM investor_interests ii
+            JOIN companies c ON ii.company_id = c.id
+            JOIN users u ON ii.investor_id = u.id
+            LEFT JOIN investor_profiles ip ON u.id = ip.user_id
+            WHERE ii.id = ?
+        ");
+        $stmt->execute([$interestId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return ['success' => false, 'message' => 'Interest record not found.'];
+        }
+
+        $company = [
+            'id' => $row['company_id'],
+            'name' => $row['company_name'],
+            'industry' => $row['company_industry']
+        ];
+
+        $investor = [
+            'id' => $row['inv_id'],
+            'name' => $row['investor_name'],
+            'email' => $row['investor_email'],
+            'phone' => $row['investor_phone'],
+            'city' => $row['investor_city'],
+            'country' => $row['investor_country'],
+            'investor_type' => $row['investor_type'] ?? 'Angel Investor',
+            'experience_years' => $row['experience_years'] ?? 3
+        ];
+
+        // Fetch Founders for this company
+        $fStmt = $db->prepare("
+            SELECT u.id, u.name, u.email
+            FROM company_founders cf
+            JOIN users u ON cf.user_id = u.id
+            WHERE cf.company_id = ?
+        ");
+        $fStmt->execute([$row['company_id']]);
+        $founders = $fStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($founders)) {
+            // Fallback: check any founder
+            $fStmt2 = $db->prepare("SELECT id, name, email FROM users WHERE role = 'founder' LIMIT 1");
+            $fStmt2->execute();
+            $founders = $fStmt2->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        $results = [];
+        $subject = "New Investor Interest on Nexora";
+        foreach ($founders as $f) {
+            $html = render_founder_new_interest_email($f, $investor, $company, $row);
+            $res = send_system_email(
+                $f['email'],
+                $f['name'],
+                $subject,
+                $html,
+                'founder_new_investor_interest'
+            );
+            $results[] = [
+                'founder_email' => $f['email'],
+                'result' => $res
+            ];
+        }
+
+        return ['success' => true, 'results' => $results];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
+/**
+ * High-level dispatcher: Sends email to investor when founder accepts interest
+ */
+function send_interest_accepted_email_to_investor(PDO $db, int $interestId, int $convId): array {
+    try {
+        $stmt = $db->prepare("
+            SELECT ii.*, 
+                   c.name as company_name,
+                   u.id as inv_id, u.name as investor_name, u.email as investor_email
+            FROM investor_interests ii
+            JOIN companies c ON ii.company_id = c.id
+            JOIN users u ON ii.investor_id = u.id
+            WHERE ii.id = ?
+        ");
+        $stmt->execute([$interestId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return ['success' => false, 'message' => 'Interest not found.'];
+
+        // Get founder name
+        $fStmt = $db->prepare("
+            SELECT u.name, u.email
+            FROM company_founders cf
+            JOIN users u ON cf.user_id = u.id
+            WHERE cf.company_id = ?
+            LIMIT 1
+        ");
+        $fStmt->execute([$row['company_id']]);
+        $founder = $fStmt->fetch(PDO::FETCH_ASSOC) ?: ['name' => 'The Founder', 'email' => ''];
+
+        $investor = [
+            'name' => $row['investor_name'],
+            'email' => $row['investor_email']
+        ];
+
+        $company = [
+            'name' => $row['company_name']
+        ];
+
+        $convUrl = rtrim(BASE_URL, '/') . '/investor/messages.php?conv=' . hash_id_encode($convId);
+        $subject = "Your Interest Was Accepted on Nexora";
+        $html = render_investor_interest_accepted_email($investor, $founder, $company, $convUrl);
+
+        $res = send_system_email(
+            $investor['email'],
+            $investor['name'],
+            $subject,
+            $html,
+            'investor_interest_accepted'
+        );
+
+        return ['success' => true, 'result' => $res];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
+/**
+ * High-level dispatcher: Sends polite email to investor when founder declines interest
+ */
+function send_interest_declined_email_to_investor(PDO $db, int $interestId): array {
+    try {
+        $stmt = $db->prepare("
+            SELECT ii.*, 
+                   c.name as company_name,
+                   u.id as inv_id, u.name as investor_name, u.email as investor_email
+            FROM investor_interests ii
+            JOIN companies c ON ii.company_id = c.id
+            JOIN users u ON ii.investor_id = u.id
+            WHERE ii.id = ?
+        ");
+        $stmt->execute([$interestId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) return ['success' => false, 'message' => 'Interest not found.'];
+
+        $investor = [
+            'name' => $row['investor_name'],
+            'email' => $row['investor_email']
+        ];
+
+        $company = [
+            'name' => $row['company_name']
+        ];
+
+        $subject = "Update on Your Interest on Nexora";
+        $html = render_investor_interest_declined_email($investor, $company);
+
+        $res = send_system_email(
+            $investor['email'],
+            $investor['name'],
+            $subject,
+            $html,
+            'investor_interest_declined'
+        );
+
+        return ['success' => true, 'result' => $res];
+    } catch (Exception $e) {
+        return ['success' => false, 'message' => $e->getMessage()];
+    }
+}
+
 

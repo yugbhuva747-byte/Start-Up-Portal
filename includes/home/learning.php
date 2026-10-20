@@ -1,9 +1,9 @@
-<?php
+﻿<?php
 /**
  * ============================================================================
  * include/home/learning.php
  * ----------------------------------------------------------------------------
- * SECTION 07 — LEARNING & ACADEMY (COLORFUL PASTEL CELESTIAL EDITION)
+ * SECTION 07 â€” LEARNING & ACADEMY (COLORFUL PASTEL CELESTIAL EDITION)
  *
  * Transformed from dark blues into vibrant, attractive pastel aurora aesthetic:
  * - Soft Lavender (#EDE9FE), Blush Rose (#FCE7F3), Warm Peach (#FFF7ED)
@@ -304,7 +304,7 @@
 
           <!-- Exact CTA -->
           <div class="pt-2">
-            <a href="login.php?role=investor"
+            <a href="auth/login.php?role=investor"
               class="inline-flex items-center gap-2 text-[14px] font-bold text-purple-700 hover:text-purple-900 transition-colors group/cta">
               <span>Explore Investor Track</span>
               <span class="transition-transform group-hover/cta:translate-x-1.5" aria-hidden="true">&rarr;</span>
@@ -411,7 +411,7 @@
 
           <!-- Exact CTA -->
           <div class="pt-2">
-            <a href="login.php?role=startup"
+            <a href="auth/login.php?role=startup"
               class="inline-flex items-center gap-2 text-[14px] font-bold text-pink-700 hover:text-pink-900 transition-colors group/cta">
               <span>Explore Founder Track</span>
               <span class="transition-transform group-hover/cta:translate-x-1.5" aria-hidden="true">&rarr;</span>

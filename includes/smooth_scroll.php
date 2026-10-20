@@ -9,6 +9,9 @@
     html {
         scroll-behavior: smooth !important;
     }
+    html:not(.dark) body {
+        background-color: #F4F2EE !important;
+    }
     html.lenis, html.lenis body {
         height: auto;
     }
