@@ -562,18 +562,18 @@ $cur = $regMeta[$selectedRole];
             <!-- Mobile Header with Brand & Sign In Link -->
             <div class="flex items-center justify-between pb-4 mb-2 border-b border-slate-100 lg:border-none lg:pb-0">
                 <div class="flex items-center space-x-2 lg:hidden">
-                    <span class="text-lg font-black tracking-tight text-slate-900 font-satoshi flex items-center gap-1">
+                    <span class="text-xl font-black tracking-tight text-slate-900 font-satoshi flex items-center gap-1">
                         NEXORA
                         <span class="w-2 h-2 rounded-full bg-blue-600"></span>
                     </span>
-                    <span class="text-[9px] text-slate-400 font-bold uppercase pl-1.5 border-l border-slate-200"><?= ucfirst($selectedRole) ?></span>
+                    <span class="text-xs text-slate-400 font-bold uppercase pl-2 border-l border-slate-200"><?= ucfirst($selectedRole) ?></span>
                 </div>
                 
-                <div class="text-right ml-auto">
-                    <span class="text-xs text-slate-500 hidden sm:inline">Already registered?</span>
-                    <a href="<?= $cur['login_url'] ?>" class="sm:ml-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100">
-                        <span>Sign In</span>
-                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                <div class="text-right ml-auto flex items-center gap-2">
+                    <span class="text-xs sm:text-sm text-slate-500 hidden sm:inline">Already have an account?</span>
+                    <a href="<?= url('auth/login.php') ?>" class="text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200/70">
+                        <span>Log In</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
                 </div>
             </div>
@@ -581,70 +581,84 @@ $cur = $regMeta[$selectedRole];
             <!-- Form Content Wrapper (Centered Vertically) -->
             <div class="max-w-md w-full mx-auto my-auto py-2">
                 
+                <!-- Role Choice Switcher Tabs (With Crisp SVG Icons & Bigger Text) -->
+                <div class="mb-5 p-1 rounded-2xl bg-slate-100/90 border border-slate-200/90 grid grid-cols-2 gap-1.5 shadow-2xs">
+                    <a href="<?= url('auth/register.php?role=founder') ?>" 
+                       class="py-3 px-3.5 rounded-xl text-center text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 <?= $selectedRole === 'founder' ? 'bg-white text-blue-700 shadow-xs border border-slate-200/80' : 'text-slate-600 hover:text-slate-900' ?>">
+                        <i data-lucide="rocket" class="w-4 h-4 <?= $selectedRole === 'founder' ? 'text-blue-600' : 'text-slate-400' ?>"></i>
+                        <span>I am a Founder</span>
+                    </a>
+                    <a href="<?= url('auth/register.php?role=investor') ?>" 
+                       class="py-3 px-3.5 rounded-xl text-center text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 <?= $selectedRole === 'investor' ? 'bg-white text-emerald-700 shadow-xs border border-slate-200/80' : 'text-slate-600 hover:text-slate-900' ?>">
+                        <i data-lucide="briefcase" class="w-4 h-4 <?= $selectedRole === 'investor' ? 'text-emerald-600' : 'text-slate-400' ?>"></i>
+                        <span>I am an Investor</span>
+                    </a>
+                </div>
+
                 <!-- Main Header -->
                 <div class="mb-5">
-                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg text-[10.5px] font-bold mb-1.5 <?= $cur['badge_color'] ?>">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-bold mb-2 <?= $cur['badge_color'] ?>">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
                         <span><?= htmlspecialchars($cur['form_badge']) ?></span>
                     </div>
-                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-satoshi">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 font-satoshi">
                         <?= htmlspecialchars($cur['form_title']) ?>
                     </h2>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    <p class="text-sm sm:text-base text-slate-600 mt-1.5 font-medium leading-relaxed">
                         <?= htmlspecialchars($cur['form_sub']) ?>
                     </p>
                 </div>
 
                 <!-- Error Notification -->
                 <?php if (!empty($error)): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-2 shadow-sm">
-                        <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
+                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center space-x-2.5 shadow-sm">
+                        <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
                         <span><?= htmlspecialchars($error) ?></span>
                     </div>
                 <?php endif; ?>
 
                 <!-- Dedicated Registration Form -->
-                <form action="<?= url('auth/register.php?role=' . urlencode($selectedRole)) ?>" method="POST" class="space-y-3.5" id="registrationForm">
+                <form action="<?= url('auth/register.php?role=' . urlencode($selectedRole)) ?>" method="POST" class="space-y-4" id="registrationForm">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <?= security_honeypot_field() ?>
                     <input type="hidden" name="role" value="<?= htmlspecialchars($selectedRole) ?>">
 
                     <!-- Shared: Full Legal Name -->
                     <div>
-                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                        <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                             Full Legal Name <span class="text-rose-500">*</span>
                         </label>
                         <div class="relative input-glow rounded-xl">
-                            <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <i data-lucide="user" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <input type="text" name="name" required placeholder="e.g. Aarav Sharma"
                                    value="<?= htmlspecialchars($_POST['name'] ?? '') ?>"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                   class="w-full pl-11 pr-4 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                         </div>
                     </div>
 
                     <!-- Shared: Email & Phone (Grid) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 Work Email <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="mail" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="email" name="email" required placeholder="name@company.com"
                                        value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
-                                       class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                       class="w-full pl-11 pr-3.5 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 Phone Number
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="phone" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="phone" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="tel" name="phone" placeholder="+91 98765 43210"
                                        value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"
-                                       class="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                       class="w-full pl-11 pr-3.5 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                             </div>
                         </div>
                     </div>
@@ -653,30 +667,30 @@ $cur = $regMeta[$selectedRole];
                         <!-- ==============================================
                              FOUNDER-ONLY FIELDS
                              ============================================== -->
-                        <div class="space-y-3.5 p-3.5 rounded-2xl bg-blue-50/40 border border-blue-100">
-                            <div class="flex items-center space-x-1.5 text-blue-700 font-bold text-[10.5px] uppercase tracking-wider font-satoshi">
-                                <i data-lucide="rocket" class="w-3.5 h-3.5 text-blue-600"></i>
+                        <div class="space-y-3.5 p-4 rounded-2xl bg-blue-50/40 border border-blue-100">
+                            <div class="flex items-center space-x-2 text-blue-700 font-bold text-xs sm:text-sm uppercase tracking-wider font-satoshi">
+                                <i data-lucide="rocket" class="w-4 h-4 text-blue-600"></i>
                                 <span>Startup &amp; Venture Profile</span>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Startup / Company Name <span class="text-rose-500">*</span>
                                     </label>
                                     <div class="relative">
-                                        <i data-lucide="briefcase" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                        <i data-lucide="building" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                         <input type="text" name="company_name" required placeholder="e.g. TechPulse AI"
                                                value="<?= htmlspecialchars($_POST['company_name'] ?? '') ?>"
-                                               class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                               class="w-full pl-9 pr-3 py-2.5 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Primary Sector
                                     </label>
-                                    <select name="industry" class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                    <select name="industry" class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                                         <option value="AI/SaaS" <?= ($_POST['industry'] ?? '') === 'AI/SaaS' ? 'selected' : '' ?>>AI & Enterprise SaaS</option>
                                         <option value="FinTech" <?= ($_POST['industry'] ?? '') === 'FinTech' ? 'selected' : '' ?>>FinTech & Web3</option>
                                         <option value="HealthTech" <?= ($_POST['industry'] ?? '') === 'HealthTech' ? 'selected' : '' ?>>HealthTech & Bio</option>
@@ -687,12 +701,12 @@ $cur = $regMeta[$selectedRole];
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Current Venture Stage
                                     </label>
-                                    <select name="stage" class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                    <select name="stage" class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                                         <option value="Seed" <?= ($_POST['stage'] ?? '') === 'Seed' ? 'selected' : '' ?>>Seed Round (Raising ₹1 Cr - ₹5 Cr)</option>
                                         <option value="Pre-Seed" <?= ($_POST['stage'] ?? '') === 'Pre-Seed' ? 'selected' : '' ?>>Pre-Seed / Prototype (₹25L - ₹1 Cr)</option>
                                         <option value="Pre-Series A" <?= ($_POST['stage'] ?? '') === 'Pre-Series A' ? 'selected' : '' ?>>Pre-Series A (₹5 Cr - ₹15 Cr)</option>
@@ -702,21 +716,21 @@ $cur = $regMeta[$selectedRole];
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Your Designation
                                     </label>
                                     <input type="text" name="designation" value="<?= htmlspecialchars($_POST['designation'] ?? 'Founder & CEO') ?>" placeholder="e.g. Founder & CEO"
-                                           class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                           class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                     One-Line Startup Elevator Pitch
                                 </label>
                                 <input type="text" name="pitch" placeholder="e.g. Autonomous AI workflow agent optimizing enterprise logistics."
                                        value="<?= htmlspecialchars($_POST['pitch'] ?? '') ?>"
-                                       class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                       class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                             </div>
                         </div>
 
@@ -724,18 +738,18 @@ $cur = $regMeta[$selectedRole];
                         <!-- ==============================================
                              INVESTOR-ONLY FIELDS
                              ============================================== -->
-                        <div class="space-y-3.5 p-3.5 rounded-2xl bg-emerald-50/40 border border-emerald-100">
-                            <div class="flex items-center space-x-1.5 text-emerald-700 font-bold text-[10.5px] uppercase tracking-wider font-satoshi">
-                                <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <div class="space-y-3.5 p-4 rounded-2xl bg-emerald-50/40 border border-emerald-100">
+                            <div class="flex items-center space-x-2 text-emerald-700 font-bold text-xs sm:text-sm uppercase tracking-wider font-satoshi">
+                                <i data-lucide="wallet" class="w-4 h-4 text-emerald-600"></i>
                                 <span>Investor Profile &amp; Mandate</span>
                             </div>
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Investor Type
                                     </label>
-                                    <select name="investor_type" class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                    <select name="investor_type" class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                                         <option value="Angel Investor" <?= ($_POST['investor_type'] ?? '') === 'Angel Investor' ? 'selected' : '' ?>>Individual Angel Investor</option>
                                         <option value="Syndicate Lead" <?= ($_POST['investor_type'] ?? '') === 'Syndicate Lead' ? 'selected' : '' ?>>Angel Syndicate Lead</option>
                                         <option value="Venture Capital Partner" <?= ($_POST['investor_type'] ?? '') === 'Venture Capital Partner' ? 'selected' : '' ?>>Institutional VC Partner</option>
@@ -745,10 +759,10 @@ $cur = $regMeta[$selectedRole];
                                 </div>
 
                                 <div>
-                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                         Typical Cheque / Ticket Size
                                     </label>
-                                    <select name="ticket_range" class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                    <select name="ticket_range" class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                                         <option value="2-10L" <?= ($_POST['ticket_range'] ?? '') === '2-10L' ? 'selected' : '' ?>>₹2 Lakhs – ₹10 Lakhs</option>
                                         <option value="10-50L" <?= ($_POST['ticket_range'] ?? '10-50L') === '10-50L' ? 'selected' : '' ?>>₹10 Lakhs – ₹50 Lakhs (Popular)</option>
                                         <option value="50L-2Cr" <?= ($_POST['ticket_range'] ?? '') === '50L-2Cr' ? 'selected' : '' ?>>₹50 Lakhs – ₹2 Crores</option>
@@ -758,82 +772,82 @@ $cur = $regMeta[$selectedRole];
                             </div>
 
                             <div>
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                     Primary Investment Focus Sectors
                                 </label>
                                 <input type="text" name="preferred_industries" 
                                        value="<?= htmlspecialchars($_POST['preferred_industries'] ?? 'AI & DeepTech, SaaS, FinTech, HealthTech') ?>" 
                                        placeholder="e.g. AI & DeepTech, SaaS, FinTech"
-                                       class="w-full px-3 py-2 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs text-slate-900 outline-none transition font-medium">
+                                       class="w-full px-3 py-2.5 bg-white border border-slate-200 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/10 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
                             </div>
                         </div>
                     <?php endif; ?>
 
                     <!-- Shared: Password & Confirmation (Grid) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 Password <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="password" id="password" name="password" required placeholder="Min 6 characters"
                                        oninput="checkPasswordStrength(this.value)" autocomplete="new-password"
-                                       class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
-                                <button type="button" onclick="togglePasswordVisibility('password', 'pwd-icon-1')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
-                                    <i data-lucide="eye" id="pwd-icon-1" class="w-4 h-4"></i>
+                                       class="w-full pl-11 pr-11 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                <button type="button" onclick="togglePasswordVisibility('password', 'pwd-icon-1')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition" title="Toggle password visibility">
+                                    <i data-lucide="eye" id="pwd-icon-1" class="w-5 h-5"></i>
                                 </button>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 Confirm Password <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="lock-check" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="password" id="password_confirmation" name="password_confirmation" required placeholder="Repeat password"
                                        autocomplete="new-password"
-                                       class="w-full pl-10 pr-9 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
-                                <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'pwd-icon-2')" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
-                                    <i data-lucide="eye" id="pwd-icon-2" class="w-4 h-4"></i>
+                                       class="w-full pl-11 pr-11 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                <button type="button" onclick="togglePasswordVisibility('password_confirmation', 'pwd-icon-2')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition" title="Toggle password visibility">
+                                    <i data-lucide="eye" id="pwd-icon-2" class="w-5 h-5"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Password Strength Meter -->
-                    <div class="space-y-1" id="strength-container" style="display: none;">
-                        <div class="flex items-center justify-between text-[10px] text-slate-500">
+                    <div class="space-y-1.5" id="strength-container" style="display: none;">
+                        <div class="flex items-center justify-between text-xs text-slate-500">
                             <span>Password strength:</span>
-                            <span id="strength-label" class="font-bold text-slate-600">Weak</span>
+                            <span id="strength-label" class="font-bold text-slate-700">Weak</span>
                         </div>
-                        <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden flex">
+                        <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex">
                             <div id="strength-bar" class="h-full bg-rose-500 transition-all duration-300 w-1/4"></div>
                         </div>
                     </div>
 
                     <!-- Shared: City & Country (Grid) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 City
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="map-pin" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="text" name="city" value="<?= htmlspecialchars($_POST['city'] ?? 'Bengaluru') ?>" required
-                                       class="w-full pl-10 pr-3.5 py-2 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
+                                       class="w-full pl-11 pr-3.5 py-2.5 sm:py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 outline-none transition font-medium">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            <label class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800 mb-1.5">
                                 Country
                             </label>
                             <div class="relative input-glow rounded-xl">
-                                <i data-lucide="globe" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <i data-lucide="globe" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="text" name="country" value="<?= htmlspecialchars($_POST['country'] ?? 'India') ?>" required
-                                       class="w-full pl-10 pr-3.5 py-2 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 outline-none transition font-medium">
+                                       class="w-full pl-11 pr-3.5 py-2.5 sm:py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 outline-none transition font-medium">
                             </div>
                         </div>
                     </div>
@@ -842,8 +856,8 @@ $cur = $regMeta[$selectedRole];
                     <div class="pt-1">
                         <label class="flex items-start space-x-2.5 cursor-pointer group">
                             <input type="checkbox" name="terms" required <?= isset($_POST['terms']) ? 'checked' : '' ?>
-                                   class="mt-0.5 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
-                            <span class="text-[11px] text-slate-600 leading-snug group-hover:text-slate-800 transition">
+                                   class="mt-1 w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+                            <span class="text-xs sm:text-sm text-slate-600 leading-relaxed group-hover:text-slate-800 transition">
                                 I agree to the <a href="<?= url('legal/terms.php') ?>" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold underline decoration-blue-200">Terms of Service</a>, <a href="<?= url('legal/privacy.php') ?>" target="_blank" class="text-blue-600 hover:text-blue-800 font-bold underline decoration-blue-200">Privacy Policy</a>, and understand private venture disclosures.
                             </span>
                         </label>
@@ -852,16 +866,16 @@ $cur = $regMeta[$selectedRole];
                     <!-- Submit Button -->
                     <div class="pt-2">
                         <button type="submit" id="submitBtn"
-                                class="w-full py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-xs sm:text-sm font-bold rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center space-x-2 group">
+                                class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-sm sm:text-base font-black rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all duration-200 flex items-center justify-center space-x-2 group font-satoshi tracking-wide">
                             <span id="btn-submit-text"><?= htmlspecialchars($cur['btn_text']) ?></span>
-                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                         </button>
                     </div>
                 </form>
 
-                <!-- Subtle Switch Link at Bottom (No tabs or clutter) -->
-                <div class="mt-4 text-center">
-                    <a href="<?= $cur['switch_url'] ?>" class="text-[11px] text-slate-400 hover:text-slate-600 transition underline">
+                <!-- Subtle Switch Link at Bottom -->
+                <div class="mt-5 text-center">
+                    <a href="<?= $cur['switch_url'] ?>" class="text-xs sm:text-sm text-slate-500 hover:text-slate-800 transition underline font-medium">
                         <?= htmlspecialchars($cur['switch_text']) ?> &rarr;
                     </a>
                 </div>

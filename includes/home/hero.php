@@ -1165,8 +1165,8 @@
 
           <!-- Action Buttons -->
           <div class="nx-hero-ctas" id="hero-ctas">
-            <a href="auth/login.php?role=investor" class="nx-btn-primary" id="hero-btn-investor"
-              aria-label="Explore Curated Dealflow">
+            <a href="<?= function_exists('url') ? url('auth/register.php?role=investor') : 'auth/register.php?role=investor' ?>" class="nx-btn-primary" id="hero-btn-investor"
+              aria-label="Explore Curated Dealflow as Investor">
               <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -1176,14 +1176,22 @@
               <span class="text-slate-400 text-sm ml-0.5" aria-hidden="true">&rarr;</span>
             </a>
 
-            <a href="auth/login.php?role=startup" class="nx-btn-secondary" id="hero-btn-startup"
-              aria-label="Apply to Raise Venture Capital">
+            <a href="<?= function_exists('url') ? url('auth/register.php?role=founder') : 'auth/register.php?role=founder' ?>" class="nx-btn-secondary" id="hero-btn-startup"
+              aria-label="Apply to Raise Capital as Founder">
               <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               <span>Apply to Raise Capital</span>
               <span class="text-slate-400 text-sm ml-0.5" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+
+          <!-- Existing User Direct Sign In Prompt -->
+          <div class="mt-2.5 mb-5 text-xs text-slate-500 font-medium flex items-center gap-1.5">
+            <span>Already have an account?</span>
+            <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="font-bold text-blue-600 hover:text-blue-800 underline transition">
+              Log in to your portal (Auto-detects role) &rarr;
             </a>
           </div>
 

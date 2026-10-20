@@ -562,13 +562,14 @@
       </nav>
 
       <!-- Right: Action Button -->
-      <div class="hidden md:flex items-center gap-2.5">
+      <!-- Right: Action Buttons (Log In for existing users + Sign Up with choice for new users) -->
+      <div class="hidden md:flex items-center gap-2">
         <?php 
           $activePersona = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
         ?>
         <a href="<?= function_exists('url') ? url('index.php?choose=1') : 'index.php?choose=1' ?>" 
            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-all"
-           title="Click to change your experience between Investor and Founder">
+           title="Click to switch landing page view between Investor and Founder">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
           <span>Role: <?= htmlspecialchars(ucfirst($activePersona)) ?></span>
           <span class="text-[10px] text-slate-400">⇄</span>
@@ -583,10 +584,19 @@
             <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
           </a>
         <?php else: ?>
-          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="nx-nav-btn nx-hoverable">
-            <span>Login / Portal</span>
-            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+          <!-- Existing Users: Clean Log In -->
+          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" 
+             class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-bold text-slate-700 hover:text-blue-600 hover:bg-slate-100 transition-all font-satoshi">
+            <span>Log In</span>
           </a>
+
+          <!-- New Users: Sign Up with Choice Modal Trigger -->
+          <button type="button" 
+                  onclick="openSignUpChoiceModal()" 
+                  class="nx-nav-btn nx-hoverable cursor-pointer">
+            <span>Sign Up</span>
+            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
         <?php endif; ?>
       </div>
 
@@ -686,7 +696,7 @@
         <?php endif; ?>
       </nav>
 
-      <div class="flex flex-col gap-4 pt-6 border-t border-nx-border">
+      <div class="flex flex-col gap-3 pt-6 border-t border-nx-border">
         <?php if (function_exists('auth_check') && auth_check()): 
           $u = current_user();
           $dashUrl = $u['role'] === 'founder' ? url('founder/dashboard.php') : ($u['role'] === 'investor' ? url('investor/dashboard.php') : url('admin/dashboard.php'));
@@ -696,12 +706,112 @@
             <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
           </a>
         <?php else: ?>
-          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="nx-nav-btn text-center justify-center py-3.5 text-[15px]">
-            <span>Login / Portal</span>
+          <!-- Mobile: Sign Up with Choice Modal -->
+          <button type="button" onclick="openSignUpChoiceModal();" class="nx-nav-btn text-center justify-center py-3.5 text-[15px] cursor-pointer w-full">
+            <span>Sign Up (Founder / Investor)</span>
             <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+
+          <!-- Mobile: Log In for Existing Users -->
+          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" 
+             class="w-full text-center py-3 rounded-full text-[14px] font-bold text-slate-800 bg-white border border-slate-200/90 hover:bg-slate-50 transition-all font-satoshi shadow-2xs">
+            <span>Log In to Account &rarr;</span>
           </a>
         <?php endif; ?>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       NEXORA — SIGN UP ROLE CHOICE MODAL
+       Allows new users to pick: Founder vs Investor
+       ============================================================ -->
+  <div id="nx-signup-choice-modal" 
+       class="fixed inset-0 z-[999] hidden items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md transition-opacity duration-300"
+       role="dialog" 
+       aria-modal="true" 
+       aria-labelledby="signupChoiceTitle">
+    
+    <div class="relative w-full max-w-2xl bg-white rounded-[28px] border border-slate-200/90 p-6 sm:p-8 shadow-2xl overflow-hidden text-slate-900 animate-fadeIn"
+         onclick="event.stopPropagation()">
+      
+      <!-- Close Button -->
+      <button type="button" 
+              onclick="closeSignUpChoiceModal()" 
+              class="absolute top-4 right-4 sm:top-6 sm:right-6 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition cursor-pointer text-xl font-bold"
+              aria-label="Close modal">
+        &times;
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center max-w-lg mx-auto mb-6 sm:mb-8">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200/70 mb-2.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>New User Registration</span>
+        </span>
+        <h2 id="signupChoiceTitle" class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-satoshi">
+          Join NEXORA Ecosystem
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1.5 font-medium">
+          Choose your persona to get started today:
+        </p>
+      </div>
+
+      <!-- 2 Cards Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+        
+        <!-- Option 1: Founder -->
+        <a href="<?= function_exists('url') ? url('auth/register.php?role=founder') : 'auth/register.php?role=founder' ?>" 
+           class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-blue-50/50 to-white hover:from-blue-50 hover:to-blue-50/30 border-2 border-slate-200/90 hover:border-blue-600 transition-all duration-200 text-left flex flex-col justify-between shadow-2xs hover:shadow-lg hover:-translate-y-1">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl mb-4 shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
+              🚀
+            </div>
+            <div class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-700 transition font-satoshi flex items-center justify-between">
+              <span>I am a Founder</span>
+              <span class="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Raise Seed or Series A capital, access 450+ verified angel networks, MCA compliance cap tables, and confidential dealrooms.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-bold text-blue-600">
+            <span>Apply to Raise Capital</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+
+        <!-- Option 2: Investor -->
+        <a href="<?= function_exists('url') ? url('auth/register.php?role=investor') : 'auth/register.php?role=investor' ?>" 
+           class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-emerald-50/50 to-white hover:from-emerald-50 hover:to-emerald-50/30 border-2 border-slate-200/90 hover:border-emerald-600 transition-all duration-200 text-left flex flex-col justify-between shadow-2xs hover:shadow-lg hover:-translate-y-1">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-md shadow-emerald-600/30 group-hover:scale-105 transition-transform">
+              💼
+            </div>
+            <div class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition font-satoshi flex items-center justify-between">
+              <span>I am an Investor</span>
+              <span class="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Discover curated private deals, view audited MCA financial records, receive standardized SAFE term sheets & co-invest.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
+            <span>Join as Investor</span>
+            <span>&rarr;</span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Footer: Already have an account? Log In -->
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center text-xs text-slate-500">
+        <span>Already have an account? </span>
+        <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="font-bold text-blue-600 hover:text-blue-800 underline transition">
+          Log in here (Auto-detects role) &rarr;
+        </a>
+      </div>
+
     </div>
   </div>
 
@@ -827,37 +937,41 @@
       });
 
 
-
-      // 4. Lenis Smooth Scroll Setup
-      // NOTE: Lenis must be driven by exactly ONE raf loop. Previously this ran
-      // BOTH a manual requestAnimationFrame loop AND gsap.ticker at the same time,
-      // which double-drove lenis.raf() every frame and caused the stutter/jank.
-      // Fixed: gsap.ticker drives it when GSAP is present (recommended pairing,
-      // keeps ScrollTrigger perfectly in sync), otherwise fall back to a single
-      // native raf loop.
-      if (typeof Lenis !== 'undefined' && !prefersReducedMotion && !isTouch) {
-        const lenis = new Lenis({
-          duration: 1.05,
-          smoothWheel: true,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        });
-
-        // Expose globally so other scripts (e.g. anchor-link navigation) can
-        // route scroll requests through Lenis instead of fighting it with
-        // native window.scrollTo().
-        window.__lenis = lenis;
-
-        if (window.gsap && window.ScrollTrigger) {
-          lenis.on('scroll', ScrollTrigger.update);
-          gsap.ticker.add((time) => lenis.raf(time * 1000));
-          gsap.ticker.lagSmoothing(0);
-        } else {
-          function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-          }
-          requestAnimationFrame(raf);
+      // 7. Sign Up Choice Modal Engine
+      window.openSignUpChoiceModal = function() {
+        const modal = document.getElementById('nx-signup-choice-modal');
+        if (modal) {
+          modal.classList.remove('hidden');
+          modal.classList.add('flex');
+          document.body.style.overflow = 'hidden';
         }
+      };
+
+      window.closeSignUpChoiceModal = function() {
+        const modal = document.getElementById('nx-signup-choice-modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.classList.remove('flex');
+          document.body.style.overflow = '';
+        }
+      };
+
+      // Close modal on click outside backdrop
+      const choiceModal = document.getElementById('nx-signup-choice-modal');
+      if (choiceModal) {
+        choiceModal.addEventListener('click', (e) => {
+          if (e.target === choiceModal) {
+            closeSignUpChoiceModal();
+          }
+        });
       }
+
+      // Close modal on ESC key
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeSignUpChoiceModal();
+        }
+      });
+
     })();
   </script>

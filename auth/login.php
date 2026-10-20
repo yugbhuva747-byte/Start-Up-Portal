@@ -36,14 +36,9 @@ if (auth_check()) {
 $error = '';
 $flash = get_flash();
 
-// Determine Role: Strictly dedicated per user's choice
-$role = strtolower($_GET['role'] ?? $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'founder');
-if ($role === 'startup') {
-    $role = 'founder';
-}
-if (!in_array($role, ['founder', 'investor', 'admin'], true)) {
-    $role = 'founder';
-}
+// Determine Role: ALWAYS Unified Single Login (User never has to choose who they are)
+// Backend automatically identifies whether the user is a Founder or Investor from MySQL database
+$role = (isset($_GET['role']) && $_GET['role'] === 'admin') ? 'admin' : 'unified';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
@@ -143,8 +138,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Role-specific definitions (NO mixing or unwanted options)
+// Determine Role: Default to unified login for all visitors
+$role = (isset($_GET['role']) && $_GET['role'] === 'admin') ? 'admin' : 'unified';
+
+// Role-specific definitions
 $roleMeta = [
+    'unified' => [
+        'page_title' => 'Sign In • ' . APP_NAME,
+        'badge' => 'SMART VENTURE LOGIN • AUTO-DETECT ROLE',
+        'badge_color' => 'bg-blue-50 text-blue-700 border-blue-200/80',
+        'headline' => 'Connecting India & UAE High-Growth Startups with Institutional Capital.',
+        'subtitle' => 'Unified secure login for Startup Founders, Accredited Investors, and Platform Administrators. Enter your registered email to access your dedicated portal.',
+        'terminal_title' => 'NEXORA Portal',
+        'terminal_round' => 'Live Ecosystem',
+        'terminal_target' => '₹280 Cr+ Deployed',
+        'terminal_percent' => '92%',
+        'terminal_subtext' => 'Founders & Allocators Active',
+        'stat_metric' => 'Smart Role Detect',
+        'stat1_num' => '₹280 Cr+',
+        'stat1_label' => 'Capital Raised',
+        'stat2_num' => '1,400+',
+        'stat2_label' => 'Active Members',
+        'stat3_num' => '0%',
+        'stat3_label' => 'Broker Fees',
+        'pillar1_icon' => 'rocket',
+        'pillar1_title' => 'For Founders',
+        'pillar1_desc' => 'Direct angel syndicate matches, confidential data rooms & live pitch dealrooms.',
+        'pillar2_icon' => 'layers',
+        'pillar2_title' => 'For Investors',
+        'pillar2_desc' => 'SEBI diligence, MCA audited cap tables, and syndication co-investments.',
+        'pillar3_icon' => 'shield-check',
+        'pillar3_title' => 'Smart Access',
+        'pillar3_desc' => 'Single sign-in that automatically identifies your account type from your email.',
+        'testimonial_avatar' => 'NX',
+        'testimonial_name' => 'Venture Ecosystem Lead',
+        'testimonial_role' => '• India & UAE Cross-Border Corridor',
+        'testimonial_quote' => '"A seamless, unified experience for both entrepreneurs raising capital and allocators deploying checks."',
+        'portal_badge' => 'SECURE SINGLE SIGN-IN',
+        'portal_title' => 'Sign In to Your Account',
+        'portal_sub' => 'Enter your registered email and password to access your dedicated portal.',
+        'btn_text' => 'Sign In to Portal',
+        'demo_email' => 'founder@techpulse.io',
+        'demo_password' => 'password123',
+        'demo_label' => 'Choose a Demo Account to test',
+        'register_url' => url('auth/register.php'),
+        'register_text' => 'Create New Account',
+        'register_prompt' => 'New to NEXORA? Choose your path to register:',
+        'switch_url' => url('index.php'),
+        'switch_text' => 'Return to NEXORA Homepage'
+    ],
     'founder' => [
         'page_title' => 'Founder Sign In • ' . APP_NAME,
         'badge' => 'FOUNDER CAPITAL ACCELERATOR • ZERO BROKERAGE',
@@ -279,7 +321,7 @@ $roleMeta = [
     ]
 ];
 
-$cur = $roleMeta[$role];
+$cur = $roleMeta[$role] ?? $roleMeta['unified'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -596,11 +638,10 @@ $cur = $roleMeta[$role];
                     <span class="text-[9px] text-slate-400 font-bold uppercase pl-1.5 border-l border-slate-200"><?= ucfirst($role) ?></span>
                 </div>
                 
-                <div class="text-right ml-auto">
-                    <span class="text-xs text-slate-500 hidden sm:inline">Don't have an account?</span>
-                    <a href="<?= $cur['register_url'] ?>" class="sm:ml-1 text-xs font-bold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100">
-                        <span><?= htmlspecialchars($cur['register_text']) ?></span>
-                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                <div class="text-right ml-auto flex items-center gap-2">
+                    <span class="text-xs text-slate-500 hidden sm:inline">New to NEXORA?</span>
+                    <a href="<?= url('auth/register.php') ?>" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200/50">
+                        <span>Sign Up &rarr;</span>
                     </a>
                 </div>
             </div>
@@ -610,144 +651,133 @@ $cur = $roleMeta[$role];
                 
                 <!-- Main Form Header -->
                 <div class="mb-5">
-                    <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10.5px] font-bold mb-2 <?= $cur['badge_color'] ?>">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold mb-2 <?= $cur['badge_color'] ?>">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
                         <span><?= htmlspecialchars($cur['portal_badge']) ?></span>
                     </div>
 
-                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-satoshi">
+                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 font-satoshi" id="portalHeaderTitle">
                         <?= htmlspecialchars($cur['portal_title']) ?>
                     </h2>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                    <p class="text-sm sm:text-base text-slate-600 mt-1.5 font-medium leading-relaxed" id="portalHeaderSub">
                         <?= htmlspecialchars($cur['portal_sub']) ?>
                     </p>
                 </div>
 
-                <!-- 1-Click Fast Demo Credentials Fill for this specific role -->
-                <div class="mb-4 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                            <i data-lucide="zap" class="w-3.5 h-3.5 text-blue-600"></i>
-                        </div>
-                        <div class="text-left">
-                            <div class="text-[11px] font-bold text-slate-800"><?= htmlspecialchars($cur['demo_label']) ?></div>
-                            <div class="text-[9.5px] text-slate-500 font-mono"><?= htmlspecialchars($cur['demo_email']) ?></div>
-                        </div>
-                    </div>
-                    <button type="button" 
-                            onclick="fillRoleDemo('<?= htmlspecialchars($cur['demo_email']) ?>', '<?= htmlspecialchars($cur['demo_password']) ?>')" 
-                            class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[10.5px] font-bold text-blue-600 hover:bg-blue-50 hover:border-blue-300 transition shadow-xs">
-                        Auto-Fill
-                    </button>
-                </div>
-
                 <!-- Alerts (Flash & Errors) -->
                 <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-amber-50 text-amber-900 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
-                        <i data-lucide="alert-triangle" class="w-4 h-4 flex-shrink-0 text-amber-600 mt-0.5"></i>
+                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold bg-amber-50 text-amber-900 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-amber-600 mt-0.5"></i>
                         <div>
-                            <span class="font-bold block">Maintenance Mode Active</span>
-                            <span class="text-[11px] text-amber-800 leading-relaxed font-normal">Public access is temporarily paused. Only Platform Administrators may sign in.</span>
+                            <span class="font-bold block text-sm">Maintenance Mode Active</span>
+                            <span class="text-xs text-amber-800 leading-relaxed font-normal">Public access is temporarily paused. Only Platform Administrators may sign in.</span>
                         </div>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($flash): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2 shadow-sm">
-                        <i data-lucide="check-circle" class="w-4 h-4 flex-shrink-0 text-emerald-600"></i>
+                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5 shadow-sm">
+                        <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600"></i>
                         <span><?= htmlspecialchars($flash['message']) ?></span>
                     </div>
                 <?php endif; ?>
 
                 <?php if (!empty($error)): ?>
-                    <div class="mb-4 p-3 rounded-xl text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center justify-between shadow-sm">
-                        <div class="flex items-center space-x-2">
-                            <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
+                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center justify-between shadow-sm">
+                        <div class="flex items-center space-x-2.5">
+                            <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
                             <span><?= htmlspecialchars($error) ?></span>
                         </div>
-                        <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-[11px] text-blue-700 hover:text-blue-900 font-bold underline whitespace-nowrap ml-2">
+                        <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-xs text-blue-700 hover:text-blue-900 font-bold underline whitespace-nowrap ml-2">
                             Reset Password?
                         </a>
                     </div>
                 <?php endif; ?>
 
                 <!-- Sign In Form -->
-                <form action="<?= url('auth/login.php?role=' . urlencode($role)) ?>" method="POST" class="space-y-3.5" id="loginForm">
+                <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-4" id="loginForm">
                     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                     <?= security_honeypot_field() ?>
 
                     <!-- Email Field -->
                     <div>
-                        <label for="email" class="block text-[11px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                            Work Email Address <span class="text-rose-500">*</span>
-                        </label>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="email" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800">
+                                Email Address <span class="text-rose-500">*</span>
+                            </label>
+                            <span id="roleDetectStatus" class="text-xs text-slate-400 font-medium"></span>
+                        </div>
                         <div class="relative input-glow rounded-xl">
-                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                            <input type="email" id="email" name="email" required placeholder="<?= htmlspecialchars($cur['demo_email']) ?>" autocomplete="email"
-                                   class="w-full pl-10 pr-4 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                            <i data-lucide="mail" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <input type="email" id="email" name="email" required placeholder="Enter your registered email ID..." autocomplete="email"
+                                   class="w-full pl-11 pr-4 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                        </div>
+
+                        <!-- Real-Time Role Detection Pill -->
+                        <div id="roleDetectIndicator" class="mt-2.5 transition-all duration-300 hidden">
+                            <!-- Injected by JavaScript -->
                         </div>
                     </div>
 
                     <!-- Password Field with Show/Hide Toggle -->
                     <div>
-                        <div class="flex items-center justify-between mb-1">
-                            <label for="password" class="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label for="password" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800">
                                 Password <span class="text-rose-500">*</span>
                             </label>
-                            <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-[11px] text-blue-600 hover:text-blue-800 font-bold transition">
+                            <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-bold transition">
                                 Forgot Password?
                             </a>
                         </div>
                         <div class="relative input-glow rounded-xl">
-                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                             <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password"
-                                   class="w-full pl-10 pr-10 py-2.5 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-0 rounded-xl text-xs sm:text-sm text-slate-900 placeholder-slate-400 outline-none transition font-medium">
+                                   class="w-full pl-11 pr-11 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                             
                             <!-- Toggle Password Visibility Button -->
                             <button type="button" 
                                     id="togglePassBtn"
                                     onclick="togglePasswordVisibility()" 
-                                    class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition"
                                     title="Toggle password visibility">
-                                <i data-lucide="eye" id="togglePassIcon" class="w-4 h-4"></i>
+                                <i data-lucide="eye" id="togglePassIcon" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Remember Me Option & Encryption Indicator -->
-                    <div class="flex items-center justify-between pt-0.5">
+                    <div class="flex items-center justify-between pt-1">
                         <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                            <span class="text-xs text-slate-600 font-medium">Remember this browser</span>
+                            <span class="text-xs sm:text-sm text-slate-700 font-medium">Remember this browser</span>
                         </label>
-                        <span class="text-[11px] text-slate-400 flex items-center gap-1">
-                            <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span class="text-xs text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
                             <span>256-Bit Encrypted</span>
                         </span>
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" id="submitBtn" class="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-xs sm:text-sm font-bold rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all flex items-center justify-center gap-2 group mt-2">
+                    <button type="submit" id="submitBtn" class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-sm sm:text-base font-black rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all flex items-center justify-center gap-2 group mt-3 font-satoshi tracking-wide">
                         <span id="btnText"><?= htmlspecialchars($cur['btn_text']) ?></span>
-                        <i data-lucide="arrow-right" id="btnIcon" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        <i data-lucide="arrow-right" id="btnIcon" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
                     </button>
                 </form>
 
-                <!-- Dedicated Onboarding Link for this Role -->
-                <div class="mt-5 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-xs text-slate-500 mb-2 font-medium">
-                        <?= htmlspecialchars($cur['register_prompt']) ?>
+                <!-- Registration Prompt -->
+                <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                        Don't have an account yet? 
+                        <a href="<?= url('auth/register.php') ?>" class="text-blue-600 font-bold hover:text-blue-800 hover:underline transition">
+                            Create an Account &rarr;
+                        </a>
                     </p>
-                    <a href="<?= $cur['register_url'] ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold transition">
-                        <i data-lucide="arrow-right-circle" class="w-3.5 h-3.5"></i>
-                        <span><?= htmlspecialchars($cur['register_text']) ?></span>
-                    </a>
                 </div>
 
-                <!-- Subtle Switch Link at Bottom (No tabs or clutter) -->
+                <!-- Back to Home Link -->
                 <div class="mt-4 text-center">
-                    <a href="<?= $cur['switch_url'] ?>" class="text-[11px] text-slate-400 hover:text-slate-600 transition underline">
-                        <?= htmlspecialchars($cur['switch_text']) ?> &rarr;
+                    <a href="<?= url('index.php') ?>" class="text-[11px] text-slate-400 hover:text-slate-600 transition underline">
+                        &larr; Return to NEXORA Homepage
                     </a>
                 </div>
             </div>
@@ -781,8 +811,8 @@ $cur = $roleMeta[$role];
             ease: "power2.out" 
         });
 
-        // 1-Click Fast Demo Fill
-        function fillRoleDemo(email, pass) {
+        // 1-Click Fast Demo Fill with Auto-Detection Trigger
+        function fillRoleDemo(email, pass, roleHint) {
             const emailInput = document.getElementById('email');
             const passwordInput = document.getElementById('password');
 
@@ -795,7 +825,10 @@ $cur = $roleMeta[$role];
                 setTimeout(() => {
                     emailInput.classList.remove('bg-blue-50');
                     passwordInput.classList.remove('bg-blue-50');
-                }, 600);
+                }, 500);
+
+                // Trigger live role check immediately
+                detectEmailRole(email);
             }
         }
 
@@ -814,13 +847,158 @@ $cur = $roleMeta[$role];
             lucide.createIcons();
         }
 
+        // Real-Time Dynamic Email Role Detection Engine
+        let detectTimeout = null;
+        const emailInput = document.getElementById('email');
+        const roleIndicator = document.getElementById('roleDetectIndicator');
+        const roleStatus = document.getElementById('roleDetectStatus');
+        const btnText = document.getElementById('btnText');
+        const portalHeaderTitle = document.getElementById('portalHeaderTitle');
+        const portalHeaderSub = document.getElementById('portalHeaderSub');
+
+        async function detectEmailRole(email) {
+            email = email.trim();
+            if (!email || !email.includes('@') || email.length < 5) {
+                if (roleIndicator) roleIndicator.classList.add('hidden');
+                if (roleStatus) roleStatus.textContent = '';
+                if (btnText) btnText.textContent = 'Sign In to Portal';
+                return;
+            }
+
+            if (roleStatus) roleStatus.textContent = 'Checking account...';
+
+            try {
+                const res = await fetch(`<?= url('api/check_email.php') ?>?email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+
+                if (data.success && data.exists) {
+                    if (roleStatus) roleStatus.textContent = '✓ Verified Account';
+                    roleIndicator.classList.remove('hidden');
+
+                    if (data.role === 'founder') {
+                        roleIndicator.innerHTML = `
+                            <div class="p-3 rounded-xl bg-blue-50/90 border border-blue-200 text-blue-900 flex items-center justify-between text-xs sm:text-sm animate-fadeIn">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                                            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-4 11a22.35 22.35 0 0 1-4 2z"/>
+                                            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+                                            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-slate-900 flex items-center gap-1.5 text-xs sm:text-sm">
+                                            <span>Startup Founder Account</span>
+                                            <span class="text-[10px] bg-blue-200/80 text-blue-800 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Verified</span>
+                                        </div>
+                                        <div class="text-xs text-blue-700 font-medium">${data.name || ''} ${data.subtitle ? '&bull; ' + data.subtitle : ''}</div>
+                                    </div>
+                                </div>
+                                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse"></span>
+                            </div>
+                        `;
+                        if (btnText) btnText.textContent = 'Sign In to Founder Portal →';
+                        if (portalHeaderTitle) portalHeaderTitle.textContent = 'Founder Sign In';
+                        if (portalHeaderSub) portalHeaderSub.textContent = 'Access your startup deal room, pitch analytics & active angel syndicates.';
+                    } else if (data.role === 'investor') {
+                        roleIndicator.innerHTML = `
+                            <div class="p-3 rounded-xl bg-emerald-50/90 border border-emerald-200 text-emerald-900 flex items-center justify-between text-xs sm:text-sm animate-fadeIn">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-slate-900 flex items-center gap-1.5 text-xs sm:text-sm">
+                                            <span>Accredited Investor Account</span>
+                                            <span class="text-[10px] bg-emerald-200/80 text-emerald-800 px-2 py-0.5 rounded-md font-bold uppercase tracking-wider">Verified</span>
+                                        </div>
+                                        <div class="text-xs text-emerald-700 font-medium">${data.name || ''} ${data.subtitle ? '&bull; ' + data.subtitle : ''}</div>
+                                    </div>
+                                </div>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 animate-pulse"></span>
+                            </div>
+                        `;
+                        if (btnText) btnText.textContent = 'Sign In to Investor Portal →';
+                        if (portalHeaderTitle) portalHeaderTitle.textContent = 'Investor Sign In';
+                        if (portalHeaderSub) portalHeaderSub.textContent = 'Access curated startup deal pipeline, audited cap tables & co-investments.';
+                    } else if (data.role === 'admin') {
+                        roleIndicator.innerHTML = `
+                            <div class="p-3 rounded-xl bg-purple-50/90 border border-purple-200 text-purple-900 flex items-center justify-between text-xs sm:text-sm animate-fadeIn">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                            <path d="m9 12 2 2 4-4"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-black text-slate-900 text-xs sm:text-sm">Platform Governance Administrator</div>
+                                        <div class="text-xs text-purple-700 font-medium">${data.name || ''} &bull; Compliance Console</div>
+                                    </div>
+                                </div>
+                                <span class="w-2.5 h-2.5 rounded-full bg-purple-600 animate-pulse"></span>
+                            </div>
+                        `;
+                        if (btnText) btnText.textContent = 'Sign In to Admin Console →';
+                        if (portalHeaderTitle) portalHeaderTitle.textContent = 'Administrator Sign In';
+                    }
+                } else {
+                    if (roleStatus) roleStatus.textContent = '';
+                    roleIndicator.classList.remove('hidden');
+                    roleIndicator.innerHTML = `
+                        <div class="p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 text-amber-900 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">New email? You can register as a <strong>Founder</strong> or <strong>Investor</strong> below.</span>
+                            </div>
+                        </div>
+                    `;
+                    if (btnText) btnText.textContent = 'Sign In to Portal →';
+                }
+            } catch (err) {
+                if (roleStatus) roleStatus.textContent = '';
+            }
+        }
+
+        if (emailInput) {
+            emailInput.addEventListener('input', function() {
+                clearTimeout(detectTimeout);
+                detectTimeout = setTimeout(() => {
+                    detectEmailRole(this.value);
+                }, 300);
+            });
+            emailInput.addEventListener('paste', function() {
+                setTimeout(() => {
+                    detectEmailRole(this.value);
+                }, 50);
+            });
+            emailInput.addEventListener('change', function() {
+                detectEmailRole(this.value);
+            });
+            emailInput.addEventListener('blur', function() {
+                detectEmailRole(this.value);
+            });
+            // If already filled on page load
+            if (emailInput.value.trim()) {
+                detectEmailRole(emailInput.value.trim());
+            }
+        }
+
         // Submit Button Loading Feedback
         document.getElementById('loginForm')?.addEventListener('submit', function() {
             const btn = document.getElementById('submitBtn');
             const btnText = document.getElementById('btnText');
             if (btn && btnText) {
                 btn.classList.add('opacity-90', 'cursor-wait');
-                btnText.textContent = 'Verifying credentials...';
+                btnText.textContent = 'Verifying credentials & role...';
             }
         });
 
