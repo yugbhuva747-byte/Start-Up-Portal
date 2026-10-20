@@ -26,7 +26,7 @@
     overflow: hidden;
     z-index: 50;
     color: #0F172A;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   .nx-pricing-wrap {

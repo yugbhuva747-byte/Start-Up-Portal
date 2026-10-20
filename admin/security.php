@@ -180,10 +180,11 @@ function get_severity_badge(string $severity): array {
             }
         }
     </script>
+    <link rel="stylesheet" href="../assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; }
         code, pre { font-family: 'JetBrains Mono', monospace; }
         .glass-card {
             background: rgba(255, 255, 255, 0.9);

@@ -27,7 +27,7 @@
       radial-gradient(ellipse 50% 35% at 10% 30%, rgba(209, 250, 229, 0.35) 0%, transparent 55%),
       linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
     color: #0F172A;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
   }
 
@@ -37,7 +37,7 @@
     position: absolute;
     inset: 0;
     background-size: 40px 40px;
-    background-image: 
+    background-image:
       linear-gradient(to right, rgba(15, 23, 42, 0.025) 1px, transparent 1px),
       linear-gradient(to bottom, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
     mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 30%, transparent 80%);
@@ -86,9 +86,17 @@
   }
 
   @keyframes nxFloatOrb {
-    0% { transform: translate3d(0, 0, 0) scale(1); }
-    50% { transform: translate3d(30px, 20px, 0) scale(1.06); }
-    100% { transform: translate3d(-25px, 15px, 0) scale(0.96); }
+    0% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    50% {
+      transform: translate3d(30px, 20px, 0) scale(1.06);
+    }
+
+    100% {
+      transform: translate3d(-25px, 15px, 0) scale(0.96);
+    }
   }
 
   /* ── Main 2-Column Stage ───────────────────────────────────── */
@@ -171,13 +179,20 @@
   }
 
   @keyframes nxPulseAnim {
-    0% { transform: scale(0.8); opacity: 0.85; }
-    100% { transform: scale(2.4); opacity: 0; }
+    0% {
+      transform: scale(0.8);
+      opacity: 0.85;
+    }
+
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
   }
 
   /* ── Main Heading ──────────────────────────────────────────── */
   .nx-hero-heading {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-family: 'Satoshi', 'Inter', sans-serif;
     font-size: clamp(36px, 4.5vw, 64px);
     font-weight: 800;
     line-height: 1.08;
@@ -368,9 +383,20 @@
     border-radius: 50%;
   }
 
-  .nx-term-dot-red { background: #EF4444; opacity: 0.85; }
-  .nx-term-dot-yellow { background: #F59E0B; opacity: 0.85; }
-  .nx-term-dot-green { background: #10B981; opacity: 0.85; }
+  .nx-term-dot-red {
+    background: #EF4444;
+    opacity: 0.85;
+  }
+
+  .nx-term-dot-yellow {
+    background: #F59E0B;
+    opacity: 0.85;
+  }
+
+  .nx-term-dot-green {
+    background: #10B981;
+    opacity: 0.85;
+  }
 
   .nx-term-title {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -428,7 +454,7 @@
     font-weight: 800;
     font-size: 14px;
     color: #60A5FA;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
 
@@ -440,7 +466,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Satoshi', sans-serif;
   }
 
   .nx-deal-meta p {
@@ -550,7 +576,7 @@
     font-size: 14.5px;
     font-weight: 800;
     color: #F8FAFC;
-    font-family: 'Plus Jakarta Sans', monospace;
+    font-family: 'Satoshi', sans-serif;
     margin-top: 2px;
   }
 
@@ -614,8 +640,13 @@
   }
 
   @keyframes nxShimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   /* Lead Backers Strip */
@@ -763,7 +794,7 @@
   }
 
   .nx-trust-num {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: clamp(24px, 2.4vw, 32px);
     font-weight: 800;
     letter-spacing: -0.035em;
@@ -780,51 +811,256 @@
     letter-spacing: -0.01em;
   }
 
-  .nx-trust-logos-wrap {
+  /* ── Sovereign Trust Architecture Marquee Strip (Prominent & Big) ── */
+  .nx-trust-marquee-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
     width: 100%;
-    margin-top: 26px;
+    margin-top: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nx-trust-marquee-header {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+
+  .nx-trust-live-pulse {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nx-trust-pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+
+  .nx-trust-pulse-ring {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1.5px solid #10B981;
+    animation: nxPulsePing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes nxPulsePing {
+    0% {
+      transform: scale(0.85);
+      opacity: 0.85;
+    }
+
+    70%,
+    100% {
+      transform: scale(2.3);
+      opacity: 0;
+    }
   }
 
   .nx-trust-logos-label {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #94A3B8;
+    color: #475569;
   }
 
-  .nx-trust-logos {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 10px 14px;
-  }
-
-  .nx-partner-mark {
-    font-size: 11px;
-    font-weight: 600;
+  .nx-trust-badge-pill {
+    font-size: 11.5px;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #475569;
-    padding: 7px 16px;
+    color: #2563EB;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1.5px solid rgba(147, 197, 253, 0.6);
+    padding: 4px 12px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(226, 232, 240, 0.85);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
   }
 
-  .nx-partner-mark:hover {
-    color: #1D4ED8;
+  /* ── Infinite Horizontal Viewport & Track ──────────────────── */
+  .nx-ticker-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 10px 0;
+    mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  }
+
+  .nx-ticker-track {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: max-content;
+    animation: nxTickerScroll 34s linear infinite;
+    will-change: transform;
+  }
+
+  .nx-trust-marquee-wrap:hover .nx-ticker-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes nxTickerScroll {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* ── Prominent Frosted Pill Badges (Big & Bold) ─────────────── */
+  .nx-partner-card {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 22px 10px 12px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(226, 232, 240, 0.95);
+    border-radius: 999px;
+    box-shadow: 0 4px 14px -3px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.03);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    cursor: default;
+  }
+
+  .nx-partner-card:hover {
+    transform: translateY(-2px);
     border-color: #93C5FD;
     background: #FFFFFF;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 8px 24px -3px rgba(37, 99, 235, 0.16);
+  }
+
+  .nx-partner-icon-wrap {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nx-icon-peak {
+    background: rgba(239, 68, 68, 0.12);
+    color: #DC2626;
+  }
+
+  .nx-icon-blume {
+    background: rgba(245, 158, 11, 0.12);
+    color: #D97706;
+  }
+
+  .nx-icon-accel {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+  }
+
+  .nx-icon-elev8 {
+    background: rgba(99, 102, 241, 0.12);
+    color: #4F46E5;
+  }
+
+  .nx-icon-speciale {
+    background: rgba(14, 165, 233, 0.12);
+    color: #0284C7;
+  }
+
+  .nx-icon-difc {
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563EB;
+  }
+
+  .nx-partner-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+
+  .nx-partner-sep {
+    font-size: 13px;
+    color: #CBD5E1;
+    margin: 0 2px;
+    display: inline-block;
+  }
+
+  .nx-partner-desc {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: -0.005em;
+    line-height: 1;
+  }
+
+  @media (max-width: 640px) {
+    .nx-trust-marquee-wrap {
+      margin-top: 24px;
+    }
+
+    .nx-trust-marquee-header {
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .nx-trust-logos-label {
+      font-size: 11px;
+    }
+
+    .nx-trust-badge-pill {
+      font-size: 10px;
+      padding: 3px 10px;
+    }
+
+    .nx-partner-card {
+      padding: 8px 14px 8px 8px;
+      gap: 10px;
+    }
+
+    .nx-partner-icon-wrap {
+      width: 30px;
+      height: 30px;
+    }
+
+    .nx-partner-icon-wrap svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .nx-partner-name {
+      font-size: 13px;
+    }
+
+    .nx-partner-desc {
+      font-size: 11.5px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nx-ticker-track {
+      animation: none;
+      overflow-x: auto;
+      max-width: 100%;
+    }
   }
 
   /* ── Scroll Cue ────────────────────────────────────────────── */
@@ -867,9 +1103,20 @@
   }
 
   @keyframes nxHeroScrollWheel {
-    0% { transform: translateY(0); opacity: 1; }
-    50% { transform: translateY(9px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 0; }
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    50% {
+      transform: translateY(9px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 0;
+    }
   }
 </style>
 
@@ -883,7 +1130,7 @@
   <div class="nx-hero-orb nx-hero-orb-2" aria-hidden="true"></div>
 
   <div class="nx-hero">
-    
+
     <!-- ── 2-Column Split Stage ──────────────────────────────── -->
     <div class="nx-hero-stage" id="nx-hero-content">
       <div class="nx-hero-grid">
@@ -897,7 +1144,8 @@
               <span class="nx-live-pulse-ring"></span>
               <span class="nx-live-pulse-dot"></span>
             </span>
-            <span class="font-semibold text-slate-800 tracking-wide text-[11.5px]">INDIA &middot; UAE VENTURE SYNDICATE</span>
+            <span class="font-semibold text-slate-800 tracking-wide text-[11.5px]">INDIA &middot; UAE VENTURE
+              SYNDICATE</span>
             <span class="text-slate-300 font-light">&middot;</span>
             <span class="text-blue-700 font-bold tracking-wider uppercase text-[11px]">$180M+ PIPELINE</span>
           </div>
@@ -910,20 +1158,30 @@
 
           <!-- Subtitle Description -->
           <p class="nx-hero-desc" id="hero-desc">
-            NEXORA is the premier private dealroom connecting audited startups with accredited angel syndicates and Tier-1 VCs across India and the UAE. Direct cap table access, 100% verified diligence, and zero broker commissions.
+            NEXORA is the premier private dealroom connecting audited startups with accredited angel syndicates and
+            Tier-1 VCs across India and the UAE. Direct cap table access, 100% verified diligence, and zero broker
+            commissions.
           </p>
 
           <!-- Action Buttons -->
           <div class="nx-hero-ctas" id="hero-ctas">
-            <a href="auth/login.php?role=investor" class="nx-btn-primary" id="hero-btn-investor" aria-label="Explore Curated Dealflow">
-              <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            <a href="auth/login.php?role=investor" class="nx-btn-primary" id="hero-btn-investor"
+              aria-label="Explore Curated Dealflow">
+              <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
               <span>Explore Curated Dealflow</span>
               <span class="nx-btn-badge">24 Deals</span>
               <span class="text-slate-400 text-sm ml-0.5" aria-hidden="true">&rarr;</span>
             </a>
 
-            <a href="auth/login.php?role=startup" class="nx-btn-secondary" id="hero-btn-startup" aria-label="Apply to Raise Venture Capital">
-              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <a href="auth/login.php?role=startup" class="nx-btn-secondary" id="hero-btn-startup"
+              aria-label="Apply to Raise Venture Capital">
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
               <span>Apply to Raise Capital</span>
               <span class="text-slate-400 text-sm ml-0.5" aria-hidden="true">&rarr;</span>
             </a>
@@ -932,17 +1190,29 @@
           <!-- Micro Guarantees Strip -->
           <div class="nx-hero-guarantee" id="hero-guarantee">
             <div class="nx-guarantee-item">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
               <span>100% Free for Founders</span>
             </div>
             <span class="text-slate-300">&bull;</span>
             <div class="nx-guarantee-item">
-              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
               <span>0% Broker Fees</span>
             </div>
             <span class="text-slate-300">&bull;</span>
             <div class="nx-guarantee-item">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
               <span>MCA &amp; DigiLocker Verified</span>
             </div>
           </div>
@@ -953,10 +1223,10 @@
         <div class="nx-terminal-wrap" id="hero-right-col">
           <div class="nx-terminal-halo"></div>
 
-          
-          
+
+
           <div class="nx-terminal-window">
-            
+
             <!-- Terminal Header Chrome -->
             <div class="nx-terminal-bar">
               <div class="nx-term-dots">
@@ -981,7 +1251,11 @@
                   <div class="nx-deal-meta">
                     <h4>
                       <span>Kinetix Robotics</span>
-                      <svg class="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                      <svg class="w-3.5 h-3.5 text-blue-400 fill-current" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clip-rule="evenodd" />
+                      </svg>
                     </h4>
                     <p>Industrial Autonomous Fleet &middot; Series A</p>
                   </div>
@@ -991,14 +1265,9 @@
 
               <!-- Terminal Image Viewport with Live Activity Pill -->
               <div class="nx-terminal-viewport">
-                <img 
-                  src="assets/images/hero_venture.jpg" 
-                  alt="Founders and investors reviewing audited venture allocation dealflow" 
-                  class="nx-terminal-img"
-                  width="800"
-                  height="450"
-                  loading="eager"
-                />
+                <img src="assets/images/hero_venture.jpg"
+                  alt="Founders and investors reviewing audited venture allocation dealflow" class="nx-terminal-img"
+                  width="800" height="450" loading="eager" />
                 <div class="nx-img-gradient-scrim"></div>
 
                 <!-- Floating Live Toast Pill inside image -->
@@ -1082,30 +1351,194 @@
         </div>
       </div>
 
-      <div class="nx-trust-logos-wrap">
-        <span class="nx-trust-logos-label">CO-INVESTORS &amp; ALLOCATORS FROM TOP VENTURE FUNDS</span>
-        <div class="nx-trust-logos">
-          <span class="nx-partner-mark">PEAK XV SURGE</span>
-          <span class="nx-partner-mark">BLUME VENTURES</span>
-          <span class="nx-partner-mark">ACCEL ATOMS</span>
-          <span class="nx-partner-mark">ELEV8 CAPITAL</span>
-          <span class="nx-partner-mark">SPECIALE INVEST</span>
-          <span class="nx-partner-mark">DIFC INNOVATION HUB</span>
+      <!-- ── Infinite Horizontal Trust Marquee (Clean Borderless Strip) ── -->
+      <div class="nx-trust-marquee-wrap">
+        <div class="nx-trust-marquee-header">
+          <span class="nx-trust-live-pulse" aria-hidden="true">
+            <span class="nx-trust-pulse-dot"></span>
+            <span class="nx-trust-pulse-ring"></span>
+          </span>
+          <span class="nx-trust-logos-label">CO-INVESTORS &amp; ALLOCATORS FROM TOP VENTURE FUNDS</span>
+          <span class="nx-trust-badge-pill">TIER-1 SYNDICATE</span>
+        </div>
+
+        <div class="nx-ticker-viewport" aria-label="Partner Venture Funds Marquee">
+          <div class="nx-ticker-track">
+            <!-- Set 1 (Primary) -->
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-peak" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m3 20 9-16 9 16H3z" />
+                  <path d="m9 20 3-5 3 5" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">PEAK XV SURGE</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Seed &amp; Early-Stage</span>
+            </div>
+
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-blume" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
+                  <path d="M22 12a4 4 0 0 0-4-4h-1a4 4 0 0 0 0 8h1a4 4 0 0 0 4-4z" />
+                  <path d="M12 22a4 4 0 0 0 4-4v-1a4 4 0 0 0-8 0v1a4 4 0 0 0 4 4z" />
+                  <path d="M2 12a4 4 0 0 0 4 4h1a4 4 0 0 0 0-8H6a4 4 0 0 0-4 4z" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">BLUME VENTURES</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Pre-Seed &amp; Series A</span>
+            </div>
+
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-accel" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="2.5" />
+                  <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(30 12 12)" />
+                  <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(150 12 12)" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">ACCEL ATOMS</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Global Venture Scale</span>
+            </div>
+
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-elev8" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 20h16" />
+                  <path d="m6 16 6-6 4 4 5-6" />
+                  <path d="M17 8h4v4" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">ELEV8 CAPITAL</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Growth Stage Syndicate</span>
+            </div>
+
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-speciale" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 3h12l4 7-10 11L2 10l4-7z" />
+                  <path d="M2 10h20" />
+                  <path d="m8 3 4 7 4-7" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">SPECIALE INVEST</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">DeepTech &amp; Frontier</span>
+            </div>
+
+            <div class="nx-partner-card">
+              <div class="nx-partner-icon-wrap nx-icon-difc" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3" width="16" height="18" rx="2" />
+                  <path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01" />
+                  <path d="M10 19v2M14 19v2" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">DIFC INNOVATION HUB</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Sovereign MENA Gateway</span>
+            </div>
+
+            <!-- Set 2 (Identical Clone for Gapless Infinite Loop) -->
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-peak">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m3 20 9-16 9 16H3z" />
+                  <path d="m9 20 3-5 3 5" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">PEAK XV SURGE</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Seed &amp; Early-Stage</span>
+            </div>
+
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-blume">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z" />
+                  <path d="M22 12a4 4 0 0 0-4-4h-1a4 4 0 0 0 0 8h1a4 4 0 0 0 4-4z" />
+                  <path d="M12 22a4 4 0 0 0 4-4v-1a4 4 0 0 0-8 0v1a4 4 0 0 0 4 4z" />
+                  <path d="M2 12a4 4 0 0 0 4 4h1a4 4 0 0 0 0-8H6a4 4 0 0 0-4 4z" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">BLUME VENTURES</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Pre-Seed &amp; Series A</span>
+            </div>
+
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-accel">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="2.5" />
+                  <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(30 12 12)" />
+                  <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(150 12 12)" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">ACCEL ATOMS</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Global Venture Scale</span>
+            </div>
+
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-elev8">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 20h16" />
+                  <path d="m6 16 6-6 4 4 5-6" />
+                  <path d="M17 8h4v4" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">ELEV8 CAPITAL</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Growth Stage Syndicate</span>
+            </div>
+
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-speciale">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 3h12l4 7-10 11L2 10l4-7z" />
+                  <path d="M2 10h20" />
+                  <path d="m8 3 4 7 4-7" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">SPECIALE INVEST</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">DeepTech &amp; Frontier</span>
+            </div>
+
+            <div class="nx-partner-card" aria-hidden="true">
+              <div class="nx-partner-icon-wrap nx-icon-difc">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="3" width="16" height="18" rx="2" />
+                  <path d="M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01" />
+                  <path d="M10 19v2M14 19v2" />
+                </svg>
+              </div>
+              <span class="nx-partner-name">DIFC INNOVATION HUB</span>
+              <span class="nx-partner-sep" aria-hidden="true">&bull;</span>
+              <span class="nx-partner-desc">Sovereign MENA Gateway</span>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- Subtle Scroll Cue -->
-      <div class="text-center">
-        <a href="#nx-opportunities" class="nx-hero-cue" aria-label="Scroll to explore live opportunities">
-          <span>EXPLORE VERIFIED VENTURES</span>
-          <div class="nx-hero-mouse" aria-hidden="true">
-            <div class="nx-hero-wheel"></div>
-          </div>
-        </a>
-      </div>
     </div>
-
-  </div>
 </section>
 
 <!-- ============================================================

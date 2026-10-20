@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Legal: Privacy Policy & Data Protection Disclosure
  * Compliant with the Digital Personal Data Protection (DPDP) Act, 2023 & IT Act Rules
@@ -14,9 +14,10 @@ $pageTitle = 'Privacy Policy • ' . APP_NAME;
     <title><?= htmlspecialchars($pageTitle) ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
     </style>
 </head>
 <body class="text-slate-900 min-h-screen flex flex-col antialiased selection:bg-indigo-600 selection:text-white">

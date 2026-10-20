@@ -134,10 +134,11 @@ function render_article_html(?string $content): string {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
     <style>
         body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
+            font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; 
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
@@ -164,7 +165,7 @@ function render_article_html(?string $content): string {
             margin-bottom: 0;
         }
         .editorial-body h2, .editorial-body h3, .editorial-body h4 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             color: #0F172A;
             letter-spacing: -0.02em;

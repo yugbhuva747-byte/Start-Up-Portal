@@ -20,7 +20,7 @@
     z-index: 20;
     overflow: hidden;
     padding: 85px 0 110px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     margin-top: 0;
     will-change: clip-path, transform;
     transform-origin: top center;
@@ -131,7 +131,7 @@
     line-height: 1;
     color: rgba(37, 99, 235, 0.05);
     pointer-events: none;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     user-select: none;
     transition: color 0.35s ease;
   }

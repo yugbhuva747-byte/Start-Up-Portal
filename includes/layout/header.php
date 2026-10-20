@@ -23,7 +23,11 @@
   <meta name="description"
     content="Discover ambitious companies and investment opportunities in one trusted, premium platform. Built for India's emerging innovators and allocators.">
 
-  <!-- ===================== FONTS ===================== -->
+  <!-- ===================== LOCAL & WEB FONTS ===================== -->
+  <link rel="preload" href="assets/fonts/Satoshi-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Satoshi-Medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/NibPro-LightItalic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -47,8 +51,10 @@
             'nx-navy': '#0A0F1D',
           },
           fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-            heading: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            sans: ['Satoshi', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            heading: ['Satoshi', 'Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            satoshi: ['Satoshi', 'Inter', 'sans-serif'],
+            nib: ['Nib Pro', 'Georgia', 'serif'],
           },
         },
       },
@@ -80,7 +86,7 @@
     body {
       background-color: var(--nx-bg);
       color: var(--nx-black);
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       letter-spacing: -0.011em;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -88,7 +94,7 @@
     }
 
     h1, h2, h3, h4, .font-heading {
-      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      font-family: 'Satoshi', 'Plus Jakarta Sans', 'Inter', sans-serif;
       letter-spacing: -0.035em;
     }
 

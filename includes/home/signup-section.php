@@ -24,7 +24,7 @@
     overflow: hidden;
     padding-top: clamp(108px, 13vh, 136px);
     padding-bottom: clamp(48px, 6vh, 72px);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   /* Ambient mesh orbs */

@@ -35,9 +35,10 @@ if ($db && $searched) {
     <title>Certificate Authenticity Verification • <?= APP_NAME ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
         .card-clean { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.04); }
     </style>
 </head>

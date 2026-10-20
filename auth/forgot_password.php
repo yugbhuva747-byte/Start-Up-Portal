@@ -165,9 +165,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- EmailJS Official Browser SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; background-color: #F4F2EE; }
     </style>
 </head>
 <body class="bg-[#F4F2EE] text-slate-900 min-h-screen flex items-center justify-center p-4">

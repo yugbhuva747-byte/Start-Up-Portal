@@ -152,7 +152,7 @@ $flashStyles = [
         }
 
         body {
-            font-family: 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+            font-family: 'Satoshi', 'Vay Portal - Regular', 'Vay Portal', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
             background-color: var(--inv-bg);
             color: var(--inv-text);
         }
@@ -253,7 +253,8 @@ $flashStyles = [
                         & Thesis</span>
                     <h1 class="text-lg sm:text-xl font-bold text-[#0B1F3A] dark:text-white tracking-tight">Investor
                         Profile & Thesis Settings</h1>
-                    <p class="text-xs sm:text-sm text-[#667085] dark:text-slate-400">Define your syndicate investment criteria,
+                    <p class="text-xs sm:text-sm text-[#667085] dark:text-slate-400">Define your syndicate investment
+                        criteria,
                         check allocation boundaries, and verified credentials.</p>
                 </div>
                 <a href="<?= url('investor/view.php') ?>"

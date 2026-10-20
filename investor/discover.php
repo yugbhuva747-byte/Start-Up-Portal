@@ -265,7 +265,7 @@ $roundLabels = [
     <style>
         body,
         html:not(.dark) body {
-            font-family: "Vay Portal", Sans-serif;
+            font-family: 'Satoshi', "Vay Portal", sans-serif;
             background-color: #F4F2EE !important;
             color: #0F172A;
         }

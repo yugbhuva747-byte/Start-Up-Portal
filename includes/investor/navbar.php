@@ -97,7 +97,7 @@ require_once __DIR__ . '/theme.php';
     table,
     th,
     td {
-        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-family: 'Satoshi', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         -webkit-font-smoothing: antialiased;
         text-rendering: optimizeLegibility;
     }

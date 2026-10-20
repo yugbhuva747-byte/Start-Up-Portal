@@ -71,7 +71,7 @@ $flash = get_flash();
     <?php include __DIR__ . '/../includes/investor/head.php'; ?>
     <style>
         body {
-            font-family: "Vay Portal", Sans-serif;
+            font-family: 'Satoshi', "Vay Portal", sans-serif;
         }
 
         .card-clean {

@@ -24,7 +24,7 @@
       radial-gradient(at 85% 85%, rgba(224, 231, 255, 0.45) 0px, transparent 45%),
       radial-gradient(at 50% 50%, rgba(241, 245, 249, 0.7) 0px, transparent 50%);
     color: #0F172A;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-top: 1px solid #E2E8F0;
     overflow-x: clip;
     position: relative;

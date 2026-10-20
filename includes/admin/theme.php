@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Global Admin Theme Controller (Dark & Light Mode Support)
  * Standardized for "Vay Portal", Sans-serif typography
@@ -33,7 +33,7 @@
 
     @font-face {
         font-family: "Vay Portal";
-        src: local('Vay Portal - Regular'), local('Vay Portal'), local('Plus Jakarta Sans'), local('Inter'), sans-serif;
+        src: local('Satoshi'), local('Vay Portal - Regular'), local('Vay Portal'), local('Plus Jakarta Sans'), local('Inter'), sans-serif;
         font-display: swap;
     }
 
@@ -68,7 +68,7 @@
     dt,
     dd,
     div {
-        font-family: "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+        font-family: 'Satoshi', "Vay Portal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility;

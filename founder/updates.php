@@ -120,7 +120,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
         body, button, input, select, textarea, h1, h2, h3, h4, h5, h6, p, span, a, label {
-            font-family: "Vay Portal", Sans-serif;
+            font-family: 'Satoshi', "Vay Portal", sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }

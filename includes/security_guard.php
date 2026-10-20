@@ -679,9 +679,10 @@ class SecurityGuard
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>403 Security Shield — {$portalName}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{$portalUrl}/assets/css/fonts.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif; }
         code, pre { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
