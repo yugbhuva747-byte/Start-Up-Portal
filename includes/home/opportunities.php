@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 /**
  * ============================================================================
  * include/home/opportunities.php
  * ----------------------------------------------------------------------------
- * SECTION 03 â€” INVESTMENT OPPORTUNITIES
+ * SECTION 03 &mdash; INVESTMENT OPPORTUNITIES
  *
  * Heading: OPPORTUNITIES WORTH DISCOVERING.
  * Background: #FFFFFF / #FAFAF8
@@ -12,7 +12,7 @@
  * - Unique Dynamic GSAP Clip-Path Viewport Expansion on Scroll Scrub
  * - Staggered polygon clip-path entrance reveal on cards
  * - Geometric architectural clip-path badges and metrics containers
- * - Seamless 360Â° Infinite Continuous Horizontal Scroll (Infinite Time)
+ * - Seamless 360° Infinite Continuous Horizontal Scroll (Infinite Time)
  * - Pause on hover for effortless reading and interaction
  * - Drag/touch scroll support with manual Prev/Next navigation controls
  * - High-end editorial card architecture with metrics, verified tags & dark blue accents
@@ -25,15 +25,15 @@ $opportunities = [
     'name' => 'Kinetix Robotics',
     'logo_initial' => 'KR',
     'sector' => 'Industrial Robotics',
-    'subsector' => 'Autonomous Logistics Â· AI Fleet Sync',
+    'subsector' => 'Autonomous Logistics &middot; AI Fleet Sync',
     'stage' => 'Series A',
     'location' => 'Bengaluru',
     'image' => 'assets/images/opportunities/kinetix-robotics.jpg',
-    'founders' => 'Ex-ISRO Â· IISc Robotics Lab',
+    'founders' => 'Ex-ISRO &middot; IISc Robotics Lab',
     'backer' => 'Peak XV Surge',
     'desc' => 'Building autonomous fleet coordination systems for high-throughput supply chains and e-commerce distribution centers across South Asia.',
-    'target' => 'â‚¹8.5 Cr',
-    'arr' => 'â‚¹6.2 Cr',
+    'target' => '₹8.5 Cr',
+    'arr' => '₹6.2 Cr',
     'booked' => '82% Booked',
     'booked_pct' => 82,
     'badge' => 'FEATURED DEAL',
@@ -43,15 +43,15 @@ $opportunities = [
     'name' => 'GreenLeaf Health',
     'logo_initial' => 'GL',
     'sector' => 'HealthTech',
-    'subsector' => 'Point-of-Care Diagnostics Â· Pathology',
+    'subsector' => 'Point-of-Care Diagnostics &middot; Pathology',
     'stage' => 'Seed Round',
     'location' => 'Pune',
     'image' => 'assets/images/opportunities/greenleaf-health.jpg',
-    'founders' => 'AIIMS Clinicians Â· IIT-B Bio',
+    'founders' => 'AIIMS Clinicians &middot; IIT-B Bio',
     'backer' => 'Blume Ventures',
     'desc' => 'Affordable preventive diagnostic devices and automated remote pathology access designed for emerging tier-2 & tier-3 urban corridors.',
-    'target' => 'â‚¹2.5 Cr',
-    'arr' => 'â‚¹1.4 Cr',
+    'target' => '₹2.5 Cr',
+    'arr' => '₹1.4 Cr',
     'booked' => '65% Booked',
     'booked_pct' => 65,
     'badge' => 'DILIGENCE READY',
@@ -61,15 +61,15 @@ $opportunities = [
     'name' => 'Aerovex Mobility',
     'logo_initial' => 'AM',
     'sector' => 'CleanTech',
-    'subsector' => 'Heavy Electric Powertrains Â· Fleet Tech',
+    'subsector' => 'Heavy Electric Powertrains &middot; Fleet Tech',
     'stage' => 'Pre-Series A',
     'location' => 'Chennai',
     'image' => 'assets/images/opportunities/aerovex-mobility.jpg',
     'founders' => 'Ex-Tata Motors EV Team',
     'backer' => 'Elev8 Capital',
     'desc' => 'Next-generation high-efficiency electric commercial powertrains built for demanding multi-shift freight delivery and industrial haulage.',
-    'target' => 'â‚¹4.0 Cr',
-    'arr' => 'â‚¹3.1 Cr',
+    'target' => '₹4.0 Cr',
+    'arr' => '₹3.1 Cr',
     'booked' => '90% Booked',
     'booked_pct' => 90,
     'badge' => 'FINAL ALLOCATION',
@@ -79,15 +79,15 @@ $opportunities = [
     'name' => 'NovaGrid Energy',
     'logo_initial' => 'NG',
     'sector' => 'ClimateTech',
-    'subsector' => 'Grid-Scale Storage Â· Smart Metering',
+    'subsector' => 'Grid-Scale Storage &middot; Smart Metering',
     'stage' => 'Series A',
     'location' => 'Ahmedabad',
     'image' => 'assets/images/opportunities/novagrid-energy.jpg',
-    'founders' => 'Ex-Adani Green Â· IIT-D Power',
+    'founders' => 'Ex-Adani Green &middot; IIT-D Power',
     'backer' => 'Institutional Lead',
     'desc' => 'Decentralized battery energy storage systems with algorithmic power arbitrating for commercial microgrids and green data centers.',
-    'target' => 'â‚¹12.0 Cr',
-    'arr' => 'â‚¹9.5 Cr',
+    'target' => '₹12.0 Cr',
+    'arr' => '₹9.5 Cr',
     'booked' => '74% Booked',
     'booked_pct' => 74,
     'badge' => 'INSTITUTIONAL LEAD',
@@ -97,15 +97,15 @@ $opportunities = [
     'name' => 'Veloce Photonics',
     'logo_initial' => 'VP',
     'sector' => 'DeepTech',
-    'subsector' => 'Silicon Optical Chips Â· AI Interconnects',
+    'subsector' => 'Silicon Optical Chips &middot; AI Interconnects',
     'stage' => 'Seed Round',
     'location' => 'Hyderabad',
     'image' => 'assets/images/opportunities/veloce-photonics.jpg',
-    'founders' => 'Ex-Intel Photonics Â· PhD Caltech',
+    'founders' => 'Ex-Intel Photonics &middot; PhD Caltech',
     'backer' => 'Accel Atoms',
     'desc' => 'Ultra-low latency silicon optical interconnects cutting GPU compute cluster latency by 80% with proprietary micro-ring resonators.',
-    'target' => 'â‚¹6.0 Cr',
-    'arr' => 'â‚¹2.8 Cr',
+    'target' => '₹6.0 Cr',
+    'arr' => '₹2.8 Cr',
     'booked' => '88% Booked',
     'booked_pct' => 88,
     'badge' => '8 PATENTS GRANTED',
@@ -115,35 +115,143 @@ $opportunities = [
     'name' => 'AgroPulse AI',
     'logo_initial' => 'AP',
     'sector' => 'AgriTech',
-    'subsector' => 'Satellite Hyperspectral Â· Yield Forensics',
+    'subsector' => 'Satellite Hyperspectral &middot; Yield Forensics',
     'stage' => 'Pre-Series A',
     'location' => 'Chandigarh',
     'image' => 'assets/images/opportunities/agropulse-ai.jpg',
     'founders' => 'ISRO Remote Sensing Fellows',
     'backer' => 'Kalaari Capital',
     'desc' => 'Sub-meter satellite radar data combined with farm IoT telemetry for real-time crop resilience and institutional underwriting.',
-    'target' => 'â‚¹3.5 Cr',
-    'arr' => 'â‚¹2.2 Cr',
+    'target' => '₹3.5 Cr',
+    'arr' => '₹2.2 Cr',
     'booked' => '70% Booked',
     'booked_pct' => 70,
     'badge' => 'COMMERCIAL PILOT',
     'link' => '/opportunities/agropulse-ai'
+  ],
+  [
+    'name' => 'PayNexus Global',
+    'logo_initial' => 'PN',
+    'sector' => 'FinTech',
+    'subsector' => 'Cross-Border Neo-Treasury · Multi-Currency',
+    'stage' => 'Series A',
+    'location' => 'Mumbai',
+    'image' => 'assets/images/opportunities/novagrid-energy.jpg',
+    'founders' => 'Ex-RBI FinTech Sandbox · IIM-A',
+    'backer' => 'Matrix Partners India',
+    'desc' => 'Unified treasury rails and instant automated cross-border reconciliation for mid-market exporters between India and GCC.',
+    'target' => '₹7.5 Cr',
+    'arr' => '₹5.4 Cr',
+    'booked' => '85% Booked',
+    'booked_pct' => 85,
+    'badge' => 'RBI REGULATED',
+    'link' => '/opportunities/paynexus'
+  ],
+  [
+    'name' => 'Indra Aerospace',
+    'logo_initial' => 'IA',
+    'sector' => 'SpaceTech',
+    'subsector' => 'LEO Propulsion & Satellite Constellation Bus',
+    'stage' => 'Pre-Series A',
+    'location' => 'Delhi NCR',
+    'image' => 'assets/images/opportunities/kinetix-robotics.jpg',
+    'founders' => 'Ex-DRDO Propulsion Fellows · IIT-Delhi',
+    'backer' => 'Speciale Invest',
+    'desc' => 'Micro-propulsion thrusters and green hypergolic satellite stabilization engines designed for rideshare smallsat launches.',
+    'target' => '₹5.2 Cr',
+    'arr' => '₹3.6 Cr',
+    'booked' => '78% Booked',
+    'booked_pct' => 78,
+    'badge' => 'ISRO CERTIFIED',
+    'link' => '/opportunities/indra-aerospace'
+  ],
+  [
+    'name' => 'FinScale MENA',
+    'logo_initial' => 'FS',
+    'sector' => 'FinTech',
+    'subsector' => 'DIFC Alternative Credit & Syndicate Lending',
+    'stage' => 'Series A',
+    'location' => 'Dubai',
+    'image' => 'assets/images/opportunities/veloce-photonics.jpg',
+    'founders' => 'Ex-Emirates NBD Wealth · INSEAD',
+    'backer' => 'Wamda Capital',
+    'desc' => 'Digital institutional debt syndication platform connecting family offices in the UAE with vetted expansions in India.',
+    'target' => '₹14.0 Cr',
+    'arr' => '₹11.2 Cr',
+    'booked' => '92% Booked',
+    'booked_pct' => 92,
+    'badge' => 'DIFC INNOVATION LEAD',
+    'link' => '/opportunities/finscale-mena'
+  ],
+  [
+    'name' => 'Falcon Sovereign AI',
+    'logo_initial' => 'FA',
+    'sector' => 'DeepTech',
+    'subsector' => 'Sovereign Arabic & Multi-Modal Foundation Models',
+    'stage' => 'Seed Round',
+    'location' => 'Abu Dhabi',
+    'image' => 'assets/images/opportunities/aerovex-mobility.jpg',
+    'founders' => 'TII Researchers · PhD Oxford AI',
+    'backer' => 'Hub71 Allocation',
+    'desc' => 'High-throughput enterprise AI inferencing infrastructure optimized for regional sovereign cloud and automated compliance.',
+    'target' => '₹18.0 Cr',
+    'arr' => '₹12.5 Cr',
+    'booked' => '80% Booked',
+    'booked_pct' => 80,
+    'badge' => 'HUB71 BACKED',
+    'link' => '/opportunities/falcon-ai'
+  ],
+  [
+    'name' => 'Zephyr Logistics Tech',
+    'logo_initial' => 'ZL',
+    'sector' => 'Logistics Tech',
+    'subsector' => 'Maritime Freight AI & Freezone Automation',
+    'stage' => 'Pre-Series A',
+    'location' => 'Sharjah',
+    'image' => 'assets/images/opportunities/agropulse-ai.jpg',
+    'founders' => 'Ex-Gulftainer Ops · AUS Engineering',
+    'backer' => 'SRTIP Angel Syndicate',
+    'desc' => 'Autonomous yard logistics and digital customs documentation pipeline reducing port dwell time by 45% for GCC-India trading lanes.',
+    'target' => '₹4.8 Cr',
+    'arr' => '₹3.4 Cr',
+    'booked' => '72% Booked',
+    'booked_pct' => 72,
+    'badge' => 'PORT PILOT LIVE',
+    'link' => '/opportunities/zephyr-logistics'
+  ],
+  [
+    'name' => 'Bengal Bionics',
+    'logo_initial' => 'BB',
+    'sector' => 'MedTech',
+    'subsector' => 'Myoelectric Prosthetics & Rehab Robotics',
+    'stage' => 'Seed Round',
+    'location' => 'Kolkata',
+    'image' => 'assets/images/opportunities/greenleaf-health.jpg',
+    'founders' => 'Ex-SSKM Clinicians · IIT-Kgp Bio',
+    'backer' => 'Villgro Innovations',
+    'desc' => 'Ultralight sensory-feedback bionic upper limbs expanding affordable clinical care across South Asia and MENA markets.',
+    'target' => '₹2.8 Cr',
+    'arr' => '₹1.6 Cr',
+    'booked' => '68% Booked',
+    'booked_pct' => 68,
+    'badge' => 'CLINICAL TRIAL READY',
+    'link' => '/opportunities/bengal-bionics'
   ]
 ];
 ?>
 
 <style>
   /* ============================================================
-     OPPORTUNITIES INFINITE HORIZONTAL MARQUEE STYLES (PASTEL LUXE)
+     OPPORTUNITIES INFINITE HORIZONTAL MARQUEE STYLES (LUXURY FINTECH)
      ============================================================ */
   .nx-opp-section {
     position: relative;
     z-index: 5;
-    background-color: #FAF5FF;
+    background-color: #F8FAFC;
     background-image: 
-      radial-gradient(at 0% 0%, #EDE9FE 0px, transparent 50%),
-      radial-gradient(at 100% 100%, #FCE7F3 0px, transparent 50%),
-      radial-gradient(at 50% 50%, #FFF7ED 0px, transparent 50%);
+      radial-gradient(at 0% 0%, #EFF6FF 0px, transparent 50%),
+      radial-gradient(at 100% 100%, #EEF2FF 0px, transparent 50%),
+      radial-gradient(at 50% 50%, #F1F5F9 0px, transparent 50%);
     overflow: hidden;
   }
 
@@ -154,14 +262,14 @@ $opportunities = [
     will-change: clip-path, transform, opacity;
     transform-origin: center center;
     border-radius: 36px;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid rgba(221, 214, 254, 0.6);
-    box-shadow: 0 15px 45px rgba(124, 58, 237, 0.06);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 15px 45px rgba(15, 23, 42, 0.05);
   }
 
-  /* Left & Right Soft Ambient Edge Masks for Infinite Feel */
+  /* Left & Right Soft Ambient Edge Masks for Infinite Feel */  
   .nx-opp-mask {
     position: relative;
     width: 100%;
@@ -213,12 +321,12 @@ $opportunities = [
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%);
   }
 
-  /* Card Individual Styling with Pastel Glow */
+  /* Card Individual Styling with Luxury Glow */
   .nx-opp-card {
     position: relative;
     width: 380px;
-    background-color: rgba(255, 255, 255, 0.95);
-    border: 1.5px solid rgba(221, 214, 254, 0.7);
+    background-color: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.9);
     border-radius: 26px;
     padding: 22px;
     display: flex;
@@ -231,7 +339,7 @@ $opportunities = [
     cursor: pointer;
     flex-shrink: 0;
     overflow: hidden;
-    box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.08);
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
   }
 
   @media (min-width: 640px) {
@@ -248,7 +356,7 @@ $opportunities = [
     border-radius: 20px;
     overflow: hidden;
     margin-bottom: 18px;
-    background-color: #1E1B4B;
+    background-color: #0F172A;
   }
 
   .nx-opp-img-wrap img {
@@ -272,36 +380,34 @@ $opportunities = [
 
   .nx-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 50%, #F59E0B 100%);
+    background: linear-gradient(90deg, #1E40AF 0%, #2563EB 55%, #059669 100%);
     border-radius: 999px;
     transition: width 0.8s ease;
   }
 
-  /* Top Right Decorative Geometric Notch with Clip-Path */
+  /* Top Right Subtle Accent Line */
   .nx-opp-card::before {
     content: '';
     position: absolute;
     top: 0;
-    right: 0;
-    width: 24px;
-    height: 24px;
-    background: linear-gradient(135deg, transparent 50%, #EC4899 50%);
-    opacity: 0.2;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    clip-path: polygon(100% 0, 0 100%, 100% 100%);
+    left: 24px;
+    right: 24px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
   }
 
   .nx-opp-card:hover::before {
-    opacity: 0.9;
-    transform: scale(1.2);
+    opacity: 1;
   }
 
   .nx-opp-card:hover {
     transform: translateY(-6px);
     background-color: #FFFFFF;
-    border-color: #A78BFA;
-    box-shadow: 0 20px 45px -10px rgba(124, 58, 237, 0.2),
-                0 8px 20px -4px rgba(236, 72, 153, 0.12);
+    border-color: #3B82F6;
+    box-shadow: 0 20px 45px -10px rgba(37, 99, 235, 0.16),
+                0 0 0 1px rgba(59, 130, 246, 0.25);
   }
 
   /* Nav arrow button styling */
@@ -310,19 +416,19 @@ $opportunities = [
     height: 44px;
     border-radius: 999px;
     background: #FFFFFF;
-    border: 1.5px solid #DDD6FE;
+    border: 1.5px solid #CBD5E1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: #6D28D9;
+    color: #1E40AF;
     transition: all 0.25s ease;
   }
 
   .nx-opp-nav-btn:hover {
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    background: linear-gradient(135deg, #1E40AF, #2563EB);
     color: #FFFFFF;
     border-color: transparent;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.35);
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
     transform: scale(1.05);
   }
 
@@ -339,23 +445,30 @@ $opportunities = [
   }
 </style>
 
-<section id="nx-opportunities" class="nx-opp-section py-20 sm:py-28 lg:py-36 border-t border-purple-100" aria-label="Investment Opportunities">
+<section id="nx-opportunities" class="nx-opp-section py-20 sm:py-28 lg:py-36 border-t border-slate-200/80" aria-label="Investment Opportunities">
   <div class="max-w-[1440px] mx-auto px-6 lg:px-14">
 
     <!-- Section Header Row -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 sm:mb-16 nx-text-reveal">
       <div>
-        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gradient-to-r from-purple-100 via-pink-100 to-amber-100 border border-purple-200 text-[11px] font-bold tracking-wider uppercase text-purple-900 mb-4 shadow-xs">
-          <span class="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 animate-pulse"></span>
-          <span>CURATED DEALFLOW &middot; 2026</span>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-bold tracking-wider uppercase text-blue-900 mb-4 shadow-xs">
+          <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>📍 REAL FOUNDERS &middot; REAL SACRIFICE &middot; REAL IMPACT</span>
         </div>
         <h2 class="text-[clamp(34px,4.8vw,68px)] font-extrabold leading-[0.98] tracking-[-0.04em] text-slate-900 mb-4">
-          OPPORTUNITIES<br>
-          <span class="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 bg-clip-text text-transparent">WORTH DISCOVERING.</span>
+          VENTURES SHAPING OUR<br>
+          <span class="bg-gradient-to-r from-blue-700 via-indigo-600 to-sky-600 bg-clip-text text-transparent">NATION&rsquo;S FUTURE.</span>
         </h2>
         <p class="text-[15.5px] sm:text-[17.5px] text-slate-600 max-w-[560px] leading-relaxed">
-          High-conviction venture allocations across robotics, deep tech, clean mobility, and climate infrastructure.
+          These are not speculative pitch slides. Meet extraordinary builders across Mumbai, Delhi, Bengaluru, Dubai &amp; Abu Dhabi solving life-critical problems with audited traction, proprietary IP, and bulletproof cap tables.
         </p>
+
+        <!-- Dynamic City Filter Pill -->
+        <div id="nx-opp-location-indicator" class="hidden items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[12px] font-semibold text-blue-900 mt-3 shadow-xs w-max">
+          <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+          <span>Showing Hub Deals in: <strong id="nx-opp-active-city" class="text-blue-700"></strong></span>
+          <button type="button" id="nx-opp-reset-city" class="ml-1 text-[10.5px] uppercase font-bold tracking-wider underline text-slate-500 hover:text-blue-800 cursor-pointer">Clear Filter</button>
+        </div>
       </div>
 
       <!-- Controls & Header CTA -->
@@ -370,8 +483,8 @@ $opportunities = [
           </button>
         </div>
 
-        <a href="auth/login.php?role=investor" class="inline-flex items-center gap-2 h-[44px] px-5 rounded-full bg-white border border-purple-200 text-[13.5px] font-bold text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all nx-hoverable shadow-xs">
-          <span>View all opportunities</span>
+        <a href="auth/login.php?role=investor" class="inline-flex items-center gap-2 h-[44px] px-5 rounded-full bg-white border border-slate-200 text-[13.5px] font-bold text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all nx-hoverable shadow-xs">
+          <span>🛡️ Explore Verified Ventures</span>
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
@@ -392,13 +505,13 @@ $opportunities = [
             foreach ($opportunities as $idx => $opp):
           ?>
             <!-- Opportunity Card with Architectural Image & Trust Architecture -->
-            <article class="nx-opp-card nx-hoverable group" data-card-id="<?php echo $idx; ?>">
+            <article class="nx-opp-card nx-hoverable group" data-card-id="<?php echo $idx; ?>" data-city="<?php echo htmlspecialchars(strtolower($opp['location'])); ?>">
               <div>
                 <!-- Top Image Visual Container with Overlay Badges -->
                 <div class="nx-opp-img-wrap relative">
                   <img
                     src="<?php echo htmlspecialchars(function_exists('url') ? url($opp['image']) : $opp['image']); ?>"
-                    alt="<?php echo htmlspecialchars($opp['name']); ?> â€” <?php echo htmlspecialchars($opp['sector']); ?>"
+                    alt="<?php echo htmlspecialchars($opp['name']); ?> &mdash; <?php echo htmlspecialchars($opp['sector']); ?>"
                     loading="lazy"
                   />
                   <!-- Gradient Vignette -->
@@ -408,18 +521,18 @@ $opportunities = [
                   <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-2 z-10">
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono font-bold tracking-wider text-white uppercase border border-white/20">
                       <span class="w-1.5 h-1.5 rounded-full bg-[#60A5FA] animate-pulse"></span>
-                      <?php echo htmlspecialchars($opp['stage']); ?> Â· <?php echo htmlspecialchars($opp['location']); ?>
+                      <?php echo htmlspecialchars($opp['stage']); ?> &middot; <?php echo htmlspecialchars($opp['location']); ?>
                     </span>
 
-                    <span class="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r from-purple-600 to-pink-600 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/25 shadow-xs">
+                    <span class="text-[9.5px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r from-blue-700 to-indigo-700 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/25 shadow-xs">
                       <?php echo htmlspecialchars($opp['badge']); ?>
                     </span>
                   </div>
 
                   <!-- Company Monogram Avatar & Sector Tag -->
                   <div class="absolute bottom-2.5 left-3 z-10 flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-white p-0.5 shadow-md flex items-center justify-center border border-purple-100">
-                      <span class="w-full h-full rounded-lg bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center font-mono font-bold text-[10.5px] tracking-wider">
+                    <div class="w-8 h-8 rounded-xl bg-white p-0.5 shadow-md flex items-center justify-center border border-slate-100">
+                      <span class="w-full h-full rounded-lg bg-gradient-to-tr from-blue-700 to-indigo-600 text-white flex items-center justify-center font-mono font-bold text-[10.5px] tracking-wider">
                         <?php echo htmlspecialchars($opp['logo_initial']); ?>
                       </span>
                     </div>
@@ -431,9 +544,9 @@ $opportunities = [
 
                 <!-- Company Title with Verified Icon -->
                 <div class="flex items-center justify-between gap-2 mb-1">
-                  <h3 class="text-[22px] sm:text-[23px] font-bold text-slate-900 tracking-[-0.03em] leading-tight group-hover:text-purple-700 transition-colors flex items-center gap-1.5">
+                  <h3 class="text-[22px] sm:text-[23px] font-bold text-slate-900 tracking-[-0.03em] leading-tight group-hover:text-blue-700 transition-colors flex items-center gap-1.5">
                     <span><?php echo htmlspecialchars($opp['name']); ?></span>
-                    <svg class="w-4 h-4 text-purple-600 shrink-0" viewBox="0 0 20 20" fill="currentColor" title="Verified Diligence Dossier">
+                    <svg class="w-4 h-4 text-blue-600 shrink-0" viewBox="0 0 20 20" fill="currentColor" title="Verified Diligence Dossier">
                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
                   </h3>
@@ -449,8 +562,8 @@ $opportunities = [
                   <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 font-medium">
                     <span class="text-slate-400">Founders:</span> <?php echo htmlspecialchars($opp['founders']); ?>
                   </span>
-                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-purple-50 border border-purple-200 text-purple-700 font-bold">
-                    <span>âš¡ <?php echo htmlspecialchars($opp['backer']); ?></span>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-bold">
+                    <span>⚡ <?php echo htmlspecialchars($opp['backer']); ?></span>
                   </span>
                 </div>
 
@@ -459,19 +572,19 @@ $opportunities = [
                   <?php echo htmlspecialchars($opp['desc']); ?>
                 </p>
 
-                <!-- Financial & Traction Highlights with Angular Cut Box Clip-Path -->
-                <div class="nx-opp-clip-box grid grid-cols-3 gap-2 p-3 bg-slate-50/80 border border-purple-100/90 mb-2 rounded-xl">
+                <!-- Verified Deal Stage & Syndicate Allocation (Financials Confidential Under NDA) -->
+                <div class="grid grid-cols-3 gap-2 p-3 bg-slate-50 border border-slate-200 mb-2 rounded-xl text-left">
                   <div>
-                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">Round Target</span>
-                    <span class="text-[14.5px] sm:text-[15.5px] font-bold text-slate-900 block nx-counter"><?php echo htmlspecialchars($opp['target']); ?></span>
+                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">Round Stage</span>
+                    <span class="text-[13.5px] font-bold text-slate-900 block"><?php echo htmlspecialchars($opp['stage']); ?></span>
                   </div>
                   <div>
-                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">ARR Run</span>
-                    <span class="text-[14.5px] sm:text-[15.5px] font-bold text-slate-900 block nx-counter"><?php echo htmlspecialchars($opp['arr']); ?></span>
+                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">Hub</span>
+                    <span class="text-[13.5px] font-bold text-slate-900 block"><?php echo htmlspecialchars($opp['location']); ?></span>
                   </div>
                   <div>
-                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">Allocation</span>
-                    <span class="text-[13.5px] sm:text-[14.5px] font-bold text-purple-700 block nx-counter"><?php echo htmlspecialchars($opp['booked']); ?></span>
+                    <span class="text-[9.5px] font-mono uppercase tracking-wider text-slate-400 block mb-0.5">Syndicate</span>
+                    <span class="text-[13.5px] font-bold text-blue-700 block"><?php echo htmlspecialchars($opp['booked']); ?></span>
                   </div>
                 </div>
 
@@ -484,7 +597,7 @@ $opportunities = [
               </div>
 
               <!-- Card Bottom Bar: Diligence & Link -->
-              <div class="pt-3.5 border-t border-purple-100 flex items-center justify-between text-[13px]">
+              <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between text-[13px]">
                 <span class="inline-flex items-center gap-1.5 text-[10.5px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   <svg class="w-3.5 h-3.5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
@@ -492,7 +605,7 @@ $opportunities = [
                   VERIFIED DATA ROOM
                 </span>
 
-                <a href="auth/login.php?role=investor" class="inline-flex items-center gap-1.5 font-bold text-purple-600 hover:text-purple-800 transition-colors">
+                <a href="auth/login.php?role=investor" class="inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-800 transition-colors">
                   <span>View Deal</span>
                   <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">&rarr;</span>
                 </a>
@@ -511,8 +624,8 @@ $opportunities = [
   <!-- Micro Footnote -->
   <div class="max-w-[1440px] mx-auto px-6 lg:px-14 mt-6 flex flex-col sm:flex-row items-center justify-between text-[11.5px] font-mono text-[#686868]/80 gap-3">
     <div class="flex items-center gap-2">
-      <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-      <span>REAL-TIME PIPELINE UPDATES Â· HOVER TO PAUSE</span>
+      <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+      <span>🛡️ 100% AUDITED DATA ROOMS &middot; ZERO BROKER MARKUPS</span>
     </div>
     <div class="hidden md:block">
       DRAG OR USE ARROWS TO BROWSE DEALS
@@ -646,5 +759,61 @@ $opportunities = [
         marquee.classList.remove('is-paused');
       }, 3000);
     }, { passive: true });
+
+    /* ----------------------------------------------------------
+     * 4. DYNAMIC LOCATION / CITY FILTER FROM NAVBAR
+     * ---------------------------------------------------------- */
+    window.nxFilterCity = function(cityName) {
+      if (!cityName) return;
+      const indicator = document.getElementById('nx-opp-location-indicator');
+      const activeCitySpan = document.getElementById('nx-opp-active-city');
+      if (indicator && activeCitySpan) {
+        activeCitySpan.textContent = cityName;
+        indicator.classList.remove('hidden');
+        indicator.classList.add('inline-flex');
+      }
+
+      // Highlight cards matching selected city
+      const cards = document.querySelectorAll('.nx-opp-card');
+      const targetCity = cityName.toLowerCase().trim();
+
+      cards.forEach(card => {
+        const cCity = (card.getAttribute('data-city') || '').toLowerCase().trim();
+        if (cCity.includes(targetCity) || targetCity.includes(cCity)) {
+          card.style.borderColor = '#2563EB';
+          card.style.boxShadow = '0 0 0 3px rgba(139, 92, 246, 0.4), 0 12px 30px rgba(124, 58, 237, 0.2)';
+        } else {
+          card.style.borderColor = '';
+          card.style.boxShadow = '';
+        }
+      });
+
+      // Pause marquee temporarily so visitor can observe the filtered opportunity
+      if (marquee) {
+        marquee.classList.add('is-paused');
+        clearTimeout(window.__oppResumeTimer);
+        window.__oppResumeTimer = setTimeout(() => {
+          marquee.classList.remove('is-paused');
+        }, 8000);
+      }
+    };
+
+    const resetCityBtn = document.getElementById('nx-opp-reset-city');
+    if (resetCityBtn) {
+      resetCityBtn.addEventListener('click', () => {
+        const indicator = document.getElementById('nx-opp-location-indicator');
+        if (indicator) {
+          indicator.classList.add('hidden');
+          indicator.classList.remove('inline-flex');
+        }
+        document.querySelectorAll('.nx-opp-card').forEach(c => {
+          c.style.borderColor = '';
+          c.style.boxShadow = '';
+        });
+        if (marquee) {
+          marquee.classList.remove('is-paused');
+        }
+      });
+    }
   });
 </script>

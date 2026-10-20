@@ -15,19 +15,19 @@
 ?>
 
 <style>
-  /* ── Canvas Container with Pastel Aurora Mesh ────────────────── */
+  /* ── Canvas Container with Luxury Canvas Mesh ────────────────── */
   .nx-how {
     padding: clamp(72px, 8vw, 120px) 0;
-    background-color: #FAF5FF;
+    background-color: #F8FAFC;
     background-image: 
-      radial-gradient(at 15% 15%, #EDE9FE 0px, transparent 50%),
-      radial-gradient(at 85% 85%, #FCE7F3 0px, transparent 50%),
-      radial-gradient(at 50% 50%, #FFF7ED 0px, transparent 55%);
+      radial-gradient(at 15% 15%, #EFF6FF 0px, transparent 50%),
+      radial-gradient(at 85% 85%, #EEF2FF 0px, transparent 50%),
+      radial-gradient(at 50% 50%, #F1F5F9 0px, transparent 55%);
     position: relative;
     overflow: hidden;
     z-index: 10;
     color: #0F172A;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
   .nx-how-wrap {
@@ -69,20 +69,20 @@
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: #7C3AED;
-    background: rgba(237, 233, 254, 0.7);
+    color: #1D4ED8;
+    background: rgba(239, 246, 255, 0.9);
     padding: 5px 12px;
     border-radius: 999px;
-    border: 1px solid rgba(196, 181, 253, 0.6);
+    border: 1px solid rgba(191, 219, 254, 0.8);
     margin-bottom: 14px;
-    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.08);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.08);
   }
 
   .nx-how-eyebrow-line {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #8B5CF6, #EC4899);
+    background: linear-gradient(135deg, #1E40AF, #2563EB);
     display: inline-block;
   }
 
@@ -101,7 +101,7 @@
   }
 
   .nx-how-h2 .nx-accent-line {
-    background: linear-gradient(135deg, #7C3AED 0%, #DB2777 50%, #EA580C 100%);
+    background: linear-gradient(135deg, #0F172A 0%, #1E40AF 50%, #2563EB 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -150,7 +150,7 @@
   .nx-flow-line-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #8B5CF6 0%, #EC4899 35%, #F59E0B 70%, #10B981 100%);
+    background: linear-gradient(90deg, #2563EB 0%, #1D4ED8 40%, #0284C7 70%, #059669 100%);
     border-radius: 999px;
     transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -179,33 +179,33 @@
 
   .nx-flow-node-item[data-dot="0"].is-active .nx-flow-dot,
   .nx-flow-node-item[data-dot="0"].is-past .nx-flow-dot {
-    border-color: #8B5CF6;
-    background-color: #8B5CF6;
-    box-shadow: 0 0 0 5px rgba(139, 92, 246, 0.25);
+    border-color: #2563EB;
+    background-color: #2563EB;
+    box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.25);
     transform: scale(1.25);
   }
 
   .nx-flow-node-item[data-dot="1"].is-active .nx-flow-dot,
   .nx-flow-node-item[data-dot="1"].is-past .nx-flow-dot {
-    border-color: #EC4899;
-    background-color: #EC4899;
-    box-shadow: 0 0 0 5px rgba(236, 72, 153, 0.25);
+    border-color: #1D4ED8;
+    background-color: #1D4ED8;
+    box-shadow: 0 0 0 5px rgba(29, 78, 216, 0.25);
     transform: scale(1.25);
   }
 
   .nx-flow-node-item[data-dot="2"].is-active .nx-flow-dot,
   .nx-flow-node-item[data-dot="2"].is-past .nx-flow-dot {
-    border-color: #F59E0B;
-    background-color: #F59E0B;
-    box-shadow: 0 0 0 5px rgba(245, 158, 11, 0.25);
+    border-color: #0284C7;
+    background-color: #0284C7;
+    box-shadow: 0 0 0 5px rgba(2, 132, 199, 0.25);
     transform: scale(1.25);
   }
 
   .nx-flow-node-item[data-dot="3"].is-active .nx-flow-dot,
   .nx-flow-node-item[data-dot="3"].is-past .nx-flow-dot {
-    border-color: #10B981;
-    background-color: #10B981;
-    box-shadow: 0 0 0 5px rgba(16, 185, 129, 0.25);
+    border-color: #059669;
+    background-color: #059669;
+    box-shadow: 0 0 0 5px rgba(5, 150, 105, 0.25);
     transform: scale(1.25);
   }
 
@@ -270,96 +270,96 @@
     justify-content: space-between;
   }
 
-  /* Individual Pastel Card Themes */
-  /* Step 01: Lavender */
+  /* Executive Monochromatic & Precision Accent Cards */
+  /* Step 01: Discover (Ice Blue & Slate) */
   .nx-card-3d-wrap[data-step="0"] .nx-card-icon-node {
-    background: #EDE9FE;
-    border-color: #DDD6FE;
-    color: #7C3AED;
+    background: #EFF6FF;
+    border-color: #DBEAFE;
+    color: #1D4ED8;
   }
   .nx-card-3d-wrap[data-step="0"] .nx-card-badge {
-    background: #EDE9FE;
-    border-color: #DDD6FE;
-    color: #6D28D9;
+    background: #EFF6FF;
+    border-color: #DBEAFE;
+    color: #1E40AF;
   }
   .nx-card-3d-wrap[data-step="0"].is-active .nx-card-3d {
-    border-color: #8B5CF6;
-    box-shadow: 0 20px 42px -10px rgba(139, 92, 246, 0.28), 0 0 0 1.5px #8B5CF6;
+    border-color: #2563EB;
+    box-shadow: 0 20px 42px -10px rgba(37, 99, 235, 0.22), 0 0 0 1.5px #2563EB;
     background: #FFFFFF;
   }
   .nx-card-3d-wrap[data-step="0"].is-active .nx-3d-foot {
-    color: #7C3AED;
-    border-top-color: #DDD6FE;
+    color: #1D4ED8;
+    border-top-color: #DBEAFE;
   }
   .nx-card-3d-wrap[data-step="0"].is-active .nx-foot-indicator {
-    background-color: #8B5CF6;
-    box-shadow: 0 0 10px rgba(139, 92, 246, 0.8);
+    background-color: #2563EB;
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.8);
   }
 
-  /* Step 02: Rose */
+  /* Step 02: Verify (Royal Sapphire) */
   .nx-card-3d-wrap[data-step="1"] .nx-card-icon-node {
-    background: #FCE7F3;
-    border-color: #FBCFE8;
-    color: #DB2777;
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #0F172A;
   }
   .nx-card-3d-wrap[data-step="1"] .nx-card-badge {
-    background: #FCE7F3;
-    border-color: #FBCFE8;
-    color: #BE185D;
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+    color: #0F172A;
   }
   .nx-card-3d-wrap[data-step="1"].is-active .nx-card-3d {
-    border-color: #EC4899;
-    box-shadow: 0 20px 42px -10px rgba(236, 72, 153, 0.28), 0 0 0 1.5px #EC4899;
+    border-color: #1D4ED8;
+    box-shadow: 0 20px 42px -10px rgba(29, 78, 216, 0.22), 0 0 0 1.5px #1D4ED8;
     background: #FFFFFF;
   }
   .nx-card-3d-wrap[data-step="1"].is-active .nx-3d-foot {
-    color: #DB2777;
-    border-top-color: #FBCFE8;
+    color: #1D4ED8;
+    border-top-color: #CBD5E1;
   }
   .nx-card-3d-wrap[data-step="1"].is-active .nx-foot-indicator {
-    background-color: #EC4899;
-    box-shadow: 0 0 10px rgba(236, 72, 153, 0.8);
+    background-color: #1D4ED8;
+    box-shadow: 0 0 10px rgba(29, 78, 216, 0.8);
   }
 
-  /* Step 03: Sunset Amber */
+  /* Step 03: Opportunity (Cobalt) */
   .nx-card-3d-wrap[data-step="2"] .nx-card-icon-node {
-    background: #FEF3C7;
-    border-color: #FDE68A;
-    color: #D97706;
+    background: #F0F9FF;
+    border-color: #BAE6FD;
+    color: #0284C7;
   }
   .nx-card-3d-wrap[data-step="2"] .nx-card-badge {
-    background: #FEF3C7;
-    border-color: #FDE68A;
-    color: #B45309;
+    background: #F0F9FF;
+    border-color: #BAE6FD;
+    color: #0369A1;
   }
   .nx-card-3d-wrap[data-step="2"].is-active .nx-card-3d {
-    border-color: #F59E0B;
-    box-shadow: 0 20px 42px -10px rgba(245, 158, 11, 0.28), 0 0 0 1.5px #F59E0B;
+    border-color: #0284C7;
+    box-shadow: 0 20px 42px -10px rgba(2, 132, 199, 0.22), 0 0 0 1.5px #0284C7;
     background: #FFFFFF;
   }
   .nx-card-3d-wrap[data-step="2"].is-active .nx-3d-foot {
-    color: #D97706;
-    border-top-color: #FDE68A;
+    color: #0284C7;
+    border-top-color: #BAE6FD;
   }
   .nx-card-3d-wrap[data-step="2"].is-active .nx-foot-indicator {
-    background-color: #F59E0B;
-    box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+    background-color: #0284C7;
+    box-shadow: 0 0 10px rgba(2, 132, 199, 0.8);
   }
 
-  /* Step 04: Mint */
+  /* Step 04: Connect (Verified Emerald) */
   .nx-card-3d-wrap[data-step="3"] .nx-card-icon-node {
-    background: #D1FAE5;
+    background: #ECFDF5;
     border-color: #A7F3D0;
     color: #059669;
   }
   .nx-card-3d-wrap[data-step="3"] .nx-card-badge {
-    background: #D1FAE5;
+    background: #ECFDF5;
     border-color: #A7F3D0;
     color: #047857;
   }
   .nx-card-3d-wrap[data-step="3"].is-active .nx-card-3d {
-    border-color: #10B981;
-    box-shadow: 0 20px 42px -10px rgba(16, 185, 129, 0.28), 0 0 0 1.5px #10B981;
+    border-color: #059669;
+    box-shadow: 0 20px 42px -10px rgba(5, 150, 105, 0.22), 0 0 0 1.5px #059669;
     background: #FFFFFF;
   }
   .nx-card-3d-wrap[data-step="3"].is-active .nx-3d-foot {
@@ -367,8 +367,8 @@
     border-top-color: #A7F3D0;
   }
   .nx-card-3d-wrap[data-step="3"].is-active .nx-foot-indicator {
-    background-color: #10B981;
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+    background-color: #059669;
+    box-shadow: 0 0 10px rgba(5, 150, 105, 0.8);
   }
 
   .nx-card-3d-wrap.is-past .nx-card-3d {
@@ -518,7 +518,9 @@
 <!-- ============================================================
      HOW IT WORKS / ECOSYSTEM SECTION (COLORFUL PASTEL EDITION)
      ============================================================ -->
-<section class="nx-how border-t border-purple-100" id="nx-ecosystem" aria-label="How Nexora Works">
+<!-- Anchor for About navbar navigation -->
+<div id="nx-about" class="relative -top-24 pointer-events-none"></div>
+<section class="nx-how border-t border-slate-200/80" id="nx-ecosystem" aria-label="How Nexora Works">
   <div class="nx-how-wrap">
 
     <!-- Editorial Header: Small Label + 3-line Heading + Short Description -->
@@ -526,19 +528,18 @@
       <div>
         <div class="nx-how-eyebrow">
           <span class="nx-how-eyebrow-line" aria-hidden="true"></span>
-          <span>HOW IT WORKS</span>
+          <span>🤝 A SANCTUARY OF RADICAL TRANSPARENCY</span>
         </div>
         <h2 class="nx-how-h2">
-          <span>ONE PLATFORM.</span>
-          <span>TWO SIDES.</span>
-          <span class="nx-accent-line">ONE OPPORTUNITY.</span>
+          <span>FUNDRAISING WITHOUT BEGGING.</span>
+          <span>INVESTING WITHOUT</span>
+          <span class="nx-accent-line">GAMBLING.</span>
         </h2>
       </div>
 
       <div>
         <p class="nx-how-sub">
-          Startups showcase what they are building with deep diligence metrics.<br>
-          Accredited investors discover high-conviction allocations with zero friction.
+          We built NEXORA because the venture ecosystem became noisy, predatory, and disconnected from reality. Here, honest builders and principled investors partner with dignity, truth, and mutual respect.
         </p>
       </div>
     </div>
@@ -580,9 +581,9 @@
 
           <!-- Card Body: 3D Pop Title & Description -->
           <div class="nx-3d-body">
-            <h3 class="nx-card-title">Create Profile</h3>
+            <h3 class="nx-card-title">01. Radical Honesty</h3>
             <p class="nx-card-desc">
-              Set up your verified company profile and share the fundamental metrics of your startup journey.
+              No inflated vanity numbers. Founders share verified traction, genuine customer love, and real unit economics.
             </p>
           </div>
 
@@ -613,9 +614,9 @@
 
           <!-- Card Body: 3D Pop Title & Description -->
           <div class="nx-3d-body">
-            <h3 class="nx-card-title">Build Your Story</h3>
+            <h3 class="nx-card-title">02. Bulletproof Proof</h3>
             <p class="nx-card-desc">
-              Showcase verified ARR, cap table readiness, customer growth, and technical breakthroughs.
+              We verify MCA records, GST filings, and cap tables upfront so investors can allocate with absolute peace of mind.
             </p>
           </div>
 
@@ -649,9 +650,9 @@
 
           <!-- Card Body: 3D Pop Title & Description -->
           <div class="nx-3d-body">
-            <h3 class="nx-card-title">Show What Matters</h3>
+            <h3 class="nx-card-title">03. Human Connection</h3>
             <p class="nx-card-desc">
-              Open allocations to qualified syndicates with verified data rooms and live term sheets.
+              Talk directly with the humans steering the ship. Ask hard questions, align on core values, and build lasting conviction.
             </p>
           </div>
 
@@ -683,9 +684,9 @@
 
           <!-- Card Body: 3D Pop Title & Description -->
           <div class="nx-3d-body">
-            <h3 class="nx-card-title">Discover &amp; Connect</h3>
+            <h3 class="nx-card-title">04. Honor-Bound Capital</h3>
             <p class="nx-card-desc">
-              Angels and funds access vetted deals, initiate syndicate discussions, and soft-commit seamlessly.
+              Standardized legal contracts protect both founder equity and investor capital. Wire funds directly with zero platform deductions.
             </p>
           </div>
 

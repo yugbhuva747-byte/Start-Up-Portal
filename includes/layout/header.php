@@ -26,7 +26,7 @@
   <!-- ===================== FONTS ===================== -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- ===================== TAILWIND (CDN) ===================== -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -35,19 +35,20 @@
       theme: {
         extend: {
           colors: {
-            'nx-bg': '#FAFAF8',
+            'nx-bg': '#F8FAFC',
             'nx-white': '#FFFFFF',
-            'nx-black': '#111111',
-            'nx-grey': '#686868',
-            'nx-light-grey': '#9A9A94',
-            'nx-border': '#E8E8E3',
-            'nx-green': '#173C9F',
-            'nx-dark-green': '#0E2970',
-            'nx-blue': '#173C9F',
-            'nx-dark-blue': '#0E2970',
+            'nx-black': '#0F172A',
+            'nx-grey': '#475569',
+            'nx-light-grey': '#94A3B8',
+            'nx-border': '#E2E8F0',
+            'nx-blue': '#2563EB',
+            'nx-dark-blue': '#1D4ED8',
+            'nx-emerald': '#059669',
+            'nx-navy': '#0A0F1D',
           },
           fontFamily: {
-            sans: ['Poppins', 'sans-serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            heading: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
           },
         },
       },
@@ -62,25 +63,33 @@
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
 
   <style>
-    /* ===================== DESIGN TOKENS ===================== */
+    /* ===================== LUXURY DESIGN TOKENS ===================== */
     :root {
-      --nx-bg: #FAFAF8;
+      --nx-bg: #F8FAFC;
       --nx-white: #FFFFFF;
-      --nx-black: #111111;
-      --nx-grey: #686868;
-      --nx-border: #E8E8E3;
-      --nx-green: #173C9F;
-      --nx-dark-green: #0E2970;
-      --nx-blue: #173C9F;
-      --nx-dark-blue: #0E2970;
+      --nx-black: #0F172A;
+      --nx-grey: #475569;
+      --nx-border: #E2E8F0;
+      --nx-blue: #2563EB;
+      --nx-dark-blue: #1D4ED8;
+      --nx-emerald: #059669;
+      --nx-navy: #0A0F1D;
     }
 
     html,
     body {
       background-color: var(--nx-bg);
       color: var(--nx-black);
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      letter-spacing: -0.011em;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: clip;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      letter-spacing: -0.035em;
     }
 
     ::selection {
@@ -98,20 +107,20 @@
       max-width: 1320px;
       height: 64px;
       z-index: 100;
-      background-color: rgba(255,255,255,.78);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(232,232,227,.6);
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(226, 232, 240, 0.85);
       border-radius: 999px;
-      box-shadow: 0 4px 24px -6px rgba(17,17,17,.06);
+      box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.06);
       transition: background-color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, top 0.35s ease;
     }
 
     #nx-header-bar.nx-scrolled {
       top: 14px;
-      background-color: rgba(255,255,255,.88);
-      border-color: rgba(232,232,227,.8);
-      box-shadow: 0 6px 28px -6px rgba(17,17,17,.08);
+      background-color: rgba(255, 255, 255, 0.95);
+      border-color: rgba(203, 213, 225, 0.9);
+      box-shadow: 0 8px 30px -4px rgba(15, 23, 42, 0.1);
     }
 
     @media (max-width: 768px) {
@@ -126,16 +135,16 @@
 
     /* Centered glass pill nav container */
     .nx-nav-pill {
-      background: rgba(255,255,255,.72);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(232,232,227,.7);
+      background: rgba(248, 250, 252, 0.8);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
       border-radius: 999px;
       padding: 4px 6px;
       display: flex;
       align-items: center;
       gap: 2px;
-      box-shadow: 0 2px 12px -3px rgba(17,17,17,.04);
+      box-shadow: 0 2px 10px -2px rgba(15, 23, 42, 0.04);
     }
 
     .nx-nav-link {
@@ -151,15 +160,15 @@
 
     .nx-nav-link:hover {
       color: var(--nx-black);
-      background-color: rgba(17,17,17,.05);
+      background-color: rgba(15, 23, 42, 0.05);
       transform: translateY(-1px);
     }
 
     .nx-nav-link.is-active {
       color: var(--nx-black);
       font-weight: 600;
-      background-color: var(--nx-bg);
-      box-shadow: 0 1px 4px rgba(17,17,17,.06), 0 0 0 1px rgba(232,232,227,.5);
+      background-color: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(226, 232, 240, 0.9);
     }
 
     .nx-nav-link.is-active::after {
@@ -171,17 +180,83 @@
       width: 4px;
       height: 4px;
       border-radius: 50%;
-      background: var(--nx-green);
+      background: var(--nx-blue);
     }
 
-    /* ===================== PREMIUM BUTTON (#173C9F) ===================== */
+    /* ===================== LOCATION MEGA DROPDOWN ===================== */
+    .nx-dropdown-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nx-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 14px);
+      left: -16px;
+      width: 590px;
+      max-width: 92vw;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 24px;
+      padding: 16px 18px;
+      box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
+      z-index: 250;
+    }
+
+    /* Invisible hover bridge */
+    .nx-dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: -14px;
+      left: 0;
+      right: 0;
+      height: 14px;
+    }
+
+    /* Top pointer notch */
+    .nx-dropdown-menu::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 38px;
+      transform: rotate(45deg);
+      width: 12px;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.98);
+      border-top: 1px solid rgba(226, 232, 240, 0.95);
+      border-left: 1px solid rgba(226, 232, 240, 0.95);
+    }
+
+    .nx-dropdown-wrap:hover .nx-dropdown-menu,
+    .nx-dropdown-wrap.is-open .nx-dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .nx-dropdown-wrap:hover .nx-caret,
+    .nx-dropdown-wrap.is-open .nx-caret {
+      transform: rotate(180deg);
+      color: var(--nx-blue);
+    }
+
+    /* ===================== LUXURY BUTTON (SAPPHIRE COBALT) ===================== */
     .nx-nav-btn {
       position: relative;
       overflow: hidden;
-      background: linear-gradient(135deg, #1C46BA 0%, #173C9F 60%, #112F82 100%);
-      background-color: #173C9F;
+      background: linear-gradient(135deg, #1E40AF 0%, #2563EB 55%, #1D4ED8 100%);
+      background-color: #2563EB;
       color: #FFFFFF;
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       font-size: 13.5px;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -191,7 +266,7 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      box-shadow: 0 4px 16px rgba(23, 60, 159, 0.32);
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.32);
       transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
                   box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
                   border-color 0.25s ease,
@@ -304,19 +379,161 @@
 
       <!-- Left: Logo placeholder NEXORA -->
       <a href="<?= function_exists('url') ? url('index.php') : 'index.php' ?>" class="flex items-center gap-2 nx-hoverable group" aria-label="NEXORA — Return to Home">
-        <span class="font-bold text-[19px] tracking-[-0.03em] text-nx-black font-sans">NEXORA</span>
-        <span class="w-1.5 h-1.5 rounded-full bg-nx-green transition-transform duration-300 group-hover:scale-125"></span>
+        <span class="font-bold text-[19px] tracking-[-0.03em] text-slate-900 font-sans">NEXORA</span>
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.6)] transition-transform duration-300 group-hover:scale-125"></span>
       </a>
 
       <!-- Center: Navigation Links (Rounded Pill Container) -->
       <nav class="hidden md:flex items-center nx-nav-pill" aria-label="Main Navigation">
-        <a href="#nx-hero" class="nx-nav-link is-active nx-hoverable">Home</a>
-        <a href="#nx-opportunities" class="nx-nav-link nx-hoverable">Opportunities</a>
-        <a href="#nx-ecosystem" class="nx-nav-link nx-hoverable">How It Works</a>
-        <a href="#nx-investors" class="nx-nav-link nx-hoverable">Investors</a>
-        <a href="#nx-startups-raise" class="nx-nav-link nx-hoverable">Startups</a>
+        <!-- 1. Location (Mega Dropdown for India & UAE Mega Cities) -->
+        <div class="nx-dropdown-wrap" id="nx-location-menu-wrap">
+          <button type="button" 
+                  id="nx-location-btn" 
+                  class="nx-nav-link nx-hoverable flex items-center gap-1.5 focus:outline-none cursor-pointer"
+                  aria-expanded="false" 
+                  aria-haspopup="true">
+            <svg class="w-3.5 h-3.5 text-nx-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Location</span>
+            <svg class="nx-caret w-3 h-3 text-nx-grey transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown Mega Menu -->
+          <div class="nx-dropdown-menu" role="menu" aria-label="Location Submenu">
+            <!-- Header bar -->
+            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-200">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-500">Global Innovation Corridors</span>
+              </div>
+              <span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200/80">India &middot; UAE Deals</span>
+            </div>
+
+            <!-- Two-Column Grid: India & UAE -->
+            <div class="grid grid-cols-2 gap-3.5">
+              
+              <!-- Column 1: India Mega Cities -->
+              <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
+                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[17px]">🇮🇳</span>
+                    <div>
+                      <div class="text-[12.5px] font-bold text-slate-900 leading-tight">India</div>
+                      <div class="text-[10px] text-slate-500">8 Mega Hubs</div>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono font-bold uppercase text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">Active</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-1 text-[12px]">
+                  <a href="#nx-opportunities" data-city="Mumbai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Mumbai</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Delhi NCR</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Bengaluru" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Bengaluru</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Hyderabad" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Hyderabad</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Chennai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Chennai</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Ahmedabad</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Pune" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Pune</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Kolkata" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Kolkata</span>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Column 2: UAE Mega Cities -->
+              <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
+                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-[17px]">🇦🇪</span>
+                    <div>
+                      <div class="text-[12.5px] font-bold text-slate-900 leading-tight">UAE</div>
+                      <div class="text-[10px] text-slate-500">Mega Financial Hubs</div>
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-mono font-bold uppercase text-blue-700 bg-blue-100/80 px-1.5 py-0.5 rounded">Fastlane</span>
+                </div>
+
+                <div class="space-y-1 text-[12px]">
+                  <a href="#nx-opportunities" data-city="Dubai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <div>
+                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Dubai</div>
+                      <div class="text-[10px] text-slate-400">DIFC &middot; Venture &amp; Tech Capital</div>
+                    </div>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <div>
+                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Abu Dhabi</div>
+                      <div class="text-[10px] text-slate-400">Hub71 &middot; Sovereign Scale</div>
+                    </div>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Sharjah" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <div>
+                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Sharjah</div>
+                      <div class="text-[10px] text-slate-400">SRTIP &middot; Creative &amp; Research</div>
+                    </div>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                  <a href="#nx-opportunities" data-city="Ajman" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
+                    <div>
+                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Ajman</div>
+                      <div class="text-[10px] text-slate-400">Logistics &amp; Trade Corridor</div>
+                    </div>
+                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Footer Strip -->
+            <div class="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
+              <span>Direct dealflow between India &amp; UAE venture corridors</span>
+              <a href="#nx-opportunities" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 group/all">
+                <span>View All Hub Deals</span>
+                <span class="transition-transform group-hover/all:translate-x-0.5">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Investor -->
+        <a href="#nx-investors" class="nx-nav-link nx-hoverable">Investor</a>
+
+        <!-- 3. Founder -->
+        <a href="#nx-startups-raise" class="nx-nav-link nx-hoverable">Founder</a>
+
+        <!-- 4. Pricing -->
         <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
-        <a href="#nx-learning" class="nx-nav-link nx-hoverable">Learn</a>
+
+        <!-- 5. About -->
+        <a href="#nx-about" class="nx-nav-link nx-hoverable">About</a>
       </nav>
 
       <!-- Right: Action Button -->
@@ -351,18 +568,70 @@
 
   <!-- ===================== MOBILE FULLSCREEN DRAWER ===================== -->
   <div id="nx-mobile-drawer" role="dialog" aria-modal="true" aria-label="Mobile Navigation Menu" inert>
-    <div class="h-full flex flex-col justify-between px-8 pt-28 pb-10">
-      <nav class="flex flex-col gap-5" aria-label="Mobile Navigation Links">
-        <a href="#nx-hero" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-black flex items-center justify-between">
-          <span>Home</span>
-          <span class="w-2 h-2 rounded-full bg-nx-green"></span>
-        </a>
-        <a href="#nx-opportunities" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Opportunities</a>
-        <a href="#nx-ecosystem" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">How It Works</a>
-        <a href="#nx-investors" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Investors</a>
-        <a href="#nx-startups-raise" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Startups</a>
-        <a href="#nx-pricing" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
-        <a href="#nx-learning" class="text-[28px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Learn</a>
+    <div class="h-full flex flex-col justify-between px-8 pt-24 pb-8 overflow-y-auto">
+      <nav class="flex flex-col gap-4" aria-label="Mobile Navigation Links">
+        <!-- 1. Location (Expandable Accordion) -->
+        <div class="border-b border-nx-border/60 pb-3">
+          <button type="button" id="nx-mobile-loc-btn" class="w-full flex items-center justify-between text-[24px] font-semibold tracking-[-0.02em] text-nx-black">
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-nx-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>Location</span>
+            </span>
+            <svg id="nx-mobile-loc-caret" class="w-5 h-5 text-nx-grey transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Collapsible City Options -->
+          <div id="nx-mobile-loc-content" class="hidden pt-3 pl-1 space-y-3.5">
+            <!-- India -->
+            <div>
+              <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <span>🇮🇳</span>
+                <span>India (Mega Cities)</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <a href="#nx-opportunities" data-city="Mumbai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Mumbai</a>
+                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Delhi NCR</a>
+                <a href="#nx-opportunities" data-city="Bengaluru" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Bengaluru</a>
+                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Hyderabad</a>
+                <a href="#nx-opportunities" data-city="Chennai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Chennai</a>
+                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Ahmedabad</a>
+                <a href="#nx-opportunities" data-city="Pune" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Pune</a>
+                <a href="#nx-opportunities" data-city="Kolkata" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Kolkata</a>
+              </div>
+            </div>
+
+            <!-- UAE -->
+            <div>
+              <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <span>🇦🇪</span>
+                <span>UAE (Mega Cities)</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <a href="#nx-opportunities" data-city="Dubai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Dubai</a>
+                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Abu Dhabi</a>
+                <a href="#nx-opportunities" data-city="Sharjah" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Sharjah</a>
+                <a href="#nx-opportunities" data-city="Ajman" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Ajman</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Investor -->
+        <a href="#nx-investors" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Investor</a>
+
+        <!-- 3. Founder -->
+        <a href="#nx-startups-raise" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Founder</a>
+
+        <!-- 4. Pricing -->
+        <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
+
+        <!-- 5. About -->
+        <a href="#nx-about" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">About</a>
       </nav>
 
       <div class="flex flex-col gap-4 pt-6 border-t border-nx-border">
@@ -449,6 +718,59 @@
         link.addEventListener('click', () => {
           navLinks.forEach((l) => l.classList.remove('is-active'));
           link.classList.add('is-active');
+        });
+      });
+
+      // 4. Location Dropdown Toggle & Outside Click (Desktop)
+      const locWrap = document.getElementById('nx-location-menu-wrap');
+      const locBtn = document.getElementById('nx-location-btn');
+      if (locWrap && locBtn) {
+        locBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isOpen = locWrap.classList.toggle('is-open');
+          locBtn.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        document.addEventListener('click', (e) => {
+          if (!locWrap.contains(e.target)) {
+            locWrap.classList.remove('is-open');
+            locBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && locWrap.classList.contains('is-open')) {
+            locWrap.classList.remove('is-open');
+            locBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // 5. Location Accordion Toggle (Mobile)
+      const mobileLocBtn = document.getElementById('nx-mobile-loc-btn');
+      const mobileLocContent = document.getElementById('nx-mobile-loc-content');
+      const mobileLocCaret = document.getElementById('nx-mobile-loc-caret');
+      if (mobileLocBtn && mobileLocContent) {
+        mobileLocBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const isHidden = mobileLocContent.classList.toggle('hidden');
+          if (mobileLocCaret) {
+            mobileLocCaret.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(180deg)';
+          }
+        });
+      }
+
+      // 6. City links click handling (Desktop & Mobile)
+      document.querySelectorAll('.nx-city-link, .nx-mobile-city-link').forEach((link) => {
+        link.addEventListener('click', () => {
+          if (locWrap) {
+            locWrap.classList.remove('is-open');
+            if (locBtn) locBtn.setAttribute('aria-expanded', 'false');
+          }
+          const city = link.getAttribute('data-city');
+          if (window.nxFilterCity && city) {
+            window.nxFilterCity(city);
+          }
         });
       });
 

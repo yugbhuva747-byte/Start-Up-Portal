@@ -313,17 +313,12 @@ require_once __DIR__ . '/theme.php';
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-
-        
-
         <!-- Navigation Links Grouped by Sections -->
         <nav class="space-y-1 text-md font-semibold">
-            
             <!-- SECTION 1: CORE OVERVIEW -->
             <div class="sidebar-section-title">
                 <span>Core Overview</span>
             </div>
-
             <a href="<?= url('admin/dashboard.php') ?>" 
                data-tooltip="Overview &amp; KPIs"
                title="Overview &amp; KPIs"
@@ -331,7 +326,6 @@ require_once __DIR__ . '/theme.php';
                 <i data-lucide="gauge" class="nav-icon text-blue-600"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Overview &amp; KPIs</span>
             </a>
-
             <a href="<?= url('admin/reports.php') ?>" 
                data-tooltip="Reports &amp; Analytics"
                title="Reports &amp; Analytics"
@@ -339,7 +333,6 @@ require_once __DIR__ . '/theme.php';
                 <i data-lucide="bar-chart-3" class="nav-icon text-indigo-500"></i>
                 <span class="whitespace-nowrap sidebar-text-item">Reports &amp; Analytics</span>
             </a>
-
             <!-- SECTION 2: DEALFLOW & GOVERNANCE -->
             <div class="sidebar-section-title mt-2">
                 <span>Dealflow &amp; Compliance</span>

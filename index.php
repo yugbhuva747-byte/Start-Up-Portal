@@ -19,56 +19,38 @@ $basePath = __DIR__;
 require_once $basePath . '/includes/layout/header.php';
 ?>
 
-<main id="nx-page" class="nx-page relative w-full overflow-x-clip bg-[#FAF5FF] text-[#0F172A]">
-
-    <!-- 01 & 02. Stacking Sections (Signup pinned at top, Hero stacks over it on scroll) -->
-    <div id="nx-stack-wrapper" class="relative w-full">
-      <?php
-      require_once $basePath . '/includes/home/signup-section.php';
-      require_once $basePath . '/includes/home/hero.php';
-      ?>
-    </div>
+<main id="nx-page" class="nx-page relative w-full overflow-x-clip bg-[#F8FAFC] text-[#0F172A]">
 
     <?php
     // ------------------------------------------------------------
-    // 03. Investment Opportunities — Live Infinite Auto-Scroll Dealflow
-    // (Hook visitor immediately with tangible companies, rounds & ARR)
+    // 01. Hero Section
+    // ------------------------------------------------------------
+    require_once $basePath . '/includes/home/hero.php';
+
+    // ------------------------------------------------------------
+    // 02. Location — Investment Opportunities (India & UAE Deals)
     // ------------------------------------------------------------
     require_once $basePath . '/includes/home/opportunities.php';
 
     // ------------------------------------------------------------
-    // 03. Ecosystem — How It Works (2 Sides, 4 Interactive 3D Steps)
+    // 03. About — Ecosystem & How It Works
     // ------------------------------------------------------------
     require_once $basePath . '/includes/home/ecosystem.php';
 
     // ------------------------------------------------------------
-    // 04. For Investors — Institutional Diligence Dossier & 3D Terminal
+    // 04. Investor — Institutional Diligence Dossier & 3D Terminal
     // ------------------------------------------------------------
     require_once $basePath . '/includes/home/investors.php';
-    
 
     // ------------------------------------------------------------
-    // 07. Transparent Venture Pricing — 4 Tiers & Monthly/Annual Toggle
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/pricing.php';
-
-
-    // ------------------------------------------------------------
-    // 05. For Startups — 3D Interactive Presentation Stage & Raise Flow
+    // 05. Founder — For Startups Raise Flow
     // ------------------------------------------------------------
     require_once $basePath . '/includes/home/startups-raise.php';
 
     // ------------------------------------------------------------
-    // 06. Learning & Academy — Full-Screen Dark Cinematic Knowledge Hub
+    // 06. Pricing — Transparent Venture Pricing Plans
     // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/learning.php';
-
-   
-
-    // ------------------------------------------------------------
-    // 08. Final CTA — High Conversion Closing Action
-    // ------------------------------------------------------------
-    require_once $basePath . '/includes/home/final-cta.php';
+    require_once $basePath . '/includes/home/pricing.php';
     ?>
 
 </main>

@@ -1,9 +1,9 @@
-﻿<?php
+<?php
 /**
  * ============================================================================
  * include/home/startups-raise.php
  * ----------------------------------------------------------------------------
- * SECTION 06 â€” FOR STARTUPS (COLORFUL PASTEL 3D CAROUSEL EDITION)
+ * SECTION 06 &mdash; FOR STARTUPS (COLORFUL PASTEL 3D CAROUSEL EDITION)
  *
  * Features:
  * - 2-Second Auto-Rotation Loop
@@ -18,14 +18,14 @@
 
 <style>
   .nx-startups-section {
-    background-color: #FAF5FF;
+    background-color: #F8FAFC;
     background-image: 
-      radial-gradient(at 15% 15%, #EDE9FE 0px, transparent 45%),
-      radial-gradient(at 85% 85%, #FCE7F3 0px, transparent 45%),
-      radial-gradient(at 50% 50%, #FFF7ED 0px, transparent 50%);
+      radial-gradient(at 15% 15%, rgba(219, 234, 254, 0.5) 0px, transparent 45%),
+      radial-gradient(at 85% 85%, rgba(224, 231, 255, 0.45) 0px, transparent 45%),
+      radial-gradient(at 50% 50%, rgba(241, 245, 249, 0.7) 0px, transparent 50%);
     color: #0F172A;
-    font-family: 'Poppins', sans-serif;
-    border-top: 1px solid rgba(221, 214, 254, 0.7);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-top: 1px solid #E2E8F0;
     overflow-x: clip;
     position: relative;
     z-index: 20;
@@ -65,7 +65,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 440px;
+    width: 390px;
     height: 415px;
     border-radius: 28px;
     padding: 30px 28px;
@@ -95,11 +95,11 @@
      ACTIVE CENTER CARD STATE (RADIANT PASTEL JEWEL)
      ==================================================== */
   .nx-stack-card.is-active {
-    background: linear-gradient(135deg, #7C3AED 0%, #DB2777 50%, #EA580C 100%) !important;
-    background-color: #7C3AED !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 55%, #2563EB 100%) !important;
+    background-color: #0F172A !important;
+    border: 1.5px solid rgba(147, 197, 253, 0.45) !important;
     color: #FFFFFF !important;
-    box-shadow: 0 32px 75px -12px rgba(219, 39, 119, 0.42), 0 0 0 1.5px rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 32px 75px -12px rgba(37, 99, 235, 0.35), 0 0 0 1.5px rgba(255, 255, 255, 0.15) !important;
     cursor: default;
     z-index: 35 !important;
   }
@@ -117,12 +117,12 @@
   }
 
   .nx-stack-card.is-active span.font-mono.tracking-wider {
-    color: #FEF08A !important;
+    color: #93C5FD !important;
   }
 
   .nx-stack-card.is-active .nx-pulse-node {
-    background-color: #FEF08A !important;
-    box-shadow: 0 0 10px #FEF08A;
+    background-color: #93C5FD !important;
+    box-shadow: 0 0 10px #93C5FD;
   }
 
   .nx-stack-card.is-active .nx-card-inner-box {
@@ -153,15 +153,15 @@
   }
 
   .nx-stack-card.is-active .text-[#173C9F] {
-    color: #FEF08A !important;
+    color: #93C5FD !important;
   }
 
   .nx-stack-card.is-active svg path[stroke="#173C9F"] {
-    stroke: #FEF08A !important;
+    stroke: #93C5FD !important;
   }
 
   .nx-stack-card.is-active svg circle[fill="#173C9F"] {
-    fill: #FEF08A !important;
+    fill: #93C5FD !important;
   }
 
   .nx-stack-card.is-active svg path[stroke="#333333"] {
@@ -169,8 +169,8 @@
   }
 
   .nx-stack-card.is-active .bg-[#173C9F] {
-    background-color: #FEF08A !important;
-    color: #7C3AED !important;
+    background-color: #93C5FD !important;
+    color: #1D4ED8 !important;
   }
 
   .nx-stack-card.is-active .bg-[#262626] {
@@ -189,9 +189,9 @@
     background-color: rgba(255, 255, 255, 0.92);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1.5px solid rgba(221, 214, 254, 0.8);
+    border: 1.5px solid #E2E8F0;
     color: #0F172A;
-    box-shadow: 0 10px 30px -8px rgba(124, 58, 237, 0.08);
+    box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.06);
   }
 
   .nx-stack-card:not(.is-active) .nx-card-title {
@@ -203,11 +203,11 @@
   }
 
   .nx-stack-card:not(.is-active) .nx-card-header-line {
-    border-color: rgba(221, 214, 254, 0.6);
+    border-color: #E2E8F0;
   }
 
   .nx-stack-card:not(.is-active) .nx-card-inner-box {
-    background-color: #FAF5FF;
+    background-color: #F8FAFC;
     border-color: rgba(221, 214, 254, 0.7);
   }
 
@@ -226,13 +226,13 @@
   }
 
   .nx-stack-card:not(.is-active) .nx-status-tag {
-    background-color: #EDE9FE;
-    border-color: #DDD6FE;
-    color: #7C3AED;
+    background-color: #EFF6FF;
+    border-color: #DBEAFE;
+    color: #2563EB;
   }
 
   .nx-stack-card:not(.is-active) span.font-mono.tracking-wider {
-    color: #7C3AED;
+    color: #2563EB;
   }
 
   /* Subtle pulsing active dot */
@@ -260,18 +260,18 @@
     <!-- ==================================================== -->
     <div class="max-w-[820px] mx-auto text-center mb-12 sm:mb-16">
       <div
-        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100/90 border border-purple-200 text-[11px] font-bold tracking-wider uppercase text-purple-900 mb-5 shadow-xs">
-        <span class="w-2 h-2 rounded-full bg-gradient-to-r from-purple-600 to-pink-500 animate-pulse"></span>
-        <span>FOR STARTUPS</span>
+        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-[11px] font-bold tracking-wider uppercase text-blue-900 mb-5 shadow-xs">
+        <span class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 animate-pulse"></span>
+        <span>🔥 TO THE BUILDERS WHO REFUSE TO QUIT</span>
       </div>
 
       <h2 class="text-[clamp(34px,5.2vw,70px)] font-extrabold tracking-[-0.04em] leading-[1.04] text-slate-900 mb-5">
-        YOUR COMPANY.<br>
-        <span class="bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 bg-clip-text text-transparent">READY TO BE DISCOVERED.</span>
+        YOUR LIFE&rsquo;S WORK DESERVES<br>
+        <span class="bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 bg-clip-text text-transparent">REAL BELIEVERS.</span>
       </h2>
 
       <p class="text-[16px] sm:text-[18px] leading-relaxed text-slate-600 max-w-[620px] mx-auto font-normal">
-        Create a clear company presence, share what you're building, and make it easier for the right capital partners to discover your startup.
+        You&rsquo;ve sacrificed sleep, savings, and weekends to solve a hard problem. You shouldn&rsquo;t have to surrender 5% to predatory brokers or face ghosting. Get introduced to partners who understand the weight you carry.
       </p>
     </div>
 
@@ -284,16 +284,16 @@
       <article class="nx-stack-card" data-index="0" aria-label="Card 1: Create Your Company">
         <div>
           <div class="flex items-center justify-between pb-3.5 border-b nx-card-header-line mb-5">
-            <span class="text-[11px] font-mono font-bold tracking-wider text-purple-700 uppercase">01 / PRESENCE</span>
+            <span class="text-[11px] font-mono font-bold tracking-wider text-blue-700 uppercase">01 / PRESENCE</span>
             <span class="nx-status-tag text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border">PROFILE READY</span>
           </div>
 
           <h3 class="text-[20px] sm:text-[22px] font-bold nx-card-title tracking-tight mb-2.5">
-            CREATE YOUR COMPANY
+            01. YOUR DIGNIFIED STAGE
           </h3>
 
           <p class="text-[13px] sm:text-[13.5px] leading-relaxed nx-card-desc mb-5">
-            Build a clear company profile that gives people a better understanding of who you are, what you do, and where you're going.
+            A secure, beautiful profile presenting your real customer testimonials, audited ARR, and long-term vision.
           </p>
         </div>
 
@@ -309,7 +309,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-purple-200/50 text-center">
+          <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-200 text-center">
             <div class="py-1 px-1 rounded border nx-inner-pill text-[10px] font-semibold">Company</div>
             <div class="py-1 px-1 rounded border nx-inner-pill text-[10px] font-semibold">Vision</div>
             <div class="py-1 px-1 rounded border nx-inner-pill text-[10px] font-semibold">Team</div>
@@ -322,35 +322,35 @@
       <article class="nx-stack-card" data-index="1" aria-label="Card 2: Tell Your Story">
         <div>
           <div class="flex items-center justify-between pb-3.5 border-b nx-card-header-line mb-5">
-            <span class="text-[11px] font-mono font-bold tracking-wider text-pink-700 uppercase">02 / STORY</span>
+            <span class="text-[11px] font-mono font-bold tracking-wider text-indigo-700 uppercase">02 / STORY</span>
             <span class="nx-status-tag text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border">MILESTONES</span>
           </div>
 
           <h3 class="text-[20px] sm:text-[22px] font-bold nx-card-title tracking-tight mb-2.5">
-            TELL YOUR STORY
+            02. UNQUESTIONABLE TRUTH
           </h3>
 
           <p class="text-[13px] sm:text-[13.5px] leading-relaxed nx-card-desc mb-5">
-            Bring your vision, product, team, and milestones together in one structured company presence.
+            Real unit economics and customer retention metrics that command immediate respect from serious cheque-writers.
           </p>
         </div>
 
         <div class="p-3.5 sm:p-4 rounded-2xl nx-card-inner-box border">
           <div class="flex items-center justify-between relative py-1">
-            <div class="absolute left-3 right-3 top-3 h-[2px] bg-purple-200/60 z-0"></div>
+            <div class="absolute left-3 right-3 top-3 h-[2px] bg-slate-200 z-0"></div>
 
             <div class="relative z-10 flex flex-col items-center">
-              <span class="w-6 h-6 rounded-full bg-purple-600 text-white text-[10px] font-mono flex items-center justify-center font-bold">1</span>
+              <span class="w-6 h-6 rounded-full bg-blue-600 text-white text-[10px] font-mono flex items-center justify-center font-bold">1</span>
               <span class="text-[10px] font-bold nx-inner-title mt-1.5">IDEA</span>
             </div>
 
             <div class="relative z-10 flex flex-col items-center">
-              <span class="w-6 h-6 rounded-full bg-pink-600 text-white text-[10px] font-mono flex items-center justify-center font-bold">2</span>
+              <span class="w-6 h-6 rounded-full bg-indigo-600 text-white text-[10px] font-mono flex items-center justify-center font-bold">2</span>
               <span class="text-[10px] font-bold nx-inner-title mt-1.5">PRODUCT</span>
             </div>
 
             <div class="relative z-10 flex flex-col items-center">
-              <span class="w-6 h-6 rounded-full bg-amber-500 text-white text-[10px] font-mono flex items-center justify-center font-bold">3</span>
+              <span class="w-6 h-6 rounded-full bg-blue-800 text-white text-[10px] font-mono flex items-center justify-center font-bold">3</span>
               <span class="text-[10px] font-bold nx-inner-title mt-1.5">TRACTION</span>
             </div>
 
@@ -375,11 +375,11 @@
           </div>
 
           <h3 class="text-[20px] sm:text-[22px] font-bold nx-card-title tracking-tight mb-2.5">
-            GET DISCOVERED
+            03. RESPECTFUL INBOUND
           </h3>
 
           <p class="text-[13px] sm:text-[13.5px] leading-relaxed nx-card-desc mb-4">
-            Make your startup easier to discover by investors exploring new companies, ideas, and opportunities.
+            Cheque-writers reach out to you with genuine curiosity. No unsolicited spam, no time-wasting vanity meetings.
           </p>
         </div>
 
@@ -391,18 +391,18 @@
                 NG</div>
               <div>
                 <span class="text-[12.5px] font-bold nx-inner-title block leading-tight">NovaGrid</span>
-                <span class="text-[10px] nx-inner-sub">Clean Energy Â· Ahmedabad</span>
+                <span class="text-[10px] nx-inner-sub">Clean Energy &middot; Ahmedabad</span>
               </div>
             </div>
-            <span class="text-[10px] font-mono uppercase tracking-wider text-amber-200 font-bold">STARTUP</span>
+            <span class="text-[10px] font-mono uppercase tracking-wider text-cyan-200 font-bold">STARTUP</span>
           </div>
 
           <div class="relative py-1">
             <svg class="w-full h-[24px] overflow-visible" viewBox="0 0 240 24" fill="none">
               <path d="M 15 5 C 80 5, 160 19, 225 19" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-dasharray="3 3" />
-              <path d="M 80 10 L 160 14" stroke="#FEF08A" stroke-width="2" stroke-linecap="round" />
+              <path d="M 80 10 L 160 14" stroke="#93C5FD" stroke-width="2" stroke-linecap="round" />
               <circle cx="15" cy="5" r="3.5" fill="#FFFFFF" />
-              <circle cx="225" cy="19" r="3.5" fill="#FEF08A" />
+              <circle cx="225" cy="19" r="3.5" fill="#93C5FD" />
             </svg>
           </div>
 
@@ -417,16 +417,16 @@
       <article class="nx-stack-card" data-index="3" aria-label="Card 4: Expressions of Interest">
         <div>
           <div class="flex items-center justify-between pb-3.5 border-b nx-card-header-line mb-5">
-            <span class="text-[11px] font-mono font-bold tracking-wider text-amber-700 uppercase">04 / INTEREST</span>
+            <span class="text-[11px] font-mono font-bold tracking-wider text-blue-700 uppercase">04 / INTEREST</span>
             <span class="nx-status-tag text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border">INBOUND</span>
           </div>
 
           <h3 class="text-[20px] sm:text-[22px] font-bold nx-card-title tracking-tight mb-2.5">
-            EXPRESSIONS OF INTEREST
+            04. PRINCIPLED ALIGNMENT
           </h3>
 
           <p class="text-[13px] sm:text-[13.5px] leading-relaxed nx-card-desc mb-5">
-            Receive interest from people who want to learn more about your company and explore the opportunity.
+            Choose partners who share your values and open enterprise doors, rather than just wiring passive dollars.
           </p>
         </div>
 
@@ -435,14 +435,14 @@
           <div class="flex items-center justify-between p-2.5 rounded-xl border nx-inner-pill">
             <div class="flex items-center gap-2">
               <div
-                class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center font-mono text-[9.5px]">
+                class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-mono text-[9.5px]">
                 IN</div>
               <div>
                 <span class="text-[11.5px] font-semibold nx-inner-title block">Investor Profile</span>
                 <span class="text-[9.5px] nx-inner-sub">"Interested in learning more"</span>
               </div>
             </div>
-            <span class="text-[10px] font-medium px-2 py-0.5 rounded border border-purple-200 text-purple-700">View</span>
+            <span class="text-[10px] font-medium px-2 py-0.5 rounded border border-blue-200 text-blue-700">View</span>
           </div>
         </div>
       </article>
@@ -452,15 +452,15 @@
         <div>
           <div class="flex items-center justify-between pb-3.5 border-b nx-card-header-line mb-5">
             <span class="text-[11px] font-mono font-bold tracking-wider text-emerald-700 uppercase">05 / NEXT STEP</span>
-            <span class="nx-status-tag text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border">CONNECT</span>
+            <span class="nx-status-tag text-[10px] font-mono px-2.5 py-0.5 rounded-full font-semibold border">05. RUNWAY TO BUILD</span>
           </div>
 
           <h3 class="text-[20px] sm:text-[22px] font-bold nx-card-title tracking-tight mb-2.5">
-            CONNECT
+            05. RUNWAY TO BUILD
           </h3>
 
           <p class="text-[13px] sm:text-[13.5px] leading-relaxed nx-card-desc mb-5">
-            Continue the conversation directly and decide what happens next on your own terms.
+            Standardized legal contracts protect your voting rights and dilution. Close your round and get back to building your empire.
           </p>
         </div>
 
@@ -470,12 +470,12 @@
               <span class="text-[9px] font-mono nx-inner-sub block">STAGE</span>
               <span class="text-[11px] font-bold nx-inner-title">STARTUP</span>
             </div>
-            <span class="text-[11px] text-purple-600">â†’</span>
+            <span class="text-[11px] text-blue-600">&rarr;</span>
             <div class="flex-1 p-2 rounded-xl border nx-inner-pill">
               <span class="text-[9px] font-mono nx-inner-sub block">DIALOGUE</span>
-              <span class="text-[11px] font-bold nx-inner-title">CONNECT</span>
+              <span class="text-[11px] font-bold nx-inner-title">05. RUNWAY TO BUILD</span>
             </div>
-            <span class="text-[11px] text-purple-600">â†’</span>
+            <span class="text-[11px] text-blue-600">&rarr;</span>
             <div class="flex-1 p-2 rounded-xl border nx-inner-pill">
               <span class="text-[9px] font-mono nx-inner-sub block">DECIDE</span>
               <span class="text-[11px] font-bold nx-inner-title">NEXT</span>
@@ -488,42 +488,42 @@
 
     <!-- Indicator Dots (Clickable) -->
     <div class="flex items-center justify-center gap-2 mb-10" id="nx-stack-dots">
-      <button class="w-2.5 h-2.5 rounded-full bg-purple-200 transition-all duration-300" data-dot="0"
+      <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" data-dot="0"
         aria-label="Go to card 1"></button>
-      <button class="w-2.5 h-2.5 rounded-full bg-purple-200 transition-all duration-300" data-dot="1"
+      <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" data-dot="1"
         aria-label="Go to card 2"></button>
-      <button class="w-8 h-2.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-300" data-dot="2"
+      <button class="w-8 h-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300" data-dot="2"
         aria-label="Go to card 3"></button>
-      <button class="w-2.5 h-2.5 rounded-full bg-purple-200 transition-all duration-300" data-dot="3"
+      <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" data-dot="3"
         aria-label="Go to card 4"></button>
-      <button class="w-2.5 h-2.5 rounded-full bg-purple-200 transition-all duration-300" data-dot="4"
+      <button class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-300" data-dot="4"
         aria-label="Go to card 5"></button>
     </div>
 
     <!-- Editorial Progression Strip -->
     <div
-      class="max-w-[960px] mx-auto py-5 mb-10 border-y border-purple-200/80 flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-[10.5px] sm:text-[11.5px] font-bold text-slate-500 tracking-widest uppercase">
+      class="max-w-[960px] mx-auto py-5 mb-10 border-y border-slate-200 flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-[10.5px] sm:text-[11.5px] font-bold text-slate-500 tracking-widest uppercase">
       <span>BUILD YOUR PRESENCE</span>
-      <span class="text-purple-600">â†’</span>
+      <span class="text-blue-600">&rarr;</span>
       <span>SHARE YOUR STORY</span>
-      <span class="text-pink-600">â†’</span>
-      <span class="text-purple-900 font-extrabold">GET DISCOVERED</span>
-      <span class="text-amber-600">â†’</span>
-      <span>CONNECT</span>
+      <span class="text-indigo-600">&rarr;</span>
+      <span class="text-blue-900 font-extrabold">03. RESPECTFUL INBOUND</span>
+      <span class="text-emerald-600">&rarr;</span>
+      <span>05. RUNWAY TO BUILD</span>
     </div>
 
     <!-- CTAs with Pastel Colors -->
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
       <a href="auth/login.php?role=startup"
-        class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2.5 shadow-md shadow-pink-500/25 transition-all duration-200 hover:brightness-105 hover:shadow-lg">
-        <span>Create Your Company Profile</span>
-        <span class="transition-transform duration-200 group-hover:translate-x-1 text-sm">â†’</span>
+        class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2.5 shadow-md shadow-blue-600/25 transition-all duration-200 hover:brightness-105 hover:shadow-lg">
+        <span>🤝 Start Your Journey With Us</span>
+        <span class="transition-transform duration-200 group-hover:translate-x-1 text-sm">&rarr;</span>
       </a>
 
       <a href="auth/login.php?role=startup"
-        class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-white text-purple-700 border border-purple-200 font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2 transition-all duration-200 hover:bg-purple-50 hover:border-purple-300 shadow-xs">
+        class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-white text-slate-800 border border-slate-200 hover:border-blue-300 hover:text-blue-700 font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2 transition-all duration-200 hover:bg-slate-50 shadow-xs">
         <span>Learn How It Works</span>
-        <span class="text-purple-500 transition-transform duration-200 group-hover:translate-x-0.5 text-sm">â†’</span>
+        <span class="text-blue-600 transition-transform duration-200 group-hover:translate-x-0.5 text-sm">&rarr;</span>
       </a>
     </div>
 
@@ -568,12 +568,12 @@
 
         // Desktop 5-card perspective stack with true depth
         if (offset === 0) return { x: 0, z: 40, scale: 1, rotY: 0, opacity: 1, zIndex: 35 };
-        if (offset === 1) return { x: 215, z: -50, scale: 0.91, rotY: -9, opacity: 0.78, zIndex: 20 };
-        if (offset === -1) return { x: -215, z: -50, scale: 0.91, rotY: 9, opacity: 0.78, zIndex: 20 };
-        if (offset === 2) return { x: 385, z: -130, scale: 0.82, rotY: -15, opacity: 0.35, zIndex: 10 };
-        if (offset === -2) return { x: -385, z: -130, scale: 0.82, rotY: 15, opacity: 0.35, zIndex: 10 };
+        if (offset === 1) return { x: 295, z: -40, scale: 0.9, rotY: -9, opacity: 0.85, zIndex: 20 };
+        if (offset === -1) return { x: -295, z: -40, scale: 0.9, rotY: 9, opacity: 0.85, zIndex: 20 };
+        if (offset === 2) return { x: 530, z: -120, scale: 0.8, rotY: -16, opacity: 0.45, zIndex: 10 };
+        if (offset === -2) return { x: -530, z: -120, scale: 0.8, rotY: 16, opacity: 0.45, zIndex: 10 };
 
-        return { x: offset * 300, z: -180, scale: 0.7, rotY: 0, opacity: 0, zIndex: 0 };
+        return { x: offset * 320, z: -180, scale: 0.7, rotY: 0, opacity: 0, zIndex: 0 };
       }
 
       // Render cards position with Ultra-Smooth GSAP Easing
@@ -616,9 +616,9 @@
         // Update dots indicator
         dots.forEach((dot, idx) => {
           if (idx === currentIndex) {
-            dot.className = 'w-8 h-2.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 transition-all duration-500';
+            dot.className = 'w-8 h-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500';
           } else {
-            dot.className = 'w-2.5 h-2.5 rounded-full bg-purple-200 transition-all duration-500';
+            dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-200 transition-all duration-500';
           }
         });
       }
