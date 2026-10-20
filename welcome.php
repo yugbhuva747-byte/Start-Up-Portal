@@ -53,8 +53,8 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
     <style>
         body {
             font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            background-color: #F8FAFC;
-            background-image: radial-gradient(circle at 50% -10%, rgba(37, 99, 235, 0.12) 0%, rgba(59, 130, 246, 0.05) 45%, rgba(248, 250, 252, 0) 75%);
+            background-color: #FFFFFF;
+            background-image: radial-gradient(circle at 50% -12%, rgba(224, 242, 254, 0.45) 0%, rgba(241, 245, 249, 0.35) 35%, rgba(255, 255, 255, 0) 65%);
             background-repeat: no-repeat;
             color: #0F172A;
             -webkit-font-smoothing: antialiased;
@@ -62,12 +62,13 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
         }
 
         .role-card {
+            background-color: #FFFFFF;
             transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .role-card:hover {
             border-color: #2563EB;
-            box-shadow: 0 22px 42px -12px rgba(37, 99, 235, 0.2), 0 8px 16px -8px rgba(15, 23, 42, 0.04);
+            box-shadow: 0 20px 38px -12px rgba(37, 99, 235, 0.15), 0 4px 12px -4px rgba(0, 0, 0, 0.03);
             transform: translateY(-5px);
         }
 
@@ -78,7 +79,6 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
 
         .role-card:hover .illustration-box {
             transform: scale(1.02);
-            box-shadow: 0 12px 24px -8px rgba(37, 99, 235, 0.18);
         }
 
         .role-card:active {
@@ -122,11 +122,11 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
             
             <!-- Card 1: Investor -->
             <a href="<?= url('index.php?role=investor') ?>" 
-               class="role-card w-full sm:w-[320px] bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-7 flex flex-col items-center text-center cursor-pointer group no-underline text-inherit shadow-xs"
+               class="role-card w-full sm:w-[320px] bg-white border border-slate-200/90 rounded-[28px] p-6 sm:p-7 flex flex-col items-center text-center cursor-pointer group no-underline text-inherit shadow-[0_2px_12px_rgba(0,0,0,0.02)]"
                aria-label="I am an Investor">
                 
-                <!-- Signature Sapphire/Blue Gradient Illustration Box -->
-                <div class="illustration-box w-full aspect-square rounded-[22px] bg-gradient-to-br from-[#EFF6FF] via-[#DBEAFE] to-[#EEF2FF] border border-blue-100/80 flex items-center justify-center relative overflow-hidden transition-all duration-300">
+                <!-- Clean Whiter Sapphire-Tinted Illustration Box -->
+                <div class="illustration-box w-full aspect-square rounded-[22px] bg-gradient-to-br from-[#FAFCFF] via-[#F0F6FF] to-[#F8FAFC] border border-slate-100 flex items-center justify-center relative overflow-hidden transition-all duration-300">
                     <!-- Clean Line-Art Person with Briefcase -->
                     <svg class="w-28 h-28 text-slate-800 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <!-- Head -->
@@ -156,11 +156,11 @@ $pageTitle = 'Welcome to ' . APP_NAME . ' • Choose Your Experience';
 
             <!-- Card 2: Founder -->
             <a href="<?= url('index.php?role=founder') ?>" 
-               class="role-card w-full sm:w-[320px] bg-white border border-[#E2E8F0] rounded-[28px] p-6 sm:p-7 flex flex-col items-center text-center cursor-pointer group no-underline text-inherit shadow-xs"
+               class="role-card w-full sm:w-[320px] bg-white border border-slate-200/90 rounded-[28px] p-6 sm:p-7 flex flex-col items-center text-center cursor-pointer group no-underline text-inherit shadow-[0_2px_12px_rgba(0,0,0,0.02)]"
                aria-label="I am a Founder">
                 
-                <!-- Signature Indigo/Cobalt Gradient Illustration Box -->
-                <div class="illustration-box w-full aspect-square rounded-[22px] bg-gradient-to-br from-[#EEF2FF] via-[#E0E7FF] to-[#EFF6FF] border border-indigo-100/80 flex items-center justify-center relative overflow-hidden transition-all duration-300">
+                <!-- Clean Whiter Indigo-Tinted Illustration Box -->
+                <div class="illustration-box w-full aspect-square rounded-[22px] bg-gradient-to-br from-[#FAFCFF] via-[#F3F5FF] to-[#F8FAFC] border border-slate-100 flex items-center justify-center relative overflow-hidden transition-all duration-300">
                     <!-- Clean Line-Art Person with Laptop -->
                     <svg class="w-28 h-28 text-slate-800 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <!-- Head -->
