@@ -73,7 +73,7 @@ try {
     $priorityLevel = $result['priority_level'];
 
     if (function_exists('set_flash')) {
-        set_flash('success', "🎉 Your {$planName} ({$priorityName}) has been activated successfully! Your priority privileges are now live.");
+        set_flash('success', "Your {$planName} ({$priorityName}) has been activated successfully! Your priority privileges are now live.");
     }
 
     $dashboardUrl = $role === 'investor' ? url('investor/dashboard.php') : url('founder/dashboard.php');

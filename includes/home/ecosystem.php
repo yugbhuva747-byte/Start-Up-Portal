@@ -528,7 +528,7 @@
       <div>
         <div class="nx-how-eyebrow">
           <span class="nx-how-eyebrow-line" aria-hidden="true"></span>
-          <span>🤝 A SANCTUARY OF RADICAL TRANSPARENCY</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 inline text-[#2563EB]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg><span>A SANCTUARY OF RADICAL TRANSPARENCY</span></span>
         </div>
         <h2 class="nx-how-h2">
           <span>FUNDRAISING WITHOUT BEGGING.</span>

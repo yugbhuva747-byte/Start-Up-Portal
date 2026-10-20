@@ -262,7 +262,7 @@
       <div
         class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-[11px] font-bold tracking-wider uppercase text-blue-900 mb-5 shadow-xs">
         <span class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 animate-pulse"></span>
-        <span>🔥 TO THE BUILDERS WHO REFUSE TO QUIT</span>
+        <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-amber-500 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg><span>TO THE BUILDERS WHO REFUSE TO QUIT</span></span>
       </div>
 
       <h2 class="text-[clamp(34px,5.2vw,70px)] font-extrabold tracking-[-0.04em] leading-[1.04] text-slate-900 mb-5">
@@ -516,7 +516,7 @@
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
       <a href="auth/login.php?role=startup"
         class="group h-[52px] sm:h-[56px] px-8 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold text-[14.5px] sm:text-[15px] inline-flex items-center justify-center gap-2.5 shadow-md shadow-blue-600/25 transition-all duration-200 hover:brightness-105 hover:shadow-lg">
-        <span>🤝 Start Your Journey With Us</span>
+        <span class="inline-flex items-center gap-2"><svg class="w-4 h-4 text-white inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span>Start Your Journey With Us</span></span>
         <span class="transition-transform duration-200 group-hover:translate-x-1 text-sm">&rarr;</span>
       </a>
 

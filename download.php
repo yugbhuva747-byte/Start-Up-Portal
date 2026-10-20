@@ -5,11 +5,30 @@
  */
 require_once __DIR__ . '/config.php';
 
-$user = require_auth();
 $db = get_db();
+$user = current_user();
 
 $docId = (int)($_GET['id'] ?? 0);
 $docType = trim($_GET['type'] ?? 'verification'); // 'verification' or 'company'
+$compHash = trim($_GET['comp_hash'] ?? '');
+
+$isPublicGuestAccess = false;
+$authorizedCompId = 0;
+
+if (!$user) {
+    if ($docType === 'company' && !empty($compHash)) {
+        $authorizedCompId = hash_id_decode($compHash);
+        if ($authorizedCompId <= 0 && is_numeric($compHash)) {
+            $authorizedCompId = (int)$compHash;
+        }
+        if ($authorizedCompId > 0) {
+            $isPublicGuestAccess = true;
+        }
+    }
+    if (!$isPublicGuestAccess) {
+        $user = require_auth();
+    }
+}
 
 if ($docId <= 0 || !$db) {
     http_response_code(400);
@@ -31,20 +50,27 @@ if ($docType === 'company') {
     }
 
     // Access authorization check
-    if ($user['role'] !== 'admin') {
-        if ($user['role'] === 'founder') {
-            // Check if founder owns this company
-            $ownCheck = $db->prepare("SELECT 1 FROM company_founders WHERE company_id = ? AND user_id = ?");
-            $ownCheck->execute([$fileRecord['company_id'], $user['id']]);
-            if (!$ownCheck->fetch()) {
-                http_response_code(403);
-                die("Unauthorized: You do not have permission to download this company document.");
-            }
-        } elseif ($user['role'] === 'investor') {
-            // Verified or registered investor access
-            if ($fileRecord['access_level'] === 'request_only' && !$user['is_verified']) {
-                http_response_code(403);
-                die("Access restricted: Verified investor accreditation required.");
+    if ($isPublicGuestAccess) {
+        if ((int)$fileRecord['company_id'] !== $authorizedCompId) {
+            http_response_code(403);
+            die("Unauthorized: Document does not belong to the shared company dossier.");
+        }
+    } elseif ($user) {
+        if ($user['role'] !== 'admin') {
+            if ($user['role'] === 'founder') {
+                // Check if founder owns this company
+                $ownCheck = $db->prepare("SELECT 1 FROM company_founders WHERE company_id = ? AND user_id = ?");
+                $ownCheck->execute([$fileRecord['company_id'], $user['id']]);
+                if (!$ownCheck->fetch()) {
+                    http_response_code(403);
+                    die("Unauthorized: You do not have permission to download this company document.");
+                }
+            } elseif ($user['role'] === 'investor') {
+                // Verified or registered investor access
+                if ($fileRecord['access_level'] === 'request_only' && !$user['is_verified']) {
+                    http_response_code(403);
+                    die("Access restricted: Verified investor accreditation required.");
+                }
             }
         }
     }
@@ -87,7 +113,7 @@ if (!$realFile || !$realUploads || !str_starts_with(str_replace('\\', '/', $real
 }
 
 // Log download audit
-log_audit($user['id'], 'DOWNLOAD_DOCUMENT', $docType === 'company' ? 'company_documents' : 'verification_documents', $docId, "Downloaded document: " . basename($realFile));
+log_audit($user['id'] ?? null, 'DOWNLOAD_DOCUMENT', $docType === 'company' ? 'company_documents' : 'verification_documents', $docId, "Downloaded document: " . basename($realFile) . ($isPublicGuestAccess ? " (via Public Share Link)" : ""));
 
 // Determine content type
 $finfo = finfo_open(FILEINFO_MIME_TYPE);

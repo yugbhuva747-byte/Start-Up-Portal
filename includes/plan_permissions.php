@@ -210,8 +210,8 @@ function render_upgrade_gate(string $requiredPlanName, int $requiredLevel, strin
     $planDetails = get_plan_details($requiredPlanName);
     ?>
     <div class="my-8 p-8 rounded-3xl bg-gradient-to-br from-purple-50 via-pink-50 to-amber-50 border border-purple-200 text-center max-w-[620px] mx-auto shadow-sm">
-        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white flex items-center justify-center text-2xl mx-auto shadow-md mb-4">
-            🔒
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 text-white flex items-center justify-center mx-auto shadow-md mb-4">
+            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
         <span class="inline-block px-3 py-1 rounded-full bg-purple-100 text-purple-800 text-[11px] font-extrabold uppercase tracking-wide mb-2">
             Priority Level <?= $requiredLevel ?> Required
@@ -223,8 +223,9 @@ function render_upgrade_gate(string $requiredPlanName, int $requiredLevel, strin
             This module is available on the <strong><?= htmlspecialchars($planDetails['name'] ?? $requiredPlanName) ?></strong> tier. Upgrade your plan to activate higher dealflow priority and unlock full access.
         </p>
         <div class="mt-6 flex items-center justify-center gap-3">
-            <a href="<?= function_exists('url') ? url('index.php#nx-pricing') : 'index.php#nx-pricing' ?>" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/25 transition flex items-center gap-1.5">
-                <span>⚡ Upgrade to <?= htmlspecialchars($planDetails['name'] ?? $requiredPlanName) ?></span>
+            <a href="<?= function_exists('url') ? url('index.php#nx-pricing') : 'index.php#nx-pricing' ?>" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-95 text-white text-xs sm:text-sm font-bold shadow-md shadow-purple-600/25 transition flex items-center gap-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Upgrade to <?= htmlspecialchars($planDetails['name'] ?? $requiredPlanName) ?></span>
                 <span>&rarr;</span>
             </a>
         </div>

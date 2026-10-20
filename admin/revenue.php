@@ -587,8 +587,8 @@ if ($db) {
     <div id="newInvoiceModal" class="hidden fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 relative">
             <button onclick="document.getElementById('newInvoiceModal').classList.add('hidden')" 
-                    class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 font-bold text-sm">
-                ✕
+                    class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition p-1 rounded-lg hover:bg-slate-100">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
 
             <div class="flex items-center gap-3 mb-4">

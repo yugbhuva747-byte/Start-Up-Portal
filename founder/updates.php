@@ -362,7 +362,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div>
                             <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Reporting Cadence</div>
                             <div class="text-lg sm:text-xl font-bold text-slate-900 mt-1">
-                                <?= $totalUpdates > 0 ? 'Consistent 🟢' : 'Kickoff 🟡' ?>
+                                <?= $totalUpdates > 0 ? 'Consistent Cadence' : 'Kickoff Phase' ?>
                             </div>
                             <div class="text-xs text-slate-500 font-medium mt-1.5 flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full <?= $totalUpdates > 0 ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>
@@ -417,11 +417,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                     <div class="flex items-center space-x-2">
                         <span class="text-xs text-slate-400 font-semibold hidden sm:inline">Preview Mode:</span>
                         <div class="p-1 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center space-x-1 text-xs">
-                            <button type="button" id="btn-view-card" onclick="setPreviewDevice('card')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-xs font-bold text-slate-800 dark:text-white transition">
-                                🖥️ Card Feed
+                            <button type="button" id="btn-view-card" onclick="setPreviewDevice('card')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-xs font-bold text-slate-800 dark:text-white transition">
+                                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                <span>Card Feed</span>
                             </button>
-                            <button type="button" id="btn-view-email" onclick="setPreviewDevice('email')" class="px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">
-                                📱 Investor Email
+                            <button type="button" id="btn-view-email" onclick="setPreviewDevice('email')" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition">
+                                <i data-lucide="mail" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                <span>Investor Email</span>
                             </button>
                         </div>
                     </div>
@@ -430,7 +432,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                 <!-- 4 Visual Smart Starter Template Cards (Not Boring!) -->
                 <div>
                     <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                        <span>⚡ 1-Click Executive Templates:</span>
+                        <span class="inline-flex items-center gap-1.5">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                            <span>1-Click Executive Templates:</span>
+                        </span>
                         <span class="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">Click any template to auto-fill</span>
                     </div>
 
@@ -439,7 +444,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div onclick="applyTemplate('revenue')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-emerald-300 hover:bg-emerald-50/20 dark:hover:bg-emerald-950/20">
                             <div class="flex items-center space-x-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-800 flex items-center justify-center font-bold text-sm">
-                                    📈
+                                    <i data-lucide="trending-up" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs font-bold text-slate-900 dark:text-white">Monthly MRR & ARR</div>
@@ -452,7 +457,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div onclick="applyTemplate('product')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-cyan-300 hover:bg-cyan-50/20 dark:hover:bg-cyan-950/20">
                             <div class="flex items-center space-x-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-100 dark:border-cyan-800 flex items-center justify-center font-bold text-sm">
-                                    ⚡
+                                    <i data-lucide="zap" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs font-bold text-slate-900 dark:text-white">Product Ship / V2</div>
@@ -465,7 +470,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div onclick="applyTemplate('milestone')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-amber-300 hover:bg-amber-50/20 dark:hover:bg-amber-950/20">
                             <div class="flex items-center space-x-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800 flex items-center justify-center font-bold text-sm">
-                                    🏆
+                                    <i data-lucide="award" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs font-bold text-slate-900 dark:text-white">Major Milestone</div>
@@ -478,7 +483,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                         <div onclick="applyTemplate('hiring')" class="template-pill-card p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-purple-300 hover:bg-purple-50/20 dark:hover:bg-purple-950/20">
                             <div class="flex items-center space-x-2.5">
                                 <div class="w-8 h-8 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-800 flex items-center justify-center font-bold text-sm">
-                                    👥
+                                    <i data-lucide="users" class="w-4 h-4"></i>
                                 </div>
                                 <div>
                                     <div class="text-xs font-bold text-slate-900 dark:text-white">Key Talent & Hire</div>
@@ -531,12 +536,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                         <span>Category Tag <span class="text-rose-500">*</span></span>
                                     </label>
                                     <select name="category" id="inp-category" onchange="handleLiveSync()" class="form-input-clean font-medium cursor-pointer">
-                                        <option value="Traction & Revenue">🚀 Traction & Revenue</option>
-                                        <option value="Milestone">🏆 Major Milestone</option>
-                                        <option value="Product Launch">⚡ Product Launch / V2</option>
-                                        <option value="Team & Hiring">👥 Team & Key Hires</option>
-                                        <option value="Financials">📊 Financials & Runway</option>
-                                        <option value="Strategic Partnership">🤝 Strategic Partnership</option>
+                                        <option value="Traction & Revenue">Traction & Revenue</option>
+                                        <option value="Milestone">Major Milestone</option>
+                                        <option value="Product Launch">Product Launch / V2</option>
+                                        <option value="Team & Hiring">Team & Key Hires</option>
+                                        <option value="Financials">Financials & Runway</option>
+                                        <option value="Strategic Partnership">Strategic Partnership</option>
                                     </select>
                                 </div>
 
@@ -545,8 +550,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                         <span>Audience Visibility Scope</span>
                                     </label>
                                     <select name="visibility" id="inp-visibility" onchange="handleLiveSync()" class="form-input-clean font-medium cursor-pointer">
-                                        <option value="all_investors">🌐 Public Discovery (All Registered Investors)</option>
-                                        <option value="portfolio_only">🔒 Confidential (Portfolio Cap Table Only)</option>
+                                        <option value="all_investors">Public Discovery (All Registered Investors)</option>
+                                        <option value="portfolio_only">Confidential (Portfolio Cap Table Only)</option>
                                     </select>
                                 </div>
                             </div>
@@ -729,16 +734,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                 All (<?= $totalUpdates ?>)
                             </button>
                             <button type="button" onclick="filterUpdates('Traction & Revenue')" class="upd-filter-btn px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition text-xs" data-filter="Traction & Revenue">
-                                🚀 Traction
+                                Traction
                             </button>
                             <button type="button" onclick="filterUpdates('Milestone')" class="upd-filter-btn px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition text-xs" data-filter="Milestone">
-                                🏆 Milestones
+                                Milestones
                             </button>
                             <button type="button" onclick="filterUpdates('Product Launch')" class="upd-filter-btn px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition text-xs" data-filter="Product Launch">
-                                ⚡ Product
+                                Product
                             </button>
                             <button type="button" onclick="filterUpdates('Team & Hiring')" class="upd-filter-btn px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition text-xs" data-filter="Team & Hiring">
-                                👥 Team
+                                Team
                             </button>
                         </div>
                     </div>
@@ -911,10 +916,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             const prevScopeBadge = document.getElementById('prev-scope-badge');
             if (prevScopeBadge) {
                 if (visibility === 'portfolio_only') {
-                    prevScopeBadge.innerText = '🔒 Confidential';
+                    prevScopeBadge.innerText = 'Confidential';
                     prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800';
                 } else {
-                    prevScopeBadge.innerText = '🌐 Public Feed';
+                    prevScopeBadge.innerText = 'Public Feed';
                     prevScopeBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
                 }
             }

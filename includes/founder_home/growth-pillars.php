@@ -13,7 +13,8 @@
     <!-- Section Header -->
     <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
       <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold uppercase tracking-wider font-satoshi">
-        🚀 The Founder Growth Engine
+        <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path><path d="M9 12H4s.55-3.03 2-4.5c1.62-1.63 5-2.5 5-2.5"></path><path d="M15 12v5s3.03-.55 4.5-2c1.63-1.62 2.5-5 2.5-5"></path></svg>
+        <span>The Founder Growth Engine</span>
       </div>
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-[-0.035em] leading-tight font-satoshi">
         How NEXORA Accelerates Your Startup Growth
@@ -80,11 +81,11 @@
         <ul class="mt-6 space-y-2 text-xs sm:text-sm font-semibold text-slate-700">
           <li class="flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-            Automated legal term sheet generation &amp; e-signatures
+            Zero-login public dossier link &mdash; share data room &amp; deck with anyone
           </li>
           <li class="flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
-            Encrypted institutional data room with access tracking
+            Automated legal term sheet generation &amp; institutional data room
           </li>
         </ul>
       </div>

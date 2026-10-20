@@ -14,7 +14,8 @@
     <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
       <div
         class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200/80 text-indigo-700 text-xs font-bold uppercase tracking-wider font-satoshi">
-        ⚡ Streamlined 3-Step Process
+        <svg class="w-3.5 h-3.5 text-indigo-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span>Streamlined 3-Step Process</span>
       </div>
       <h2
         class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-[-0.035em] leading-tight font-satoshi">

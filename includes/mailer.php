@@ -323,7 +323,7 @@ function render_founder_investment_email(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎉 Investment Received - {$companyName}</title>
+<title>Investment Received - {$companyName}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0b1120; padding: 30px 15px;">
@@ -341,7 +341,7 @@ function render_founder_investment_email(
                                     <td>
                                         <div style="display: inline-block; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 20px; padding: 4px 12px; margin-bottom: 14px;">
                                             <span style="color: #34d399; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                                ✦ NEW INVESTMENT RECEIVED
+                                                NEW INVESTMENT RECEIVED
                                             </span>
                                         </div>
                                         <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
@@ -525,7 +525,7 @@ function render_investor_congratulations_email(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🚀 Congratulations on your Investment in {$companyName}!</title>
+<title>Congratulations on your Investment in {$companyName}!</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
@@ -543,7 +543,7 @@ function render_investor_congratulations_email(
                                     <td>
                                         <div style="display: inline-block; background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;">
                                             <span style="color: #a5b4fc; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                                🚀 OFFICIAL INVESTMENT CONFIRMATION
+                                                OFFICIAL INVESTMENT CONFIRMATION
                                             </span>
                                         </div>
                                         <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em;">
@@ -617,7 +617,7 @@ function render_investor_congratulations_email(
                                 <tr>
                                     <td style="padding: 12px 16px; font-size: 13px; color: #64748b; font-weight: 600; border-bottom: 1px solid #f1f5f9;">Payment Status:</td>
                                     <td style="padding: 12px 16px; font-size: 13px; color: #15803d; font-weight: 700; border-bottom: 1px solid #f1f5f9;">
-                                        ✓ ESCROW SECURED (CONFIRMED)
+                                        ESCROW SECURED (CONFIRMED)
                                     </td>
                                 </tr>
                                 <tr style="background: #f8fafc;">
@@ -632,7 +632,7 @@ function render_investor_congratulations_email(
                                 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;">
                                     <tr>
-                                        <td width="28" valign="top" style="font-size: 16px;">🛡️</td>
+                                        <td width="28" valign="top" style="font-size: 13px; font-weight: 800; color: #4f46e5;">[1]</td>
                                         <td style="font-size: 13px; color: #475569; line-height: 1.5;">
                                             <strong>Escrow Protection:</strong> Your commitment is held in institutional escrow and released only upon legal closing and allotment validation.
                                         </td>
@@ -641,7 +641,7 @@ function render_investor_congratulations_email(
 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;">
                                     <tr>
-                                        <td width="28" valign="top" style="font-size: 16px;">📜</td>
+                                        <td width="28" valign="top" style="font-size: 13px; font-weight: 800; color: #4f46e5;">[2]</td>
                                         <td style="font-size: 13px; color: #475569; line-height: 1.5;">
                                             <strong>Digital Share Certificate:</strong> Your signed certificate of allotment with distinctive serial numbers has been generated.
                                         </td>
@@ -650,7 +650,7 @@ function render_investor_congratulations_email(
 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
-                                        <td width="28" valign="top" style="font-size: 16px;">📈</td>
+                                        <td width="28" valign="top" style="font-size: 13px; font-weight: 800; color: #4f46e5;">[3]</td>
                                         <td style="font-size: 13px; color: #475569; line-height: 1.5;">
                                             <strong>Founder Updates & Reports:</strong> You will receive regular financial milestone and operational updates directly in your dashboard.
                                         </td>
@@ -767,7 +767,7 @@ function send_investment_automated_emails(
         ];
 
         // 3. Dispatch Congratulations Email to INVESTOR
-        $investorSubject = "🚀 Congratulations! Your investment in {$company['name']} is confirmed (" . format_inr($amount) . ")";
+        $investorSubject = "Congratulations! Your investment in {$company['name']} is confirmed (" . format_inr($amount) . ")";
         $investorHtml = render_investor_congratulations_email($investor, $round, $company, $investmentData);
         $investorSendResult = send_system_email(
             $investor['email'],
@@ -812,7 +812,7 @@ function send_investment_automated_emails(
         }
 
         // 5. Dispatch Alert Email to each FOUNDER dynamically
-        $founderSubject = "🎉 Investment Alert: {$investor['name']} committed " . format_inr($amount) . " to {$company['name']}";
+        $founderSubject = "Investment Alert: {$investor['name']} committed " . format_inr($amount) . " to {$company['name']}";
         foreach ($founders as $f) {
             $founderHtml = render_founder_investment_email($f, $investor, $round, $company, $investmentData);
             $founderSendResult = send_system_email(
@@ -872,7 +872,7 @@ function render_founder_round_submitted_email(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🚀 Funding Round Application Received - {$companyName}</title>
+<title>Funding Round Application Received - {$companyName}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
@@ -886,7 +886,7 @@ function render_founder_round_submitted_email(
                         <td style="background: linear-gradient(135deg, #090e1a 0%, #1e1b4b 60%, #4338ca 100%); padding: 38px 32px 30px 32px; text-align: left; border-bottom: 3px solid #6366f1;">
                             <div style="display: inline-block; background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;">
                                 <span style="color: #a5b4fc; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    ✦ FUNDING APPLICATION IN PROCESS
+                                    FUNDING APPLICATION IN PROCESS
                                 </span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
@@ -1038,7 +1038,7 @@ function render_founder_round_status_email(
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎉 Round Approved & LIVE - {$companyName}</title>
+<title>Round Approved & LIVE - {$companyName}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #0b0f19; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1e293b;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #050811; padding: 30px 15px;">
@@ -1051,7 +1051,7 @@ function render_founder_round_status_email(
                         <td style="background: linear-gradient(135deg, #090e1a 0%, #064e3b 60%, #047857 100%); padding: 38px 32px 30px 32px; text-align: left; border-bottom: 3px solid #10b981;">
                             <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; border-radius: 20px; padding: 4px 14px; margin-bottom: 14px;">
                                 <span style="color: #6ee7b7; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    ✦ {$badgeText}
+                                    {$badgeText}
                                 </span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3;">
@@ -1157,7 +1157,7 @@ function send_funding_round_submitted_emails(
         ];
 
         // 3. Dispatch Email to Founder dynamically
-        $subject = "🚀 Funding Round Application Received: {$company['name']} ({$round['round_name']})";
+        $subject = "Funding Round Application Received: {$company['name']} ({$round['round_name']})";
         $html = render_founder_round_submitted_email($founder, $company, $round);
         $result = send_system_email(
             $founder['email'],
@@ -1169,7 +1169,7 @@ function send_funding_round_submitted_emails(
 
         // 4. Also alert Admin
         $adminEmail = defined('MAIL_FROM_ADDRESS') ? MAIL_FROM_ADDRESS : 'admin@startupportal.com';
-        $adminSubject = "🔔 New Capital Request: {$company['name']} submitted {$round['round_name']} (" . format_inr($round['target_amount']) . ")";
+        $adminSubject = "New Capital Request: {$company['name']} submitted {$round['round_name']} (" . format_inr($round['target_amount']) . ")";
         $adminHtml = "<p>Founder <strong>{$founder['name']}</strong> ({$founder['email']}) has submitted a new funding round for <strong>{$company['name']}</strong> with target capital of <strong>" . format_inr($round['target_amount']) . "</strong>.</p><p><a href='" . BASE_URL . "admin/funding_review.php'>Review & Approve in Admin Desk</a></p>";
         send_system_email($adminEmail, 'Platform Admin', $adminSubject, $adminHtml, 'admin_round_submission_alert');
 
@@ -1224,7 +1224,7 @@ function send_funding_round_status_email(
 
         $results = [];
         $subject = in_array(strtoupper($newStatus), ['LIVE', 'APPROVED'])
-            ? "🎉 Your Funding Round is Approved & LIVE for Investors: {$company['name']}"
+            ? "Your Funding Round is Approved & LIVE for Investors: {$company['name']}"
             : "Notice: Funding Round Status Updated to {$newStatus} ({$company['name']})";
 
         foreach ($founders as $f) {
@@ -1295,7 +1295,7 @@ function render_founder_new_interest_email(
                         <td style="background: linear-gradient(135deg, #090e1a 0%, #1e1b4b 60%, #312e81 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #6366f1;">
                             <div style="display: inline-block; background: rgba(99, 102, 241, 0.2); border: 1px solid #818cf8; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
                                 <span style="color: #a5b4fc; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    ✦ NEW INVESTOR INTEREST
+                                    NEW INVESTOR INTEREST
                                 </span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
@@ -1426,7 +1426,7 @@ function render_investor_interest_accepted_email(
                         <td style="background: linear-gradient(135deg, #090e1a 0%, #064e3b 60%, #047857 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #10b981;">
                             <div style="display: inline-block; background: rgba(16, 185, 129, 0.2); border: 1px solid #34d399; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
                                 <span style="color: #6ee7b7; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    ✦ CONNECTION ESTABLISHED
+                                    CONNECTION ESTABLISHED
                                 </span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">
@@ -1535,7 +1535,7 @@ function render_investor_interest_declined_email(
                         <td style="background: linear-gradient(135deg, #090e1a 0%, #1e293b 100%); padding: 36px 32px 28px 32px; text-align: left; border-bottom: 3px solid #64748b;">
                             <div style="display: inline-block; background: rgba(148, 163, 184, 0.2); border: 1px solid #94a3b8; border-radius: 20px; padding: 4px 14px; margin-bottom: 12px;">
                                 <span style="color: #cbd5e1; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
-                                    ✦ INTEREST UPDATE
+                                    INTEREST UPDATE
                                 </span>
                             </div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em;">

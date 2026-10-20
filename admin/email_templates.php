@@ -98,25 +98,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 $customInvestor = $sampleInvestor;
                 $customInvestor['email'] = $testEmail;
                 $html = render_investor_congratulations_email($customInvestor, $sampleRound, $customCompany, $customInvestment);
-                $subject = "🚀 [TEST] Congratulations! Your investment in {$customCompany['name']} is confirmed (" . format_inr($testAmount) . ")";
+                $subject = "[TEST] Congratulations! Your investment in {$customCompany['name']} is confirmed (" . format_inr($testAmount) . ")";
                 $result = send_system_email($testEmail, $customInvestor['name'], $subject, $html, 'investor_congratulations_test');
             } elseif ($templateType === 'founder') {
                 $customFounder = $sampleFounder;
                 $customFounder['email'] = $testEmail;
                 $html = render_founder_investment_email($customFounder, $sampleInvestor, $sampleRound, $customCompany, $customInvestment);
-                $subject = "🎉 [TEST] Investment Alert: {$sampleInvestor['name']} committed " . format_inr($testAmount) . " to {$customCompany['name']}";
+                $subject = "[TEST] Investment Alert: {$sampleInvestor['name']} committed " . format_inr($testAmount) . " to {$customCompany['name']}";
                 $result = send_system_email($testEmail, $customFounder['name'], $subject, $html, 'founder_investment_alert_test');
             } elseif ($templateType === 'round_submission') {
                 $customFounder = $sampleFounder;
                 $customFounder['email'] = $testEmail;
                 $html = render_founder_round_submitted_email($customFounder, $customCompany, $sampleRound);
-                $subject = "🚀 [TEST] Funding Round Application Received: {$customCompany['name']} ({$sampleRound['round_name']})";
+                $subject = "[TEST] Funding Round Application Received: {$customCompany['name']} ({$sampleRound['round_name']})";
                 $result = send_system_email($testEmail, $customFounder['name'], $subject, $html, 'founder_round_submitted_test');
             } elseif ($templateType === 'round_approved') {
                 $customFounder = $sampleFounder;
                 $customFounder['email'] = $testEmail;
                 $html = render_founder_round_status_email($customFounder, $customCompany, $sampleRound, 'LIVE');
-                $subject = "🎉 [TEST] Your Funding Round is Approved & LIVE for Investors: {$customCompany['name']}";
+                $subject = "[TEST] Your Funding Round is Approved & LIVE for Investors: {$customCompany['name']}";
                 $result = send_system_email($testEmail, $customFounder['name'], $subject, $html, 'founder_round_approved_test');
             }
 
@@ -156,10 +156,10 @@ if (!in_array($activeTemplate, ['investor', 'founder', 'round_submission', 'roun
 }
 
 $templateSubjects = [
-    'investor' => "🚀 Congratulations! Your investment in TechPulse AI Solutions is confirmed (" . format_inr(500000) . ")",
-    'founder' => "🎉 Investment Alert: Vikramaditya Singhania committed " . format_inr(500000) . " to TechPulse AI Solutions",
-    'round_submission' => "🚀 Funding Round Application Received: TechPulse AI Solutions (Seed Growth Round)",
-    'round_approved' => "🎉 Your Funding Round is Approved & LIVE for Investors: TechPulse AI Solutions"
+    'investor' => "Congratulations! Your investment in TechPulse AI Solutions is confirmed (" . format_inr(500000) . ")",
+    'founder' => "Investment Alert: Vikramaditya Singhania committed " . format_inr(500000) . " to TechPulse AI Solutions",
+    'round_submission' => "Funding Round Application Received: TechPulse AI Solutions (Seed Growth Round)",
+    'round_approved' => "Your Funding Round is Approved & LIVE for Investors: TechPulse AI Solutions"
 ];
 $activeSubject = $templateSubjects[$activeTemplate] ?? '';
 

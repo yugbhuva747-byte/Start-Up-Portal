@@ -11,7 +11,9 @@ require_once __DIR__ . '/config.php';
 
 // Set active persona to founder
 $_SESSION['portal_role'] = 'founder';
-setcookie('portal_role', 'founder', time() + (86400 * 30), '/');
+if (!headers_sent()) {
+    setcookie('portal_role', 'founder', time() + (86400 * 30), '/');
+}
 
 // Base path
 $basePath = __DIR__;

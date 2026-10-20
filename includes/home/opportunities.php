@@ -453,7 +453,7 @@ $opportunities = [
       <div>
         <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-[11px] font-bold tracking-wider uppercase text-blue-900 mb-4 shadow-xs">
           <span class="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
-          <span>📍 REAL FOUNDERS &middot; REAL SACRIFICE &middot; REAL IMPACT</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 inline text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg><span>REAL FOUNDERS &middot; REAL SACRIFICE &middot; REAL IMPACT</span></span>
         </div>
         <h2 class="text-[clamp(34px,4.8vw,68px)] font-extrabold leading-[0.98] tracking-[-0.04em] text-slate-900 mb-4">
           VENTURES SHAPING OUR<br>
@@ -484,7 +484,7 @@ $opportunities = [
         </div>
 
         <a href="auth/login.php?role=investor" class="inline-flex items-center gap-2 h-[44px] px-5 rounded-full bg-white border border-slate-200 text-[13.5px] font-bold text-blue-700 hover:bg-blue-50 hover:border-blue-300 transition-all nx-hoverable shadow-xs">
-          <span>🛡️ Explore Verified Ventures</span>
+          <span class="inline-flex items-center gap-1.5"><svg class="w-4 h-4 text-blue-700 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span>Explore Verified Ventures</span></span>
           <span aria-hidden="true">&rarr;</span>
         </a>
       </div>
@@ -563,7 +563,7 @@ $opportunities = [
                     <span class="text-slate-400">Founders:</span> <?php echo htmlspecialchars($opp['founders']); ?>
                   </span>
                   <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 font-bold">
-                    <span>⚡ <?php echo htmlspecialchars($opp['backer']); ?></span>
+                    <span class="inline-flex items-center gap-1"><svg class="w-3 h-3 text-blue-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span><?php echo htmlspecialchars($opp['backer']); ?></span></span>
                   </span>
                 </div>
 
@@ -625,7 +625,7 @@ $opportunities = [
   <div class="max-w-[1440px] mx-auto px-6 lg:px-14 mt-6 flex flex-col sm:flex-row items-center justify-between text-[11.5px] font-mono text-[#686868]/80 gap-3">
     <div class="flex items-center gap-2">
       <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-      <span>🛡️ 100% AUDITED DATA ROOMS &middot; ZERO BROKER MARKUPS</span>
+      <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-blue-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span>100% AUDITED DATA ROOMS &middot; ZERO BROKER MARKUPS</span></span>
     </div>
     <div class="hidden md:block">
       DRAG OR USE ARROWS TO BROWSE DEALS

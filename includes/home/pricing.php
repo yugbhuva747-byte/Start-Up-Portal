@@ -121,7 +121,7 @@
     <div class="text-center max-w-[840px] mx-auto mb-10 sm:mb-14 nx-text-reveal">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-[11.5px] font-bold uppercase tracking-wider text-blue-900 mb-3.5 shadow-xs">
         <span class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 animate-pulse"></span>
-        <span>🕊️ HONESTY ABOVE PROFIT &middot; ZERO EQUITY OR SUCCESS FEES</span>
+        <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-blue-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span>HONESTY ABOVE PROFIT &middot; ZERO EQUITY OR SUCCESS FEES</span></span>
       </div>
 
       <h2 class="text-[32px] sm:text-[44px] lg:text-[48px] font-extrabold tracking-[-0.035em] text-slate-900 leading-[1.14]">
@@ -210,22 +210,22 @@
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN TRIAL:</div>
             
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>1 Live Pitch Deck Listing</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Basic Cap Table Viewer</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Public Syndicate Directory</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Standard Community Support</span>
             </div>
           </div>
@@ -278,22 +278,22 @@
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN TRIAL, PLUS:</div>
             
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>3 Active Deal Rooms</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Direct Founder-Investor DMs</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>DigiLocker KYC Badge</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Real-Time Pitch Deck Analytics</span>
             </div>
           </div>
@@ -355,27 +355,27 @@
             <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN 1 MONTH, PLUS:</div>
             
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Unlimited Active Deal Rooms</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Featured Dealflow Placement</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Direct WhatsApp Warm Intros</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>SEBI &amp; MCA Legal SAFE Templates</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Dedicated Venture Scout Manager</span>
             </div>
           </div>
@@ -428,27 +428,27 @@
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">FULL ENTERPRISE SUITE:</div>
             
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>All 6-Month Growth Features</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>SPV Pooling &amp; Syndicate Lead Tools</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>White-Label LP Data Room</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Full Platform REST API Access</span>
             </div>
 
             <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
               <span>Dedicated Partner Success Director</span>
             </div>
           </div>
@@ -511,8 +511,8 @@
       <div class="relative w-full max-w-[560px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 overflow-hidden transform transition-all max-h-[92vh] overflow-y-auto">
         
         <!-- Floating Close Button -->
-        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer z-10">
-          ✕
+        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer z-10" aria-label="Close modal">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
 
         <!-- Plan Header -->
@@ -563,7 +563,8 @@
             </div>
 
             <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-              <span>⚡ Confirm Plan &amp; Activate Priority</span>
+              <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+              <span>Confirm Plan &amp; Activate Priority</span>
               <span aria-hidden="true">&rarr;</span>
             </button>
           </div>
@@ -575,7 +576,8 @@
             <input type="hidden" id="modal-form-role" name="role" value="founder">
 
             <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-1 flex items-center gap-1.5">
-              <span>⚡ INSTANT ACCOUNT CREATION &amp; PLAN ACTIVATION</span>
+              <svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+              <span>INSTANT ACCOUNT CREATION &amp; PLAN ACTIVATION</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -616,19 +618,22 @@
 
             <div class="pt-1.5 space-y-2">
               <button type="submit" id="modal-submit-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-                <span id="modal-submit-text">⚡ Complete Purchase &amp; Activate Plan</span>
+                <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                <span id="modal-submit-text">Complete Purchase &amp; Activate Plan</span>
                 <span aria-hidden="true">&rarr;</span>
               </button>
 
               <button type="button" id="modal-scroll-to-register-btn" class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                <span>📝 Or Fill Full Landing Page Form (Scroll Up)</span>
+                <svg class="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Or Fill Full Landing Page Form (Scroll Up)</span>
               </button>
             </div>
           </form>
         <?php endif; ?>
 
-        <p class="text-center text-[10px] text-slate-500 font-medium mt-3">
-          🔒 256-bit encrypted checkout &middot; 0% broker fee &middot; Instant priority activation
+        <p class="text-center text-[10px] text-slate-500 font-medium mt-3 flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          <span>256-bit encrypted checkout &middot; 0% broker fee &middot; Instant priority activation</span>
         </p>
 
       </div>
@@ -720,19 +725,19 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN TRIAL:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>1 Live Pitch Deck Listing</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Basic Cap Table Viewer</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Public Syndicate Directory</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Standard Community Support</span>
         </div>
       `
@@ -751,19 +756,19 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN TRIAL, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>3 Active Deal Rooms</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Direct Founder-Investor DMs</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>DigiLocker KYC Badge</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Real-Time Pitch Deck Analytics</span>
         </div>
       `
@@ -782,23 +787,23 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN 1 MONTH, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Top Featured Dealflow Placement</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Unlimited Active Deal Rooms</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Direct WhatsApp Warm Intros</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>SEBI &amp; MCA Legal SAFE Templates</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Dedicated Venture Scout Manager</span>
         </div>
       `
@@ -817,23 +822,23 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">FULL ENTERPRISE SUITE:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>#1 Top Spotlight Placement &amp; Gold Badge</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>SPV Pooling &amp; Syndicate Tools</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>White-Label LP Data Room</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Full Platform REST API &amp; Webhooks</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Dedicated Partner Success Director</span>
         </div>
       `
@@ -855,15 +860,15 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN PASS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Browse 300+ Verified Deals</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>High-Level Pitch Summaries</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Weekly Dealflow Newsletter</span>
         </div>
       `
@@ -882,19 +887,19 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN EXPLORER, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Audited MRR &amp; Cap Tables</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Direct Founder 1-on-1 Messaging</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Full Pitch Deck Downloads</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Co-Invest From $2,500</span>
         </div>
       `
@@ -913,23 +918,23 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN ANGEL, PLUS:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Lead Syndicates &amp; SPV Pooling</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Priority Allocation in Hot Rounds</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Direct WhatsApp Founder Connect</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Automated Carry &amp; Distribution CRM</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Dedicated Venture Scout</span>
         </div>
       `
@@ -948,19 +953,19 @@
       features: `
         <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INSTITUTIONAL SUITE:</div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Custom Institutional Research Reports</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>White-Label LP Deal Portal</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Full Dealflow API &amp; Webhooks</span>
         </div>
         <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold">✓</span>
+          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
           <span>Dedicated Partner Relationship Manager</span>
         </div>
       `
@@ -1098,7 +1103,7 @@
     if (modalFormRole) modalFormRole.value = currentRole;
 
     if (modalSubmitText) {
-      modalSubmitText.textContent = '⚡ Complete Purchase & Activate ' + planObj.name;
+      modalSubmitText.textContent = 'Complete Purchase & Activate ' + planObj.name;
     }
 
     if (modalAlert) {
@@ -1148,7 +1153,7 @@
     modalConfirmActionBtn.addEventListener('click', async () => {
       modalConfirmActionBtn.disabled = true;
       const prevText = modalConfirmActionBtn.innerHTML;
-      modalConfirmActionBtn.innerHTML = '<span>⚡ Activating Priority Plan...</span>';
+      modalConfirmActionBtn.innerHTML = '<svg class="w-4 h-4 animate-spin inline-block mr-1.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg><span>Activating Priority Plan...</span>';
 
       try {
         const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
@@ -1168,7 +1173,7 @@
         const json = await res.json();
         if (json && json.success) {
           modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
+          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
           modalAlert.classList.remove('hidden');
 
           setTimeout(() => {
@@ -1178,14 +1183,14 @@
           modalConfirmActionBtn.disabled = false;
           modalConfirmActionBtn.innerHTML = prevText;
           modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Activation failed.') + '</span>';
+          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>' + (json.error || 'Activation failed.') + '</span>';
           modalAlert.classList.remove('hidden');
         }
       } catch (err) {
         modalConfirmActionBtn.disabled = false;
         modalConfirmActionBtn.innerHTML = prevText;
         modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-        modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
+        modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>Network error. Please try again.</span>';
         modalAlert.classList.remove('hidden');
       }
     });
@@ -1197,7 +1202,7 @@
       e.preventDefault();
       modalSubmitBtn.disabled = true;
       const prevText = modalSubmitBtn.innerHTML;
-      modalSubmitBtn.innerHTML = '<span>⚡ Processing Plan Activation...</span>';
+      modalSubmitBtn.innerHTML = '<svg class="w-4 h-4 animate-spin inline-block mr-1.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg><span>Processing Plan Activation...</span>';
 
       const formData = new FormData(modalForm);
       const payload = {
@@ -1219,7 +1224,7 @@
         const json = await res.json();
         if (json && json.success) {
           modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span>✓</span> <span>' + (json.message || 'Account created & Priority plan activated!') + '</span>';
+          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span> <span>' + (json.message || 'Account created & Priority plan activated!') + '</span>';
           modalAlert.classList.remove('hidden');
 
           setTimeout(() => {
@@ -1229,14 +1234,14 @@
           modalSubmitBtn.disabled = false;
           modalSubmitBtn.innerHTML = prevText;
           modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span>✕</span> <span>' + (json.error || 'Registration failed. Please try again.') + '</span>';
+          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>' + (json.error || 'Registration failed. Please try again.') + '</span>';
           modalAlert.classList.remove('hidden');
         }
       } catch (err) {
         modalSubmitBtn.disabled = false;
         modalSubmitBtn.innerHTML = prevText;
         modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-        modalAlert.innerHTML = '<span>✕</span> <span>Network error. Please try again.</span>';
+        modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>Network error. Please try again.</span>';
         modalAlert.classList.remove('hidden');
       }
     });

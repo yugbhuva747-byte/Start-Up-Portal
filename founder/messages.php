@@ -202,13 +202,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                         <!-- Quick Reply Chips -->
                         <div class="flex flex-wrap items-center gap-2 mb-3">
                             <button type="button" onclick="insertMsg('Hi, please find our latest audited financial model attached in the Data Room.')" class="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-xs text-slate-700 font-bold transition">
-                                📊 Financial Model link
+                                <svg class="w-3.5 h-3.5 text-indigo-500 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>Financial Model link
                             </button>
                             <button type="button" onclick="insertMsg('Thanks for connecting! We are available for a founder introduction call this week.')" class="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-xs text-slate-700 font-bold transition">
-                                📅 Schedule Intro Call
+                                <svg class="w-3.5 h-3.5 text-indigo-500 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Schedule Intro Call
                             </button>
                             <button type="button" onclick="insertMsg('Our Seed Round is currently 70% committed with institutional lead participation.')" class="px-3 py-1.5 rounded-full bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 border border-slate-200 text-xs text-slate-700 font-bold transition">
-                                🚀 Round Status
+                                <svg class="w-3.5 h-3.5 text-indigo-500 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Round Status
                             </button>
                         </div>
 

@@ -380,6 +380,9 @@
 <body class="bg-nx-bg text-nx-black antialiased selection:bg-nx-green selection:text-white">
 
   <!-- ===================== HEADER ===================== -->
+  <?php 
+    $activePersona = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
+  ?>
   <header id="nx-header-bar" role="banner">
     <div class="max-w-[1440px] h-full mx-auto px-6 lg:px-14 flex items-center justify-between">
 
@@ -426,7 +429,16 @@
               <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
                 <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[17px]">🇮🇳</span>
+                    <span class="inline-flex w-5 h-3.5 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
+                      <svg viewBox="0 0 640 480" class="w-full h-full">
+                        <path fill="#f93" d="M0 0h640v160H0z"/>
+                        <path fill="#fff" d="M0 160h640v160H0z"/>
+                        <path fill="#128807" d="M0 320h640v160H0z"/>
+                        <circle cx="320" cy="240" r="40" fill="#008"/>
+                        <circle cx="320" cy="240" r="30" fill="#fff"/>
+                        <circle cx="320" cy="240" r="8" fill="#008"/>
+                      </svg>
+                    </span>
                     <div>
                       <div class="text-[12.5px] font-bold text-slate-900 leading-tight">India</div>
                       <div class="text-[10px] text-slate-500">8 Mega Hubs</div>
@@ -475,7 +487,14 @@
               <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
                 <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-[17px]">🇦🇪</span>
+                    <span class="inline-flex w-5 h-3.5 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
+                      <svg viewBox="0 0 640 480" class="w-full h-full">
+                        <path fill="#00732f" d="M0 0h640v160H0z"/>
+                        <path fill="#fff" d="M0 160h640v160H0z"/>
+                        <path fill="#000" d="M0 320h640v160H0z"/>
+                        <path fill="#f00" d="M0 0h200v480H0z"/>
+                      </svg>
+                    </span>
                     <div>
                       <div class="text-[12.5px] font-bold text-slate-900 leading-tight">UAE</div>
                       <div class="text-[10px] text-slate-500">Mega Financial Hubs</div>
@@ -529,17 +548,17 @@
           </div>
         </div>
 
-        <!-- 2. Investor -->
-        <a href="#nx-investors" class="nx-nav-link nx-hoverable">Investor</a>
-
-        <!-- 3. Founder -->
-        <a href="#nx-startups-raise" class="nx-nav-link nx-hoverable">Founder</a>
-
-        <!-- 4. Pricing -->
-        <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
-
-        <!-- 5. About -->
-        <a href="#nx-about" class="nx-nav-link nx-hoverable">About</a>
+        <!-- Navigation Links Based on Persona -->
+        <?php if ($activePersona === 'investor'): ?>
+          <a href="#nx-investors" class="nx-nav-link nx-hoverable">Diligence Terminal</a>
+          <a href="#nx-opportunities" class="nx-nav-link nx-hoverable">Opportunities</a>
+          <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
+          <a href="#nx-about" class="nx-nav-link nx-hoverable">About</a>
+        <?php else: ?>
+          <a href="#nx-growth-pillars" class="nx-nav-link nx-hoverable">Growth Pillars</a>
+          <a href="#nx-raise-steps" class="nx-nav-link nx-hoverable">Raise Flow</a>
+          <a href="#nx-perks-cta" class="nx-nav-link nx-hoverable">Founder Perks</a>
+        <?php endif; ?>
       </nav>
 
       <!-- Right: Action Button -->
@@ -607,7 +626,16 @@
             <!-- India -->
             <div>
               <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span>🇮🇳</span>
+                <span class="inline-flex w-4 h-3 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
+                  <svg viewBox="0 0 640 480" class="w-full h-full">
+                    <path fill="#f93" d="M0 0h640v160H0z"/>
+                    <path fill="#fff" d="M0 160h640v160H0z"/>
+                    <path fill="#128807" d="M0 320h640v160H0z"/>
+                    <circle cx="320" cy="240" r="40" fill="#008"/>
+                    <circle cx="320" cy="240" r="30" fill="#fff"/>
+                    <circle cx="320" cy="240" r="8" fill="#008"/>
+                  </svg>
+                </span>
                 <span>India (Mega Cities)</span>
               </div>
               <div class="flex flex-wrap gap-1.5">
@@ -625,7 +653,14 @@
             <!-- UAE -->
             <div>
               <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span>🇦🇪</span>
+                <span class="inline-flex w-4 h-3 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
+                  <svg viewBox="0 0 640 480" class="w-full h-full">
+                    <path fill="#00732f" d="M0 0h640v160H0z"/>
+                    <path fill="#fff" d="M0 160h640v160H0z"/>
+                    <path fill="#000" d="M0 320h640v160H0z"/>
+                    <path fill="#f00" d="M0 0h200v480H0z"/>
+                  </svg>
+                </span>
                 <span>UAE (Mega Cities)</span>
               </div>
               <div class="flex flex-wrap gap-1.5">
@@ -638,17 +673,17 @@
           </div>
         </div>
 
-        <!-- 2. Investor -->
-        <a href="#nx-investors" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Investor</a>
-
-        <!-- 3. Founder -->
-        <a href="#nx-startups-raise" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Founder</a>
-
-        <!-- 4. Pricing -->
-        <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
-
-        <!-- 5. About -->
-        <a href="#nx-about" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">About</a>
+        <!-- Mobile Nav Links Based on Persona -->
+        <?php if ($activePersona === 'investor'): ?>
+          <a href="#nx-investors" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Diligence Terminal</a>
+          <a href="#nx-opportunities" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Opportunities</a>
+          <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
+          <a href="#nx-about" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">About</a>
+        <?php else: ?>
+          <a href="#nx-growth-pillars" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Growth Pillars</a>
+          <a href="#nx-raise-steps" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Raise Flow</a>
+          <a href="#nx-perks-cta" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Founder Perks</a>
+        <?php endif; ?>
       </nav>
 
       <div class="flex flex-col gap-4 pt-6 border-t border-nx-border">

@@ -18,7 +18,7 @@ try {
             PDO::ATTR_TIMEOUT => 4
         ]);
         $pdoRoot->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-        $output[] = "✓ Database `" . DB_NAME . "` created or verified.";
+        $output[] = "[OK] Database `" . DB_NAME . "` created or verified.";
     } catch (PDOException $e) {
         // On live shared hosting (cPanel), CREATE DATABASE is restricted.
         // The user already creates the database via the hosting control panel.
@@ -51,7 +51,7 @@ try {
     // 3. Read and execute database.sql
     $sqlContent = file_get_contents(__DIR__ . '/database.sql');
     $db->exec($sqlContent);
-    $output[] = "✓ All 17 tables created successfully.";
+    $output[] = "[OK] All 17 tables created successfully.";
 
     // 4. Seed Essential Accounts & Demo Data
     $passwordHash = password_hash('password123', PASSWORD_BCRYPT);
@@ -273,15 +273,15 @@ try {
         log_audit($investor1Id, 'SUBMIT_INVESTMENT_ORDER', 'investment_orders', $order1Id, 'Investor submitted order for ₹25,00,000');
         log_audit($adminId, 'VERIFY_COMPANY', 'companies', $comp1Id, 'Compliance Admin approved KYC and CIN verification for TechPulse AI');
 
-        $output[] = "✓ Seed data populated successfully with Admin, Founders, Investors, Startups, Rounds, Blogs, Documents & Categories.";
+        $output[] = "[OK] Seed data populated successfully with Admin, Founders, Investors, Startups, Rounds, Blogs, Documents & Categories.";
     } else {
-        $output[] = "✓ Database is connected and verified. Users and seed records are already initialized.";
+        $output[] = "[OK] Database is connected and verified. Users and seed records are already initialized.";
     }
 
     $status = 'success';
 } catch (Exception $e) {
     $status = 'error';
-    $output[] = "❌ Error: " . $e->getMessage();
+    $output[] = "[ERROR] Error: " . $e->getMessage();
 }
 
 if (php_sapi_name() === 'cli') {
@@ -325,8 +325,13 @@ if (php_sapi_name() === 'cli') {
         <div class="space-y-3 mb-5">
             <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono space-y-1.5">
                 <?php foreach ($output as $line): ?>
-                    <div class="<?= str_contains($line, '❌') ? 'text-rose-600 font-semibold' : (str_contains($line, '✓') ? 'text-emerald-700 font-medium flex items-center gap-1.5' : 'text-slate-600') ?>">
-                        <?= htmlspecialchars($line) ?>
+                    <div class="<?= str_contains($line, '[ERROR]') ? 'text-rose-600 font-semibold flex items-center gap-1.5' : (str_contains($line, '[OK]') ? 'text-emerald-700 font-medium flex items-center gap-1.5' : 'text-slate-600') ?>">
+                        <?php if (str_contains($line, '[OK]')): ?>
+                            <svg class="w-3.5 h-3.5 text-emerald-600 inline shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <?php elseif (str_contains($line, '[ERROR]')): ?>
+                            <svg class="w-3.5 h-3.5 text-rose-600 inline shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <?php endif; ?>
+                        <span><?= htmlspecialchars(str_replace(['[OK] ', '[ERROR] '], '', $line)) ?></span>
                     </div>
                 <?php endforeach; ?>
             </div>

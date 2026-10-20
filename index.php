@@ -77,10 +77,7 @@ require_once $basePath . '/includes/layout/header.php';
         // 04. Investor — Institutional Diligence Dossier & 3D Terminal
         require_once $basePath . '/includes/home/investors.php';
 
-        // 05. Founder — For Startups Raise Flow
-        require_once $basePath . '/includes/home/startups-raise.php';
-
-        // 06. Pricing — Transparent Venture Pricing Plans
+        // 05. Pricing — Transparent Venture Pricing Plans
         require_once $basePath . '/includes/home/pricing.php';
     }
     ?>

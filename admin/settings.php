@@ -53,9 +53,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $db) {
             log_audit($user['id'], $maintenanceMode ? 'ENABLE_MAINTENANCE' : 'DISABLE_MAINTENANCE', 'platform_settings', null, "Maintenance mode set to " . ($maintenanceMode ? 'ACTIVE' : 'INACTIVE'));
 
             if ($maintenanceMode) {
-                set_flash('success', '⚠️ Platform Maintenance Mode is now ACTIVE. Public visitors, Founders, and Investors are blocked. Only Administrators have access.');
+                set_flash('success', 'Platform Maintenance Mode is now ACTIVE. Public visitors, Founders, and Investors are blocked. Only Administrators have access.');
             } else {
-                set_flash('success', '✓ Maintenance Mode DEACTIVATED. Platform is LIVE and fully accessible to all Founders, Investors, and visitors.');
+                set_flash('success', 'Maintenance Mode DEACTIVATED. Platform is LIVE and fully accessible to all Founders, Investors, and visitors.');
             }
             header('Location: ' . url('admin/settings.php'));
             exit;
@@ -70,9 +70,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && $db) {
             log_audit($user['id'], $newState ? 'ENABLE_MAINTENANCE' : 'DISABLE_MAINTENANCE', 'platform_settings', null, "Maintenance mode quick-toggled to " . ($newState ? 'ACTIVE' : 'INACTIVE'));
 
             if ($newState) {
-                set_flash('success', '⚠️ Platform Maintenance Mode is now ACTIVE. Only Administrators can access.');
+                set_flash('success', 'Platform Maintenance Mode is now ACTIVE. Only Administrators can access.');
             } else {
-                set_flash('success', '✓ Platform is now LIVE. Normal operations restored for Founders & Investors.');
+                set_flash('success', 'Platform is now LIVE. Normal operations restored for Founders & Investors.');
             }
             header('Location: ' . url('admin/settings.php'));
             exit;
@@ -307,7 +307,7 @@ $flashClasses = match ($flashType) {
                         <?= $isMaintenanceActive ? 'Maintenance' : 'Production' ?>
                     </div>
                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        <?= $isMaintenanceActive ? '⚠️ Restricted to Admins' : php_uname('s') . ' / Apache' ?>
+                        <?= $isMaintenanceActive ? 'Restricted to Admins' : php_uname('s') . ' / Apache' ?>
                     </div>
                 </div>
 
@@ -556,7 +556,7 @@ $flashClasses = match ($flashType) {
                                 <span>Google / Microsoft Authenticator</span>
                             </div>
                             <div class="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
-                                <?= $isTotpSetup ? '✓ Mobile Phone Linked' : '⚠️ Pending QR Scan' ?> • 30s interval
+                                <?= $isTotpSetup ? 'Mobile Phone Linked' : 'Pending QR Scan' ?> • 30s interval
                             </div>
                         </div>
 

@@ -106,8 +106,9 @@ if ($db && $searched) {
                             <i data-lucide="badge-check" class="w-7 h-7"></i>
                         </div>
                         <div>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800">
-                                ✓ Certified Authentic & Active
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-emerald-100 text-emerald-800">
+                                <svg class="w-3 h-3 text-emerald-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                <span>Certified Authentic &amp; Active</span>
                             </span>
                             <h2 class="text-base sm:text-lg font-black text-slate-900 mt-0.5 break-all">
                                 <?= htmlspecialchars($certData['certificate_number']) ?>

@@ -29,23 +29,22 @@
             <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
           </span>
           <span class="text-xs font-bold tracking-wide uppercase text-blue-700 font-satoshi">
-            For Ambitious Founders &middot; ₹240Cr+ Capital Deployed
+            Direct Capital Engine &middot; ₹240Cr+ Capital Deployed &middot; Zero Broker Cuts
           </span>
         </div>
 
         <!-- Main Headline -->
         <h1
-          class="text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-[#0F172A] tracking-[-0.04em] leading-[1.08] font-satoshi">
-          Raise Capital Directly from <br class="hidden sm:inline" />
+          class="text-4xl sm:text-5xl lg:text-[58px] font-extrabold text-[#0F172A] tracking-[-0.04em] leading-[1.06] font-satoshi">
+          Close Your Seed to Series A.<br class="hidden sm:inline" />
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700">
-            Top Angels &amp; VCs.
+            Direct From 450+ Verified Cheque-Writers.
           </span>
         </h1>
 
         <!-- Easy to read, strong subtitle -->
-        <p class="text-lg sm:text-xl text-slate-600 font-normal leading-relaxed max-w-2xl font-satoshi">
-          Skip endless cold emails, gatekeepers, and broker cuts. NEXORA gives you direct access to 450+ verified angel
-          syndicates, family offices, and tier-1 venture funds actively writing cheques.
+        <p class="text-lg sm:text-[20px] text-slate-600 font-normal leading-relaxed max-w-2xl font-satoshi">
+          No middlemen, zero equity commissions, and no endless pitch-deck ghosting. NEXORA places your verified smart dossier directly on the private terminals of lead angel syndicates, family offices, and Tier-1 VCs actively writing cheques across India, UAE &amp; Singapore.
         </p>
 
         <!-- CTA Action Buttons -->
@@ -85,6 +84,17 @@
               <polyline points="20 6 9 17 4 12" />
             </svg>
             SEBI &amp; Delaware Standardized
+          </span>
+          <span class="inline-flex items-center gap-1.5 text-blue-600 font-semibold">
+            <svg class="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            Zero-Login Shareable Dossier &amp; Data Room
           </span>
         </div>
 

@@ -297,8 +297,9 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                                                 <?= htmlspecialchars($item['investor_type'] ?? 'Angel Investor') ?>
                                             </span>
                                             <?php if (!empty($item['accreditation_status'])): ?>
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
-                                                    ✓ Verified
+                                                <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                                                    <svg class="w-3 h-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                    <span>Verified</span>
                                                 </span>
                                             <?php endif; ?>
                                         </div>
@@ -467,7 +468,7 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                 if (res.success) {
                     btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                     btn.classList.add('bg-emerald-800');
-                    btn.innerHTML = '✓ Connected!';
+                    btn.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Connected!</span>';
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);

@@ -492,14 +492,13 @@ $flashStyles = [
                                 class="block font-bold text-slate-700 text-sm mb-1.5 uppercase tracking-wider">Document
                                 Classification</label>
                             <select name="doc_type" required class="form-input-clean font-medium cursor-pointer">
-                                <option value="Founder PAN Card">💳 Founder PAN Card</option>
-                                <option value="Passport / Aadhaar ID">🪪 Passport / Aadhaar ID</option>
-                                <option value="Certificate of Incorporation">🏛️ Certificate of Incorporation (MCA)
-                                </option>
-                                <option value="GST Registration Certificate">🧾 GST Registration Certificate</option>
-                                <option value="Audited Financial Statement">📊 Audited Financial Statement</option>
-                                <option value="Board Resolution">📑 Board Resolution / MOA & AOA</option>
-                                <option value="Startup Pitch Deck">🚀 Startup Pitch Deck</option>
+                                <option value="Founder PAN Card">Founder PAN Card</option>
+                                <option value="Passport / Aadhaar ID">Passport / Aadhaar ID</option>
+                                <option value="Certificate of Incorporation">Certificate of Incorporation (MCA)</option>
+                                <option value="GST Registration Certificate">GST Registration Certificate</option>
+                                <option value="Audited Financial Statement">Audited Financial Statement</option>
+                                <option value="Board Resolution">Board Resolution / MOA & AOA</option>
+                                <option value="Startup Pitch Deck">Startup Pitch Deck</option>
                             </select>
                         </div>
 

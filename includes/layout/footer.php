@@ -65,6 +65,38 @@
             Direct Portals
           </span>
           <ul class="space-y-3 text-[14px]" role="list">
+            <?php if (($activePersona ?? '') === 'investor' || (isset($_SESSION['portal_role']) && $_SESSION['portal_role'] === 'investor')): ?>
+            <li>
+              <a href="<?= function_exists('url') ? url('auth/login.php?role=investor') : 'auth/login.php?role=investor' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Investor Terminal Login</span>
+              </a>
+            </li>
+            <li>
+              <a href="<?= function_exists('url') ? url('auth/register.php?role=investor') : 'auth/register.php?role=investor' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Accredited Investor Sign Up</span>
+              </a>
+            </li>
+            <li>
+              <a href="#nx-opportunities" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Live Deal Pipeline</span>
+              </a>
+            </li>
+            <li>
+              <a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Diligence &amp; Cap Tables</span>
+              </a>
+            </li>
+            <li>
+              <a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Syndicate Memberships</span>
+              </a>
+            </li>
+            <?php else: ?>
             <li>
               <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
                 <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
@@ -95,6 +127,7 @@
                 <span>Live Deal Pipeline</span>
               </a>
             </li>
+            <?php endif; ?>
           </ul>
         </div>
 
@@ -105,12 +138,20 @@
             Platform &amp; Diligence
           </span>
           <ul class="space-y-3 text-[14px]" role="list">
+            <?php if (($activePersona ?? '') === 'investor' || (isset($_SESSION['portal_role']) && $_SESSION['portal_role'] === 'investor')): ?>
+            <li><a href="#nx-opportunities" class="text-slate-400 hover:text-white transition-colors">Vetted Dealflow</a></li>
+            <li><a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors">Diligence Terminal</a></li>
+            <li><a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors">Investor Subscriptions</a></li>
+            <li><a href="#nx-ecosystem" class="text-slate-400 hover:text-white transition-colors">Co-Investment Protocol</a></li>
+            <li><a href="#nx-faq" class="text-slate-400 hover:text-white transition-colors">Frequently Asked Questions</a></li>
+            <?php else: ?>
             <li><a href="#nx-ecosystem" class="text-slate-400 hover:text-white transition-colors">How It Works</a></li>
             <li><a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors">Venture Pricing Plans</a></li>
             <li><a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors">Vetted Cap Tables</a></li>
             <li><a href="#nx-startups-raise" class="text-slate-400 hover:text-white transition-colors">Founder Raise Dossier</a></li>
             <li><a href="#nx-learning" class="text-slate-400 hover:text-white transition-colors">Regulatory Framework</a></li>
             <li><a href="#nx-faq" class="text-slate-400 hover:text-white transition-colors">Frequently Asked Questions</a></li>
+            <?php endif; ?>
           </ul>
         </div>
 
@@ -144,8 +185,9 @@
                 </svg>
               </button>
             </div>
-            <div id="footer-newsletter-msg" class="hidden text-[11.5px] text-emerald-400 font-medium">
-              ✓ Subscribed! You will receive our next Tuesday Deal Brief.
+            <div id="footer-newsletter-msg" class="hidden text-[11.5px] text-emerald-400 font-medium flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-emerald-400 inline flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+              <span>Subscribed! You will receive our next Tuesday Deal Brief.</span>
             </div>
             <p class="text-[11px] text-slate-500 font-mono">
               Zero spam. Unsubscribe anytime.
@@ -322,14 +364,23 @@
     <!-- Quick Replies -->
     <div id="chatQuickReplies" class="px-4 pb-2.5 flex flex-wrap gap-2 shrink-0 bg-slate-50">
       <button
-        class="quick-reply text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
-        data-msg="I have a question about investing">💰 Investing Query</button>
+        class="quick-reply inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
+        data-msg="I have a question about investing">
+        <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Investing Query</span>
+      </button>
       <button
-        class="quick-reply text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
-        data-msg="I want to list my startup">🚀 List Startup</button>
+        class="quick-reply inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
+        data-msg="I want to list my startup">
+        <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+        <span>List Startup</span>
+      </button>
       <button
-        class="quick-reply text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
-        data-msg="I need help with my account">🔑 Account Access</button>
+        class="quick-reply inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-full border border-slate-200 text-slate-800 bg-white hover:bg-slate-100 transition-colors shadow-2xs"
+        data-msg="I need help with my account">
+        <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg>
+        <span>Account Access</span>
+      </button>
     </div>
 
     <!-- Input Area -->
@@ -349,7 +400,7 @@
   <!-- Tooltip -->
   <div id="chatTooltip"
     class="bg-white text-slate-800 text-[13px] font-medium px-4 py-2.5 rounded-2xl shadow-xl shadow-slate-950/10 border border-slate-200 transition-all duration-300 opacity-0 translate-y-2 pointer-events-none max-w-[220px]">
-    💬 Have questions?<br><span class="text-[11.5px] text-blue-600 font-normal">Chat with our support team!</span>
+    <div class="inline-flex items-center gap-1.5 font-bold text-slate-900"><svg class="w-3.5 h-3.5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Have questions?</span></div><br><span class="text-[11.5px] text-blue-600 font-normal">Chat with our support team!</span>
   </div>
 
   <!-- Floating Button -->
@@ -400,7 +451,7 @@
 
         setTimeout(function () {
           newsletterBtn.disabled = false;
-          newsletterBtn.innerHTML = '✓';
+          newsletterBtn.innerHTML = '<svg class="w-4 h-4 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
           newsletterMsg.classList.remove('hidden');
           newsletterInput.value = '';
           setTimeout(function () {
@@ -455,7 +506,7 @@
     async function showWelcome() {
       if (welcomed) return;
       welcomed = true;
-      await addMsg('Hello! 👋 Welcome to NEXORA.', 'bot', 250);
+      await addMsg('Hello! Welcome to NEXORA.', 'bot', 250);
       await addMsg('How can we assist you today? Select a quick option below or send your query.', 'bot', 700);
     }
 
@@ -492,7 +543,7 @@
       if (quickReplies) quickReplies.style.display = 'none';
 
       const lower = text.toLowerCase();
-      let reply = 'Thank you for reaching out! 🙏 Our team has received your inquiry and will reply shortly. You can also reach us directly at contact@nexora.in.';
+      let reply = 'Thank you for reaching out! Our team has received your inquiry and will reply shortly. You can also reach us directly at contact@nexora.in.';
       if (lower.includes('invest')) {
         reply = 'Thank you for your investing inquiry! We provide curated, pre-vetted dealflow with verified cap tables. An investment specialist will be in touch shortly.';
       } else if (lower.includes('startup') || lower.includes('list')) {

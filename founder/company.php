@@ -318,8 +318,17 @@ $flashStyles = [
                         institutional and angel investors.
                     </p>
                 </div>
-                <div class="flex items-center space-x-2.5 flex-shrink-0">
+                <div class="flex flex-wrap items-center space-x-2.5 flex-shrink-0">
                     <?= $company ? render_status_badge($company['verified_status']) : '<span class="text-xs font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Not Initialized</span>' ?>
+                    <?php if ($company): 
+                        $publicCompUrl = url('company.php?id=' . hash_id_encode($company['id']));
+                    ?>
+                        <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicCompUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')"
+                            class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm shadow-blue-500/25">
+                            <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                            <span>Share Public Link</span>
+                        </button>
+                    <?php endif; ?>
                     <a href="#company-data-room"
                         class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 border border-indigo-200 dark:border-indigo-800 shadow-2xs">
                         <i data-lucide="folder-lock" class="w-3.5 h-3.5"></i>
@@ -409,7 +418,7 @@ $flashStyles = [
                             <span><?= $completedChecks ?> of <?= count($checks) ?> fields ready</span>
                             <span
                                 class="<?= $profileStrength >= 80 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-medium' ?>">
-                                <?= $profileStrength >= 80 ? 'Investor Ready ✓' : 'Details Pending' ?>
+                                <?= $profileStrength >= 80 ? '<span class="inline-flex items-center gap-1"><svg class="w-3 h-3 inline text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Investor Ready</span>' : 'Details Pending' ?>
                             </span>
                         </div>
                     </div>
@@ -946,6 +955,8 @@ $flashStyles = [
         }
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeUploadModal(); });
     </script>
+
+    <?php include __DIR__ . '/../includes/share_company_modal.php'; ?>
 </body>
 
 </html>
