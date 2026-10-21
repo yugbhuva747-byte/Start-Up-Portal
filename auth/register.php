@@ -659,7 +659,7 @@ $cur = $regMeta[$selectedRole];
                             <div class="relative input-glow rounded-xl">
                                 <i data-lucide="mail" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
                                 <input type="email" name="email" required placeholder="name@company.com"
-                                       value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
+                                       value="<?= htmlspecialchars($_POST['email'] ?? $_GET['email'] ?? '') ?>"
                                        class="w-full pl-11 pr-3.5 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
                             </div>
                         </div>
