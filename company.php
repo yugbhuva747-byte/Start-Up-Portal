@@ -79,10 +79,44 @@ if ($db) {
     $rStmt = $db->prepare("SELECT * FROM funding_rounds WHERE company_id = ? AND status IN ('LIVE', 'PARTIALLY_FUNDED', 'APPROVED') ORDER BY created_at DESC LIMIT 1");
     $rStmt->execute([$companyId]);
     $activeRound = $rStmt->fetch();
+
+    // Check if logged in investor already expressed interest
+    $userExistingInterest = null;
+    if ($currentUser && $currentUser['role'] === 'investor') {
+        $eiStmt = $db->prepare("SELECT * FROM investor_interests WHERE investor_id = ? AND company_id = ? LIMIT 1");
+        $eiStmt->execute([$currentUser['id'], $companyId]);
+        $userExistingInterest = $eiStmt->fetch();
+    }
+
+    // 1.1 Track Founder Share & Invite Link attribution
+    $inviteRef = trim($_GET['invite'] ?? ($_GET['ref'] ?? ($_SESSION['active_founder_invite'] ?? '')));
+    $currentInviteData = null;
+    if (!empty($inviteRef)) {
+        try {
+            $invStmt = $db->prepare("SELECT fi.*, u.name as founder_name FROM founder_invites fi JOIN users u ON fi.founder_id = u.id WHERE fi.invite_code = ? LIMIT 1");
+            $invStmt->execute([$inviteRef]);
+            $currentInviteData = $invStmt->fetch();
+
+            if ($currentInviteData && isset($_GET['invite']) || isset($_GET['ref'])) {
+                // Increment views
+                $db->prepare("
+                    UPDATE founder_invites 
+                    SET views_count = views_count + 1, 
+                        status = IF(status = 'pending', 'viewed', status), 
+                        updated_at = NOW() 
+                    WHERE id = ?
+                ")->execute([$currentInviteData['id']]);
+                $_SESSION['active_founder_invite'] = $inviteRef;
+            }
+        } catch (\Throwable $e) {}
+    }
 }
 
 $compHash = hash_id_encode($company['id']);
 $publicShareUrl = url('company.php?id=' . $compHash);
+if (!empty($inviteRef)) {
+    $publicShareUrl .= '&invite=' . urlencode($inviteRef);
+}
 
 // Company Initials
 $companyInitials = 'SU';
@@ -312,7 +346,38 @@ foreach ($documents as $doc) {
 
                 <!-- Right: High-Impact CTAs -->
                 <div class="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto flex-shrink-0">
-                    <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicShareUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')" class="w-full justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-500/25 flex items-center gap-2 transition">
+                    <?php if ($currentUser && $currentUser['role'] === 'investor'): ?>
+                        <?php if ($userExistingInterest): ?>
+                            <div class="w-full p-3 rounded-2xl bg-indigo-50 border border-indigo-200/80 text-indigo-900 text-xs space-y-1 text-center">
+                                <div class="font-bold flex items-center justify-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full <?= $userExistingInterest['status'] === 'accepted' ? 'bg-emerald-500' : ($userExistingInterest['status'] === 'declined' ? 'bg-slate-400' : 'bg-amber-500') ?>"></span>
+                                    <span>Interest <?= strtoupper($userExistingInterest['status']) ?></span>
+                                </div>
+                                <div class="text-[11px] text-slate-500">
+                                    <?= $userExistingInterest['status'] === 'accepted' ? 'Communication unlocked!' : 'Submitted to founders' ?>
+                                </div>
+                                <a href="<?= url('investor/startup_detail.php?id=' . encode_id($company['id'])) ?>" class="block font-bold text-indigo-600 hover:underline pt-1 text-[11px]">
+                                    Open in Investor Portal &rarr;
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <button type="button" onclick="openExpressInterestModal()" class="w-full justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 flex items-center gap-2 transition">
+                                <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                <span>Express Interest &rarr;</span>
+                            </button>
+                        <?php endif; ?>
+                    <?php elseif (!$currentUser): ?>
+                        <a href="<?= url('login.php?redirect=' . urlencode('company.php?id=' . $compHash)) ?>" class="w-full justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 flex items-center gap-2 transition">
+                            <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span>Express Interest (Login)</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicShareUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')" class="w-full justify-center px-5 py-2.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/25 flex items-center gap-2 transition">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
                         </svg>
@@ -320,14 +385,14 @@ foreach ($documents as $doc) {
                     </button>
 
                     <?php if ($pitchDeckDoc): ?>
-                        <a href="<?= url('download.php?type=company&id=' . $pitchDeckDoc['id'] . '&comp_hash=' . $compHash) ?>" class="w-full justify-center px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-sm shadow-xs flex items-center gap-2 transition">
+                        <a href="<?= url('download.php?type=company&id=' . $pitchDeckDoc['id'] . '&comp_hash=' . $compHash) ?>" class="w-full justify-center px-5 py-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition">
                             <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             <span>Download Pitch Deck</span>
                         </a>
                     <?php else: ?>
-                        <a href="#company-data-room" class="w-full justify-center px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-sm shadow-xs flex items-center gap-2 transition">
+                        <a href="#company-data-room" class="w-full justify-center px-5 py-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-800 font-bold text-xs sm:text-sm shadow-xs flex items-center gap-2 transition">
                             <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                             </svg>
@@ -539,6 +604,29 @@ foreach ($documents as $doc) {
                                 <strong class="text-slate-800">Use of Funds:</strong> <?= htmlspecialchars($activeRound['purpose']) ?>
                             </div>
                         <?php endif; ?>
+
+                        <!-- Direct Syndicate & Express Interest Action Bar -->
+                        <div class="mt-4 pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-xs text-slate-500 font-medium">
+                                Backed by verified angel syndicates and statutory MCA compliance.
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <?php if ($currentUser && $currentUser['role'] === 'investor'): ?>
+                                    <?php if (!$userExistingInterest): ?>
+                                        <button type="button" onclick="openExpressInterestModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                                            <span>Express Interest</span>
+                                        </button>
+                                    <?php endif; ?>
+                                    <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                                        <span>Participate / Invest &rarr;</span>
+                                    </a>
+                                <?php elseif (!$currentUser): ?>
+                                    <a href="<?= url('login.php?redirect=' . urlencode('company.php?id=' . $compHash)) ?>" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                                        <span>Log In to Invest / Express Interest</span>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 <?php endif; ?>
 
@@ -697,6 +785,155 @@ foreach ($documents as $doc) {
             </div>
         </div>
     </footer>
+
+    <?php if ($currentUser && $currentUser['role'] === 'investor' && !$userExistingInterest): ?>
+    <!-- Express Interest Modal for Verified Investors -->
+    <div id="express-interest-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl relative border border-slate-200">
+            <button type="button" onclick="closeExpressInterestModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Express Interest</h3>
+                    <p class="text-xs text-slate-500">Discover and connect directly with the founders</p>
+                </div>
+            </div>
+
+            <form id="express-interest-form" onsubmit="submitExpressInterest(event)" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token()) ?>">
+                <input type="hidden" name="company_id" value="<?= htmlspecialchars($company['id']) ?>">
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center flex-shrink-0 text-sm">
+                        <?= htmlspecialchars($companyInitials) ?>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Startup</div>
+                        <div class="text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($company['name']) ?></div>
+                        <div class="text-xs text-slate-500"><?= htmlspecialchars($company['industry'] ?? '') ?> &bull; <?= htmlspecialchars($company['stage'] ?? 'Seed') ?></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="interest-message" class="block text-xs font-bold text-slate-700 mb-1.5">
+                        Why are you interested? <span class="text-rose-500">*</span>
+                    </label>
+                    <textarea id="interest-message" name="message" rows="4" required minlength="10" maxlength="2000"
+                        placeholder="Briefly describe what caught your attention (e.g. market thesis, traction, technology synergies, or potential check size)..."
+                        class="w-full text-xs sm:text-sm rounded-xl border border-slate-300 bg-white text-slate-900 p-3 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition placeholder-slate-400"></textarea>
+                    <div class="flex justify-between items-center mt-1 text-[11px] text-slate-400">
+                        <span>Keep the message short and useful.</span>
+                        <span id="char-count">0 / 2000</span>
+                    </div>
+                </div>
+
+                <div id="interest-error" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
+                <div id="interest-success" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold"></div>
+
+                <div class="flex items-center justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeExpressInterestModal()"
+                        class="px-4 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btn-submit-interest"
+                        class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition flex items-center space-x-2 shadow-sm disabled:opacity-50">
+                        <span>Send Expression of Interest &rarr;</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const expressModal = document.getElementById('express-interest-modal');
+        const expressMsg = document.getElementById('interest-message');
+        const expressCharCount = document.getElementById('char-count');
+        const expressErr = document.getElementById('interest-error');
+        const expressSucc = document.getElementById('interest-success');
+        const expressBtn = document.getElementById('btn-submit-interest');
+
+        function openExpressInterestModal() {
+            if (expressModal) {
+                expressModal.classList.remove('hidden');
+                if (expressErr) expressErr.classList.add('hidden');
+                if (expressSucc) expressSucc.classList.add('hidden');
+                if (expressMsg) expressMsg.focus();
+            }
+        }
+
+        function closeExpressInterestModal() {
+            if (expressModal) expressModal.classList.add('hidden');
+        }
+
+        if (expressMsg && expressCharCount) {
+            expressMsg.addEventListener('input', () => {
+                expressCharCount.textContent = `${expressMsg.value.length} / 2000`;
+            });
+        }
+
+        async function submitExpressInterest(e) {
+            e.preventDefault();
+            if (!expressMsg || expressMsg.value.trim().length < 10) {
+                if (expressErr) {
+                    expressErr.textContent = 'Please write at least 10 characters explaining your interest.';
+                    expressErr.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const form = document.getElementById('express-interest-form');
+            const formData = new FormData(form);
+
+            if (expressBtn) {
+                expressBtn.disabled = true;
+                expressBtn.textContent = 'Submitting...';
+            }
+            if (expressErr) expressErr.classList.add('hidden');
+            if (expressSucc) expressSucc.classList.add('hidden');
+
+            try {
+                const response = await fetch('<?= url("api/investor/express-interest.php") ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    if (expressSucc) {
+                        expressSucc.textContent = result.message || 'Interest sent successfully! The founder has been notified.';
+                        expressSucc.classList.remove('hidden');
+                    }
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1200);
+                } else {
+                    if (expressErr) {
+                        expressErr.textContent = result.error || 'Failed to submit interest.';
+                        expressErr.classList.remove('hidden');
+                    }
+                    if (expressBtn) {
+                        expressBtn.disabled = false;
+                        expressBtn.textContent = 'Send Expression of Interest →';
+                    }
+                }
+            } catch (err) {
+                if (expressErr) {
+                    expressErr.textContent = 'Network error. Please try again.';
+                    expressErr.classList.remove('hidden');
+                }
+                if (expressBtn) {
+                    expressBtn.disabled = false;
+                    expressBtn.textContent = 'Send Expression of Interest →';
+                }
+            }
+        }
+    </script>
+    <?php endif; ?>
 
     <!-- Include Reusable Share Modal -->
     <?php include __DIR__ . '/includes/share_company_modal.php'; ?>

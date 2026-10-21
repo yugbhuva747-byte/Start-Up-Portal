@@ -11,7 +11,7 @@ All demo accounts share the same default password: **`password123`**
 | **Role** | Platform Administrator / Compliance Officer |
 | **Name** | Portal Compliance Admin |
 | **Email** | `admin@portal.com` |
-| **Password** | `password123` |
+| **Password** | `*password123*` |
 | **Login URL** | [http://localhost/start%20up%20portal/auth/login.php](http://localhost/start%20up%20portal/auth/login.php) |
 | **Direct Dashboard** | [http://localhost/start%20up%20portal/admin/dashboard.php](http://localhost/start%20up%20portal/admin/dashboard.php) |
 | **Key Features** | KYC Review Queue, Funding Round Approvals, User Governance, Escrow Ledger, Audit Trail |

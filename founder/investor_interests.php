@@ -193,24 +193,24 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                 <a href="<?= url('founder/investor_interests.php?status=all') ?>"
                     class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeFilter === 'all' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' ?>">
                     <span>All</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] <?= $activeFilter === 'all' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['total'] ?></span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] <?= $activeFilter === 'all' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['total'] ?></span>
                 </a>
                 <a href="<?= url('founder/investor_interests.php?status=pending') ?>"
                     class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeFilter === 'pending' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' ?>">
                     <span>Pending</span>
                     <?php if ($stats['pending'] > 0): ?>
-                        <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-white"><?= $stats['pending'] ?></span>
+                        <span class="px-1.5 py-0.5 rounded-full text-[10px] bg-amber-500 text-white"><?= $stats['pending'] ?></span>
                     <?php endif; ?>
                 </a>
                 <a href="<?= url('founder/investor_interests.php?status=accepted') ?>"
                     class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeFilter === 'accepted' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' ?>">
                     <span>Accepted</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] <?= $activeFilter === 'accepted' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['accepted'] ?></span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] <?= $activeFilter === 'accepted' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['accepted'] ?></span>
                 </a>
                 <a href="<?= url('founder/investor_interests.php?status=declined') ?>"
                     class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 <?= $activeFilter === 'declined' ? 'bg-indigo-600 text-white shadow-xs' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800' ?>">
                     <span>Declined</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[10px] <?= $activeFilter === 'declined' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['declined'] ?></span>
+                    <span class="px-1.5 py-0.5 rounded-full text-[10px] <?= $activeFilter === 'declined' ? 'bg-indigo-700 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300' ?>"><?= $stats['declined'] ?></span>
                 </a>
             </div>
 
@@ -222,7 +222,23 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
             });
             ?>
 
-            <?php if (empty($displayedInterests)): ?>
+            <?php if (empty($companies)): ?>
+                <div class="card-clean p-12 text-center space-y-4">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+                        <i data-lucide="building-2" class="w-8 h-8"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">No Registered Company Profile Found</h3>
+                        <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
+                            To receive inbound investor interest and equity inquiries, you must first register your startup profile.
+                        </p>
+                    </div>
+                    <a href="<?= url('founder/company.php') ?>" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Register Company Profile</span>
+                    </a>
+                </div>
+            <?php elseif (empty($displayedInterests)): ?>
                 <div class="card-clean p-12 text-center space-y-4">
                     <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
                         <i data-lucide="inbox" class="w-8 h-8"></i>
@@ -347,7 +363,7 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                                 <div class="flex items-center space-x-2.5">
                                     <?php if ($item['status'] === 'pending'): ?>
                                         <button type="button"
-                                            onclick="openDeclineModal(<?= $interestId ?>, '<?= htmlspecialchars(addslashes($item['investor_name'])) ?>', '<?= htmlspecialchars(addslashes($item['company_name'])) ?>')"
+                                            onclick='openDeclineModal(<?= $interestId ?>, <?= htmlspecialchars(json_encode($item['investor_name']), ENT_QUOTES, 'UTF-8') ?>, <?= htmlspecialchars(json_encode($item['company_name']), ENT_QUOTES, 'UTF-8') ?>)'
                                             class="px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/30 hover:bg-rose-100 text-rose-700 dark:text-rose-300 text-xs font-bold transition flex items-center space-x-1.5">
                                             <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
                                             <span>Decline</span>
@@ -366,6 +382,12 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                                                 class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
                                                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                                                 <span>Open Conversation →</span>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="<?= url('founder/messages.php') ?>"
+                                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+                                                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                                                <span>Go to Chat →</span>
                                             </a>
                                         <?php endif; ?>
                                     <?php endif; ?>

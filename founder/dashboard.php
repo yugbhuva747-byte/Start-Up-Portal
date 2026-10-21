@@ -528,8 +528,8 @@ if ($company && !empty($company['name'])) {
                             </p>
                             
                             <div class="flex items-center gap-2">
-                                <input type="text" readonly value="<?= htmlspecialchars($publicCompUrl) ?>" class="w-full px-3 py-2 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 select-all outline-none">
-                                <button type="button" onclick="navigator.clipboard.writeText('<?= htmlspecialchars($publicCompUrl) ?>'); this.innerText='Copied!'; setTimeout(()=>this.innerText='Copy', 2000)" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition flex-shrink-0 shadow-xs">
+                                <input type="text" id="fastShareInput" readonly value="<?= htmlspecialchars($publicCompUrl) ?>" class="w-full px-3 py-2 text-xs font-mono bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 select-all outline-none">
+                                <button type="button" onclick="copyFastShareLink(this)" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition flex-shrink-0 shadow-xs">
                                     Copy
                                 </button>
                             </div>
@@ -637,6 +637,28 @@ if ($company && !empty($company['name'])) {
         refreshIcons();
         document.addEventListener('DOMContentLoaded', refreshIcons);
         window.addEventListener('load', refreshIcons);
+
+        function copyFastShareLink(btn) {
+            const input = document.getElementById('fastShareInput');
+            if (!input) return;
+            input.select();
+            input.setSelectionRange(0, 99999);
+            const originalText = btn.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(input.value).then(() => {
+                    btn.innerText = 'Copied!';
+                    setTimeout(() => { btn.innerText = originalText; }, 2000);
+                }).catch(() => {
+                    document.execCommand('copy');
+                    btn.innerText = 'Copied!';
+                    setTimeout(() => { btn.innerText = originalText; }, 2000);
+                });
+            } else {
+                document.execCommand('copy');
+                btn.innerText = 'Copied!';
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            }
+        }
     </script>
     <?php include __DIR__ . '/../includes/share_company_modal.php'; ?>
 </body>
