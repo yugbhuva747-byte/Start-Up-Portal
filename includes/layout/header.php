@@ -189,7 +189,7 @@
       background: var(--nx-blue);
     }
 
-    /* ===================== LOCATION MEGA DROPDOWN ===================== */
+    /* ===================== LOCATION MEGA DROPDOWN (ANTLER-STYLE LAYOUT) ===================== */
     .nx-dropdown-wrap {
       position: relative;
       display: inline-flex;
@@ -199,22 +199,28 @@
     .nx-dropdown-menu {
       position: absolute;
       top: calc(100% + 14px);
-      left: -16px;
-      width: 590px;
-      max-width: 92vw;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      left: 50%;
+      transform: translateX(-32%) translateY(8px);
+      width: 960px;
+      max-width: calc(100vw - 32px);
+      background: #FFFFFF;
       border: 1px solid rgba(226, 232, 240, 0.95);
-      border-radius: 24px;
-      padding: 16px 18px;
-      box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      border-radius: 18px;
+      padding: 24px 28px;
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(15, 23, 42, 0.04);
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: translateY(8px);
       transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
       z-index: 250;
+    }
+
+    @media (max-width: 1024px) {
+      .nx-dropdown-menu {
+        width: 720px;
+        transform: translateX(-40%) translateY(8px);
+        padding: 18px 20px;
+      }
     }
 
     /* Invisible hover bridge */
@@ -227,26 +233,19 @@
       height: 14px;
     }
 
-    /* Top pointer notch */
-    .nx-dropdown-menu::after {
-      content: '';
-      position: absolute;
-      top: -6px;
-      left: 38px;
-      transform: rotate(45deg);
-      width: 12px;
-      height: 12px;
-      background: rgba(255, 255, 255, 0.98);
-      border-top: 1px solid rgba(226, 232, 240, 0.95);
-      border-left: 1px solid rgba(226, 232, 240, 0.95);
-    }
-
     .nx-dropdown-wrap:hover .nx-dropdown-menu,
     .nx-dropdown-wrap.is-open .nx-dropdown-menu {
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
-      transform: translateY(0);
+      transform: translateX(-32%) translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .nx-dropdown-wrap:hover .nx-dropdown-menu,
+      .nx-dropdown-wrap.is-open .nx-dropdown-menu {
+        transform: translateX(-40%) translateY(0);
+      }
     }
 
     .nx-dropdown-wrap:hover .nx-caret,
@@ -254,6 +253,49 @@
       transform: rotate(180deg);
       color: var(--nx-blue);
     }
+
+    /* Rectangular Location Card (Antler Style matching screenshot) */
+    .nx-loc-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 16px;
+      background: #FFFFFF;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      text-decoration: none;
+      color: #111827;
+      font-family: 'Satoshi', 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      transition: all 0.18s ease;
+      cursor: pointer;
+    }
+
+    .nx-loc-card:hover {
+      border-color: #0F172A;
+      background-color: #F8FAFC;
+      color: #0F172A;
+      box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .nx-loc-card .nx-loc-arrow {
+      color: #6B7280;
+      font-size: 14px;
+      line-height: 1;
+      font-family: system-ui, -apple-system, sans-serif;
+      transition: transform 0.18s ease, color 0.18s ease;
+    }
+
+    .nx-loc-card:hover .nx-loc-arrow {
+      color: #0F172A;
+      transform: translate(2px, -2px);
+    }
+
+
+
 
     /* ===================== LUXURY BUTTON (SAPPHIRE COBALT) ===================== */
     .nx-nav-btn {
@@ -411,140 +453,87 @@
             </svg>
           </button>
 
-          <!-- Dropdown Mega Menu -->
+          <!-- Dropdown Mega Menu (Antler-style 4-column rectangular card layout) -->
           <div class="nx-dropdown-menu" role="menu" aria-label="Location Submenu">
-            <!-- Header bar -->
-            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-200">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-[11px] font-mono font-bold tracking-wider uppercase text-slate-500">Global Innovation Corridors</span>
+            
+            <!-- Section 1: India -->
+            <div class="mb-5">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-bold text-[15px] text-slate-900 tracking-tight flex items-center gap-2">
+                  <span>India</span>
+                  <span class="text-[11px] font-semibold text-slate-500 font-mono">8 Innovation Hubs</span>
+                </h4>
+                <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Active Ecosystem</span>
               </div>
-              <span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200/80">India &middot; UAE Deals</span>
-            </div>
-
-            <!-- Two-Column Grid: India & UAE -->
-            <div class="grid grid-cols-2 gap-3.5">
               
-              <!-- Column 1: India Mega Cities -->
-              <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
-                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
-                  <div class="flex items-center gap-1.5">
-                    <span class="inline-flex w-5 h-3.5 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
-                      <svg viewBox="0 0 640 480" class="w-full h-full">
-                        <path fill="#f93" d="M0 0h640v160H0z"/>
-                        <path fill="#fff" d="M0 160h640v160H0z"/>
-                        <path fill="#128807" d="M0 320h640v160H0z"/>
-                        <circle cx="320" cy="240" r="40" fill="#008"/>
-                        <circle cx="320" cy="240" r="30" fill="#fff"/>
-                        <circle cx="320" cy="240" r="8" fill="#008"/>
-                      </svg>
-                    </span>
-                    <div>
-                      <div class="text-[12.5px] font-bold text-slate-900 leading-tight">India</div>
-                      <div class="text-[10px] text-slate-500">8 Mega Hubs</div>
-                    </div>
-                  </div>
-                  <span class="text-[9px] font-mono font-bold uppercase text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">Active</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-1 text-[12px]">
-                  <a href="#nx-opportunities" data-city="Mumbai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Mumbai</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Delhi NCR</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Bengaluru" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Bengaluru</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Hyderabad" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Hyderabad</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Chennai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Chennai</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Ahmedabad</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Pune" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Pune</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Kolkata" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <span class="font-medium text-slate-700 group-hover:text-blue-700">Kolkata</span>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                </div>
+              <!-- 4-Column Grid for India -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <a href="#nx-opportunities" data-city="Bengaluru" class="nx-city-link nx-loc-card group">
+                  <span>Bengaluru</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Mumbai" class="nx-city-link nx-loc-card group">
+                  <span>Mumbai</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-city-link nx-loc-card group">
+                  <span>Delhi NCR</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="GIFT City" class="nx-city-link nx-loc-card group">
+                  <span>GIFT City</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-city-link nx-loc-card group">
+                  <span>Hyderabad</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Chennai" class="nx-city-link nx-loc-card group">
+                  <span>Chennai</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Pune" class="nx-city-link nx-loc-card group">
+                  <span>Pune</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-city-link nx-loc-card group">
+                  <span>Ahmedabad</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
               </div>
-
-              <!-- Column 2: UAE Mega Cities -->
-              <div class="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3">
-                <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-slate-200/60">
-                  <div class="flex items-center gap-1.5">
-                    <span class="inline-flex w-5 h-3.5 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
-                      <svg viewBox="0 0 640 480" class="w-full h-full">
-                        <path fill="#00732f" d="M0 0h640v160H0z"/>
-                        <path fill="#fff" d="M0 160h640v160H0z"/>
-                        <path fill="#000" d="M0 320h640v160H0z"/>
-                        <path fill="#f00" d="M0 0h200v480H0z"/>
-                      </svg>
-                    </span>
-                    <div>
-                      <div class="text-[12.5px] font-bold text-slate-900 leading-tight">UAE</div>
-                      <div class="text-[10px] text-slate-500">Mega Financial Hubs</div>
-                    </div>
-                  </div>
-                  <span class="text-[9px] font-mono font-bold uppercase text-blue-700 bg-blue-100/80 px-1.5 py-0.5 rounded">Fastlane</span>
-                </div>
-
-                <div class="space-y-1 text-[12px]">
-                  <a href="#nx-opportunities" data-city="Dubai" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <div>
-                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Dubai</div>
-                      <div class="text-[10px] text-slate-400">DIFC &middot; Venture &amp; Tech Capital</div>
-                    </div>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <div>
-                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Abu Dhabi</div>
-                      <div class="text-[10px] text-slate-400">Hub71 &middot; Sovereign Scale</div>
-                    </div>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Sharjah" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <div>
-                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Sharjah</div>
-                      <div class="text-[10px] text-slate-400">SRTIP &middot; Creative &amp; Research</div>
-                    </div>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                  <a href="#nx-opportunities" data-city="Ajman" class="nx-city-link group flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-white/95 hover:shadow-xs transition-all">
-                    <div>
-                      <div class="font-medium text-slate-700 group-hover:text-blue-700">Ajman</div>
-                      <div class="text-[10px] text-slate-400">Logistics &amp; Trade Corridor</div>
-                    </div>
-                    <span class="text-[10px] text-slate-400 group-hover:text-blue-600 opacity-0 group-hover:opacity-100">&rarr;</span>
-                  </a>
-                </div>
-              </div>
-
             </div>
 
-            <!-- Footer Strip -->
-            <div class="mt-3 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-              <span>Direct dealflow between India &amp; UAE venture corridors</span>
-              <a href="#nx-opportunities" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 group/all">
-                <span>View All Hub Deals</span>
-                <span class="transition-transform group-hover/all:translate-x-0.5">&rarr;</span>
-              </a>
+            <!-- Section 2: United Arab Emirates -->
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-bold text-[15px] text-slate-900 tracking-tight flex items-center gap-2">
+                  <span>United Arab Emirates</span>
+                  <span class="text-[11px] font-semibold text-slate-500 font-mono">4 Venture Freezones</span>
+                </h4>
+                <span class="text-[10px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">Global Gateway</span>
+              </div>
+              
+              <!-- 4-Column Grid for UAE -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <a href="#nx-opportunities" data-city="Dubai" class="nx-city-link nx-loc-card group">
+                  <span>Dubai (DIFC)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-city-link nx-loc-card group">
+                  <span>Abu Dhabi (ADGM)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Dubai Internet City" class="nx-city-link nx-loc-card group">
+                  <span>Dubai Internet City</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Sharjah" class="nx-city-link nx-loc-card group">
+                  <span>Sharjah (SRTIP)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+              </div>
             </div>
+
           </div>
         </div>
 
@@ -575,14 +564,20 @@
           <span class="text-[10px] text-slate-400">⇄</span>
         </a>
 
-        <?php if (function_exists('auth_check') && auth_check()): 
-          $u = current_user();
-          $dashUrl = $u['role'] === 'founder' ? url('founder/dashboard.php') : ($u['role'] === 'investor' ? url('investor/dashboard.php') : url('admin/dashboard.php'));
-        ?>
-          <a href="<?= $dashUrl ?>" class="nx-nav-btn nx-hoverable">
-            <span>Dashboard (<?= htmlspecialchars(ucfirst($u['role'])) ?>)</span>
-            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+        <?php if (function_exists('auth_check') && auth_check()): ?>
+          <!-- Log Out for active session -->
+          <a href="<?= function_exists('url') ? url('auth/logout.php') : 'auth/logout.php' ?>" 
+             class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-[13px] font-bold text-slate-700 hover:text-rose-600 hover:bg-slate-100 transition-all font-satoshi">
+            <span>Log Out</span>
           </a>
+
+          <!-- Sign Up button -->
+          <button type="button" 
+                  onclick="openSignUpChoiceModal()" 
+                  class="nx-nav-btn nx-hoverable cursor-pointer">
+            <span>Sign Up</span>
+            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+          </button>
         <?php else: ?>
           <!-- Existing Users: Clean Log In -->
           <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" 
@@ -632,52 +627,72 @@
           </button>
 
           <!-- Collapsible City Options -->
-          <div id="nx-mobile-loc-content" class="hidden pt-3 pl-1 space-y-3.5">
+          <div id="nx-mobile-loc-content" class="hidden pt-3 pl-1 space-y-4">
             <!-- India -->
             <div>
-              <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span class="inline-flex w-4 h-3 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
-                  <svg viewBox="0 0 640 480" class="w-full h-full">
-                    <path fill="#f93" d="M0 0h640v160H0z"/>
-                    <path fill="#fff" d="M0 160h640v160H0z"/>
-                    <path fill="#128807" d="M0 320h640v160H0z"/>
-                    <circle cx="320" cy="240" r="40" fill="#008"/>
-                    <circle cx="320" cy="240" r="30" fill="#fff"/>
-                    <circle cx="320" cy="240" r="8" fill="#008"/>
-                  </svg>
-                </span>
-                <span>India (Mega Cities)</span>
+              <div class="text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>India (8 Hubs)</span>
+                <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Active</span>
               </div>
-              <div class="flex flex-wrap gap-1.5">
-                <a href="#nx-opportunities" data-city="Mumbai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Mumbai</a>
-                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Delhi NCR</a>
-                <a href="#nx-opportunities" data-city="Bengaluru" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Bengaluru</a>
-                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Hyderabad</a>
-                <a href="#nx-opportunities" data-city="Chennai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Chennai</a>
-                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Ahmedabad</a>
-                <a href="#nx-opportunities" data-city="Pune" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Pune</a>
-                <a href="#nx-opportunities" data-city="Kolkata" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Kolkata</a>
+              <div class="grid grid-cols-2 gap-2">
+                <a href="#nx-opportunities" data-city="Bengaluru" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Bengaluru</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Mumbai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Mumbai</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Delhi NCR</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="GIFT City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>GIFT City</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Hyderabad</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Chennai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Chennai</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Pune" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Pune</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Ahmedabad</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
               </div>
             </div>
 
             <!-- UAE -->
             <div>
-              <div class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <span class="inline-flex w-4 h-3 rounded overflow-hidden border border-slate-200/80 shadow-2xs shrink-0">
-                  <svg viewBox="0 0 640 480" class="w-full h-full">
-                    <path fill="#00732f" d="M0 0h640v160H0z"/>
-                    <path fill="#fff" d="M0 160h640v160H0z"/>
-                    <path fill="#000" d="M0 320h640v160H0z"/>
-                    <path fill="#f00" d="M0 0h200v480H0z"/>
-                  </svg>
-                </span>
-                <span>UAE (Mega Cities)</span>
+              <div class="text-[12px] font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>UAE (4 Freezones)</span>
+                <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Gateway</span>
               </div>
-              <div class="flex flex-wrap gap-1.5">
-                <a href="#nx-opportunities" data-city="Dubai" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Dubai</a>
-                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Abu Dhabi</a>
-                <a href="#nx-opportunities" data-city="Sharjah" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Sharjah</a>
-                <a href="#nx-opportunities" data-city="Ajman" class="nx-mobile-city-link text-[12.5px] px-3 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200 font-semibold hover:bg-blue-50 hover:text-blue-700">Ajman</a>
+              <div class="grid grid-cols-2 gap-2">
+                <a href="#nx-opportunities" data-city="Dubai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Dubai (DIFC)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Abu Dhabi (ADGM)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Dubai Internet City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Internet City</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
+                <a href="#nx-opportunities" data-city="Sharjah" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                  <span>Sharjah (SRTIP)</span>
+                  <span class="nx-loc-arrow">&#x2197;</span>
+                </a>
               </div>
             </div>
           </div>
@@ -697,27 +712,17 @@
       </nav>
 
       <div class="flex flex-col gap-3 pt-6 border-t border-nx-border">
-        <?php if (function_exists('auth_check') && auth_check()): 
-          $u = current_user();
-          $dashUrl = $u['role'] === 'founder' ? url('founder/dashboard.php') : ($u['role'] === 'investor' ? url('investor/dashboard.php') : url('admin/dashboard.php'));
-        ?>
-          <a href="<?= $dashUrl ?>" class="nx-nav-btn text-center justify-center py-3.5 text-[15px]">
-            <span>Dashboard (<?= htmlspecialchars(ucfirst($u['role'])) ?>)</span>
-            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
-          </a>
-        <?php else: ?>
-          <!-- Mobile: Sign Up with Choice Modal -->
-          <button type="button" onclick="openSignUpChoiceModal();" class="nx-nav-btn text-center justify-center py-3.5 text-[15px] cursor-pointer w-full">
-            <span>Sign Up (Founder / Investor)</span>
-            <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
-          </button>
+        <!-- Mobile: Log In -->
+        <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" 
+           class="w-full text-center py-3 rounded-full text-[14px] font-bold text-slate-800 bg-white border border-slate-200/90 hover:bg-slate-50 transition-all font-satoshi shadow-2xs">
+          <span>Log In</span>
+        </a>
 
-          <!-- Mobile: Log In for Existing Users -->
-          <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" 
-             class="w-full text-center py-3 rounded-full text-[14px] font-bold text-slate-800 bg-white border border-slate-200/90 hover:bg-slate-50 transition-all font-satoshi shadow-2xs">
-            <span>Log In to Account &rarr;</span>
-          </a>
-        <?php endif; ?>
+        <!-- Mobile: Sign Up with Choice Modal -->
+        <button type="button" onclick="if(typeof closeDrawer==='function')closeDrawer(); openSignUpChoiceModal();" class="nx-nav-btn text-center justify-center py-3.5 text-[15px] cursor-pointer w-full">
+          <span>Sign Up</span>
+          <span class="nx-btn-arrow" aria-hidden="true">&rarr;</span>
+        </button>
       </div>
     </div>
   </div>
