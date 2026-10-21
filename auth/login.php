@@ -78,6 +78,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         } elseif (function_exists('is_maintenance_mode') && is_maintenance_mode() && $user['role'] !== 'admin') {
                             $error = 'Access Restricted: The platform is currently in Maintenance Mode. Only administrators are permitted to sign in.';
                             log_security_event($user['id'], 'MAINTENANCE_LOGIN_BLOCKED', 'medium', "Non-admin user ({$user['role']}) tried to log in during maintenance mode: {$email}");
+                        } elseif (empty($user['is_verified']) && (int)$user['is_verified'] === 0 && $user['role'] !== 'admin') {
+                            require_once __DIR__ . '/../includes/mailer.php';
+                            $otp = generate_2fa_otp((int)$user['id']);
+                            send_registration_otp_email($user['email'], $user['name'], $otp, $user['role']);
+                            send_registration_otp_sms($user['phone'] ?? '', $user['name'], $otp, $user['role']);
+
+                            $_SESSION['reg_verify_user_id'] = (int)$user['id'];
+                            $_SESSION['reg_verify_email'] = $user['email'];
+                            $_SESSION['reg_verify_phone'] = $user['phone'] ?? '';
+                            $_SESSION['reg_verify_name'] = $user['name'];
+                            $_SESSION['reg_verify_role'] = $user['role'];
+                            $_SESSION['reg_verify_code'] = $otp;
+                            $_SESSION['reg_verify_sent_at'] = time();
+
+                            set_flash('info', 'Please verify your registered account with the 6-digit code sent to your email and phone.');
+                            header('Location: ' . url('auth/verify_otp.php'));
+                            exit;
                         } elseif ($user['role'] === 'admin' && is_admin_2fa_enforced((int)$user['id'])) {
                             // Admin 2FA Verification Flow
                             unset($_SESSION['user_id'], $_SESSION['user_role'], $_SESSION['user_name'], $_SESSION['2fa_verified']);
@@ -764,8 +781,36 @@ $cur = $roleMeta[$role] ?? $roleMeta['unified'];
                     </button>
                 </form>
 
+                <!-- Quick 1-Click Demo Accounts -->
+                <div class="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i>
+                            1-Click Demo Accounts
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">pass: password123</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="fillRoleDemo('founder@techpulse.io', 'password123', 'founder')" 
+                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+                            <i data-lucide="rocket" class="w-3 h-3 text-blue-600"></i>
+                            <span>Founder</span>
+                        </button>
+                        <button type="button" onclick="fillRoleDemo('investor@venturecapital.com', 'password123', 'investor')" 
+                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+                            <i data-lucide="briefcase" class="w-3 h-3 text-emerald-600"></i>
+                            <span>Investor</span>
+                        </button>
+                        <button type="button" onclick="fillRoleDemo('admin@portal.com', 'password123', 'admin')" 
+                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
+                            <i data-lucide="shield" class="w-3 h-3 text-purple-600"></i>
+                            <span>Admin</span>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Registration Prompt -->
-                <div class="mt-6 pt-5 border-t border-slate-100 text-center">
+                <div class="mt-5 pt-4 border-t border-slate-100 text-center">
                     <p class="text-xs sm:text-sm text-slate-600 font-medium">
                         Don't have an account yet? 
                         <a href="<?= url('auth/register.php') ?>" class="text-blue-600 font-bold hover:text-blue-800 hover:underline transition">

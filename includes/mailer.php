@@ -1907,5 +1907,471 @@ HTML;
     }
 }
 
+/**
+ * Initialize SMS Logs Table in Database
+ */
+function init_sms_logs_table(PDO $db): void {
+    static $initialized = false;
+    if ($initialized) return;
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `sms_logs` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `phone_number` VARCHAR(50) NOT NULL,
+                `recipient_name` VARCHAR(150) NULL,
+                `message_text` TEXT NOT NULL,
+                `otp_code` VARCHAR(10) NULL,
+                `status` ENUM('sent', 'logged', 'failed') NOT NULL DEFAULT 'logged',
+                `gateway` VARCHAR(50) NOT NULL DEFAULT 'simulator',
+                `error_message` TEXT NULL,
+                `sent_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+        $initialized = true;
+    } catch (\Throwable $e) {
+        // Table might already exist
+    }
+}
+
+/**
+ * Mask Email Address for Security (e.g., rohan@solarispulse.in -> r***n@solarispulse.in)
+ */
+if (!function_exists('mask_email')) {
+    function mask_email(string $email): string {
+        $email = trim($email);
+        $parts = explode('@', $email, 2);
+        if (count($parts) !== 2) return $email;
+        $name = $parts[0];
+        $domain = $parts[1];
+        $len = strlen($name);
+        if ($len <= 2) {
+            $masked = substr($name, 0, 1) . '***';
+        } else {
+            $masked = substr($name, 0, 1) . str_repeat('*', min(4, $len - 2)) . substr($name, -1);
+        }
+        return $masked . '@' . $domain;
+    }
+}
+
+/**
+ * Mask Phone Number for Security (e.g., +91 9123456780 -> +91 91234 ****0)
+ */
+if (!function_exists('mask_phone')) {
+    function mask_phone(string $phone): string {
+        $clean = trim($phone);
+        if (empty($clean)) return '+91 98*** ***10';
+        $len = strlen($clean);
+        if ($len <= 4) return $clean;
+        $start = substr($clean, 0, max(3, $len - 5));
+        $end = substr($clean, -1);
+        return $start . ' ****' . $end;
+    }
+}
+
+/**
+ * Email Dispatcher: Sends 6-Digit One-Time Login Code (OTP) to Founder/Investor
+ */
+function send_login_otp_email(string $userEmail, string $userName, string $otpCode, string $userRole): array {
+    $userEmail = trim($userEmail);
+    if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Invalid email address: ' . $userEmail];
+    }
+
+    $userName = htmlspecialchars($userName ?: 'Valued Partner');
+    $roleLabel = ucfirst($userRole);
+    $appName = defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR';
+    $subject = "Your One-Time Login Code: {$otpCode} • {$appName}";
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    $requestTime = date('d M Y, h:i A') . ' IST';
+
+    $themeGradient = ($userRole === 'investor')
+        ? 'linear-gradient(135deg, #065f46 0%, #0284c7 100%)'
+        : 'linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%)';
+
+    $html = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{$subject}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0b0f19;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#050811;padding:30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:540px;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);border:1px solid #1e293b;">
+                    <tr>
+                        <td style="background:{$themeGradient};padding:34px 32px 28px 32px;text-align:left;">
+                            <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:12px;">
+                                <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                                    🔒 {$roleLabel} Account Verification
+                                </span>
+                            </div>
+                            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;line-height:1.3;">
+                                One-Time Login Code (OTP)
+                            </h1>
+                            <p style="margin:6px 0 0 0;color:#e0e7ff;font-size:13px;">
+                                Two-Factor Security Gateway &bull; {$appName}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 32px 24px 32px;">
+                            <p style="margin:0 0 16px 0;font-size:15px;color:#334155;line-height:1.6;">
+                                Hello <strong>{$userName}</strong>,
+                            </p>
+                            <p style="margin:0 0 20px 0;font-size:14px;color:#475569;line-height:1.6;">
+                                A sign-in request was initiated for your <strong>{$roleLabel}</strong> account. Please use the 6-digit One-Time Password (OTP) below to complete your authentication:
+                            </p>
+
+                            <!-- OTP Box -->
+                            <div style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border: 2px dashed #93c5fd; border-radius: 14px; padding: 24px 16px; text-align: center; margin: 24px 0;">
+                                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;">
+                                    Your 6-Digit Verification Code
+                                </div>
+                                <div style="font-family: 'JetBrains Mono', Consolas, Monaco, monospace; font-size: 38px; font-weight: 800; letter-spacing: 12px; color: #1e3a8a; text-indent: 12px; margin: 6px 0;">
+                                    {$otpCode}
+                                </div>
+                                <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
+                                    ⏱ Valid for <strong>10 minutes</strong> &bull; Single-use only
+                                </div>
+                            </div>
+
+                            <p style="margin:0 0 16px 0;font-size:13px;color:#64748b;line-height:1.6;">
+                                <strong>Security Notice:</strong> Never share this code with anyone. Platform administrators and support representatives will never ask for your verification code.
+                            </p>
+
+                            <!-- Request Details -->
+                            <div style="background-color:#f8fafc;border-radius:10px;padding:12px 16px;border:1px solid #e2e8f0;margin:20px 0;font-size:12px;color:#475569;line-height:1.6;">
+                                <div><strong>Request Time:</strong> {$requestTime}</div>
+                                <div><strong>IP Address:</strong> <span style="font-family:monospace;">{$clientIp}</span></div>
+                            </div>
+
+                            <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.5;">
+                                If you did not make this login request, someone may be attempting to access your account. Please change your password immediately.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">
+                            &copy; " . date('Y') . " {$appName}. All rights reserved. &bull; Enterprise Security Shield
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+
+    // 1. Dispatch via EmailJS (Direct inbox delivery)
+    $emailjsRes = null;
+    if (function_exists('send_via_emailjs')) {
+        $emailjsRes = send_via_emailjs($userEmail, $userName, [
+            'subject' => $subject,
+            'message' => "Your 6-digit one-time login code is: {$otpCode}.\n\nEnter this code on the verification screen to sign in. Valid for 10 minutes.\n\nDo not share this code with anyone.",
+            'otp_code' => $otpCode,
+            'code' => $otpCode,
+            'role' => $roleLabel,
+            'app_name' => $appName
+        ]);
+    }
+
+    // 2. Also log and archive via system mailer
+    $sysRes = send_system_email(
+        $userEmail,
+        $userName,
+        $subject,
+        $html,
+        'login_otp'
+    );
+
+    return [
+        'success' => ($emailjsRes && $emailjsRes['success']) || ($sysRes && $sysRes['success']),
+        'emailjs' => $emailjsRes,
+        'system' => $sysRes
+    ];
+}
+
+/**
+ * SMS Dispatcher: Dispatches 6-Digit Login Verification OTP to Phone/Mobile
+ * Stores in database `sms_logs` and supports SMS gateway API (Twilio / Fast2SMS / MSG91) or Local Simulator
+ */
+function send_login_otp_sms(string $userPhone, string $userName, string $otpCode, string $userRole): array {
+    $db = get_db();
+    if ($db) {
+        init_sms_logs_table($db);
+    }
+
+    $cleanPhone = trim($userPhone);
+    if (empty($cleanPhone)) {
+        $cleanPhone = '+91 98765 43210';
+    }
+
+    $appName = defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR';
+    $messageText = "Your {$appName} login verification code is: {$otpCode}. Valid for 10 minutes. Do not share this OTP with anyone.";
+
+    $status = 'logged';
+    $errorMessage = null;
+    $gateway = 'simulator';
+
+    // Optional Live SMS Gateway: Fast2SMS if API key provided
+    $fast2smsKey = defined('FAST2SMS_API_KEY') ? FAST2SMS_API_KEY : (getenv('FAST2SMS_API_KEY') ?: '');
+    $digitsOnly = preg_replace('/[^0-9]/', '', $cleanPhone);
+    if (!empty($fast2smsKey) && strlen($digitsOnly) >= 10) {
+        $rawNumber = substr($digitsOnly, -10);
+        $ch = curl_init('https://www.fast2sms.com/dev/bulkV2');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            'route' => 'otp',
+            'variables_values' => $otpCode,
+            'numbers' => $rawNumber,
+        ]));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'authorization: ' . $fast2smsKey,
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        $res = curl_exec($ch);
+        $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $gateway = 'fast2sms';
+        if ($http >= 200 && $http < 300) {
+            $status = 'sent';
+        } else {
+            $errorMessage = "Fast2SMS HTTP {$http}: {$res}";
+        }
+    } else {
+        $status = 'logged';
+        $gateway = 'local_simulator';
+        $errorMessage = 'SMS queued and logged to database (Local simulator mode)';
+    }
+
+    $logId = 0;
+    if ($db) {
+        try {
+            $stmt = $db->prepare("
+                INSERT INTO sms_logs (phone_number, recipient_name, message_text, otp_code, status, gateway, error_message, sent_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->execute([$cleanPhone, $userName, $messageText, $otpCode, $status, $gateway, $errorMessage]);
+            $logId = (int)$db->lastInsertId();
+        } catch (\Throwable $e) {}
+    }
+
+    return [
+        'success' => in_array($status, ['sent', 'logged']),
+        'status' => $status,
+        'gateway' => $gateway,
+        'phone' => $cleanPhone,
+        'message_text' => $messageText,
+        'log_id' => $logId,
+        'message' => $errorMessage ?: 'SMS OTP dispatched successfully.'
+    ];
+}
+
+/**
+ * Email Dispatcher: Sends 6-Digit Registration Verification OTP to New Founder/Investor
+ */
+function send_registration_otp_email(string $userEmail, string $userName, string $otpCode, string $userRole): array {
+    $userEmail = trim($userEmail);
+    if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
+        return ['success' => false, 'message' => 'Invalid email address: ' . $userEmail];
+    }
+
+    $userName = htmlspecialchars($userName ?: 'Valued Partner');
+    $roleLabel = ucfirst($userRole);
+    $appName = defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR';
+    $subject = "Verify Your Account: {$otpCode} • Welcome to {$appName}";
+    $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+    $requestTime = date('d M Y, h:i A') . ' IST';
+
+    $themeGradient = ($userRole === 'investor')
+        ? 'linear-gradient(135deg, #065f46 0%, #0284c7 100%)'
+        : 'linear-gradient(135deg, #1e1b4b 0%, #2563eb 100%)';
+
+    $html = <<<HTML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{$subject}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0b0f19;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#050811;padding:30px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:540px;background-color:#ffffff;border-radius:18px;overflow:hidden;box-shadow:0 25px 50px -12px rgba(0,0,0,0.6);border:1px solid #1e293b;">
+                    <tr>
+                        <td style="background:{$themeGradient};padding:34px 32px 28px 32px;text-align:left;">
+                            <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:12px;">
+                                <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
+                                    ✨ Welcome to {$appName}
+                                </span>
+                            </div>
+                            <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;line-height:1.3;">
+                                Verify Your {$roleLabel} Registration
+                            </h1>
+                            <p style="margin:6px 0 0 0;color:#e0e7ff;font-size:13px;">
+                                One-Time Verification Passcode (OTP)
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:32px 32px 24px 32px;">
+                            <p style="margin:0 0 16px 0;font-size:15px;color:#334155;line-height:1.6;">
+                                Welcome <strong>{$userName}</strong>,
+                            </p>
+                            <p style="margin:0 0 20px 0;font-size:14px;color:#475569;line-height:1.6;">
+                                Thank you for registering your <strong>{$roleLabel}</strong> account on {$appName}. To activate your account and verify your identity, please enter the 6-digit One-Time Password (OTP) below:
+                            </p>
+
+                            <!-- OTP Box -->
+                            <div style="background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%); border: 2px dashed #93c5fd; border-radius: 14px; padding: 24px 16px; text-align: center; margin: 24px 0;">
+                                <div style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;">
+                                    Your 6-Digit Registration OTP
+                                </div>
+                                <div style="font-family: 'JetBrains Mono', Consolas, Monaco, monospace; font-size: 38px; font-weight: 800; letter-spacing: 12px; color: #1e3a8a; text-indent: 12px; margin: 6px 0;">
+                                    {$otpCode}
+                                </div>
+                                <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
+                                    ⏱ Valid for <strong>10 minutes</strong> &bull; Single-use only
+                                </div>
+                            </div>
+
+                            <p style="margin:0 0 16px 0;font-size:13px;color:#64748b;line-height:1.6;">
+                                <strong>Security Notice:</strong> Never share this code with anyone. Platform representatives will never ask for your verification code.
+                            </p>
+
+                            <!-- Request Details -->
+                            <div style="background-color:#f8fafc;border-radius:10px;padding:12px 16px;border:1px solid #e2e8f0;margin:20px 0;font-size:12px;color:#475569;line-height:1.6;">
+                                <div><strong>Registered Email:</strong> {$userEmail}</div>
+                                <div><strong>Registration Time:</strong> {$requestTime}</div>
+                                <div><strong>IP Address:</strong> <span style="font-family:monospace;">{$clientIp}</span></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#f8fafc;padding:20px 32px;text-align:center;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;">
+                            &copy; " . date('Y') . " {$appName}. All rights reserved. &bull; Enterprise Security Shield
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+HTML;
+
+    // 1. Send via EmailJS (Direct inbox delivery)
+    $emailjsRes = null;
+    if (function_exists('send_via_emailjs')) {
+        $emailjsRes = send_via_emailjs($userEmail, $userName, [
+            'subject' => $subject,
+            'message' => "Welcome to {$appName}! Your 6-digit registration verification code is: {$otpCode}.\n\nEnter this code on the verification screen to activate your {$roleLabel} account. This code is valid for 10 minutes.\n\nDo not share this code with anyone.",
+            'otp_code' => $otpCode,
+            'code' => $otpCode,
+            'role' => $roleLabel,
+            'app_name' => $appName
+        ]);
+    }
+
+    // 2. Also log and archive via system mailer
+    $sysRes = send_system_email(
+        $userEmail,
+        $userName,
+        $subject,
+        $html,
+        'registration_otp'
+    );
+
+    return [
+        'success' => ($emailjsRes && $emailjsRes['success']) || ($sysRes && $sysRes['success']),
+        'emailjs' => $emailjsRes,
+        'system' => $sysRes
+    ];
+}
+
+/**
+ * SMS Dispatcher: Dispatches 6-Digit Registration Verification OTP to Mobile Number
+ */
+function send_registration_otp_sms(string $userPhone, string $userName, string $otpCode, string $userRole): array {
+    $db = get_db();
+    if ($db) {
+        init_sms_logs_table($db);
+    }
+
+    $cleanPhone = trim($userPhone);
+    if (empty($cleanPhone)) {
+        $cleanPhone = '+91 98765 43210';
+    }
+
+    $appName = defined('APP_NAME') ? APP_NAME : 'STARTUP × INVESTOR';
+    $messageText = "Welcome to {$appName}! Your registration verification OTP is {$otpCode}. Enter this code to activate your account. Valid for 10 minutes.";
+
+    $status = 'logged';
+    $errorMessage = null;
+    $gateway = 'simulator';
+
+    $fast2smsKey = defined('FAST2SMS_API_KEY') ? FAST2SMS_API_KEY : (getenv('FAST2SMS_API_KEY') ?: '');
+    $digitsOnly = preg_replace('/[^0-9]/', '', $cleanPhone);
+    if (!empty($fast2smsKey) && strlen($digitsOnly) >= 10) {
+        $rawNumber = substr($digitsOnly, -10);
+        $ch = curl_init('https://www.fast2sms.com/dev/bulkV2');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+            'route' => 'otp',
+            'variables_values' => $otpCode,
+            'numbers' => $rawNumber,
+        ]));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'authorization: ' . $fast2smsKey,
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 6);
+        $res = curl_exec($ch);
+        $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $gateway = 'fast2sms';
+        if ($http >= 200 && $http < 300) {
+            $status = 'sent';
+        } else {
+            $errorMessage = "Fast2SMS HTTP {$http}: {$res}";
+        }
+    } else {
+        $status = 'logged';
+        $gateway = 'local_simulator';
+        $errorMessage = 'SMS queued and logged to database (Local simulator mode)';
+    }
+
+    $logId = 0;
+    if ($db) {
+        try {
+            $stmt = $db->prepare("
+                INSERT INTO sms_logs (phone_number, recipient_name, message_text, otp_code, status, gateway, error_message, sent_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+            ");
+            $stmt->execute([$cleanPhone, $userName, $messageText, $otpCode, $status, $gateway, $errorMessage]);
+            $logId = (int)$db->lastInsertId();
+        } catch (\Throwable $e) {}
+    }
+
+    return [
+        'success' => in_array($status, ['sent', 'logged']),
+        'status' => $status,
+        'gateway' => $gateway,
+        'phone' => $cleanPhone,
+        'message_text' => $messageText,
+        'log_id' => $logId,
+        'message' => $errorMessage ?: 'Registration SMS OTP dispatched successfully.'
+    ];
+}
+
 
 

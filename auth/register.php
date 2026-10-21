@@ -156,28 +156,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         activate_user_subscription($userId, 'free_trial', 'monthly');
                     }
 
-                    session_regenerate_id(true);
-                    $_SESSION['user_id'] = $userId;
-                    $_SESSION['user_role'] = $role;
-                    $_SESSION['user_name'] = $name;
+                    // 6-Digit One-Time Password (OTP) Verification for New Registration
+                    require_once __DIR__ . '/../includes/mailer.php';
 
-                    // Register active login session
-                    $sessionToken = bin2hex(random_bytes(32));
-                    $_SESSION['session_token'] = $sessionToken;
-                    $clientIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-                    $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
-                    $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$userId, $sessionToken, $clientIp, $ua]);
+                    // Generate cryptographically secure 6-digit OTP code (10 minutes validity)
+                    $otp = generate_2fa_otp($userId);
 
-                    // Set persistent 30-day cookie session
-                    if (function_exists('set_remember_me_cookie')) {
-                        set_remember_me_cookie($userId, 30);
-                    }
+                    // Dispatch to Email
+                    send_registration_otp_email($email, $name, $otp, $role);
 
-                    log_audit($userId, 'USER_REGISTERED', 'users', $userId, "User registered as {$role}");
-                    set_flash('success', "Welcome to NEXORA, " . htmlspecialchars($name) . "! Your " . ucfirst($role) . " account is ready.");
+                    // Dispatch to Mobile via SMS
+                    send_registration_otp_sms($phone, $name, $otp, $role);
+
+                    // Setup pending registration verification session
+                    $_SESSION['reg_verify_user_id'] = $userId;
+                    $_SESSION['reg_verify_email'] = $email;
+                    $_SESSION['reg_verify_phone'] = $phone;
+                    $_SESSION['reg_verify_name'] = $name;
+                    $_SESSION['reg_verify_role'] = $role;
+                    $_SESSION['reg_verify_code'] = $otp; // Preserved for local dev preview
+                    $_SESSION['reg_verify_sent_at'] = time();
+
+                    log_audit($userId, 'USER_REGISTER_OTP_SENT', 'users', $userId, "Registration verification OTP dispatched for {$role}");
+                    set_flash('info', "A 6-digit verification code has been dispatched to your email and mobile number.");
                     
-                    $redirect = $role === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php';
-                    header('Location: ' . url($redirect));
+                    header('Location: ' . url('auth/verify_otp.php'));
                     exit;
                 }
             } else {

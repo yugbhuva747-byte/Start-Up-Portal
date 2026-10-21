@@ -462,6 +462,19 @@ CREATE TABLE IF NOT EXISTS `email_logs` (
     `sent_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- 28.1 Automated SMS Delivery Logs
+CREATE TABLE IF NOT EXISTS `sms_logs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `phone_number` VARCHAR(50) NOT NULL,
+    `recipient_name` VARCHAR(150) NULL,
+    `message_text` TEXT NOT NULL,
+    `otp_code` VARCHAR(10) NULL,
+    `status` ENUM('sent', 'logged', 'failed') NOT NULL DEFAULT 'logged',
+    `gateway` VARCHAR(50) NOT NULL DEFAULT 'simulator',
+    `error_message` TEXT NULL,
+    `sent_at` DATETIME DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- 29. Subscriptions (Plan Tiers, Priority Levels & Payment Entitlements)
 CREATE TABLE IF NOT EXISTS `subscriptions` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,

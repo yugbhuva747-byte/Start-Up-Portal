@@ -69,6 +69,21 @@ On the login screen ([http://localhost/start%20up%20portal/auth/login.php](http:
 
 ---
 
+## 📩 6-Digit One-Time Password (OTP) Registration Verification
+Whenever a new user registers as a **Founder** or **Investor** ([http://localhost/start%20up%20portal/auth/register.php](http://localhost/start%20up%20portal/auth/register.php)):
+1. Fill out the registration form (Name, Email, Mobile Number, Password, Role details).
+2. A **6-digit verification code (OTP)** is automatically generated and sent to:
+   - 📱 **Mobile Number via SMS** (Stored in `sms_logs` table, gateway/simulator ready)
+   - ✉️ **Email Address** (Branded HTML email saved to `uploads/emails/` and database `email_logs`)
+3. On the **Verification Screen** ([http://localhost/start%20up%20portal/auth/verify_otp.php](http://localhost/start%20up%20portal/auth/verify_otp.php)):
+   - Check your Email Inbox or Phone SMS for the 6-digit code.
+   - Type or paste the 6-digit code into the verification boxes.
+   - 30-second Resend OTP countdown timer & brute-force attack protection.
+4. Once verified, the account is activated (`is_verified = 1`) and the user is taken directly into their **Founder Panel** (`founder/dashboard.php`) or **Investor Panel** (`investor/dashboard.php`)!
+*(Note: Standard login remains direct with email & password without 2FA prompt).*
+
+---
+
 ## 🗄️ Database Connection Details
 - **Host:** `127.0.0.1`
 - **Port:** `3307`

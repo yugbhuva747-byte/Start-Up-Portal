@@ -838,14 +838,14 @@ function get_2fa_record(int $userId): ?array
     $stmt->execute([$userId]);
     $rec = $stmt->fetch();
     if (!$rec) {
-        // Check if user is admin
         $uStmt = $db->prepare("SELECT role FROM users WHERE id = ?");
         $uStmt->execute([$userId]);
         $user = $uStmt->fetch();
-        if ($user && $user['role'] === 'admin') {
-            $secret = generate_totp_secret();
-            $ins = $db->prepare("INSERT INTO two_factor_auth (user_id, auth_type, secret_code, is_enabled, is_totp_setup, created_at) VALUES (?, 'authenticator', ?, 1, 0, NOW())");
-            $ins->execute([$userId, $secret]);
+        if ($user) {
+            $authType = ($user['role'] === 'admin') ? 'authenticator' : 'email_otp';
+            $secret = ($user['role'] === 'admin') ? generate_totp_secret() : null;
+            $ins = $db->prepare("INSERT INTO two_factor_auth (user_id, auth_type, secret_code, is_enabled, is_totp_setup, created_at) VALUES (?, ?, ?, 1, 0, NOW())");
+            $ins->execute([$userId, $authType, $secret]);
             $stmt->execute([$userId]);
             $rec = $stmt->fetch();
         }
