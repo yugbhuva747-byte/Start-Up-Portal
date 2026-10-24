@@ -265,71 +265,14 @@ $roundLabels = [
     <style>
         body,
         html:not(.dark) body {
-            font-family: 'Satoshi', "Vay Portal", sans-serif;
+            font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
             background-color: #F4F2EE !important;
             color: #0F172A;
         }
 
         html.dark body {
-            background-color: #0B1120 !important;
+            background-color: #0B0F19 !important;
             color: #F8FAFC !important;
-        }
-
-        .linkedin-card {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .04), 0 1px 2px -1px rgba(0, 0, 0, .02);
-            transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
-        }
-
-        html.dark .linkedin-card {
-            background: #111827 !important;
-            border-color: #1F2937 !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .3);
-        }
-
-        .linkedin-card:hover {
-            border-color: #0A66C2;
-            box-shadow: 0 8px 16px -4px rgba(10, 102, 194, .10);
-        }
-
-        html.dark .linkedin-card:hover {
-            border-color: #38BDF8 !important;
-            box-shadow: 0 8px 24px -4px rgba(56, 189, 248, .18) !important;
-        }
-
-        .badge-linkedin {
-            background-color: #EAF2FF;
-            color: #0A66C2;
-            border: 1px solid rgba(10, 102, 194, .2);
-        }
-
-        html.dark .badge-linkedin {
-            background-color: rgba(56, 189, 248, .12) !important;
-            color: #38BDF8 !important;
-            border-color: rgba(56, 189, 248, .25) !important;
-        }
-
-        .metric-box {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-        }
-
-        html.dark .metric-box {
-            background: rgba(30, 41, 59, .6);
-            border-color: #334155;
-        }
-
-        .progress-track {
-            background: #E2E8F0;
-        }
-
-        html.dark .progress-track {
-            background: #334155;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #0A66C2, #10B981);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -343,43 +286,40 @@ $roundLabels = [
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] dark:bg-[#0B1120] text-slate-900 dark:text-slate-100 flex min-h-screen">
+<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
 
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
     <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/investor/navbar.php'; ?>
 
+        <main class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8 py-5 space-y-5" id="discover-main">
 
-        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" id="discover-main">
-
-            <!-- 1. HERO / MARKET STATUS -->
+            <!-- 1. HERO / MARKET STATUS (Matching Founder Feed Design) -->
             <div
-                class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                class="rounded-3xl p-5 sm:p-6 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-5">
                 <div class="space-y-1.5 max-w-2xl">
                     <div class="flex items-center flex-wrap gap-2">
                         <span
-                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold badge-linkedin">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1"></i>
-                            SEBI & MCA Verified Dealflow
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            SEBI &amp; MCA Verified Dealflow
                         </span>
-                        <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">• Live Syndicate
-                            Allocations</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">• Live Syndicate Allocations</span>
                     </div>
                     <h1
-                        class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                        Discover High-Growth Startups
+                        class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
+                        Discover High-Growth Startups &amp; Deal Flow
                     </h1>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                        Back verified founders raising capital under audited due diligence and escrow-protected
-                        investment flow.
+                    <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
+                        Back verified founders raising capital under institutional due diligence, transparent traction metrics, and escrow-secured investor syndicate protections.
                     </p>
                 </div>
             </div>
 
-            <!-- 2. SEARCH + FILTERS (sticky on desktop) -->
+            <!-- 2. SEARCH + FILTERS (Sticky on desktop, matching Founder Feed inputs) -->
             <div
-                class="lg:sticky lg:top-20 z-30 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-md">
+                class="lg:sticky lg:top-20 z-20 rounded-2xl p-4 sm:p-5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <form action="<?= url('investor/discover.php') ?>" method="GET">
                     <input type="hidden" name="tab" value="<?= htmlspecialchars($tab) ?>">
                     <div class="flex flex-col lg:flex-row items-stretch gap-3">
@@ -388,7 +328,7 @@ $roundLabels = [
                                 class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
                             <input type="text" name="q" value="<?= htmlspecialchars($search) ?>"
                                 placeholder="Search startup, founder, industry, keyword..."
-                                class="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-medium outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-[#0A66C2] dark:focus:border-blue-400 focus:ring-2 focus:ring-[#0A66C2]/15 transition">
+                                class="w-full pl-10 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-medium outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/15 transition">
                             <?php if ($search !== ''): ?>
                                 <a href="<?= discover_link(['q' => null, 'search' => null, 'page' => null]) ?>"
                                     class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
@@ -400,7 +340,7 @@ $roundLabels = [
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 lg:flex items-stretch gap-2">
                             <select name="industry" onchange="this.form.submit()"
-                                class="px-3.5 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-[#0A66C2]">
+                                class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
                                 <option value="">All Industries</option>
                                 <?php foreach (['AI/SaaS', 'FinTech', 'HealthTech', 'CleanTech', 'DeepTech', 'E-Commerce', 'EdTech'] as $ind): ?>
                                     <option value="<?= $ind ?>" <?= $industry === $ind ? 'selected' : '' ?>>
@@ -410,7 +350,7 @@ $roundLabels = [
                             </select>
 
                             <select name="stage" onchange="this.form.submit()"
-                                class="px-3.5 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-[#0A66C2]">
+                                class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
                                 <option value="">All Stages</option>
                                 <?php foreach (['Idea / MVP', 'Pre-Seed', 'Seed', 'Pre-Series A', 'Series A'] as $stg): ?>
                                     <option value="<?= $stg ?>" <?= $stage === $stg ? 'selected' : '' ?>>
@@ -420,18 +360,15 @@ $roundLabels = [
                             </select>
 
                             <select name="sort" onchange="this.form.submit()"
-                                class="px-3.5 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-[#0A66C2]">
-                                <option value="active" <?= $sort === 'active' ? 'selected' : '' ?>>Sort: Most Active
-                                </option>
+                                class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
+                                <option value="active" <?= $sort === 'active' ? 'selected' : '' ?>>Sort: Most Active</option>
                                 <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Sort: Newest</option>
-                                <option value="target" <?= $sort === 'target' ? 'selected' : '' ?>>Sort: Biggest Round
-                                </option>
-                                <option value="ending" <?= $sort === 'ending' ? 'selected' : '' ?>>Sort: Closing Soon
-                                </option>
+                                <option value="target" <?= $sort === 'target' ? 'selected' : '' ?>>Sort: Biggest Round</option>
+                                <option value="ending" <?= $sort === 'ending' ? 'selected' : '' ?>>Sort: Closing Soon</option>
                             </select>
 
                             <button type="submit"
-                                class="px-5 py-3 bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold rounded-xl transition flex items-center justify-center space-x-1.5 shadow-sm cursor-pointer">
+                                class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer">
                                 <i data-lucide="sliders" class="w-4 h-4"></i>
                                 <span>Apply</span>
                             </button>
@@ -459,23 +396,15 @@ $roundLabels = [
                                 <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Reset filters</span>
                             </a>
                         <?php endif; ?>
-                    </div>
-
-                    <?php if (empty($pageStartups)): ?>
-                        <div class="linkedin-card rounded-2xl p-12 text-center">
-                            <div
-                                class="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950/60 text-[#0A66C2] dark:text-blue-400 flex items-center justify-center mx-auto mb-3.5">
-                                <i data-lucide="search-x" class="w-7 h-7"></i>
-                            </div>
-                            <h3 class="text-base font-extrabold text-slate-900 dark:text-white mb-1">No Matching Startups
-                                Found</h3>
-                            <p
-                                class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                                Try a broader keyword, or remove the industry / stage filters.
-                            </p>
+                    </                    <?php if (empty($pageStartups)): ?>
+                        <div class="rounded-3xl p-12 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-center space-y-3">
+                            <i data-lucide="search-x" class="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto"></i>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">No Matching Startups Found</h3>
+                            <p class="text-xs text-slate-500 max-w-sm mx-auto">Try a broader keyword search, or reset the industry and funding stage filters.</p>
                             <a href="<?= url('investor/discover.php') ?>"
-                                class="inline-flex items-center space-x-2 mt-4 px-4 py-2 bg-[#0A66C2] text-white rounded-xl text-xs font-bold hover:bg-[#004182] transition">
-                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i><span>Reset All Filters</span>
+                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md hover:bg-indigo-700 transition">
+                                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                                <span>Reset All Filters</span>
                             </a>
                         </div>
                     <?php else: ?>
@@ -502,279 +431,230 @@ $roundLabels = [
                                 'detail_url' => $detailUrl,
                                 'images' => $gallery,
                             ];
-                            $thumb1 = $gallery[1] ?? null;
-                            $thumb2 = $gallery[2] ?? null;
-                            $moreCount = count($gallery) - 3;
                             $city = trim(($s['city'] ?? '') . (!empty($s['state']) ? ', ' . $s['state'] : ''), ', ');
                             ?>
-                            <article class="linkedin-card deal-card rounded-2xl overflow-hidden p-5 sm:p-6 space-y-4"
+                            <!-- Single LinkedIn Style Deal / Post Card (Matching Founder Feed) -->
+                            <article id="deal-<?= $s['id'] ?>"
+                                class="deal-card rounded-3xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden space-y-4 p-5 sm:p-6 transition hover:border-slate-300 dark:hover:border-slate-700"
                                 data-gallery="<?= htmlspecialchars(json_encode($galleryData), ENT_QUOTES, 'UTF-8') ?>"
                                 data-link="<?= htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8') ?>">
 
-                                <!-- Header -->
+                                <!-- Header: Logo, Startup Name, Verified Badge, Subtitle & Status Pill -->
                                 <div class="flex items-start justify-between gap-3">
-                                    <div class="flex items-center space-x-3.5 min-w-0">
+                                    <div class="flex items-center gap-3.5 min-w-0">
+                                        <!-- Startup Logo -->
                                         <a href="<?= $detailUrl ?>" class="flex-shrink-0">
                                             <img src="<?= htmlspecialchars($logo) ?>" loading="lazy"
                                                 onerror="this.onerror=null;this.src='<?= $fallbackLogo ?>'"
-                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl object-cover border border-slate-200 dark:border-slate-700"
-                                                alt="<?= htmlspecialchars($s['name']) ?>">
+                                                alt="<?= htmlspecialchars($s['name']) ?>"
+                                                class="w-12 h-12 rounded-2xl border border-slate-200 dark:border-slate-700 object-cover object-center shadow-xs hover:scale-105 transition">
                                         </a>
+
                                         <div class="min-w-0">
-                                            <div class="flex flex-wrap items-center gap-2 mb-0.5">
+                                            <div class="flex items-center gap-1.5 flex-wrap">
                                                 <a href="<?= $detailUrl ?>"
-                                                    class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white hover:text-[#0A66C2] dark:hover:text-blue-400 transition tracking-tight">
+                                                    class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition truncate">
                                                     <?= htmlspecialchars($s['name']) ?>
                                                 </a>
-                                                <i data-lucide="badge-check" class="w-5 h-5 text-[#0A66C2] dark:text-blue-400"
-                                                    title="MCA & SEBI Verified"></i>
+                                                <i data-lucide="badge-check" class="w-4 h-4 text-indigo-600 flex-shrink-0" title="MCA &amp; SEBI Verified Deal"></i>
                                             </div>
-                                            <div class="flex flex-wrap items-center gap-1.5">
-                                                <span
-                                                    class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"><?= htmlspecialchars($s['industry']) ?></span>
-                                                <span
-                                                    class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 dark:bg-blue-950/60 text-[#0A66C2] dark:text-blue-300"><?= htmlspecialchars($s['stage']) ?></span>
-                                                <?php if ($city): ?>
-                                                    <span
-                                                        class="inline-flex items-center text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-                                                        <i data-lucide="map-pin"
-                                                            class="w-3 h-3 mr-0.5"></i><?= htmlspecialchars($city) ?>
-                                                    </span>
-                                                <?php endif; ?>
-
-                                            </div>
+                                            <p class="text-[11.5px] text-slate-500 dark:text-slate-400 truncate">
+                                                Led by <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?> (<?= htmlspecialchars($s['founder_designation'] ?? 'Founder') ?>) • <?= htmlspecialchars($s['stage']) ?><?php if ($city): ?> • <?= htmlspecialchars($city) ?><?php endif; ?>
+                                            </p>
                                         </div>
                                     </div>
 
-
-                                    <div class="flex items-center space-x-2 flex-shrink-0">
-                                        <span
-                                            class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide
-                                        <?= $statusColor === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40' : ($statusColor === 'blue' ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700') ?>">
-                                            <?php if ($isLiveRound): ?><span
-                                                    class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span><?php endif; ?>
-                                            <?= $statusText ?>
+                                    <!-- Category & Status Badge -->
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <span class="px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-1.5 <?= $isLiveRound ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80' ?>">
+                                            <?php if ($isLiveRound): ?>
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                            <?php endif; ?>
+                                            <?= htmlspecialchars($s['industry']) ?> • <?= $statusText ?>
                                         </span>
-
-                                        <form action="<?= url('investor/discover.php') ?>" method="POST" class="inline">
-                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                            <input type="hidden" name="action" value="toggle_watchlist">
-                                            <input type="hidden" name="company_id" value="<?= $hashId ?>">
-                                            <button type="submit"
-                                                title="<?= $isSaved ? 'Remove from Saved' : 'Save to Watchlist' ?>"
-                                                class="p-2 rounded-xl border transition cursor-pointer <?= $isSaved ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-700/60 text-amber-600 dark:text-amber-400' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-[#0A66C2] dark:hover:text-blue-400 hover:border-[#0A66C2]' ?>">
-                                                <i data-lucide="bookmark"
-                                                    class="w-4 h-4 <?= $isSaved ? 'fill-amber-500' : '' ?>"></i>
-                                            </button>
-                                        </form>
                                     </div>
                                 </div>
 
-                                <!-- Pitch -->
-                                <p class="text-sm font-medium text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-2">
-                                    <?= htmlspecialchars($s['pitch'] ?? '') ?>
-                                </p>
+                                <!-- Pitch Headline & Content Body -->
+                                <div class="space-y-2.5">
+                                    <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                                        <?= htmlspecialchars($s['name']) ?> — <?= htmlspecialchars($s['pitch'] ?? 'Pioneering innovative solutions with validated product-market fit.') ?>
+                                    </h3>
 
-                                <!-- Funding progress + key metrics -->
+                                    <?php if (!empty($s['description'])): ?>
+                                        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal whitespace-pre-line line-clamp-3">
+                                            <?= htmlspecialchars($s['description']) ?>
+                                        </p>
+                                    <?php endif; ?>
+
+                                    <!-- Traction Metrics Pill (Matching Founder Feed) -->
+                                    <div class="flex flex-wrap items-center gap-2 pt-0.5">
+                                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
+                                            <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                            <span><?= $isLiveRound ? 'Round Active: ' . format_inr($raisedAmount) . ' Committed' : 'Verified Venture • ' . htmlspecialchars($s['stage']) ?></span>
+                                        </div>
+                                        <?php if ($hasRound): ?>
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
+                                                <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                                <span>Target: <?= format_inr($targetAmount) ?> (<?= $pct ?>% Raised)</span>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Elevated Funding Progress & Key Metrics Box -->
                                 <?php if ($hasRound): ?>
-                                    <div class="rounded-xl border border-slate-200 dark:border-slate-700/70 p-4 space-y-3">
+                                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
                                         <div class="flex items-end justify-between gap-3">
                                             <div>
-                                                <div
-                                                    class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                                    <?= htmlspecialchars($s['round_name'] ?? 'Funding Round') ?>
+                                                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                                    <?= htmlspecialchars($s['round_name'] ?? 'Syndicate Funding Round') ?>
                                                 </div>
-                                                <div
-                                                    class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                                                <div class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
                                                     <?= format_inr($raisedAmount) ?>
-                                                    <span
-                                                        class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">raised
-                                                        of <?= format_inr($targetAmount) ?></span>
+                                                    <span class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">raised of <?= format_inr($targetAmount) ?></span>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="text-lg sm:text-xl font-bold text-[#0A66C2] dark:text-blue-400"><?= $pct ?>%
-                                                </div>
+                                                <div class="text-lg sm:text-xl font-black text-indigo-600 dark:text-indigo-400"><?= $pct ?>%</div>
                                             </div>
                                         </div>
-                                        <div class="progress-track h-2.5 rounded-full overflow-hidden">
-                                            <div class="progress-fill h-full rounded-full" style="width: <?= $pct ?>%"></div>
+                                        <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                                            <div class="h-full rounded-full bg-gradient-to-r from-indigo-600 to-emerald-500 transition-all duration-500" style="width: <?= $pct ?>%"></div>
                                         </div>
-                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                                            <div class="metric-box rounded-lg px-3 py-2">
-                                                <div
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                                    Min. Ticket</div>
-                                                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                                    <?= !empty($s['min_investment']) ? format_inr($s['min_investment']) : '—' ?>
-                                                </div>
+                                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Min. Ticket</span>
+                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['min_investment']) ? format_inr($s['min_investment']) : '—' ?></span>
                                             </div>
-                                            <div class="metric-box rounded-lg px-3 py-2">
-                                                <div
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                                    Valuation</div>
-                                                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                                    <?= !empty($s['valuation']) ? format_inr($s['valuation']) : '—' ?>
-                                                </div>
+                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Valuation</span>
+                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['valuation']) ? format_inr($s['valuation']) : '—' ?></span>
                                             </div>
-                                            <div class="metric-box rounded-lg px-3 py-2">
-                                                <div
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                                    Equity Offered</div>
-                                                <div class="text-sm font-extrabold text-slate-900 dark:text-white">
-                                                    <?= isset($s['equity_offered']) && $s['equity_offered'] !== '' ? htmlspecialchars(rtrim(rtrim(number_format((float) $s['equity_offered'], 2), '0'), '.')) . '%' : '—' ?>
-                                                </div>
+                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Equity</span>
+                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= isset($s['equity_offered']) && $s['equity_offered'] !== '' ? htmlspecialchars(rtrim(rtrim(number_format((float) $s['equity_offered'], 2), '0'), '.')) . '%' : '—' ?></span>
                                             </div>
-                                            <div class="metric-box rounded-lg px-3 py-2">
-                                                <div
-                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                                    Round Closes</div>
-                                                <div
-                                                    class="text-sm font-extrabold <?= ($daysLeft !== null && $daysLeft <= 7 && $daysLeft > 0) ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?>">
+                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Closing</span>
+                                                <span class="text-xs sm:text-sm font-extrabold <?= ($daysLeft !== null && $daysLeft <= 7 && $daysLeft > 0) ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?>">
                                                     <?= $daysLeft === null ? '—' : ($daysLeft > 0 ? $daysLeft . ' days left' : 'Closed') ?>
-                                                </div>
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php else: ?>
-                                    <div
-                                        class="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center space-x-2">
-                                        <i data-lucide="clock" class="w-4 h-4"></i>
-                                        <span>No active funding round yet. Save this startup to get notified when they raise.</span>
                                     </div>
                                 <?php endif; ?>
 
-                                <!-- Gallery -->
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 rounded-xl overflow-hidden">
-                                    <div class="md:col-span-2 relative h-52 sm:h-60 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
+                                <!-- Post Media Image (Matching Founder Feed full-width preview) -->
+                                <?php if (!empty($gallery[0]['url'])): ?>
+                                    <div class="rounded-2xl overflow-hidden max-h-96 border border-slate-100 dark:border-slate-800 bg-slate-900 cursor-pointer relative group"
                                         onclick="openGalleryFromCard(this, 0)">
                                         <img src="<?= htmlspecialchars($gallery[0]['url']) ?>" loading="lazy"
-                                            alt="<?= htmlspecialchars($gallery[0]['title']) ?>"
-                                            class="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.03]">
-                                        <div
-                                            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none">
-                                        </div>
-                                        <div class="absolute bottom-3 left-3 right-3 pointer-events-none">
-                                            <h4 class="text-sm sm:text-base font-bold text-white drop-shadow line-clamp-1">
-                                                <?= htmlspecialchars($gallery[0]['title']) ?>
-                                            </h4>
-                                        </div>
-                                        <div
-                                            class="absolute top-3 right-3 bg-black/60 text-white text-[11px] font-semibold px-2 py-1 rounded-lg flex items-center space-x-1 pointer-events-none">
-                                            <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i><span>View</span>
+                                            alt="<?= htmlspecialchars($s['name']) ?>"
+                                            class="w-full h-full max-h-96 object-cover object-center group-hover:scale-101 transition duration-500">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                                        <div class="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
+                                            <span class="text-xs font-bold drop-shadow truncate max-w-[280px]"><?= htmlspecialchars($gallery[0]['title'] ?? $s['name']) ?></span>
+                                            <span class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-[11px] font-semibold flex items-center gap-1.5">
+                                                <i data-lucide="images" class="w-3.5 h-3.5 text-indigo-400"></i>
+                                                <span>View <?= count($gallery) ?> Photos</span>
+                                            </span>
                                         </div>
                                     </div>
+                                <?php endif; ?>
 
-                                    <div class="grid grid-cols-2 md:grid-cols-1 gap-2.5">
-                                        <?php if ($thumb1): ?>
-                                            <div class="relative h-24 sm:h-28 md:h-[114px] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
-                                                onclick="openGalleryFromCard(this, 1)">
-                                                <img src="<?= htmlspecialchars($thumb1['url']) ?>" loading="lazy"
-                                                    alt="<?= htmlspecialchars($thumb1['title']) ?>"
-                                                    class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if ($thumb2): ?>
-                                            <div class="relative h-24 sm:h-28 md:h-[114px] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer"
-                                                onclick="openGalleryFromCard(this, 2)">
-                                                <img src="<?= htmlspecialchars($thumb2['url']) ?>" loading="lazy"
-                                                    alt="<?= htmlspecialchars($thumb2['title']) ?>"
-                                                    class="w-full h-full object-cover">
-                                                <div
-                                                    class="<?= $moreCount > 0 ? 'flex' : 'hidden' ?> absolute inset-0 bg-slate-900/65 hover:bg-slate-900/75 transition flex-col items-center justify-center text-white text-center">
-                                                    <span class="text-lg font-bold leading-none">+<?= $moreCount ?></span>
-                                                    <span
-                                                        class="text-[11px] font-bold uppercase tracking-wider text-slate-200 flex items-center gap-1 mt-1">
-                                                        <i data-lucide="images"
-                                                            class="w-3.5 h-3.5 text-blue-400"></i><span>Photos</span>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
+                                <!-- Post Social Proof & Due Diligence Stats Bar -->
+                                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80 font-medium">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                                            <i data-lucide="bookmark" class="w-2.5 h-2.5 fill-white text-white"></i>
+                                        </span>
+                                        <span><?= (int) $s['saves_count'] ?> investors tracking</span>
                                     </div>
-
-                                </div>
-
-                                <!-- Founder + social proof -->
-                                <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
-                                    <div class="flex items-center space-x-2.5 min-w-0">
-                                        <?php if (!empty($s['founder_avatar'])): ?>
-                                            <img src="<?= htmlspecialchars(get_avatar_url($s['founder_avatar'] ?? '')) ?>" loading="lazy"
-                                                class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
-                                                alt="<?= htmlspecialchars($s['founder_name'] ?? 'Founder') ?>">
-                                        <?php else: ?>
-                                            <div
-                                                class="w-8 h-8 rounded-full bg-[#0A66C2] text-white flex items-center justify-center text-xs font-black">
-                                                <?= strtoupper(substr($s['founder_name'] ?? 'F', 0, 1)) ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div class="min-w-0">
-                                            <div class="font-bold text-slate-800 dark:text-slate-200 truncate">
-                                                <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?>
-                                            </div>
-                                            <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate">
-                                                <?= htmlspecialchars($s['founder_designation'] ?? 'Founder') ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center space-x-4 text-slate-500 dark:text-slate-400 font-semibold">
-                                        <span class="inline-flex items-center space-x-1"><i data-lucide="bookmark"
-                                                class="w-3.5 h-3.5"></i><span><?= (int) $s['saves_count'] ?> saved</span></span>
-                                        <span class="inline-flex items-center space-x-1"><i data-lucide="file-text"
-                                                class="w-3.5 h-3.5"></i><span><?= (int) $s['docs_count'] ?> docs</span></span>
+                                    <div class="flex items-center gap-3">
+                                        <span class="flex items-center gap-1">
+                                            <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-400"></i>
+                                            <?= (int) $s['docs_count'] ?> pitch docs
+                                        </span>
+                                        <span class="flex items-center gap-1">
+                                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                            Verified
+                                        </span>
                                     </div>
                                 </div>
 
-                                <!-- Actions -->
-                                <div
-                                    class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-                                    <div class="flex items-center flex-wrap gap-2.5">
-                                        <a href="<?= $detailUrl ?>"
-                                            class="px-5 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs sm:text-sm font-bold transition flex items-center space-x-2 shadow-sm">
-                                            <span>View Details</span><i data-lucide="arrow-right" class="w-4 h-4"></i>
-                                        </a>
-                                        <?php if ($isLiveRound && $roundHash): ?>
-                                            <a href="<?= url('investor/invest.php?round=' . $roundHash) ?>"
-                                                class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold transition flex items-center space-x-1.5 shadow-sm">
-                                                <i data-lucide="wallet" class="w-3.5 h-3.5"></i><span>Invest Now</span>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
-                                        <?php if ($founderHash): ?>
-                                            <a href="<?= url('investor/messages.php?founder=' . $founderHash . '&company=' . $hashId) ?>"
-                                                class="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-[#0A66C2] dark:hover:text-blue-400 text-xs font-bold transition flex items-center space-x-1.5">
-                                                <i data-lucide="message-circle"
-                                                    class="w-4 h-4 text-[#0A66C2] dark:text-blue-400"></i>
-                                                <span class="hidden sm:inline">Chat with Founder</span>
-                                            </a>
-                                        <?php endif; ?>
-                                        <button type="button" onclick="copyDealLink(this.closest('article').dataset.link)"
-                                            class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 transition cursor-pointer"
-                                            title="Copy Deal Link">
-                                            <i data-lucide="share-2" class="w-4 h-4"></i>
+                                <!-- Interactive Action Buttons (Matching Founder Feed 4-Grid Layout) -->
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                                    <!-- 1. Save / Bookmark Toggle -->
+                                    <form action="<?= url('investor/discover.php') ?>" method="POST" class="w-full">
+                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                        <input type="hidden" name="action" value="toggle_watchlist">
+                                        <input type="hidden" name="company_id" value="<?= $hashId ?>">
+                                        <button type="submit"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer <?= $isSaved ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent' ?>">
+                                            <i data-lucide="bookmark" class="w-4 h-4 <?= $isSaved ? 'fill-amber-500 text-amber-500' : '' ?>"></i>
+                                            <span><?= $isSaved ? 'Saved' : 'Save' ?></span>
                                         </button>
-                                    </div>
+                                    </form>
+
+                                    <!-- 2. Deal Room / Overview -->
+                                    <a href="<?= $detailUrl ?>"
+                                        class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 border border-transparent">
+                                        <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
+                                        <span>Deal Room</span>
+                                    </a>
+
+                                    <!-- 3. Chat with Founder / Share -->
+                                    <?php if ($founderHash): ?>
+                                        <a href="<?= url('investor/messages.php?founder=' . $founderHash . '&company=' . $hashId) ?>"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 border border-transparent">
+                                            <i data-lucide="message-circle" class="w-4 h-4 text-indigo-500"></i>
+                                            <span>Chat Founder</span>
+                                        </a>
+                                    <?php else: ?>
+                                        <button type="button" onclick="copyDealLink('<?= htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8') ?>')"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 border border-transparent cursor-pointer">
+                                            <i data-lucide="share-2" class="w-4 h-4 text-indigo-500"></i>
+                                            <span>Share Deal</span>
+                                        </button>
+                                    <?php endif; ?>
+
+                                    <!-- 4. Invest Now CTA Button -->
+                                    <?php if ($isLiveRound && $roundHash): ?>
+                                        <a href="<?= url('investor/invest.php?round=' . $roundHash) ?>"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white transition flex items-center justify-center gap-1.5 shadow-sm">
+                                            <i data-lucide="coins" class="w-3.5 h-3.5 text-white"></i>
+                                            <span>Invest Now</span>
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?= $detailUrl ?>"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-black bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 transition flex items-center justify-center gap-1.5">
+                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                            <span>Explore</span>
+                                        </a>
+                                    <?php endif; ?>
                                 </div>
                             </article>
                         <?php endforeach; ?>
 
-                        <!-- Pagination -->
+                        <!-- Pagination (Clean Rounded Buttons) -->
                         <?php if ($totalPages > 1): ?>
                             <nav class="flex items-center justify-center flex-wrap gap-2 pt-2" aria-label="Pagination">
                                 <?php if ($page > 1): ?>
                                     <a href="<?= discover_link(['page' => $page - 1]) ?>"
-                                        class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#0A66C2] transition">←
-                                        Prev</a>
+                                        class="px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-indigo-500 transition">
+                                        ← Prev
+                                    </a>
                                 <?php endif; ?>
                                 <?php for ($p = 1; $p <= $totalPages; $p++): ?>
                                     <a href="<?= discover_link(['page' => $p]) ?>"
-                                        class="w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition <?= $p === $page ? 'bg-[#0A66C2] text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-[#0A66C2]' ?>"><?= $p ?></a>
+                                        class="w-9 h-9 flex items-center justify-center rounded-xl text-xs font-bold transition <?= $p === $page ? 'bg-indigo-600 text-white shadow-xs' : 'bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 hover:border-indigo-500' ?>"><?= $p ?></a>
                                 <?php endfor; ?>
                                 <?php if ($page < $totalPages): ?>
                                     <a href="<?= discover_link(['page' => $page + 1]) ?>"
-                                        class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#0A66C2] transition">Next
-                                        →</a>
+                                        class="px-3.5 py-2 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-indigo-500 transition">
+                                        Next →
+                                    </a>
                                 <?php endif; ?>
                             </nav>
                         <?php endif; ?>
@@ -782,54 +662,97 @@ $roundLabels = [
                     <?php endif; ?>
                 </div>
 
-                <!-- RIGHT RAIL -->
-                <aside class="space-y-5 xl:sticky xl:top-44">
-                    <div class="linkedin-card rounded-2xl p-5">
-                        <h3
-                            class="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                            Browse by Sector</h3>
-                        <div class="space-y-1">
-                            <?php foreach ($industryCounts as $ind => $cnt): ?>
+                <!-- RIGHT RAIL (Matching Founder Feed Sidebar Design with Read More toggles) -->
+                <aside class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5">
+                    <!-- Browse by Sector Card -->
+                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                <span>Browse by Sector</span>
+                            </h3>
+                            <span class="text-[10.5px] text-indigo-600 font-bold"><?= count($industryCounts) ?> Sectors</span>
+                        </div>
+
+                        <div class="space-y-1.5" id="sector-list-container">
+                            <?php 
+                            $indIndex = 0;
+                            foreach ($industryCounts as $ind => $cnt): 
+                                $isExtra = $indIndex >= 2;
+                                $indIndex++;
+                            ?>
                                 <a href="<?= discover_link(['industry' => $ind, 'tab' => null, 'page' => null]) ?>"
-                                    class="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition <?= $industry === $ind ? 'bg-[#0A66C2] text-white' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800' ?>">
-                                    <span><?= htmlspecialchars($ind) ?></span>
-                                    <span
-                                        class="<?= $industry === $ind ? 'text-white/80' : 'text-slate-400' ?>"><?= (int) $cnt ?></span>
+                                    class="<?= $isExtra ? 'sector-extra-item hidden' : '' ?> flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition <?= $industry === $ind ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60' ?>">
+                                    <span class="truncate"><?= htmlspecialchars($ind) ?></span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] <?= $industry === $ind ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' ?>"><?= (int) $cnt ?></span>
                                 </a>
                             <?php endforeach; ?>
                             <?php if (empty($industryCounts)): ?>
-                                <p class="text-xs text-slate-400">No sectors yet.</p><?php endif; ?>
+                                <p class="text-xs text-slate-400 py-1">No sectors recorded yet.</p>
+                            <?php endif; ?>
                         </div>
+
+                        <?php if (count($industryCounts) > 2): ?>
+                            <button type="button" id="btn-toggle-sectors" onclick="toggleSectorList()"
+                                class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500" id="icon-toggle-sectors"></i>
+                                <span id="text-toggle-sectors">Read More (+<?= count($industryCounts) - 2 ?>)</span>
+                            </button>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="linkedin-card rounded-2xl p-5">
-                        <h3
-                            class="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                            Browse by Stage</h3>
-                        <div class="flex flex-wrap gap-2">
-                            <?php foreach ($stageCounts as $stg => $cnt): ?>
+                    <!-- Browse by Stage Card -->
+                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="rocket" class="w-3.5 h-3.5 text-indigo-600"></i>
+                                <span>Venture Stages</span>
+                            </h3>
+                            <span class="text-[10.5px] text-slate-400 font-bold"><?= count($stageCounts) ?></span>
+                        </div>
+
+                        <div class="flex flex-wrap gap-1.5" id="stage-list-container">
+                            <?php 
+                            $stgIndex = 0;
+                            foreach ($stageCounts as $stg => $cnt): 
+                                $isExtraStg = $stgIndex >= 3;
+                                $stgIndex++;
+                            ?>
                                 <a href="<?= discover_link(['stage' => $stg, 'tab' => null, 'page' => null]) ?>"
-                                    class="px-3 py-1.5 rounded-full text-[11px] font-bold transition <?= $stage === $stg ? 'bg-[#0A66C2] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700' ?>">
+                                    class="<?= $isExtraStg ? 'stage-extra-item hidden' : '' ?> px-2.5 py-1 rounded-xl text-[11px] font-bold transition <?= $stage === $stg ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-slate-700' ?>">
                                     <?= htmlspecialchars($stg) ?> · <?= (int) $cnt ?>
                                 </a>
                             <?php endforeach; ?>
                         </div>
+
+                        <?php if (count($stageCounts) > 3): ?>
+                            <button type="button" id="btn-toggle-stages" onclick="toggleStageList()"
+                                class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500" id="icon-toggle-stages"></i>
+                                <span id="text-toggle-stages">Read More (+<?= count($stageCounts) - 3 ?>)</span>
+                            </button>
+                        <?php endif; ?>
                     </div>
 
-                    <div class="linkedin-card rounded-2xl p-5">
-                        <h3
-                            class="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
-                            How Investing Works</h3>
-                        <ol class="space-y-3 text-xs text-slate-600 dark:text-slate-300">
-                            <li class="flex items-start space-x-2.5"><span
-                                    class="w-5 h-5 rounded-full bg-[#0A66C2] text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">1</span><span>Review
-                                    the startup details, documents and funding round.</span></li>
-                            <li class="flex items-start space-x-2.5"><span
-                                    class="w-5 h-5 rounded-full bg-[#0A66C2] text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">2</span><span>Chat
-                                    with the founder to clear your doubts.</span></li>
-                            <li class="flex items-start space-x-2.5"><span
-                                    class="w-5 h-5 rounded-full bg-[#0A66C2] text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5">3</span><span>Invest
-                                    securely. Funds are held in escrow until the round closes.</span></li>
+                    <!-- How Investing Works Card -->
+                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
+                            <span>Institutional Protections</span>
+                        </h3>
+                        <ol class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">1</span>
+                                <span class="leading-relaxed">Audit the data room, audited pitch decks, and verified capitalization tables.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">2</span>
+                                <span class="leading-relaxed">Direct messaging with verified founders to discuss syndication and terms.</span>
+                            </li>
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">3</span>
+                                <span class="leading-relaxed">Escrow-backed investment flow with digital legal signatures and automated share allocation.</span>
+                            </li>
                         </ol>
                     </div>
                 </aside>
@@ -853,8 +776,8 @@ $roundLabels = [
                 </div>
                 <div class="flex items-center space-x-2.5 flex-shrink-0">
                     <a id="galleryModalDetailsLink" href="#"
-                        class="px-4 py-2 rounded-xl bg-[#0A66C2] hover:bg-[#004182] text-white text-xs font-bold transition flex items-center space-x-1.5">
-                        <span>View Details</span><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+                        <span>View Deal Room</span><i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                     </a>
                     <button type="button" onclick="closeGalleryModal()"
                         class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
@@ -892,7 +815,7 @@ $roundLabels = [
     <script>
         if (window.lucide) lucide.createIcons();
 
-        // Entrance animation (fromTo + clearProps => cards can never stay faded)
+        // Entrance animation
         (function () {
             const cards = document.querySelectorAll('.deal-card');
             if (!window.gsap || !cards.length) return;
@@ -909,6 +832,32 @@ $roundLabels = [
                 toast.classList.remove('translate-y-20', 'opacity-0');
                 setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2500);
             });
+        }
+
+        // Sector List Read More Toggle
+        let sectorsExpanded = false;
+        function toggleSectorList() {
+            sectorsExpanded = !sectorsExpanded;
+            const items = document.querySelectorAll('.sector-extra-item');
+            items.forEach(el => el.classList.toggle('hidden', !sectorsExpanded));
+            const txt = document.getElementById('text-toggle-sectors');
+            const icon = document.getElementById('icon-toggle-sectors');
+            if (txt) txt.textContent = sectorsExpanded ? 'Show Less' : 'Read More (+' + items.length + ')';
+            if (icon) icon.setAttribute('data-lucide', sectorsExpanded ? 'chevrons-up' : 'chevrons-down');
+            if (window.lucide) lucide.createIcons();
+        }
+
+        // Stage List Read More Toggle
+        let stagesExpanded = false;
+        function toggleStageList() {
+            stagesExpanded = !stagesExpanded;
+            const items = document.querySelectorAll('.stage-extra-item');
+            items.forEach(el => el.classList.toggle('hidden', !stagesExpanded));
+            const txt = document.getElementById('text-toggle-stages');
+            const icon = document.getElementById('icon-toggle-stages');
+            if (txt) txt.textContent = stagesExpanded ? 'Show Less' : 'Read More (+' + items.length + ')';
+            if (icon) icon.setAttribute('data-lucide', stagesExpanded ? 'chevrons-up' : 'chevrons-down');
+            if (window.lucide) lucide.createIcons();
         }
 
         // Gallery modal
@@ -956,7 +905,7 @@ $roundLabels = [
             activeGallery.images.forEach((img, idx) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = `w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition cursor-pointer ${idx === activeGalleryIndex ? 'border-[#0A66C2] opacity-100' : 'border-transparent opacity-50 hover:opacity-100'}`;
+                btn.className = `w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition cursor-pointer ${idx === activeGalleryIndex ? 'border-indigo-500 opacity-100 ring-2 ring-indigo-500/30' : 'border-transparent opacity-50 hover:opacity-100'}`;
                 btn.onclick = () => { activeGalleryIndex = idx; renderGalleryModalState(); };
                 const im = document.createElement('img');
                 im.src = img.url; im.alt = ''; im.className = 'w-full h-full object-cover';
