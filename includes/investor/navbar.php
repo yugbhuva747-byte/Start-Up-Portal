@@ -29,13 +29,26 @@ if ($db && !empty($currentUser['id'])) {
 $navActive = 'bg-[#123B7A] text-white shadow-xs dark:bg-blue-600';
 $navInactive = 'text-[#4B5563] dark:text-slate-300 hover:text-[#123B7A] dark:hover:text-white hover:bg-white dark:hover:bg-slate-700/60';
 
+$pendingConnCount = 0;
+if (!empty($currentUser['id']) && function_exists('get_pending_connections_count')) {
+    $pendingConnCount = get_pending_connections_count((int)$currentUser['id']);
+}
+
 $navItems = [
     [
         'href' => url('investor/discover.php'),
         'icon' => 'sparkles',
         'label' => 'Discover',
         'title' => 'Discover Startups',
-        'active' => in_array($currentPage, ['discover.php', 'startup_detail.php', 'invest.php'], true),
+        'active' => in_array($currentPage, ['discover.php', 'startup_detail.php', 'company_view.php', 'invest.php'], true),
+    ],
+    [
+        'href' => url('investor/network.php'),
+        'icon' => 'users',
+        'label' => 'Network',
+        'title' => 'My Network',
+        'badge' => $pendingConnCount,
+        'active' => $currentPage === 'network.php',
     ],
     [
         'href' => url('investor/dashboard.php'),
@@ -186,10 +199,15 @@ require_once __DIR__ . '/theme.php';
         class="hidden md:flex items-center space-x-1 lg:space-x-1.5 px-2 py-1 rounded-2xl bg-[#FAFBFD] dark:bg-slate-800/80 border border-[#E4E8EF] dark:border-slate-800">
         <?php foreach ($navItems as $item): ?>
             <a href="<?= $item['href'] ?>"
-                class="top-nav-link flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $item['active'] ? $navActive : $navInactive ?>"
+                class="top-nav-link relative flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all <?= $item['active'] ? $navActive : $navInactive ?>"
                 title="<?= htmlspecialchars($item['title']) ?>" <?= $item['active'] ? 'aria-current="page"' : '' ?>>
                 <i data-lucide="<?= $item['icon'] ?>" class="w-3.5 h-3.5 flex-shrink-0"></i>
                 <span><?= htmlspecialchars($item['label']) ?></span>
+                <?php if (!empty($item['badge'])): ?>
+                    <span class="inline-flex items-center justify-center min-w-[1.125rem] h-4.5 px-1.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white ml-0.5 shadow-2xs">
+                        <?= $item['badge'] ?>
+                    </span>
+                <?php endif; ?>
             </a>
         <?php endforeach; ?>
     </nav>

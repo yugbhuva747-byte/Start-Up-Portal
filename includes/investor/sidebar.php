@@ -301,7 +301,22 @@ require_once __DIR__ . '/theme.php';
         </div>
 
         <?php
+        $pendingConnCount = 0;
+        if (!empty($investorUser['id']) && function_exists('get_pending_connections_count')) {
+            $pendingConnCount = get_pending_connections_count((int)$investorUser['id']);
+        }
+
         $navGroups = [
+            'Network & Deals' => [
+                [
+                    'title' => 'My Network',
+                    'url' => url('investor/network.php'),
+                    'icon' => 'users',
+                    'tooltip' => 'My Network & Invitations' . ($pendingConnCount > 0 ? " ($pendingConnCount Pending)" : ''),
+                    'badge' => $pendingConnCount,
+                    'active' => ($currentPage === 'network.php')
+                ],
+            ],
             'Support' => [
                 [
                     'title' => 'Help & Support',
@@ -356,7 +371,11 @@ require_once __DIR__ . '/theme.php';
                                         class="nav-icon w-4.5 h-4.5 flex-shrink-0 <?= $item['active'] ? 'text-[#123B7A] dark:text-blue-400' : 'text-[#667085] dark:text-slate-400 group-hover:text-[#111827] dark:group-hover:text-white' ?>"></i>
                                     <span class="truncate sidebar-text-item"><?= htmlspecialchars($item['title']) ?></span>
                                 </div>
-                                <?php if ($item['active']): ?>
+                                <?php if (!empty($item['badge'])): ?>
+                                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#123B7A] dark:bg-blue-600 text-white shadow-2xs">
+                                        <?= $item['badge'] ?>
+                                    </span>
+                                <?php elseif ($item['active']): ?>
                                     <span class="w-1.5 h-4 rounded-full bg-[#123B7A] dark:bg-blue-400 flex-shrink-0 sidebar-text-item active-indicator"
                                         title="Active Page"></span>
                                 <?php endif; ?>
@@ -528,6 +547,7 @@ require_once __DIR__ . '/theme.php';
             'profile.php',
             'view.php',
             'startup_detail.php',
+            'company_view.php',
             'invest.php'
         ];
 
@@ -554,6 +574,7 @@ require_once __DIR__ . '/theme.php';
                 const linkPage = getPageKey(link.href);
                 const isMatch = (linkPage === targetPage) ||
                     (targetPage === 'startup_detail.php' && linkPage === 'discover.php') ||
+                    (targetPage === 'company_view.php' && linkPage === 'discover.php') ||
                     (targetPage === 'invest.php' && linkPage === 'discover.php');
 
                 const navIcon = link.querySelector('.nav-icon');
@@ -587,6 +608,7 @@ require_once __DIR__ . '/theme.php';
                 const linkPage = getPageKey(link.href);
                 const isMatch = (linkPage === targetPage) ||
                     (targetPage === 'startup_detail.php' && linkPage === 'discover.php') ||
+                    (targetPage === 'company_view.php' && linkPage === 'discover.php') ||
                     (targetPage === 'invest.php' && linkPage === 'discover.php');
 
                 if (isMatch) {

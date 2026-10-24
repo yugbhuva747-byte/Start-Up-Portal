@@ -235,16 +235,28 @@ $flash = get_flash();
                             <?php endif; ?>
                         </div>
 
-                        <!-- Single Essential Action Button on Right -->
-                        <div class="flex items-center gap-2 pt-2 sm:pt-0 self-start sm:self-end">
+                        <!-- Action Buttons on Right -->
+                        <div class="flex flex-wrap items-center gap-2 pt-2 sm:pt-0 self-start sm:self-end">
                             <?php if (!$isSelf): ?>
-                                <a href="<?= url('investor/messages.php') ?>" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition flex items-center space-x-1.5">
-                                    <i data-lucide="message-square" class="w-4 h-4"></i>
-                                    <span>Connect</span>
+                                <?= render_connect_button((int)$founder['id'], [
+                                    'name' => $founder['name'],
+                                    'headline' => $profile['designation'] ?? (!empty($companies[0]['name']) ? 'Founder at ' . $companies[0]['name'] : 'Startup Founder'),
+                                    'avatar' => get_avatar_url($founder['avatar_url'] ?? '')
+                                ]) ?>
+
+                                <?php 
+                                $chatLink = ($currentUser['role'] === 'founder') 
+                                    ? url('founder/messages.php') 
+                                    : url('investor/messages.php');
+                                ?>
+                                <a href="<?= $chatLink ?>" class="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-bold text-xs transition flex items-center space-x-1.5 shadow-2xs">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                    <span>Message</span>
                                 </a>
+
                                 <?php if (!empty($companies)): ?>
-                                    <a href="<?= url('investor/startup_detail.php?id=' . encode_id($companies[0]['id'])) ?>" class="px-4 py-2 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 font-bold text-xs rounded-xl transition flex items-center space-x-1.5 shadow-2xs">
-                                        <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
+                                    <a href="<?= url('founder/company_view.php?id=' . encode_id($companies[0]['id'])) ?>" class="px-3.5 py-1.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-xs rounded-xl transition flex items-center space-x-1.5 shadow-2xs">
+                                        <i data-lucide="building-2" class="w-3.5 h-3.5 text-indigo-500"></i>
                                         <span>View Startup</span>
                                     </a>
                                 <?php endif; ?>

@@ -88,6 +88,24 @@ require_once __DIR__ . '/theme.php';
             </span>
         </button>
 
+        <?php
+        $pendingConnCount = 0;
+        if (!empty($currentUser['id']) && function_exists('get_pending_connections_count')) {
+            $pendingConnCount = get_pending_connections_count((int)$currentUser['id']);
+        }
+        ?>
+        <!-- My Network Quick Link -->
+        <a href="<?= url('founder/network.php') ?>" 
+           class="relative p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 transition flex items-center justify-center cursor-pointer shadow-xs"
+           title="My Network &amp; Connections">
+            <i data-lucide="users" class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400"></i>
+            <?php if ($pendingConnCount > 0): ?>
+                <span class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center ring-2 ring-white dark:ring-slate-900 animate-pulse">
+                    <?= $pendingConnCount > 9 ? '9+' : $pendingConnCount ?>
+                </span>
+            <?php endif; ?>
+        </a>
+
         <!-- Notifications Bell -->
         <div class="relative" id="notif-dropdown-wrapper">
             <button id="founder-notif-btn" 

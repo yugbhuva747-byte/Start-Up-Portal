@@ -53,4 +53,7 @@
 <link rel="stylesheet" href="<?= function_exists('url') ? url('assets/css/fonts.css') : '../assets/css/fonts.css' ?>">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap"
     rel="stylesheet">
+<meta name="csrf-token" content="<?= function_exists('csrf_token') ? csrf_token() : '' ?>">
+<script>window.APP_URL = "<?= function_exists('url') ? rtrim(url('/'), '/') : '' ?>";</script>
+<script src="<?= function_exists('url') ? url('assets/js/connect.js') : '../assets/js/connect.js' ?>"></script>
 <?php include_once __DIR__ . '/theme.php'; ?>

@@ -259,6 +259,28 @@ require_once __DIR__ . '/theme.php';
             </a>
 
             <?php
+            $pendingConnCount = 0;
+            if ($founderUser && function_exists('get_pending_connections_count')) {
+                $pendingConnCount = get_pending_connections_count((int)$founderUser['id']);
+            }
+            ?>
+            <a href="<?= url('founder/network.php') ?>"
+               data-tooltip="My Network<?= $pendingConnCount > 0 ? " ($pendingConnCount Pending)" : '' ?>"
+               title="My Network"
+               class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'network.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <i data-lucide="users"
+                        class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'network.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
+                    <span class="sidebar-text-item whitespace-nowrap">My Network</span>
+                </div>
+                <?php if ($pendingConnCount > 0): ?>
+                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shadow-2xs">
+                        <?= $pendingConnCount ?>
+                    </span>
+                <?php endif; ?>
+            </a>
+
+            <?php
             $hasCompanyProfile = false;
             if ($founderUser) {
                 $hasCompanyProfile = function_exists('founder_has_company') ? founder_has_company((int)$founderUser['id']) : false;

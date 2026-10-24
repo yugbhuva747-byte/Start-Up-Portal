@@ -286,7 +286,8 @@ $roundLabels = [
     </style>
 </head>
 
-<body class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+<body
+    class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
 
     <?php include __DIR__ . '/../includes/investor/sidebar.php'; ?>
 
@@ -305,14 +306,16 @@ $roundLabels = [
                             <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
                             SEBI &amp; MCA Verified Dealflow
                         </span>
-                        <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">• Live Syndicate Allocations</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 font-semibold">• Live Syndicate
+                            Allocations</span>
                     </div>
                     <h1
                         class="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
                         Discover High-Growth Startups &amp; Deal Flow
                     </h1>
                     <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
-                        Back verified founders raising capital under institutional due diligence, transparent traction metrics, and escrow-secured investor syndicate protections.
+                        Back verified founders raising capital under institutional due diligence, transparent traction
+                        metrics, and escrow-secured investor syndicate protections.
                     </p>
                 </div>
             </div>
@@ -361,10 +364,13 @@ $roundLabels = [
 
                             <select name="sort" onchange="this.form.submit()"
                                 class="px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-200 text-xs font-semibold outline-none focus:border-indigo-500">
-                                <option value="active" <?= $sort === 'active' ? 'selected' : '' ?>>Sort: Most Active</option>
+                                <option value="active" <?= $sort === 'active' ? 'selected' : '' ?>>Sort: Most Active
+                                </option>
                                 <option value="newest" <?= $sort === 'newest' ? 'selected' : '' ?>>Sort: Newest</option>
-                                <option value="target" <?= $sort === 'target' ? 'selected' : '' ?>>Sort: Biggest Round</option>
-                                <option value="ending" <?= $sort === 'ending' ? 'selected' : '' ?>>Sort: Closing Soon</option>
+                                <option value="target" <?= $sort === 'target' ? 'selected' : '' ?>>Sort: Biggest Round
+                                </option>
+                                <option value="ending" <?= $sort === 'ending' ? 'selected' : '' ?>>Sort: Closing Soon
+                                </option>
                             </select>
 
                             <button type="submit"
@@ -379,11 +385,11 @@ $roundLabels = [
             </div>
 
 
-            <!-- 3. FEED + RIGHT RAIL -->
-            <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
+            <!-- 3. FEED + RIGHT RAIL (Matching Founder Feed Layout) -->
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
 
                 <!-- FEED -->
-                <div class="space-y-5 min-w-0" id="deal-feed">
+                <div class="flex-1 min-w-0 space-y-5" id="deal-feed">
 
                     <div
                         class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-semibold px-1">
@@ -392,15 +398,20 @@ $roundLabels = [
                             of <?= $totalDeals ?> startups</span>
                         <?php if ($search !== '' || $industry !== '' || $stage !== '' || $tab !== 'all'): ?>
                             <a href="<?= url('investor/discover.php') ?>"
-                                class="text-[#0A66C2] dark:text-blue-400 hover:underline flex items-center space-x-1">
+                                class="text-indigo-600 dark:text-indigo-400 hover:underline flex items-center space-x-1">
                                 <i data-lucide="rotate-ccw" class="w-3 h-3"></i><span>Reset filters</span>
                             </a>
                         <?php endif; ?>
-                    </                    <?php if (empty($pageStartups)): ?>
-                        <div class="rounded-3xl p-12 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-center space-y-3">
+                    </div>
+
+                    <?php if (empty($pageStartups)): ?>
+                        <div
+                            class="rounded-3xl p-12 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 text-center space-y-3">
                             <i data-lucide="search-x" class="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto"></i>
-                            <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">No Matching Startups Found</h3>
-                            <p class="text-xs text-slate-500 max-w-sm mx-auto">Try a broader keyword search, or reset the industry and funding stage filters.</p>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">No Matching Startups Found
+                            </h3>
+                            <p class="text-xs text-slate-500 max-w-sm mx-auto">Try a broader keyword search, or reset the
+                                industry and funding stage filters.</p>
                             <a href="<?= url('investor/discover.php') ?>"
                                 class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow-md hover:bg-indigo-700 transition">
                                 <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
@@ -411,7 +422,7 @@ $roundLabels = [
 
                         <?php foreach ($pageStartups as $s):
                             $hashId = hash_id_encode($s['id']);
-                            $detailUrl = url('investor/startup_detail.php?id=' . $hashId);
+                            $detailUrl = url('founder/company_view.php?id=' . $hashId);
                             $isSaved = in_array($s['id'], $watchlistIds);
                             $targetAmount = (float) ($s['target_amount'] ?? 0);
                             $raisedAmount = (float) ($s['amount_raised'] ?? 0);
@@ -456,17 +467,31 @@ $roundLabels = [
                                                     class="font-extrabold text-sm sm:text-base text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition truncate">
                                                     <?= htmlspecialchars($s['name']) ?>
                                                 </a>
-                                                <i data-lucide="badge-check" class="w-4 h-4 text-indigo-600 flex-shrink-0" title="MCA &amp; SEBI Verified Deal"></i>
+                                                <i data-lucide="badge-check" class="w-4 h-4 text-indigo-600 flex-shrink-0"
+                                                    title="MCA &amp; SEBI Verified Deal"></i>
                                             </div>
                                             <p class="text-[11.5px] text-slate-500 dark:text-slate-400 truncate">
-                                                Led by <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?> (<?= htmlspecialchars($s['founder_designation'] ?? 'Founder') ?>) • <?= htmlspecialchars($s['stage']) ?><?php if ($city): ?> • <?= htmlspecialchars($city) ?><?php endif; ?>
+                                                Led by <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?>
+                                                (<?= htmlspecialchars($s['founder_designation'] ?? 'Founder') ?>) •
+                                                <?= htmlspecialchars($s['stage']) ?>        <?php if ($city): ?> •
+                                                    <?= htmlspecialchars($city) ?>        <?php endif; ?>
                                             </p>
                                         </div>
                                     </div>
 
                                     <!-- Category & Status Badge -->
                                     <div class="flex items-center gap-2 flex-shrink-0">
-                                        <span class="px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-1.5 <?= $isLiveRound ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80' ?>">
+                                        <?php if (!empty($s['founder_user_id']) && $s['founder_user_id'] != $user['id']): ?>
+                                            <?= render_connect_button((int) $s['founder_user_id'], [
+                                                'name' => $s['founder_name'] ?? 'Founder',
+                                                'headline' => ($s['founder_designation'] ?? 'Founder') . ' at ' . $s['name'],
+                                                'avatar' => get_avatar_url($s['founder_avatar'] ?? ''),
+                                                'class' => 'text-[11px] py-1 px-2.5 hidden sm:inline-flex'
+                                            ]) ?>
+                                        <?php endif; ?>
+
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-1.5 <?= $isLiveRound ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80' : 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80' ?>">
                                             <?php if ($isLiveRound): ?>
                                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                             <?php endif; ?>
@@ -478,23 +503,30 @@ $roundLabels = [
                                 <!-- Pitch Headline & Content Body -->
                                 <div class="space-y-2.5">
                                     <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
-                                        <?= htmlspecialchars($s['name']) ?> — <?= htmlspecialchars($s['pitch'] ?? 'Pioneering innovative solutions with validated product-market fit.') ?>
+                                        <a href="<?= $detailUrl ?>"
+                                            class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">
+                                            <?= htmlspecialchars($s['name']) ?> —
+                                            <?= htmlspecialchars($s['pitch'] ?? 'Pioneering innovative solutions with validated product-market fit.') ?>
+                                        </a>
                                     </h3>
 
                                     <?php if (!empty($s['description'])): ?>
-                                        <p class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal whitespace-pre-line line-clamp-3">
+                                        <p
+                                            class="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal whitespace-pre-line line-clamp-3">
                                             <?= htmlspecialchars($s['description']) ?>
                                         </p>
                                     <?php endif; ?>
 
                                     <!-- Traction Metrics Pill (Matching Founder Feed) -->
                                     <div class="flex flex-wrap items-center gap-2 pt-0.5">
-                                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
+                                        <div
+                                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold">
                                             <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
                                             <span><?= $isLiveRound ? 'Round Active: ' . format_inr($raisedAmount) . ' Committed' : 'Verified Venture • ' . htmlspecialchars($s['stage']) ?></span>
                                         </div>
                                         <?php if ($hasRound): ?>
-                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
+                                            <div
+                                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs font-bold">
                                                 <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-indigo-600"></i>
                                                 <span>Target: <?= format_inr($targetAmount) ?> (<?= $pct ?>% Raised)</span>
                                             </div>
@@ -504,40 +536,60 @@ $roundLabels = [
 
                                 <!-- Elevated Funding Progress & Key Metrics Box -->
                                 <?php if ($hasRound): ?>
-                                    <div class="rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
+                                    <div
+                                        class="rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
                                         <div class="flex items-end justify-between gap-3">
                                             <div>
-                                                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                                <div
+                                                    class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                                                     <?= htmlspecialchars($s['round_name'] ?? 'Syndicate Funding Round') ?>
                                                 </div>
-                                                <div class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
+                                                <div
+                                                    class="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
                                                     <?= format_inr($raisedAmount) ?>
-                                                    <span class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">raised of <?= format_inr($targetAmount) ?></span>
+                                                    <span
+                                                        class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">raised
+                                                        of <?= format_inr($targetAmount) ?></span>
                                                 </div>
                                             </div>
                                             <div class="text-right">
-                                                <div class="text-lg sm:text-xl font-black text-indigo-600 dark:text-indigo-400"><?= $pct ?>%</div>
+                                                <div class="text-lg sm:text-xl font-black text-indigo-600 dark:text-indigo-400">
+                                                    <?= $pct ?>%</div>
                                             </div>
                                         </div>
                                         <div class="h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                                            <div class="h-full rounded-full bg-gradient-to-r from-indigo-600 to-emerald-500 transition-all duration-500" style="width: <?= $pct ?>%"></div>
+                                            <div class="h-full rounded-full bg-gradient-to-r from-indigo-600 to-emerald-500 transition-all duration-500"
+                                                style="width: <?= $pct ?>%"></div>
                                         </div>
                                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Min. Ticket</span>
-                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['min_investment']) ? format_inr($s['min_investment']) : '—' ?></span>
+                                            <div
+                                                class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Min.
+                                                    Ticket</span>
+                                                <span
+                                                    class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['min_investment']) ? format_inr($s['min_investment']) : '—' ?></span>
                                             </div>
-                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Valuation</span>
-                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['valuation']) ? format_inr($s['valuation']) : '—' ?></span>
+                                            <div
+                                                class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Valuation</span>
+                                                <span
+                                                    class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= !empty($s['valuation']) ? format_inr($s['valuation']) : '—' ?></span>
                                             </div>
-                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Equity</span>
-                                                <span class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= isset($s['equity_offered']) && $s['equity_offered'] !== '' ? htmlspecialchars(rtrim(rtrim(number_format((float) $s['equity_offered'], 2), '0'), '.')) . '%' : '—' ?></span>
+                                            <div
+                                                class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Equity</span>
+                                                <span
+                                                    class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white"><?= isset($s['equity_offered']) && $s['equity_offered'] !== '' ? htmlspecialchars(rtrim(rtrim(number_format((float) $s['equity_offered'], 2), '0'), '.')) . '%' : '—' ?></span>
                                             </div>
-                                            <div class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
-                                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Closing</span>
-                                                <span class="text-xs sm:text-sm font-extrabold <?= ($daysLeft !== null && $daysLeft <= 7 && $daysLeft > 0) ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?>">
+                                            <div
+                                                class="p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-slate-800">
+                                                <span
+                                                    class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Closing</span>
+                                                <span
+                                                    class="text-xs sm:text-sm font-extrabold <?= ($daysLeft !== null && $daysLeft <= 7 && $daysLeft > 0) ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white' ?>">
                                                     <?= $daysLeft === null ? '—' : ($daysLeft > 0 ? $daysLeft . ' days left' : 'Closed') ?>
                                                 </span>
                                             </div>
@@ -552,10 +604,15 @@ $roundLabels = [
                                         <img src="<?= htmlspecialchars($gallery[0]['url']) ?>" loading="lazy"
                                             alt="<?= htmlspecialchars($s['name']) ?>"
                                             class="w-full h-full max-h-96 object-cover object-center group-hover:scale-101 transition duration-500">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
-                                        <div class="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
-                                            <span class="text-xs font-bold drop-shadow truncate max-w-[280px]"><?= htmlspecialchars($gallery[0]['title'] ?? $s['name']) ?></span>
-                                            <span class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-[11px] font-semibold flex items-center gap-1.5">
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none">
+                                        </div>
+                                        <div
+                                            class="absolute bottom-3 left-4 right-4 flex items-center justify-between text-white pointer-events-none">
+                                            <span
+                                                class="text-xs font-bold drop-shadow truncate max-w-[280px]"><?= htmlspecialchars($gallery[0]['title'] ?? $s['name']) ?></span>
+                                            <span
+                                                class="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-xs text-[11px] font-semibold flex items-center gap-1.5">
                                                 <i data-lucide="images" class="w-3.5 h-3.5 text-indigo-400"></i>
                                                 <span>View <?= count($gallery) ?> Photos</span>
                                             </span>
@@ -564,9 +621,11 @@ $roundLabels = [
                                 <?php endif; ?>
 
                                 <!-- Post Social Proof & Due Diligence Stats Bar -->
-                                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80 font-medium">
+                                <div
+                                    class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80 font-medium">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs">
+                                        <span
+                                            class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xs">
                                             <i data-lucide="bookmark" class="w-2.5 h-2.5 fill-white text-white"></i>
                                         </span>
                                         <span><?= (int) $s['saves_count'] ?> investors tracking</span>
@@ -584,7 +643,8 @@ $roundLabels = [
                                 </div>
 
                                 <!-- Interactive Action Buttons (Matching Founder Feed 4-Grid Layout) -->
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                                <div
+                                    class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
                                     <!-- 1. Save / Bookmark Toggle -->
                                     <form action="<?= url('investor/discover.php') ?>" method="POST" class="w-full">
                                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
@@ -592,16 +652,17 @@ $roundLabels = [
                                         <input type="hidden" name="company_id" value="<?= $hashId ?>">
                                         <button type="submit"
                                             class="w-full py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer <?= $isSaved ? 'text-amber-600 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-transparent' ?>">
-                                            <i data-lucide="bookmark" class="w-4 h-4 <?= $isSaved ? 'fill-amber-500 text-amber-500' : '' ?>"></i>
+                                            <i data-lucide="bookmark"
+                                                class="w-4 h-4 <?= $isSaved ? 'fill-amber-500 text-amber-500' : '' ?>"></i>
                                             <span><?= $isSaved ? 'Saved' : 'Save' ?></span>
                                         </button>
                                     </form>
 
-                                    <!-- 2. Deal Room / Overview -->
+                                    <!-- 2. Company Profile / Deal Room -->
                                     <a href="<?= $detailUrl ?>"
                                         class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 border border-transparent">
                                         <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
-                                        <span>Deal Room</span>
+                                        <span>Company Profile</span>
                                     </a>
 
                                     <!-- 3. Chat with Founder / Share -->
@@ -612,7 +673,8 @@ $roundLabels = [
                                             <span>Chat Founder</span>
                                         </a>
                                     <?php else: ?>
-                                        <button type="button" onclick="copyDealLink('<?= htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8') ?>')"
+                                        <button type="button"
+                                            onclick="copyDealLink('<?= htmlspecialchars($detailUrl, ENT_QUOTES, 'UTF-8') ?>')"
                                             class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 border border-transparent cursor-pointer">
                                             <i data-lucide="share-2" class="w-4 h-4 text-indigo-500"></i>
                                             <span>Share Deal</span>
@@ -663,28 +725,33 @@ $roundLabels = [
                 </div>
 
                 <!-- RIGHT RAIL (Matching Founder Feed Sidebar Design with Read More toggles) -->
-                <aside class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5">
+                <aside
+                    class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5">
                     <!-- Browse by Sector Card -->
-                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <div
+                        class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div
+                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                             <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <i data-lucide="layers" class="w-3.5 h-3.5 text-indigo-600"></i>
                                 <span>Browse by Sector</span>
                             </h3>
-                            <span class="text-[10.5px] text-indigo-600 font-bold"><?= count($industryCounts) ?> Sectors</span>
+                            <span class="text-[10.5px] text-indigo-600 font-bold"><?= count($industryCounts) ?>
+                                Sectors</span>
                         </div>
 
                         <div class="space-y-1.5" id="sector-list-container">
-                            <?php 
+                            <?php
                             $indIndex = 0;
-                            foreach ($industryCounts as $ind => $cnt): 
+                            foreach ($industryCounts as $ind => $cnt):
                                 $isExtra = $indIndex >= 2;
                                 $indIndex++;
-                            ?>
+                                ?>
                                 <a href="<?= discover_link(['industry' => $ind, 'tab' => null, 'page' => null]) ?>"
                                     class="<?= $isExtra ? 'sector-extra-item hidden' : '' ?> flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition <?= $industry === $ind ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800/60' ?>">
                                     <span class="truncate"><?= htmlspecialchars($ind) ?></span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] <?= $industry === $ind ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' ?>"><?= (int) $cnt ?></span>
+                                    <span
+                                        class="px-2 py-0.5 rounded-full text-[10px] <?= $industry === $ind ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' ?>"><?= (int) $cnt ?></span>
                                 </a>
                             <?php endforeach; ?>
                             <?php if (empty($industryCounts)): ?>
@@ -695,15 +762,18 @@ $roundLabels = [
                         <?php if (count($industryCounts) > 2): ?>
                             <button type="button" id="btn-toggle-sectors" onclick="toggleSectorList()"
                                 class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
-                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500" id="icon-toggle-sectors"></i>
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"
+                                    id="icon-toggle-sectors"></i>
                                 <span id="text-toggle-sectors">Read More (+<?= count($industryCounts) - 2 ?>)</span>
                             </button>
                         <?php endif; ?>
                     </div>
 
                     <!-- Browse by Stage Card -->
-                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                        <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <div
+                        class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <div
+                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                             <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <i data-lucide="rocket" class="w-3.5 h-3.5 text-indigo-600"></i>
                                 <span>Venture Stages</span>
@@ -712,12 +782,12 @@ $roundLabels = [
                         </div>
 
                         <div class="flex flex-wrap gap-1.5" id="stage-list-container">
-                            <?php 
+                            <?php
                             $stgIndex = 0;
-                            foreach ($stageCounts as $stg => $cnt): 
+                            foreach ($stageCounts as $stg => $cnt):
                                 $isExtraStg = $stgIndex >= 3;
                                 $stgIndex++;
-                            ?>
+                                ?>
                                 <a href="<?= discover_link(['stage' => $stg, 'tab' => null, 'page' => null]) ?>"
                                     class="<?= $isExtraStg ? 'stage-extra-item hidden' : '' ?> px-2.5 py-1 rounded-xl text-[11px] font-bold transition <?= $stage === $stg ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-slate-700' ?>">
                                     <?= htmlspecialchars($stg) ?> · <?= (int) $cnt ?>
@@ -728,30 +798,39 @@ $roundLabels = [
                         <?php if (count($stageCounts) > 3): ?>
                             <button type="button" id="btn-toggle-stages" onclick="toggleStageList()"
                                 class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
-                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500" id="icon-toggle-stages"></i>
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"
+                                    id="icon-toggle-stages"></i>
                                 <span id="text-toggle-stages">Read More (+<?= count($stageCounts) - 3 ?>)</span>
                             </button>
                         <?php endif; ?>
                     </div>
 
                     <!-- How Investing Works Card -->
-                    <div class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
-                        <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <div
+                        class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                        <h3
+                            class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5 border-b border-slate-100 dark:border-slate-800 pb-2">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600"></i>
                             <span>Institutional Protections</span>
                         </h3>
                         <ol class="space-y-2.5 text-xs text-slate-600 dark:text-slate-300">
                             <li class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">1</span>
-                                <span class="leading-relaxed">Audit the data room, audited pitch decks, and verified capitalization tables.</span>
+                                <span
+                                    class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">1</span>
+                                <span class="leading-relaxed">Audit the data room, audited pitch decks, and verified
+                                    capitalization tables.</span>
                             </li>
                             <li class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">2</span>
-                                <span class="leading-relaxed">Direct messaging with verified founders to discuss syndication and terms.</span>
+                                <span
+                                    class="w-5 h-5 rounded-full bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">2</span>
+                                <span class="leading-relaxed">Direct messaging with verified founders to discuss
+                                    syndication and terms.</span>
                             </li>
                             <li class="flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">3</span>
-                                <span class="leading-relaxed">Escrow-backed investment flow with digital legal signatures and automated share allocation.</span>
+                                <span
+                                    class="w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">3</span>
+                                <span class="leading-relaxed">Escrow-backed investment flow with digital legal
+                                    signatures and automated share allocation.</span>
                             </li>
                         </ol>
                     </div>

@@ -527,11 +527,22 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                         </div>
                                     </div>
 
-                                    <!-- Category Badge -->
-                                    <span
-                                        class="px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80 flex-shrink-0">
-                                        <?= htmlspecialchars($p['category']) ?>
-                                    </span>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <?php if ($p['founder_id'] != $user['id']): ?>
+                                            <?= render_connect_button((int)$p['founder_id'], [
+                                                'name' => $p['founder_name'],
+                                                'headline' => $authorSubtitle,
+                                                'avatar' => $avatarSrc,
+                                                'class' => 'text-[11px] py-1 px-2.5 hidden sm:inline-flex'
+                                            ]) ?>
+                                        <?php endif; ?>
+
+                                        <!-- Category Badge -->
+                                        <span
+                                            class="px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800/80 flex-shrink-0">
+                                            <?= htmlspecialchars($p['category']) ?>
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <!-- Post Headline & Content -->
@@ -764,18 +775,25 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between pt-0.5 text-xs">
+                                    <div class="flex items-center justify-between pt-1 gap-1 text-xs">
                                         <a href="<?= url('founder/company_view.php?id=' . encode_id($ts['id'])) ?>"
                                             class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1 text-[11px]">
                                             <span>Deal Room</span>
                                             <i data-lucide="arrow-right" class="w-3 h-3"></i>
                                         </a>
 
-                                        <button type="button"
-                                            onclick="triggerFeedAngelModal(<?= $ts['id'] ?>, '<?= htmlspecialchars(addslashes($ts['name'])) ?>')"
-                                            class="px-2 py-0.5 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider cursor-pointer">
-                                            Invest
-                                        </button>
+                                        <div class="flex items-center gap-1">
+                                            <?= render_company_connect_button((int)$ts['id'], [
+                                                'name' => $ts['name'],
+                                                'logo' => get_company_logo_url($ts['logo_url'] ?? ''),
+                                                'class' => 'text-[10px] py-0.5 px-2'
+                                            ]) ?>
+                                            <button type="button"
+                                                onclick="triggerFeedAngelModal(<?= $ts['id'] ?>, '<?= htmlspecialchars(addslashes($ts['name'])) ?>')"
+                                                class="px-2 py-0.5 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider cursor-pointer">
+                                                Invest
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -821,10 +839,14 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                         </div>
                                     </div>
 
-                                    <a href="<?= url('founder/view.php?id=' . encode_id($nf['id'])) ?>"
-                                        class="px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition flex-shrink-0">
-                                        View
-                                    </a>
+                                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                                        <?= render_connect_button((int)$nf['id'], [
+                                            'name' => $nf['name'],
+                                            'headline' => $nf['company_name'] ?? 'Startup Founder',
+                                            'avatar' => get_avatar_url($nf['avatar_url'] ?? ''),
+                                            'class' => 'text-[11px] py-1 px-2.5'
+                                        ]) ?>
+                                    </div>
                                 </div>
                             <?php endforeach; ?>
                         </div>

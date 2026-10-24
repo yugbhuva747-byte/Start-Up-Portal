@@ -18,7 +18,8 @@ if ($companyId <= 0 && is_numeric($hashId)) {
 
 if ($companyId <= 0) {
     set_flash('error', 'Company profile not specified or invalid.');
-    header('Location: ' . url('founder/feed.php'));
+    $fallbackUrl = ($currentUser['role'] ?? '') === 'investor' ? url('investor/discover.php') : url('founder/feed.php');
+    header('Location: ' . $fallbackUrl);
     exit;
 }
 
@@ -38,7 +39,8 @@ if ($db) {
 
     if (!$company) {
         set_flash('error', 'Company not found.');
-        header('Location: ' . url('founder/feed.php'));
+        $fallbackUrl = ($currentUser['role'] ?? '') === 'investor' ? url('investor/discover.php') : url('founder/feed.php');
+        header('Location: ' . $fallbackUrl);
         exit;
     }
 
@@ -183,10 +185,22 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
             <!-- Breadcrumb Navigation -->
             <div class="flex items-center justify-between text-sm text-slate-500 font-medium">
                 <div class="flex items-center space-x-2">
-                    <a href="<?= url('founder/feed.php') ?>" class="hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5 font-bold text-indigo-600 dark:text-indigo-400">
-                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                        <span>Founder Network</span>
-                    </a>
+                    <?php if (($currentUser['role'] ?? '') === 'investor'): ?>
+                        <a href="<?= url('investor/discover.php') ?>" class="hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5 font-bold text-indigo-600 dark:text-indigo-400">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Discover Startups</span>
+                        </a>
+                    <?php elseif (($currentUser['role'] ?? '') === 'admin'): ?>
+                        <a href="<?= url('admin/companies.php') ?>" class="hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5 font-bold text-indigo-600 dark:text-indigo-400">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Companies Registry</span>
+                        </a>
+                    <?php else: ?>
+                        <a href="<?= url('founder/feed.php') ?>" class="hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5 font-bold text-indigo-600 dark:text-indigo-400">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            <span>Founder Network</span>
+                        </a>
+                    <?php endif; ?>
                     <span>/</span>
                     <span class="text-slate-900 dark:text-white font-bold truncate max-w-xs"><?= htmlspecialchars($company['name']) ?></span>
                 </div>
@@ -308,13 +322,34 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                         <!-- Right Actions: Angel Co-Invest & Message -->
                         <div class="lg:w-80 flex flex-col justify-between gap-3 flex-shrink-0">
                             <?php if (!$isMyCompany): ?>
+                                <?php if (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])): ?>
+                                    <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>"
+                                       class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm shadow-lg shadow-emerald-600/25 transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                        <i data-lucide="zap" class="w-5 h-5 text-amber-300"></i>
+                                        <span>Invest in Live Round</span>
+                                    </a>
+                                <?php endif; ?>
+
                                 <button type="button" onclick="openAngelInvestModal()"
-                                        class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-extrabold text-sm shadow-lg shadow-indigo-600/25 transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                    <i data-lucide="badge-dollar-sign" class="w-5 h-5 text-amber-300"></i>
-                                    <span><?= $existingInterest ? 'Update Angel Interest' : 'Angel Invest / Express Interest' ?></span>
+                                        class="w-full py-3 px-5 rounded-2xl <?= (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])) ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700' : 'bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white shadow-lg shadow-indigo-600/25' ?> font-extrabold text-xs sm:text-sm transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                    <i data-lucide="badge-dollar-sign" class="w-4.5 h-4.5 text-amber-400"></i>
+                                    <span><?= $existingInterest ? 'Update Investment Interest' : 'Express Direct / Angel Interest' ?></span>
                                 </button>
                                 
-                                <a href="<?= url('founder/messages.php') ?>" 
+                                <?php 
+                                $firstFounderHash = !empty($founders[0]['id']) ? hash_id_encode($founders[0]['id']) : '';
+                                $teamMsgUrl = (($currentUser['role'] ?? '') === 'investor')
+                                    ? ($firstFounderHash ? url('investor/messages.php?founder=' . $firstFounderHash . '&company=' . encode_id($companyId)) : url('investor/messages.php'))
+                                    : url('founder/messages.php');
+                                ?>
+                                <?= render_company_connect_button((int)$companyId, [
+                                    'name' => $company['name'],
+                                    'logo' => get_company_logo_url($company['logo_url'] ?? ''),
+                                    'button_text' => 'Connect with Company',
+                                    'class' => 'w-full py-2.5 px-4 justify-center shadow-xs'
+                                ]) ?>
+
+                                <a href="<?= $teamMsgUrl ?>" 
                                    class="w-full py-2.5 px-4 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-bold text-xs transition flex items-center justify-center gap-2 shadow-2xs">
                                     <i data-lucide="message-square" class="w-4 h-4 text-indigo-500"></i>
                                     <span>Message Founder Team</span>
@@ -322,14 +357,14 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                             <?php else: ?>
                                 <div class="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 text-center">
                                     <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 block mb-1">Your Startup Company</span>
-                                    <p class="text-[11px] text-slate-600 dark:text-slate-400">This is how your venture appears to other founders and angel investors.</p>
+                                    <p class="text-[11px] text-slate-600 dark:text-slate-400">This is how your venture appears to investors and syndicate partners.</p>
                                 </div>
                             <?php endif; ?>
 
                             <?php if ($existingInterest): ?>
                                 <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-medium">
                                     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
-                                    <span>You submitted angel interest on <?= date('M d, Y', strtotime($existingInterest['created_at'])) ?> (Status: <strong><?= ucfirst($existingInterest['status']) ?></strong>)</span>
+                                    <span>You submitted investment interest on <?= date('M d, Y', strtotime($existingInterest['created_at'])) ?> (Status: <strong><?= ucfirst($existingInterest['status']) ?></strong>)</span>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -351,9 +386,16 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                                 </p>
                             </div>
                             <?php if (!$isMyCompany): ?>
-                                <button type="button" onclick="openAngelInvestModal()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-sm cursor-pointer active:scale-95 flex-shrink-0">
-                                    Participate in Round
-                                </button>
+                                <?php if (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])): ?>
+                                    <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-sm active:scale-95 flex-shrink-0 inline-flex items-center gap-1.5">
+                                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                                        <span>Participate in Round</span>
+                                    </a>
+                                <?php else: ?>
+                                    <button type="button" onclick="openAngelInvestModal()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-sm cursor-pointer active:scale-95 flex-shrink-0">
+                                        Participate in Round
+                                    </button>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
@@ -416,20 +458,29 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                             </div>
                         <?php else: ?>
                             <div class="space-y-3">
-                                <?php foreach ($documents as $doc): ?>
+                                <?php foreach ($documents as $doc): 
+                                    $docName = !empty($doc['title']) ? $doc['title'] : (!empty($doc['document_name']) ? $doc['document_name'] : 'Pitch Document');
+                                    $docCat = !empty($doc['document_type']) ? $doc['document_type'] : (!empty($doc['category']) ? $doc['category'] : 'Pitch Deck');
+                                    $docDate = !empty($doc['uploaded_at']) ? date('M d, Y', strtotime($doc['uploaded_at'])) : 'Verified';
+                                ?>
                                     <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex items-center justify-between gap-3">
                                         <div class="flex items-center gap-3 min-w-0">
                                             <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
                                                 <i data-lucide="file-check" class="w-5 h-5"></i>
                                             </div>
                                             <div class="min-w-0">
-                                                <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate"><?= htmlspecialchars($doc['document_name']) ?></div>
-                                                <div class="text-[11px] text-slate-500 dark:text-slate-400"><?= htmlspecialchars($doc['category'] ?? 'Pitch Deck') ?> • <?= date('M d, Y', strtotime($doc['uploaded_at'])) ?></div>
+                                                <div class="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate"><?= htmlspecialchars($docName) ?></div>
+                                                <div class="text-[11px] text-slate-500 dark:text-slate-400"><?= htmlspecialchars($docCat) ?> • <?= $docDate ?></div>
                                             </div>
                                         </div>
-                                        <span class="text-[10.5px] px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                                            <i data-lucide="shield" class="w-3 h-3"></i> Verified
-                                        </span>
+                                        <div class="flex items-center gap-2 flex-shrink-0">
+                                            <a href="<?= url('download.php?id=' . encode_id($doc['id']) . '&type=company') ?>" class="text-[11px] px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800 flex items-center gap-1 transition shadow-2xs">
+                                                <i data-lucide="download" class="w-3 h-3"></i> View
+                                            </a>
+                                            <span class="text-[10.5px] px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-800 hidden sm:flex items-center gap-1">
+                                                <i data-lucide="shield" class="w-3 h-3"></i> Verified
+                                            </span>
+                                        </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
@@ -474,16 +525,29 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                                         </p>
                                     <?php endif; ?>
 
-                                    <div class="pt-2 border-t border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between text-xs">
-                                        <a href="<?= url('founder/view.php?id=' . encode_id($f['id'])) ?>" class="text-indigo-600 dark:text-indigo-400 hover:underline font-bold flex items-center gap-1">
-                                            <span>Full Profile</span>
-                                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                        </a>
-
-                                        <?php if (!empty($f['linkedin_url'])): ?>
-                                            <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 transition" title="LinkedIn">
-                                                <i data-lucide="linkedin" class="w-4 h-4"></i>
+                                    <div class="pt-2.5 border-t border-slate-200/70 dark:border-slate-700/70 flex flex-wrap items-center justify-between gap-2 text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <a href="<?= url('founder/view.php?id=' . encode_id($f['id'])) ?>" class="text-indigo-600 dark:text-indigo-400 hover:underline font-bold flex items-center gap-1 text-xs">
+                                                <span>Profile</span>
+                                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                             </a>
+
+                                            <?php if (!empty($f['linkedin_url'])): ?>
+                                                <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" rel="noopener noreferrer" class="text-slate-400 hover:text-blue-600 transition" title="LinkedIn">
+                                                    <i data-lucide="linkedin" class="w-4 h-4"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <?php if ($f['id'] != $currentUser['id']): ?>
+                                            <div>
+                                                <?= render_connect_button((int)$f['id'], [
+                                                    'name' => $f['name'],
+                                                    'headline' => ($f['designation'] ?? 'Founder') . ' at ' . $company['name'],
+                                                    'avatar' => get_avatar_url($f['avatar_url'] ?? ''),
+                                                    'class' => 'text-[11px] py-1 px-2.5'
+                                                ]) ?>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -591,6 +655,11 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
             if (input) input.value = amt;
         }
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAngelInvestModal(); });
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
+    <script src="<?= url('assets/js/connect.js') ?>"></script>
 </body>
 </html>

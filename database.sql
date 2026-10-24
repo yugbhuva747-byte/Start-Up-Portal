@@ -733,3 +733,22 @@ CREATE TABLE IF NOT EXISTS `company_awards` (
     INDEX `idx_company_awards_company` (`company_id`),
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 39. LinkedIn Style User Connections (Founder & Investor Networking)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `user_connections` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `requester_id` INT NOT NULL,
+    `receiver_id` INT NOT NULL,
+    `status` ENUM('pending', 'accepted', 'declined', 'withdrawn') NOT NULL DEFAULT 'pending',
+    `message` TEXT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_connection_pair` (`requester_id`, `receiver_id`),
+    INDEX `idx_receiver_status` (`receiver_id`, `status`),
+    INDEX `idx_requester_status` (`requester_id`, `status`),
+    FOREIGN KEY (`requester_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

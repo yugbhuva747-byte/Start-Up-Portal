@@ -206,14 +206,25 @@ $flash = get_flash();
                         </div>
 
                         <!-- Top Level Action Buttons -->
-                        <div class="flex items-center space-x-3 pt-2 md:pt-0">
+                        <div class="flex flex-wrap items-center gap-2.5 pt-2 md:pt-0">
                             <?php if (!$isSelf): ?>
-                                <a href="<?= url('founder/messages.php') ?>" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition flex items-center space-x-2">
-                                    <i data-lucide="message-square" class="w-4 h-4"></i>
-                                    <span>Pitch Startup / Message</span>
+                                <?= render_connect_button((int)$investor['id'], [
+                                    'name' => $investor['name'],
+                                    'headline' => ($profile['investor_type'] ?? 'Angel Investor') . (!empty($profile['organization']) ? ' at ' . $profile['organization'] : ''),
+                                    'avatar' => get_avatar_url($investor['avatar_url'] ?? '')
+                                ]) ?>
+
+                                <?php 
+                                $chatLink = ($currentUser['role'] === 'founder') 
+                                    ? url('founder/messages.php') 
+                                    : url('investor/messages.php');
+                                ?>
+                                <a href="<?= $chatLink ?>" class="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl border border-slate-200 dark:border-slate-700 shadow-2xs transition flex items-center space-x-1.5">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5 text-blue-600"></i>
+                                    <span>Message</span>
                                 </a>
                             <?php else: ?>
-                                <a href="<?= url('investor/profile.php') ?>" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2">
+                                <a href="<?= url('investor/profile.php') ?>" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
                                     <i data-lucide="settings" class="w-4 h-4"></i>
                                     <span>Thesis & Preferences</span>
                                 </a>

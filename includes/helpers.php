@@ -2045,3 +2045,685 @@ function enforce_maintenance_mode(): void
     header('Location: ' . url('maintenance.php'), true, 307);
     exit;
 }
+
+// =========================================================================
+// 19. LINKEDIN-STYLE USER CONNECTIONS & NETWORKING (FOUNDERS & INVESTORS)
+// =========================================================================
+
+/**
+ * Get connection status between two users
+ * Statuses: 'self', 'connected', 'pending_sent', 'pending_received', 'declined', 'none'
+ */
+function get_connection_status(int $userAId, int $userBId): array {
+    if ($userAId <= 0 || $userBId <= 0) {
+        return ['status' => 'none', 'is_connected' => false, 'connection' => null];
+    }
+    if ($userAId === $userBId) {
+        return ['status' => 'self', 'is_connected' => false, 'connection' => null];
+    }
+
+    $db = get_db();
+    if (!$db) {
+        return ['status' => 'none', 'is_connected' => false, 'connection' => null];
+    }
+
+    try {
+        $stmt = $db->prepare("
+            SELECT * FROM user_connections 
+            WHERE (requester_id = ? AND receiver_id = ?) 
+               OR (requester_id = ? AND receiver_id = ?)
+            ORDER BY updated_at DESC LIMIT 1
+        ");
+        $stmt->execute([$userAId, $userBId, $userBId, $userAId]);
+        $conn = $stmt->fetch();
+
+        if (!$conn) {
+            return ['status' => 'none', 'is_connected' => false, 'connection' => null];
+        }
+
+        if ($conn['status'] === 'accepted') {
+            return ['status' => 'connected', 'is_connected' => true, 'connection' => $conn];
+        }
+
+        if ($conn['status'] === 'pending') {
+            if ((int)$conn['requester_id'] === $userAId) {
+                return ['status' => 'pending_sent', 'is_connected' => false, 'connection' => $conn];
+            } else {
+                return ['status' => 'pending_received', 'is_connected' => false, 'connection' => $conn];
+            }
+        }
+
+        if ($conn['status'] === 'declined' || $conn['status'] === 'withdrawn') {
+            return ['status' => 'none', 'is_connected' => false, 'connection' => $conn];
+        }
+
+        return ['status' => 'none', 'is_connected' => false, 'connection' => $conn];
+    } catch (\Throwable $e) {
+        error_log("Connection status error: " . $e->getMessage());
+        return ['status' => 'none', 'is_connected' => false, 'connection' => null];
+    }
+}
+
+/**
+ * Send a connection request from one user to another
+ */
+function send_connection_request(int $fromUserId, int $toUserId, ?string $message = null, int $companyId = 0): array {
+    if ($fromUserId <= 0 || $toUserId <= 0 || $fromUserId === $toUserId) {
+        return ['success' => false, 'error' => 'Invalid user selected.'];
+    }
+
+    $db = get_db();
+    if (!$db) {
+        return ['success' => false, 'error' => 'Database connection failed.'];
+    }
+
+    try {
+        // Verify target user exists and is active
+        $uStmt = $db->prepare("SELECT id, name, role, email FROM users WHERE id = ? AND status != 'suspended'");
+        $uStmt->execute([$toUserId]);
+        $targetUser = $uStmt->fetch();
+
+        if (!$targetUser) {
+            return ['success' => false, 'error' => 'Target user does not exist or account is inactive.'];
+        }
+
+        // Fetch sender user info
+        $sStmt = $db->prepare("SELECT id, name, role FROM users WHERE id = ?");
+        $sStmt->execute([$fromUserId]);
+        $sender = $sStmt->fetch();
+
+        // Check company info if companyId provided
+        $companyName = '';
+        if ($companyId > 0) {
+            $compStmt = $db->prepare("SELECT id, name FROM companies WHERE id = ?");
+            $compStmt->execute([$companyId]);
+            $compRow = $compStmt->fetch();
+            if ($compRow) {
+                $companyName = $compRow['name'];
+            }
+        }
+
+        // Check existing connection
+        $chk = $db->prepare("
+            SELECT * FROM user_connections 
+            WHERE (requester_id = ? AND receiver_id = ?) 
+               OR (requester_id = ? AND receiver_id = ?)
+            LIMIT 1
+        ");
+        $chk->execute([$fromUserId, $toUserId, $toUserId, $fromUserId]);
+        $existing = $chk->fetch();
+
+        $cleanMsg = $message !== null ? trim(substr($message, 0, 500)) : null;
+
+        if ($existing) {
+            if ($existing['status'] === 'accepted') {
+                return ['success' => false, 'error' => 'You are already connected with ' . htmlspecialchars($targetUser['name']) . ($companyName ? " ({$companyName})" : '') . '.'];
+            }
+            if ($existing['status'] === 'pending') {
+                if ((int)$existing['requester_id'] === $fromUserId) {
+                    return ['success' => false, 'error' => 'Connection request is already pending.'];
+                } else {
+                    // Other user already invited this user -> Auto-accept!
+                    return respond_connection_request((int)$existing['id'], $fromUserId, 'accept');
+                }
+            }
+
+            // If declined or withdrawn, re-activate as pending
+            $upd = $db->prepare("
+                UPDATE user_connections 
+                SET requester_id = ?, receiver_id = ?, status = 'pending', message = ?, updated_at = NOW() 
+                WHERE id = ?
+            ");
+            $upd->execute([$fromUserId, $toUserId, $cleanMsg, $existing['id']]);
+            $connId = (int)$existing['id'];
+        } else {
+            $ins = $db->prepare("
+                INSERT INTO user_connections (requester_id, receiver_id, status, message, created_at, updated_at) 
+                VALUES (?, ?, 'pending', ?, NOW(), NOW())
+            ");
+            $ins->execute([$fromUserId, $toUserId, $cleanMsg]);
+            $connId = (int)$db->lastInsertId();
+        }
+
+        // Send in-app notification to the handling founder
+        $targetRoleRedirect = $targetUser['role'] === 'founder' ? 'founder/network.php?tab=invitations' : 'investor/network.php?tab=invitations';
+        
+        if ($companyName) {
+            $notifTitle = "New Connection Request • {$companyName}";
+            $notifBody = "{$sender['name']} (" . ucfirst($sender['role']) . ") sent a connection request to your startup {$companyName}" . ($cleanMsg ? ": \"" . htmlspecialchars($cleanMsg) . "\"" : ".");
+            $respMsg = "Connection invitation sent to {$companyName}'s founder ({$targetUser['name']})!";
+        } else {
+            $notifTitle = "New Connection Request";
+            $notifBody = "{$sender['name']} (" . ucfirst($sender['role']) . ") sent you a connection request" . ($cleanMsg ? ": \"" . htmlspecialchars($cleanMsg) . "\"" : ".");
+            $respMsg = "Connection invitation sent to " . htmlspecialchars($targetUser['name']) . "!";
+        }
+
+        send_notification(
+            $toUserId,
+            $notifTitle,
+            $notifBody,
+            "info",
+            $targetRoleRedirect
+        );
+
+        // If companyId provided and there are other co-founders, notify them as well
+        if ($companyId > 0) {
+            $coStmt = $db->prepare("SELECT user_id FROM company_founders WHERE company_id = ? AND user_id != ? AND user_id != ?");
+            $coStmt->execute([$companyId, $toUserId, $fromUserId]);
+            $coFounders = $coStmt->fetchAll();
+            foreach ($coFounders as $co) {
+                send_notification(
+                    (int)$co['user_id'],
+                    "Startup Network • {$companyName}",
+                    "{$sender['name']} sent a connection invitation to {$companyName}.",
+                    "info",
+                    "founder/network.php"
+                );
+            }
+        }
+
+        log_audit($fromUserId, 'CONNECT_REQUEST_SENT', 'users', $toUserId, "Sent connect request to {$targetUser['name']}" . ($companyName ? " for company {$companyName}" : ''));
+
+        return [
+            'success' => true,
+            'connection_id' => $connId,
+            'target_id' => encode_id($toUserId),
+            'company_id' => $companyId ? encode_id($companyId) : '',
+            'status' => 'pending_sent',
+            'message' => $respMsg
+        ];
+    } catch (\Throwable $e) {
+        error_log("send_connection_request error: " . $e->getMessage());
+        return ['success' => false, 'error' => 'Failed to send request: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Respond to an invitation: 'accept', 'decline', 'withdraw'
+ */
+function respond_connection_request(int $connectionId, int $currentUserId, string $action): array {
+    if ($connectionId <= 0 || $currentUserId <= 0) {
+        return ['success' => false, 'error' => 'Invalid request parameters.'];
+    }
+
+    $db = get_db();
+    if (!$db) {
+        return ['success' => false, 'error' => 'Database connection failed.'];
+    }
+
+    try {
+        $stmt = $db->prepare("SELECT * FROM user_connections WHERE id = ?");
+        $stmt->execute([$connectionId]);
+        $conn = $stmt->fetch();
+
+        if (!$conn) {
+            return ['success' => false, 'error' => 'Connection request not found.'];
+        }
+
+        $requesterId = (int)$conn['requester_id'];
+        $receiverId = (int)$conn['receiver_id'];
+
+        if ($action === 'accept') {
+            if ($receiverId !== $currentUserId) {
+                return ['success' => false, 'error' => 'Only the invited user can accept this connection.'];
+            }
+
+            $upd = $db->prepare("UPDATE user_connections SET status = 'accepted', updated_at = NOW() WHERE id = ?");
+            $upd->execute([$connectionId]);
+
+            // Fetch names for notification
+            $uStmt = $db->prepare("SELECT name, role FROM users WHERE id = ?");
+            $uStmt->execute([$currentUserId]);
+            $currentUserRow = $uStmt->fetch();
+
+            $rStmt = $db->prepare("SELECT role FROM users WHERE id = ?");
+            $rStmt->execute([$requesterId]);
+            $requesterRole = $rStmt->fetchColumn() ?: 'founder';
+
+            $reqRedirect = $requesterRole === 'founder' ? 'founder/network.php' : 'investor/network.php';
+            send_notification(
+                $requesterId,
+                "Connection Accepted!",
+                "{$currentUserRow['name']} accepted your connection request. You are now connected!",
+                "success",
+                $reqRedirect
+            );
+
+            log_audit($currentUserId, 'CONNECT_ACCEPTED', 'users', $requesterId, "Accepted connection with user #{$requesterId}");
+
+            return [
+                'success' => true,
+                'status' => 'connected',
+                'message' => 'Connected successfully! You can now message each other directly.'
+            ];
+        } elseif ($action === 'decline') {
+            if ($receiverId !== $currentUserId) {
+                return ['success' => false, 'error' => 'Only the invited user can decline this connection.'];
+            }
+
+            $upd = $db->prepare("UPDATE user_connections SET status = 'declined', updated_at = NOW() WHERE id = ?");
+            $upd->execute([$connectionId]);
+
+            return [
+                'success' => true,
+                'status' => 'none',
+                'message' => 'Connection invitation ignored.'
+            ];
+        } elseif ($action === 'withdraw') {
+            if ($requesterId !== $currentUserId) {
+                return ['success' => false, 'error' => 'Only the sender can withdraw this request.'];
+            }
+
+            $upd = $db->prepare("UPDATE user_connections SET status = 'withdrawn', updated_at = NOW() WHERE id = ?");
+            $upd->execute([$connectionId]);
+
+            return [
+                'success' => true,
+                'status' => 'none',
+                'message' => 'Connection request withdrawn.'
+            ];
+        }
+
+        return ['success' => false, 'error' => 'Invalid action specified.'];
+    } catch (\Throwable $e) {
+        error_log("respond_connection_request error: " . $e->getMessage());
+        return ['success' => false, 'error' => 'Action failed: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Remove an existing connection
+ */
+function remove_user_connection(int $currentUserId, int $targetUserId): array {
+    if ($currentUserId <= 0 || $targetUserId <= 0) {
+        return ['success' => false, 'error' => 'Invalid user.'];
+    }
+
+    $db = get_db();
+    if (!$db) return ['success' => false, 'error' => 'Database connection unavailable.'];
+
+    try {
+        $del = $db->prepare("
+            DELETE FROM user_connections 
+            WHERE (requester_id = ? AND receiver_id = ?) 
+               OR (requester_id = ? AND receiver_id = ?)
+        ");
+        $del->execute([$currentUserId, $targetUserId, $targetUserId, $currentUserId]);
+
+        return ['success' => true, 'status' => 'none', 'message' => 'Connection removed.'];
+    } catch (\Throwable $e) {
+        return ['success' => false, 'error' => 'Failed to remove connection: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Count of pending connection requests for a user
+ */
+function get_pending_connections_count(int $userId): int {
+    if ($userId <= 0) return 0;
+    $db = get_db();
+    if (!$db) return 0;
+
+    try {
+        $stmt = $db->prepare("SELECT COUNT(*) FROM user_connections WHERE receiver_id = ? AND status = 'pending'");
+        $stmt->execute([$userId]);
+        return (int)$stmt->fetchColumn();
+    } catch (\Throwable $e) {
+        return 0;
+    }
+}
+
+/**
+ * Get all 1st degree connections for a user
+ */
+function get_user_connections(int $userId): array {
+    if ($userId <= 0) return [];
+    $db = get_db();
+    if (!$db) return [];
+
+    try {
+        $stmt = $db->prepare("
+            SELECT uc.id as connection_id, uc.created_at as connected_at,
+                   u.id as user_id, u.name, u.email, u.phone, u.avatar_url, u.role, u.city, u.country, u.is_verified,
+                   fp.designation as founder_designation, fp.bio as founder_bio, fp.linkedin_url as founder_linkedin,
+                   c.id as company_id, c.name as company_name, c.logo_url as company_logo,
+                   ip.investor_type, ip.linkedin_url as investor_linkedin
+            FROM user_connections uc
+            JOIN users u ON (CASE WHEN uc.requester_id = ? THEN uc.receiver_id ELSE uc.requester_id END) = u.id
+            LEFT JOIN founder_profiles fp ON u.id = fp.user_id AND u.role = 'founder'
+            LEFT JOIN company_founders cf ON u.id = cf.user_id
+            LEFT JOIN companies c ON cf.company_id = c.id
+            LEFT JOIN investor_profiles ip ON u.id = ip.user_id AND u.role = 'investor'
+            WHERE (uc.requester_id = ? OR uc.receiver_id = ?) AND uc.status = 'accepted'
+            GROUP BY u.id
+            ORDER BY uc.updated_at DESC
+        ");
+        $stmt->execute([$userId, $userId, $userId]);
+        return $stmt->fetchAll();
+    } catch (\Throwable $e) {
+        error_log("get_user_connections error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get pending connection invitations received by this user
+ */
+function get_pending_connection_requests(int $userId): array {
+    if ($userId <= 0) return [];
+    $db = get_db();
+    if (!$db) return [];
+
+    try {
+        $stmt = $db->prepare("
+            SELECT uc.id as connection_id, uc.message as invite_note, uc.created_at as requested_at,
+                   u.id as user_id, u.name, u.email, u.avatar_url, u.role, u.city, u.country, u.is_verified,
+                   fp.designation as founder_designation, fp.bio as founder_bio,
+                   c.name as company_name, c.logo_url as company_logo,
+                   ip.investor_type
+            FROM user_connections uc
+            JOIN users u ON uc.requester_id = u.id
+            LEFT JOIN founder_profiles fp ON u.id = fp.user_id AND u.role = 'founder'
+            LEFT JOIN company_founders cf ON u.id = cf.user_id
+            LEFT JOIN companies c ON cf.company_id = c.id
+            LEFT JOIN investor_profiles ip ON u.id = ip.user_id AND u.role = 'investor'
+            WHERE uc.receiver_id = ? AND uc.status = 'pending'
+            GROUP BY u.id
+            ORDER BY uc.created_at DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
+    } catch (\Throwable $e) {
+        error_log("get_pending_connection_requests error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get pending connection invitations sent by this user
+ */
+function get_sent_connection_requests(int $userId): array {
+    if ($userId <= 0) return [];
+    $db = get_db();
+    if (!$db) return [];
+
+    try {
+        $stmt = $db->prepare("
+            SELECT uc.id as connection_id, uc.message as invite_note, uc.created_at as requested_at,
+                   u.id as user_id, u.name, u.email, u.avatar_url, u.role, u.city, u.country, u.is_verified,
+                   fp.designation as founder_designation,
+                   c.name as company_name, c.logo_url as company_logo,
+                   ip.investor_type
+            FROM user_connections uc
+            JOIN users u ON uc.receiver_id = u.id
+            LEFT JOIN founder_profiles fp ON u.id = fp.user_id AND u.role = 'founder'
+            LEFT JOIN company_founders cf ON u.id = cf.user_id
+            LEFT JOIN companies c ON cf.company_id = c.id
+            LEFT JOIN investor_profiles ip ON u.id = ip.user_id AND u.role = 'investor'
+            WHERE uc.requester_id = ? AND uc.status = 'pending'
+            GROUP BY u.id
+            ORDER BY uc.created_at DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
+    } catch (\Throwable $e) {
+        error_log("get_sent_connection_requests error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Render LinkedIn-style Connect Button Component
+ */
+function render_connect_button(int $targetUserId, array $options = []): string {
+    $currentUser = current_user();
+    if (!$currentUser || $currentUser['id'] == $targetUserId) {
+        return '';
+    }
+
+    $currentUserId = (int)$currentUser['id'];
+    $statusData = get_connection_status($currentUserId, $targetUserId);
+    $status = $statusData['status'] ?? 'none';
+    $conn = $statusData['connection'] ?? null;
+
+    $targetHash = encode_id($targetUserId);
+    $connHash = !empty($conn['id']) ? encode_id($conn['id']) : '';
+
+    $name = $options['name'] ?? 'Member';
+    $headline = $options['headline'] ?? 'Portal Member';
+    $avatar = $options['avatar'] ?? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100';
+    $customClass = $options['class'] ?? '';
+
+    $msgUrl = ($currentUser['role'] === 'founder') 
+        ? url('founder/messages.php') 
+        : url('investor/messages.php');
+
+    if ($status === 'connected') {
+        return '
+        <div class="inline-flex items-center gap-1.5 ' . htmlspecialchars($customClass) . '">
+            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>Connected</span>
+            </span>
+            <a href="' . $msgUrl . '" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition" title="Direct Message">
+                <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+            </a>
+        </div>';
+    }
+
+    if ($status === 'pending_sent') {
+        return '
+        <button type="button" 
+                data-connect-user="' . $targetHash . '" 
+                data-connect-status="pending_sent"
+                onclick="window.NexoraConnect ? window.NexoraConnect.withdraw(\'' . $targetHash . '\', \'' . $connHash . '\') : null"
+                title="Click to withdraw invitation"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition shadow-2xs cursor-pointer ' . htmlspecialchars($customClass) . '">
+            <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Pending</span>
+        </button>';
+    }
+
+    if ($status === 'pending_received') {
+        return '
+        <div class="inline-flex items-center gap-1.5 ' . htmlspecialchars($customClass) . '">
+            <button type="button" 
+                    onclick="window.NexoraConnect ? window.NexoraConnect.respond(\'' . $connHash . '\', \'accept\', \'' . $targetHash . '\') : null"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                <span>Accept</span>
+            </button>
+            <button type="button" 
+                    onclick="window.NexoraConnect ? window.NexoraConnect.respond(\'' . $connHash . '\', \'decline\', \'' . $targetHash . '\') : null"
+                    class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer">
+                Ignore
+            </button>
+        </div>';
+    }
+
+    // Default: None -> Connect
+    return '
+    <button type="button"
+            data-connect-user="' . $targetHash . '"
+            data-connect-name="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '"
+            data-connect-headline="' . htmlspecialchars($headline, ENT_QUOTES, 'UTF-8') . '"
+            data-connect-avatar="' . htmlspecialchars($avatar, ENT_QUOTES, 'UTF-8') . '"
+            data-connect-status="none"
+            onclick="window.NexoraConnect ? window.NexoraConnect.openModal(\'' . $targetHash . '\', \'' . addslashes($name) . '\', \'' . addslashes($headline) . '\', \'' . addslashes($avatar) . '\') : null"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer ' . htmlspecialchars($customClass) . '">
+        <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
+        <span>Connect</span>
+    </button>';
+}
+
+/**
+ * Connect with a Company: Automatically resolves the founder handling the company
+ * and sends the connection request and notification specifically targeting the startup.
+ */
+function connect_with_company(int $fromUserId, int $companyId, ?string $message = null): array {
+    if ($fromUserId <= 0 || $companyId <= 0) {
+        return ['success' => false, 'error' => 'Invalid parameters.'];
+    }
+
+    $db = get_db();
+    if (!$db) {
+        return ['success' => false, 'error' => 'Database connection unavailable.'];
+    }
+
+    try {
+        // 1. Verify company exists
+        $cStmt = $db->prepare("SELECT id, name, logo_url FROM companies WHERE id = ?");
+        $cStmt->execute([$companyId]);
+        $company = $cStmt->fetch();
+        if (!$company) {
+            return ['success' => false, 'error' => 'Company not found.'];
+        }
+
+        // 2. Find primary founder handling this company
+        $fStmt = $db->prepare("
+            SELECT cf.user_id, u.name, u.role
+            FROM company_founders cf
+            JOIN users u ON cf.user_id = u.id
+            WHERE cf.company_id = ? AND u.status != 'suspended'
+            ORDER BY cf.is_signatory DESC, cf.created_at ASC
+            LIMIT 1
+        ");
+        $fStmt->execute([$companyId]);
+        $founder = $fStmt->fetch();
+
+        if (!$founder) {
+            return ['success' => false, 'error' => 'No active founder account found managing ' . htmlspecialchars($company['name']) . '.'];
+        }
+
+        $targetFounderId = (int)$founder['user_id'];
+        if ($targetFounderId === $fromUserId) {
+            return ['success' => false, 'error' => 'You cannot connect with your own company.'];
+        }
+
+        // 3. Delegate to send_connection_request with companyId
+        return send_connection_request($fromUserId, $targetFounderId, $message, $companyId);
+    } catch (\Throwable $e) {
+        error_log("connect_with_company error: " . $e->getMessage());
+        return ['success' => false, 'error' => 'Failed to connect with company: ' . $e->getMessage()];
+    }
+}
+
+/**
+ * Render LinkedIn-Style Connect with Company Button
+ * Target company resolves to the managing founder so they receive notification
+ */
+function render_company_connect_button(int $companyId, array $options = []): string {
+    $currentUser = current_user();
+    if (!$currentUser || $companyId <= 0) {
+        return '';
+    }
+
+    $currentUserId = (int)$currentUser['id'];
+    $db = get_db();
+    if (!$db) return '';
+
+    try {
+        // Check if current user is one of the founders of this company
+        $myCheck = $db->prepare("SELECT COUNT(*) FROM company_founders WHERE company_id = ? AND user_id = ?");
+        $myCheck->execute([$companyId, $currentUserId]);
+        if ((int)$myCheck->fetchColumn() > 0) {
+            return ''; // Don't show connect button for own company
+        }
+
+        // Fetch company and primary founder
+        $stmt = $db->prepare("
+            SELECT c.id as company_id, c.name as company_name, c.logo_url as company_logo, c.industry as company_industry,
+                   cf.user_id as founder_user_id, cf.designation as founder_designation,
+                   u.name as founder_name, u.avatar_url as founder_avatar
+            FROM companies c
+            JOIN company_founders cf ON c.id = cf.company_id
+            JOIN users u ON cf.user_id = u.id
+            WHERE c.id = ? AND u.status != 'suspended'
+            ORDER BY cf.is_signatory DESC, cf.created_at ASC
+            LIMIT 1
+        ");
+        $stmt->execute([$companyId]);
+        $row = $stmt->fetch();
+
+        if (!$row) return '';
+
+        $targetFounderId = (int)$row['founder_user_id'];
+        $statusData = get_connection_status($currentUserId, $targetFounderId);
+        $status = $statusData['status'] ?? 'none';
+        $conn = $statusData['connection'] ?? null;
+
+        $targetHash = encode_id($targetFounderId);
+        $companyHash = encode_id($companyId);
+        $connHash = !empty($conn['id']) ? encode_id($conn['id']) : '';
+
+        $companyName = $options['name'] ?? $row['company_name'];
+        $headline = $options['headline'] ?? ($row['company_name'] . ' • Founded by ' . $row['founder_name']);
+        $logo = $options['logo'] ?? get_company_logo_url($row['company_logo'] ?? '');
+        $customClass = $options['class'] ?? '';
+        $buttonText = $options['button_text'] ?? 'Connect';
+
+        $msgUrl = ($currentUser['role'] === 'founder') 
+            ? url('founder/messages.php') 
+            : url('investor/messages.php');
+
+        if ($status === 'connected') {
+            return '
+            <div class="inline-flex items-center gap-1.5 ' . htmlspecialchars($customClass) . '">
+                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                    <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                    <span>Connected</span>
+                </span>
+                <a href="' . $msgUrl . '" class="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 transition" title="Direct Message Founder">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                </a>
+            </div>';
+        }
+
+        if ($status === 'pending_sent') {
+            return '
+            <button type="button" 
+                    data-connect-company="' . $companyHash . '"
+                    data-connect-user="' . $targetHash . '" 
+                    data-connect-status="pending_sent"
+                    onclick="window.NexoraConnect ? window.NexoraConnect.withdraw(\'' . $targetHash . '\', \'' . $connHash . '\') : null"
+                    title="Click to withdraw invitation to ' . htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8') . '"
+                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition shadow-2xs cursor-pointer ' . htmlspecialchars($customClass) . '">
+                <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                <span>Pending</span>
+            </button>';
+        }
+
+        if ($status === 'pending_received') {
+            return '
+            <div class="inline-flex items-center gap-1.5 ' . htmlspecialchars($customClass) . '">
+                <button type="button" 
+                        onclick="window.NexoraConnect ? window.NexoraConnect.respond(\'' . $connHash . '\', \'accept\', \'' . $targetHash . '\') : null"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer">
+                    <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                    <span>Accept</span>
+                </button>
+            </div>';
+        }
+
+        // Default: None -> Connect with Company / Founder
+        return '
+        <button type="button"
+                data-connect-company="' . $companyHash . '"
+                data-connect-user="' . $targetHash . '"
+                data-connect-name="' . htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8') . '"
+                data-connect-headline="' . htmlspecialchars($headline, ENT_QUOTES, 'UTF-8') . '"
+                data-connect-avatar="' . htmlspecialchars($logo, ENT_QUOTES, 'UTF-8') . '"
+                data-connect-status="none"
+                onclick="window.NexoraConnect ? window.NexoraConnect.openModal(\'' . $targetHash . '\', \'' . addslashes($companyName) . '\', \'' . addslashes($headline) . '\', \'' . addslashes($logo) . '\', \'' . $companyHash . '\') : null"
+                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer ' . htmlspecialchars($customClass) . '">
+            <i data-lucide="building-2" class="w-3.5 h-3.5"></i>
+            <span>' . htmlspecialchars($buttonText) . '</span>
+        </button>';
+    } catch (\Throwable $e) {
+        error_log("render_company_connect_button error: " . $e->getMessage());
+        return '';
+    }
+}
+
+
+
