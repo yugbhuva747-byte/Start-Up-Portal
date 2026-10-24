@@ -303,6 +303,20 @@ require_once __DIR__ . '/theme.php';
         <?php
         $navGroups = [
            
+            'Syndicate & Network' => [
+                [
+                    'title' => 'Investor Community',
+                    'url' => url('investor/community.php'),
+                    'icon' => 'users',
+                    'active' => ($currentPage === 'community.php')
+                ],
+                [
+                    'title' => 'Helpdesk & Support',
+                    'url' => url('investor/support.php'),
+                    'icon' => 'life-buoy',
+                    'active' => ($currentPage === 'support.php')
+                ],
+            ],
             'Identity & Trust' => [
                 [
                     'title' => 'Public Profile',
@@ -357,7 +371,23 @@ require_once __DIR__ . '/theme.php';
         </div>
     </div>
 
-
+    <!-- User Footer & Logout -->
+    <div class="sidebar-footer-container p-4 border-t border-[#E4E8EF] dark:border-slate-800 bg-[#FAFBFD]/80 dark:bg-slate-900/80">
+        <div class="sidebar-footer-inner flex items-center justify-between gap-3">
+            <a href="<?= url('investor/view.php') ?>" class="sidebar-footer-user flex items-center space-x-3 min-w-0 group" data-tooltip="View Profile" title="View Profile">
+                <img src="<?= $investorUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>" class="w-9 h-9 rounded-xl object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0 group-hover:ring-2 group-hover:ring-blue-500 transition">
+                <div class="sidebar-text-item min-w-0 truncate">
+                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white truncate group-hover:text-blue-600 transition"><?= htmlspecialchars($investorUser['name']) ?></div>
+                    <div class="text-[10px] text-slate-400 font-medium truncate">Investor Portal</div>
+                </div>
+            </a>
+            <div class="sidebar-logout-btn flex-shrink-0">
+                <a href="<?= url('auth/logout.php') ?>" data-tooltip="Sign Out" title="Sign Out" class="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition block">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </div>
 </aside>
 
 <script>

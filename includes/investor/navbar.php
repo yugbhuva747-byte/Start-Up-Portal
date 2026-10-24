@@ -65,6 +65,13 @@ $navItems = [
         'title' => 'Deal Conversations',
         'active' => $currentPage === 'messages.php',
     ],
+    [
+        'href' => url('investor/community.php'),
+        'icon' => 'users',
+        'label' => 'Community',
+        'title' => 'Syndicate Network & Demo Days',
+        'active' => $currentPage === 'community.php',
+    ],
 ];
 
 // Load Investor Dark & Light Theme Controller

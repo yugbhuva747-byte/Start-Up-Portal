@@ -68,6 +68,11 @@ if ($db) {
     $bStmt->execute([$companyId]);
     $companyBlogs = $bStmt->fetchAll();
 
+    // 7.1 Fetch Company Awards & Trust Badges
+    $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
+    $aStmt->execute([$companyId]);
+    $awards = $aStmt->fetchAll();
+
     // 8. Check Existing Investor Interest
     $existingInterest = null;
     $connectedConvId = 0;
@@ -91,6 +96,111 @@ if ($db) {
             $existingInterest = null;
             $connectedConvId = 0;
         }
+    }
+
+    // 7.2 Self-heal and handle Private Due Diligence Scorecards & Investor Notes
+    try {
+        $db->exec("
+            CREATE TABLE IF NOT EXISTS `investor_diligence_notes` (
+                `id` INT AUTO_INCREMENT PRIMARY KEY,
+                `investor_id` INT NOT NULL,
+                `company_id` INT NOT NULL,
+                `score_team` TINYINT NOT NULL DEFAULT 8,
+                `score_market` TINYINT NOT NULL DEFAULT 8,
+                `score_traction` TINYINT NOT NULL DEFAULT 7,
+                `score_defensibility` TINYINT NOT NULL DEFAULT 7,
+                `overall_score` DECIMAL(3,1) NOT NULL DEFAULT 7.5,
+                `recommendation` ENUM('strong_buy', 'watch', 'pass', 'pending') NOT NULL DEFAULT 'watch',
+                `private_notes` TEXT NULL DEFAULT NULL,
+                `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+                `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY `unique_investor_company_diligence` (`investor_id`, `company_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+    } catch (\Throwable $e) {}
+
+    // Handle Saving Private Due Diligence Scorecard & Notes
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save_diligence' && $companyId > 0) {
+        if (verify_csrf($_POST['csrf_token'] ?? '')) {
+            $scoreTeam = max(1, min(10, (int)($_POST['score_team'] ?? 8)));
+            $scoreMarket = max(1, min(10, (int)($_POST['score_market'] ?? 8)));
+            $scoreTraction = max(1, min(10, (int)($_POST['score_traction'] ?? 7)));
+            $scoreDefensibility = max(1, min(10, (int)($_POST['score_defensibility'] ?? 7)));
+            $overallScore = round(($scoreTeam + $scoreMarket + $scoreTraction + $scoreDefensibility) / 4, 1);
+            
+            $allowedRec = ['strong_buy', 'watch', 'pass', 'pending'];
+            $recommendation = in_array($_POST['recommendation'] ?? '', $allowedRec, true) ? $_POST['recommendation'] : 'watch';
+            $privateNotes = trim($_POST['private_notes'] ?? '');
+
+            try {
+                $upsert = $db->prepare("
+                    INSERT INTO investor_diligence_notes 
+                        (investor_id, company_id, score_team, score_market, score_traction, score_defensibility, overall_score, recommendation, private_notes, updated_at)
+                    VALUES 
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+                    ON DUPLICATE KEY UPDATE
+                        score_team = VALUES(score_team),
+                        score_market = VALUES(score_market),
+                        score_traction = VALUES(score_traction),
+                        score_defensibility = VALUES(score_defensibility),
+                        overall_score = VALUES(overall_score),
+                        recommendation = VALUES(recommendation),
+                        private_notes = VALUES(private_notes),
+                        updated_at = NOW()
+                ");
+                $upsert->execute([
+                    $user['id'],
+                    $companyId,
+                    $scoreTeam,
+                    $scoreMarket,
+                    $scoreTraction,
+                    $scoreDefensibility,
+                    $overallScore,
+                    $recommendation,
+                    $privateNotes
+                ]);
+
+                log_audit($user['id'], 'SAVE_DILIGENCE_SCORECARD', 'companies', $companyId, "Saved diligence scorecard (Score: {$overallScore}/10, Rec: {$recommendation})");
+
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Due diligence notes and scorecard saved.',
+                        'overall_score' => $overallScore,
+                        'updated_at' => date('M d, Y h:i A')
+                    ]);
+                    exit;
+                }
+
+                set_flash('success', 'Private due diligence scorecard & notes saved.');
+            } catch (\Throwable $e) {
+                set_flash('danger', 'Failed to save due diligence: ' . $e->getMessage());
+            }
+
+            header('Location: ' . url('investor/startup_detail.php?id=' . $hashId . '#section-diligence-scorecard'));
+            exit;
+        }
+    }
+
+    $diligence = null;
+    try {
+        $dnStmt = $db->prepare("SELECT * FROM investor_diligence_notes WHERE investor_id = ? AND company_id = ? LIMIT 1");
+        $dnStmt->execute([$user['id'], $companyId]);
+        $diligence = $dnStmt->fetch();
+    } catch (\Throwable $e) {}
+
+    if (!$diligence) {
+        $diligence = [
+            'score_team' => 8,
+            'score_market' => 8,
+            'score_traction' => 7,
+            'score_defensibility' => 7,
+            'overall_score' => 7.5,
+            'recommendation' => 'watch',
+            'private_notes' => '',
+            'updated_at' => null
+        ];
     }
 }
 
@@ -205,6 +315,13 @@ $flash = get_flash();
                                 <span>Express Interest →</span>
                             </button>
                         <?php endif; ?>
+
+                        <a href="#section-diligence-scorecard"
+                            class="px-3.5 py-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-bold transition flex items-center space-x-1.5"
+                            title="Jump to your private due diligence evaluation">
+                            <i data-lucide="clipboard-check" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+                            <span>My Scorecard (<strong id="top-score-display"><?= number_format($diligence['overall_score'], 1) ?></strong>)</span>
+                        </a>
 
                         <?php if ($activeRound): ?>
                             <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>"
@@ -352,6 +469,247 @@ $flash = get_flash();
             <?php endif; ?>
 
             <!-- ==========================================
+                 SECTION: PRIVATE DUE DILIGENCE SCORECARD & INVESTOR NOTES
+                 ========================================== -->
+            <section id="section-diligence-scorecard" class="border-b border-[#E4E8EF] dark:border-slate-800 pb-8 scroll-mt-24 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="clipboard-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h2 class="text-sm sm:text-base font-bold text-[#0B1F3A] dark:text-white">
+                                    Private Due Diligence Scorecard &amp; Investor Notes
+                                </h2>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800 flex items-center gap-1">
+                                    <i data-lucide="lock" class="w-2.5 h-2.5"></i> Private to You
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-[#667085] dark:text-slate-400 mt-0.5">
+                                Rate startup metrics across 4 pillars (1–10 scale) and maintain confidential investment memos.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Live Overall Score Badge -->
+                    <div class="flex items-center gap-3 self-end sm:self-auto">
+                        <div class="text-right">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Overall Rating</div>
+                            <div id="badge-score-rating-label" class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                <?= $diligence['overall_score'] >= 8 ? 'High Conviction' : ($diligence['overall_score'] >= 6.5 ? 'Strong Contender' : ($diligence['overall_score'] >= 5 ? 'Moderate / In Review' : 'Needs Verification')) ?>
+                            </div>
+                        </div>
+                        <div class="px-4 py-2 rounded-2xl bg-gradient-to-tr from-[#0B1F3A] to-[#123B7A] dark:from-blue-900 dark:to-blue-700 text-white shadow-xs flex items-center gap-1.5">
+                            <span id="badge-overall-score" class="text-lg font-black tracking-tight"><?= number_format($diligence['overall_score'], 1) ?></span>
+                            <span class="text-xs text-blue-200 font-semibold">/ 10</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="diligence-scorecard-form" action="<?= url('investor/startup_detail.php?id=' . $hashId) ?>" method="POST" class="bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl p-6 sm:p-7 shadow-xs space-y-6">
+                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <input type="hidden" name="action" value="save_diligence">
+
+                    <!-- Confidentiality Notice Banner -->
+                    <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 flex items-start gap-3 text-xs text-slate-600 dark:text-slate-300">
+                        <i data-lucide="shield" class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"></i>
+                        <div class="leading-relaxed">
+                            <strong class="font-bold text-slate-800 dark:text-slate-100">Confidential Investor Memo:</strong>
+                            These ratings and notes are strictly private to your investor account. Founders, syndicates, and platform administrators cannot see your evaluation or private memos.
+                        </div>
+                    </div>
+
+                    <!-- 4-Pillar Diligence Scorecard Sliders -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        
+                        <!-- Pillar 1: Team & Execution -->
+                        <div class="p-4 rounded-xl bg-[#FAFBFD] dark:bg-slate-800/40 border border-[#E4E8EF] dark:border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white flex items-center gap-1.5">
+                                        <i data-lucide="users" class="w-3.5 h-3.5 text-blue-600"></i>
+                                        <span>Founding Team &amp; Execution</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-[#667085] dark:text-slate-400 mt-0.5">
+                                        Domain expertise, track record, tenacity &amp; completeness
+                                    </p>
+                                </div>
+                                <div class="px-2.5 py-1 rounded-lg bg-blue-100/70 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 font-extrabold text-xs">
+                                    <span id="display-score-team"><?= (int)$diligence['score_team'] ?></span>/10
+                                </div>
+                            </div>
+                            <input type="range" min="1" max="10" step="1" name="score_team" id="input-score-team" value="<?= (int)$diligence['score_team'] ?>"
+                                   class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#123B7A] dark:accent-blue-500"
+                                   oninput="updateScorecardDisplay()">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
+                                <span>1 (Inexperienced)</span>
+                                <span>5 (Solid)</span>
+                                <span>10 (Tier-1 Elite)</span>
+                            </div>
+                        </div>
+
+                        <!-- Pillar 2: Market Opportunity & TAM -->
+                        <div class="p-4 rounded-xl bg-[#FAFBFD] dark:bg-slate-800/40 border border-[#E4E8EF] dark:border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white flex items-center gap-1.5">
+                                        <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        <span>Market Opportunity (TAM)</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-[#667085] dark:text-slate-400 mt-0.5">
+                                        Market growth rate, structural tailwinds &amp; timing
+                                    </p>
+                                </div>
+                                <div class="px-2.5 py-1 rounded-lg bg-emerald-100/70 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-extrabold text-xs">
+                                    <span id="display-score-market"><?= (int)$diligence['score_market'] ?></span>/10
+                                </div>
+                            </div>
+                            <input type="range" min="1" max="10" step="1" name="score_market" id="input-score-market" value="<?= (int)$diligence['score_market'] ?>"
+                                   class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                                   oninput="updateScorecardDisplay()">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
+                                <span>1 (Niche TAM)</span>
+                                <span>5 (Viable)</span>
+                                <span>10 (Massive $10B+ TAM)</span>
+                            </div>
+                        </div>
+
+                        <!-- Pillar 3: Product Traction & Unit Economics -->
+                        <div class="p-4 rounded-xl bg-[#FAFBFD] dark:bg-slate-800/40 border border-[#E4E8EF] dark:border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white flex items-center gap-1.5">
+                                        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-600"></i>
+                                        <span>Product Traction &amp; Unit Economics</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-[#667085] dark:text-slate-400 mt-0.5">
+                                        Revenue growth, user retention, margins &amp; payback
+                                    </p>
+                                </div>
+                                <div class="px-2.5 py-1 rounded-lg bg-amber-100/70 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 font-extrabold text-xs">
+                                    <span id="display-score-traction"><?= (int)$diligence['score_traction'] ?></span>/10
+                                </div>
+                            </div>
+                            <input type="range" min="1" max="10" step="1" name="score_traction" id="input-score-traction" value="<?= (int)$diligence['score_traction'] ?>"
+                                   class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-600"
+                                   oninput="updateScorecardDisplay()">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
+                                <span>1 (Pre-Revenue)</span>
+                                <span>5 (Early Signal)</span>
+                                <span>10 (Hyper-Growth PMF)</span>
+                            </div>
+                        </div>
+
+                        <!-- Pillar 4: Defensibility & Competitive Moat -->
+                        <div class="p-4 rounded-xl bg-[#FAFBFD] dark:bg-slate-800/40 border border-[#E4E8EF] dark:border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-xs font-bold text-[#0B1F3A] dark:text-white flex items-center gap-1.5">
+                                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-violet-600"></i>
+                                        <span>Defensibility &amp; Competitive Moat</span>
+                                    </div>
+                                    <p class="text-[10.5px] text-[#667085] dark:text-slate-400 mt-0.5">
+                                        Patents, network effects, high switching cost &amp; IP
+                                    </p>
+                                </div>
+                                <div class="px-2.5 py-1 rounded-lg bg-violet-100/70 dark:bg-violet-950/80 text-violet-800 dark:text-violet-300 font-extrabold text-xs">
+                                    <span id="display-score-defensibility"><?= (int)$diligence['score_defensibility'] ?></span>/10
+                                </div>
+                            </div>
+                            <input type="range" min="1" max="10" step="1" name="score_defensibility" id="input-score-defensibility" value="<?= (int)$diligence['score_defensibility'] ?>"
+                                   class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-600"
+                                   oninput="updateScorecardDisplay()">
+                            <div class="flex justify-between text-[10px] text-slate-400 font-semibold px-0.5">
+                                <span>1 (No Moat)</span>
+                                <span>5 (Moderate)</span>
+                                <span>10 (Unassailable Barrier)</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Investment Verdict / Recommendation -->
+                    <div>
+                        <label class="block text-xs font-bold text-[#0B1F3A] dark:text-white mb-2">
+                            <span>Your Syndicate Verdict / Next Step</span>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="recommendation" value="strong_buy" class="peer hidden" <?= $diligence['recommendation'] === 'strong_buy' ? 'checked' : '' ?>>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/50 peer-checked:text-emerald-800 dark:peer-checked:text-emerald-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <div class="text-base mb-0.5">🚀</div>
+                                    <div class="text-xs font-bold">Strong Buy</div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">High Conviction</div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="recommendation" value="watch" class="peer hidden" <?= $diligence['recommendation'] === 'watch' ? 'checked' : '' ?>>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-blue-600 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-950/50 peer-checked:text-blue-800 dark:peer-checked:text-blue-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <div class="text-base mb-0.5">👁️</div>
+                                    <div class="text-xs font-bold">Watchlist</div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">Monitor Traction</div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="recommendation" value="pending" class="peer hidden" <?= $diligence['recommendation'] === 'pending' ? 'checked' : '' ?>>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-amber-600 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-950/50 peer-checked:text-amber-800 dark:peer-checked:text-amber-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <div class="text-base mb-0.5">⏳</div>
+                                    <div class="text-xs font-bold">Need Info</div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">Data Room Pending</div>
+                                </div>
+                            </label>
+
+                            <label class="cursor-pointer">
+                                <input type="radio" name="recommendation" value="pass" class="peer hidden" <?= $diligence['recommendation'] === 'pass' ? 'checked' : '' ?>>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-rose-600 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/50 peer-checked:text-rose-800 dark:peer-checked:text-rose-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
+                                    <div class="text-base mb-0.5">⛔</div>
+                                    <div class="text-xs font-bold">Pass</div>
+                                    <div class="text-[10px] text-slate-400 mt-0.5">Out of Thesis / Risk</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Private Notes & Due Diligence Memo -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold text-[#0B1F3A] dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-blue-600"></i>
+                                <span>Confidential Investment Notes &amp; Meeting Takeaways</span>
+                            </label>
+                            <span class="text-[10.5px] text-slate-400">Markdown &amp; bullets supported</span>
+                        </div>
+                        <textarea name="private_notes" id="input-private-notes" rows="4"
+                                  placeholder="Record key diligence findings: founder background checks, valuation pushbacks, co-investor syndicates, questions for the next partner meeting..."
+                                  class="w-full p-3.5 text-xs rounded-xl border border-[#E4E8EF] dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#123B7A] dark:focus:ring-blue-500 leading-relaxed font-sans"><?= htmlspecialchars($diligence['private_notes'] ?? '') ?></textarea>
+                    </div>
+
+                    <!-- Action Bar & Toast Feedback -->
+                    <div class="pt-4 border-t border-[#E4E8EF] dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="text-[11px] text-[#667085] dark:text-slate-400 flex items-center gap-1.5">
+                            <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span id="diligence-save-status">
+                                <?= !empty($diligence['updated_at']) ? 'Last saved on ' . date('M d, Y \a\t h:i A', strtotime($diligence['updated_at'])) : 'No notes saved yet' ?>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center gap-2.5 w-full sm:w-auto justify-end">
+                            <button type="button" onclick="clearDiligenceNotes()" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition">
+                                Clear Notes
+                            </button>
+                            <button type="submit" id="btn-save-diligence" class="px-5 py-2.5 rounded-xl bg-[#123B7A] hover:bg-[#0B1F3A] dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold text-xs transition shadow-sm flex items-center justify-center gap-1.5">
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                <span>Save Due Diligence</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!-- ==========================================
                  SECTION: LEADERSHIP & FOUNDING TEAM
                  ========================================== -->
             <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
@@ -451,7 +809,61 @@ $flash = get_flash();
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            </section>
+            <!-- ==========================================
+                 SECTION: AWARDS, ACCREDITATIONS & TRUST BADGES
+                 ========================================== -->
+            <?php if (!empty($awards)): ?>
+                <section class="border-b border-[#E4E8EF] pb-8 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-[11px] font-bold text-[#667085] uppercase tracking-wider">
+                                Verified Awards &amp; Trust Credentials (<?= count($awards) ?>)
+                            </div>
+                            <h2 class="text-lg font-bold text-[#0B1F3A]">Accreditations &amp; Industry Honors</h2>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 text-xs font-bold border border-amber-200 flex items-center gap-1">
+                            <i data-lucide="award" class="w-3.5 h-3.5 text-amber-600"></i>
+                            <span>Diligence Verified</span>
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <?php foreach ($awards as $aw): 
+                            $isPdf = str_ends_with(strtolower($aw['image_url']), '.pdf');
+                        ?>
+                            <!-- Certificate Photo Wall Frame -->
+                            <div class="group relative cursor-pointer"
+                                 onclick="<?= $isPdf ? "window.open('" . htmlspecialchars($aw['image_url']) . "', '_blank')" : "openInvestorAwardLightbox('" . htmlspecialchars($aw['image_url']) . "', '" . htmlspecialchars(addslashes($aw['title'] ?? '')) . "', '" . htmlspecialchars(addslashes($aw['issuer'] ?? '')) . "')" ?>"
+                                 title="Click to view full certificate">
+                                <!-- Outer Frame Molding (Top, Right, Bottom, Left all framed) -->
+                                <div class="p-3 rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.25)] border-2 border-amber-600/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_16px_35px_-5px_rgba(0,0,0,0.35)]">
+                                    <!-- Inner Matting (passe-partout on all sides) -->
+                                    <div class="p-2 sm:p-2.5 rounded-lg bg-[#faf8f5] border border-amber-200/50 shadow-inner">
+                                        <!-- Photo Mount Container -->
+                                        <div class="relative w-full h-48 sm:h-56 rounded bg-white overflow-hidden flex items-center justify-center border border-slate-300/80 shadow-xs">
+                                            <?php if ($isPdf): ?>
+                                                <div class="text-center p-3">
+                                                    <i data-lucide="file-text" class="w-8 h-8 text-rose-500 mx-auto mb-1"></i>
+                                                    <span class="text-xs font-bold text-slate-700 block">Official Certificate</span>
+                                                    <span class="block text-[10px] text-[#123B7A] font-semibold mt-0.5">Click to view &rarr;</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <img src="<?= htmlspecialchars($aw['image_url']) ?>" alt="Award Certificate" class="w-full h-full object-contain p-1 group-hover:brightness-105 transition duration-300">
+                                                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                    <span class="px-2.5 py-1 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-md flex items-center gap-1.5">
+                                                        <i data-lucide="maximize-2" class="w-3 h-3 text-amber-400"></i>
+                                                        <span>View Photo</span>
+                                                    </span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </section>
+            <?php endif; ?>
 
             <!-- ==========================================
                  SECTION: CONFIDENTIAL DATA ROOM & FILES
@@ -714,7 +1126,160 @@ $flash = get_flash();
                 errorBox.classList.remove('hidden');
             }
         }
+
+        function openInvestorAwardLightbox(src, title, issuer) {
+            const modal = document.getElementById('investor-award-lightbox');
+            const img = document.getElementById('inv-lightbox-img');
+            const titleEl = document.getElementById('inv-lightbox-title');
+            const issuerEl = document.getElementById('inv-lightbox-issuer');
+            if (modal && img) {
+                img.src = src;
+                if (titleEl) titleEl.textContent = title || 'Verified Award';
+                if (issuerEl) issuerEl.textContent = issuer ? ('Issued by: ' + issuer) : '';
+                modal.classList.remove('hidden');
+                lucide.createIcons();
+            }
+        }
+        function closeInvestorAwardLightbox() {
+            const modal = document.getElementById('investor-award-lightbox');
+            if (modal) modal.classList.add('hidden');
+        }
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') closeInvestorAwardLightbox();
+        });
+
+        // ==========================================
+        // PRIVATE DUE DILIGENCE SCORECARD FUNCTIONS
+        // ==========================================
+        function updateScorecardDisplay() {
+            const teamInput = document.getElementById('input-score-team');
+            const marketInput = document.getElementById('input-score-market');
+            const tractionInput = document.getElementById('input-score-traction');
+            const defInput = document.getElementById('input-score-defensibility');
+
+            const team = teamInput ? parseInt(teamInput.value, 10) || 1 : 1;
+            const market = marketInput ? parseInt(marketInput.value, 10) || 1 : 1;
+            const traction = tractionInput ? parseInt(tractionInput.value, 10) || 1 : 1;
+            const def = defInput ? parseInt(defInput.value, 10) || 1 : 1;
+
+            const dispTeam = document.getElementById('display-score-team');
+            const dispMarket = document.getElementById('display-score-market');
+            const dispTraction = document.getElementById('display-score-traction');
+            const dispDef = document.getElementById('display-score-defensibility');
+
+            if (dispTeam) dispTeam.textContent = team;
+            if (dispMarket) dispMarket.textContent = market;
+            if (dispTraction) dispTraction.textContent = traction;
+            if (dispDef) dispDef.textContent = def;
+
+            const overall = ((team + market + traction + def) / 4).toFixed(1);
+            
+            const badgeOverall = document.getElementById('badge-overall-score');
+            const topScoreDisp = document.getElementById('top-score-display');
+            if (badgeOverall) badgeOverall.textContent = overall;
+            if (topScoreDisp) topScoreDisp.textContent = overall;
+
+            const labelEl = document.getElementById('badge-score-rating-label');
+            if (labelEl) {
+                const numericOverall = parseFloat(overall);
+                if (numericOverall >= 8.0) {
+                    labelEl.textContent = 'High Conviction';
+                    labelEl.className = 'text-xs font-bold text-emerald-600 dark:text-emerald-400';
+                } else if (numericOverall >= 6.5) {
+                    labelEl.textContent = 'Strong Contender';
+                    labelEl.className = 'text-xs font-bold text-blue-600 dark:text-blue-400';
+                } else if (numericOverall >= 5.0) {
+                    labelEl.textContent = 'Moderate / In Review';
+                    labelEl.className = 'text-xs font-bold text-amber-600 dark:text-amber-400';
+                } else {
+                    labelEl.textContent = 'Needs Verification';
+                    labelEl.className = 'text-xs font-bold text-rose-600 dark:text-rose-400';
+                }
+            }
+        }
+
+        function clearDiligenceNotes() {
+            const notesEl = document.getElementById('input-private-notes');
+            if (notesEl && confirm('Clear your confidential notes for this startup? (Click Save afterwards to persist changes)')) {
+                notesEl.value = '';
+                notesEl.focus();
+            }
+        }
+
+        // AJAX Due Diligence Form submission
+        const diligenceForm = document.getElementById('diligence-scorecard-form');
+        if (diligenceForm) {
+            diligenceForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const btn = document.getElementById('btn-save-diligence');
+                const statusEl = document.getElementById('diligence-save-status');
+                const originalBtnHtml = btn ? btn.innerHTML : '';
+
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<span class="inline-block animate-spin mr-1.5">&#x27F3;</span> <span>Saving...</span>';
+                }
+
+                try {
+                    const formData = new FormData(diligenceForm);
+                    const response = await fetch(diligenceForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            if (statusEl) {
+                                statusEl.textContent = 'Last saved on ' + (data.updated_at || 'Just now');
+                            }
+                            if (btn) {
+                                btn.classList.remove('bg-[#123B7A]', 'dark:bg-blue-600');
+                                btn.classList.add('bg-emerald-600');
+                                btn.innerHTML = '<i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> <span>Saved!</span>';
+                                lucide.createIcons();
+                                setTimeout(() => {
+                                    btn.disabled = false;
+                                    btn.classList.remove('bg-emerald-600');
+                                    btn.classList.add('bg-[#123B7A]', 'dark:bg-blue-600');
+                                    btn.innerHTML = originalBtnHtml;
+                                    lucide.createIcons();
+                                }, 2200);
+                            }
+                            return;
+                        }
+                    }
+                    diligenceForm.submit();
+                } catch (err) {
+                    diligenceForm.submit();
+                }
+            });
+        }
     </script>
+
+    <!-- Investor Award Lightbox Modal -->
+    <div id="investor-award-lightbox"
+        class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+        onclick="if (event.target === this) closeInvestorAwardLightbox();">
+        <div class="relative max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+            <div class="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/90 text-white">
+                <div>
+                    <h4 id="inv-lightbox-title" class="font-bold text-base text-white"></h4>
+                    <p id="inv-lightbox-issuer" class="text-xs text-amber-400 font-medium"></p>
+                </div>
+                <button type="button" onclick="closeInvestorAwardLightbox()"
+                    class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-2 bg-black flex items-center justify-center min-h-[300px] max-h-[75vh] overflow-hidden">
+                <img id="inv-lightbox-img" src="" alt="Award Photo" class="max-h-[72vh] max-w-full object-contain rounded-lg">
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

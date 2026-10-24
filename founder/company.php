@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Quick Auto Upload from Gallery / Camera click on Company Logo
         if ($action === 'quick_upload_logo' && $company) {
             if (!empty($_FILES['company_logo']['name'])) {
-                $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int)$company['id']);
+                $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int) $company['id']);
                 if ($logoRes['success']) {
                     $u = $db->prepare("UPDATE companies SET logo_url = ? WHERE id = ?");
                     $u->execute([$logoRes['url'], $company['id']]);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Quick Auto Upload for Cover Banner
         if ($action === 'quick_upload_banner' && $company) {
             if (!empty($_FILES['company_banner']['name'])) {
-                $bannerRes = handle_company_banner_upload($_FILES['company_banner'], (int)$company['id']);
+                $bannerRes = handle_company_banner_upload($_FILES['company_banner'], (int) $company['id']);
                 if ($bannerRes['success']) {
                     $u = $db->prepare("UPDATE companies SET banner_url = ? WHERE id = ?");
                     $u->execute([$bannerRes['url'], $company['id']]);
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $logoUrl = trim($_POST['logo_url'] ?? ($company['logo_url'] ?? ''));
             if (!empty($_FILES['company_logo']['name']) && $company) {
-                $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int)$company['id']);
+                $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int) $company['id']);
                 if ($logoRes['success']) {
                     $logoUrl = $logoRes['url'];
                 }
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $bannerUrl = trim($_POST['banner_url'] ?? ($company['banner_url'] ?? ''));
             if (!empty($_FILES['company_banner']['name']) && $company) {
-                $bannerRes = handle_company_banner_upload($_FILES['company_banner'], (int)$company['id']);
+                $bannerRes = handle_company_banner_upload($_FILES['company_banner'], (int) $company['id']);
                 if ($bannerRes['success']) {
                     $bannerUrl = $bannerRes['url'];
                 }
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $newCompId = $db->lastInsertId();
 
                 if (!empty($_FILES['company_logo']['name'])) {
-                    $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int)$newCompId);
+                    $logoRes = handle_company_logo_upload($_FILES['company_logo'], (int) $newCompId);
                     if ($logoRes['success']) {
                         $db->prepare("UPDATE companies SET logo_url = ? WHERE id = ?")->execute([$logoRes['url'], $newCompId]);
                     }
@@ -222,15 +222,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             header('Location: ' . url('founder/company.php#company-data-room'));
             exit;
+        } elseif ($action === 'add_award' && $company) {
+            $title = trim($_POST['title'] ?? '');
+            $category = trim($_POST['category'] ?? 'Industry Award');
+            $issuer = trim($_POST['issuer'] ?? '');
+            $awardYear = trim($_POST['award_year'] ?? date('Y'));
+            $description = trim($_POST['description'] ?? '');
+            $verificationLink = trim($_POST['verification_link'] ?? '');
+            $imageUrl = trim($_POST['image_url'] ?? '');
+
+            // Handle file upload
+            if (!empty($_FILES['award_file']['name'])) {
+                $upRes = handle_award_upload($_FILES['award_file'], $company['id']);
+                if (!empty($upRes['success'])) {
+                    $imageUrl = $upRes['url'];
+                } elseif (!empty($upRes['error'])) {
+                    $error = $upRes['error'];
+                }
+            }
+
+            if (empty($title)) {
+                $title = 'Certificate of Recognition';
+            }
+            if (empty($category)) {
+                $category = 'Award & Recognition';
+            }
+
+            if (empty($imageUrl) && empty($error)) {
+                $error = 'Please choose a certificate/award photo file or paste an image URL.';
+            }
+
+            if (empty($error)) {
+                $ins = $db->prepare("
+                    INSERT INTO company_awards (company_id, title, category, issuer, award_year, description, image_url, verification_link, is_featured)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+                ");
+                $ins->execute([$company['id'], $title, $category, $issuer, $awardYear, $description, $imageUrl, $verificationLink]);
+                $newAwardId = $db->lastInsertId();
+
+                log_audit($user['id'], 'ADD_COMPANY_AWARD', 'company_awards', $newAwardId, "Added certificate photo: $title");
+                set_flash('success', 'Certificate photo successfully framed and uploaded.');
+                header('Location: ' . url('founder/company.php#sec-awards'));
+                exit;
+            }
+        } elseif ($action === 'delete_award' && $company) {
+            $awardId = (int) ($_POST['award_id'] ?? 0);
+            if ($awardId > 0) {
+                $aQuery = $db->prepare("SELECT * FROM company_awards WHERE id = ? AND company_id = ?");
+                $aQuery->execute([$awardId, $company['id']]);
+                $awardToDelete = $aQuery->fetch();
+                if ($awardToDelete) {
+                    if (!empty($awardToDelete['image_url']) && str_contains($awardToDelete['image_url'], 'uploads/awards/')) {
+                        $parsedPath = parse_url($awardToDelete['image_url'], PHP_URL_PATH);
+                        $pos = strpos($parsedPath, 'uploads/awards/');
+                        if ($pos !== false) {
+                            $localRel = substr($parsedPath, $pos);
+                            $localFile = ROOT_PATH . '/' . $localRel;
+                            if (file_exists($localFile)) {
+                                @unlink($localFile);
+                            }
+                        }
+                    }
+                    $db->prepare("DELETE FROM company_awards WHERE id = ? AND company_id = ?")->execute([$awardId, $company['id']]);
+                    log_audit($user['id'], 'DELETE_COMPANY_AWARD', 'company_awards', $awardId, "Deleted trust award: " . ($awardToDelete['title'] ?? ''));
+                    set_flash('success', 'Award/trust item successfully deleted.');
+                }
+            }
+            header('Location: ' . url('founder/company.php#sec-awards'));
+            exit;
         }
     }
 }
 
-// Load documents AFTER POST handling
+// Load documents and awards AFTER POST handling
+$awards = [];
 if ($db && $company) {
     $dStmt = $db->prepare("SELECT * FROM company_documents WHERE company_id = ? ORDER BY uploaded_at DESC");
     $dStmt->execute([$company['id']]);
     $documents = $dStmt->fetchAll();
+
+    $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
+    $aStmt->execute([$company['id']]);
+    $awards = $aStmt->fetchAll();
 }
 
 // Calculate Profile Strength Metrics
@@ -246,7 +319,8 @@ $checks = [
     'description' => !empty($company['description']),
     'target_market' => !empty($company['target_market']),
     'location' => !empty($company['city']),
-    'documents' => !empty($documents)
+    'documents' => !empty($documents),
+    'awards' => !empty($awards)
 ];
 $completedChecks = count(array_filter($checks));
 $profileStrength = round(($completedChecks / count($checks)) * 100);
@@ -316,7 +390,9 @@ $flashStyles = [
             color: #1E293B;
             margin-bottom: 0.35rem;
         }
-        .dark .form-label-clean, html.dark .form-label-clean {
+
+        .dark .form-label-clean,
+        html.dark .form-label-clean {
             color: #E2E8F0 !important;
         }
 
@@ -326,7 +402,9 @@ $flashStyles = [
             margin-top: 0.3rem;
             line-height: 1.25rem;
         }
-        .dark .form-hint, html.dark .form-hint {
+
+        .dark .form-hint,
+        html.dark .form-hint {
             color: #94A3B8 !important;
         }
 
@@ -336,6 +414,7 @@ $flashStyles = [
             position: relative;
             overflow: hidden;
         }
+
         .cover-banner-pattern::after {
             content: '';
             position: absolute;
@@ -354,7 +433,9 @@ $flashStyles = [
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
             transition: all 0.2s ease;
         }
-        .dark .section-card, html.dark .section-card {
+
+        .dark .section-card,
+        html.dark .section-card {
             background-color: #111827 !important;
             color: #F8FAFC !important;
             border-color: #1E293B !important;
@@ -383,21 +464,23 @@ $flashStyles = [
                         <i data-lucide="<?= $fs[1] ?>" class="w-4 h-4 flex-shrink-0 <?= $fs[2] ?>"></i>
                         <span><?= htmlspecialchars($flash['message']) ?></span>
                     </div>
-                    <button type="button" onclick="document.getElementById('flash-alert')?.remove()" 
-                            class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
-                            title="Dismiss">
+                    <button type="button" onclick="document.getElementById('flash-alert')?.remove()"
+                        class="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition cursor-pointer"
+                        title="Dismiss">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
             <?php endif; ?>
 
             <?php if (!empty($error)): ?>
-                <div class="px-4 py-3 rounded-2xl text-xs sm:text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center justify-between gap-3 shadow-xs">
+                <div
+                    class="px-4 py-3 rounded-2xl text-xs sm:text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center justify-between gap-3 shadow-xs">
                     <div class="flex items-center gap-2.5">
                         <i data-lucide="alert-circle" class="w-4 h-4 flex-shrink-0 text-rose-600"></i>
                         <span><?= htmlspecialchars($error) ?></span>
                     </div>
-                    <button type="button" onclick="this.parentElement?.remove()" class="p-1 rounded-lg text-rose-400 hover:text-rose-600 transition cursor-pointer">
+                    <button type="button" onclick="this.parentElement?.remove()"
+                        class="p-1 rounded-lg text-rose-400 hover:text-rose-600 transition cursor-pointer">
                         <i data-lucide="x" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -408,7 +491,8 @@ $flashStyles = [
                 <div>
                     <!-- Clean Breadcrumb -->
                     <nav class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium mb-1">
-                        <a href="<?= url('founder/dashboard.php') ?>" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">Founder Portal</a>
+                        <a href="<?= url('founder/dashboard.php') ?>"
+                            class="hover:text-indigo-600 dark:hover:text-indigo-400 transition">Founder Portal</a>
                         <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
                         <span class="text-slate-900 dark:text-slate-200 font-semibold">Company Profile</span>
                     </nav>
@@ -419,9 +503,9 @@ $flashStyles = [
 
                 <!-- Right Action Buttons -->
                 <div class="flex items-center gap-2.5 flex-wrap">
-                    <?php if ($company): 
+                    <?php if ($company):
                         $publicCompUrl = url('company.php?id=' . hash_id_encode($company['id']));
-                    ?>
+                        ?>
                         <!-- Preview Public Page Link -->
                         <a href="<?= htmlspecialchars($publicCompUrl) ?>" target="_blank" rel="noopener"
                             class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5 shadow-2xs">
@@ -430,45 +514,51 @@ $flashStyles = [
                         </a>
 
                         <!-- Share Public Modal -->
-                        <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicCompUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')"
+                        <button type="button"
+                            onclick="openShareModal('<?= htmlspecialchars($publicCompUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')"
                             class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm shadow-indigo-500/20 active:scale-95 cursor-pointer">
                             <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
                             <span>Share Profile</span>
                         </button>
                     <?php endif; ?>
+                    <a href="#company-data-room"
+                        class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 border border-indigo-200 dark:border-indigo-800 shadow-2xs">
+                        <i data-lucide="folder-lock" class="w-3.5 h-3.5"></i>
+                        <span>Data Room (<?= count($documents) ?>)</span>
+                    </a>
                 </div>
             </div>
 
             <!-- ======================================================== -->
             <!-- LINKEDIN-STYLE COMPANY HERO & COVER BANNER CARD -->
             <!-- ======================================================== -->
-            <div class="section-card rounded-2xl overflow-hidden relative shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]">
-                
+            <div
+                class="section-card rounded-2xl overflow-hidden relative shadow-sm border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827]">
+
                 <!-- LinkedIn Cover Banner -->
-                <div id="company-hero-banner-container" class="h-44 sm:h-56 <?= !empty($company['banner_url']) ? 'bg-slate-900' : 'cover-banner-pattern' ?> relative group overflow-hidden">
+                <div id="company-hero-banner-container"
+                    class="h-44 sm:h-56 <?= !empty($company['banner_url']) ? 'bg-slate-900' : 'cover-banner-pattern' ?> relative group overflow-hidden">
                     <?php if (!empty($company['banner_url'])): ?>
-                        <img id="company-hero-banner-img" 
-                             src="<?= htmlspecialchars(get_company_banner_url($company['banner_url'])) ?>" 
-                             alt="Company Banner" 
-                             class="w-full h-full object-cover object-center">
+                        <img id="company-hero-banner-img"
+                            src="<?= htmlspecialchars(get_company_banner_url($company['banner_url'])) ?>"
+                            alt="Company Banner" class="w-full h-full object-cover object-center">
                     <?php else: ?>
-                        <img id="company-hero-banner-img" 
-                             src="" 
-                             alt="Company Banner" 
-                             class="w-full h-full object-cover object-center hidden">
+                        <img id="company-hero-banner-img" src="" alt="Company Banner"
+                            class="w-full h-full object-cover object-center hidden">
                     <?php endif; ?>
 
                     <!-- Cover Banner Action Badges -->
                     <div class="absolute top-4 right-4 z-10 flex items-center gap-2">
                         <!-- Quick Banner Change Button -->
-                        <button type="button" onclick="triggerCompanyBannerUpload()" 
-                                class="px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-xs font-bold border border-white/25 flex items-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
-                                title="Change Cover Banner">
+                        <button type="button" onclick="triggerCompanyBannerUpload()"
+                            class="px-3.5 py-1.5 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-xs font-bold border border-white/25 flex items-center gap-1.5 shadow-md transition active:scale-95 cursor-pointer"
+                            title="Change Cover Banner">
                             <i data-lucide="image" class="w-3.5 h-3.5"></i>
                             <span class="hidden sm:inline">Change Cover Banner</span>
                         </button>
-                        
-                        <span class="px-3.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-white text-xs font-bold border border-white/25 flex items-center gap-1.5 shadow-md">
+
+                        <span
+                            class="px-3.5 py-1.5 rounded-xl bg-black/60 backdrop-blur-md text-white text-xs font-bold border border-white/25 flex items-center gap-1.5 shadow-md">
                             <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
                             <span>Verified Company Page</span>
                         </span>
@@ -477,28 +567,33 @@ $flashStyles = [
 
                 <!-- Company Details & Overlapping Logo Section -->
                 <div class="px-6 sm:px-10 pb-8 sm:pb-9 pt-0 relative">
-                    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 border-b border-slate-100 dark:border-slate-800/80 pb-7 sm:pb-8">
-                        
+                    <div
+                        class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 border-b border-slate-100 dark:border-slate-800/80 pb-7 sm:pb-8">
+
                         <!-- Left: Overlapping Logo & Identity -->
                         <div class="flex flex-col sm:flex-row sm:items-end gap-6">
-                            
+
                             <!-- Company Logo Box (LinkedIn Style Square with Rounded Corners + Camera Upload) -->
                             <div class="relative -mt-16 sm:-mt-22 flex-shrink-0">
-                                <div class="relative group cursor-pointer" onclick="triggerCompanyLogoUpload()" title="Click to add / change company picture from gallery">
-                                    <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl p-1 bg-white dark:bg-[#111827] border-4 border-white dark:border-[#111827] shadow-xl overflow-hidden flex items-center justify-center relative">
-                                        <img id="company-hero-logo-img" 
-                                             src="<?= !empty($company['logo_url']) ? htmlspecialchars(get_company_logo_url($company['logo_url'])) : '' ?>" 
-                                             alt="<?= htmlspecialchars($company['name'] ?? 'Startup') ?>" 
-                                             class="w-full h-full object-cover object-center rounded-xl transition duration-300 group-hover:scale-105 <?= empty($company['logo_url']) ? 'hidden' : '' ?>">
-                                        
+                                <div class="relative group cursor-pointer" onclick="triggerCompanyLogoUpload()"
+                                    title="Click to add / change company picture from gallery">
+                                    <div
+                                        class="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl p-1 bg-white dark:bg-[#111827] border-4 border-white dark:border-[#111827] shadow-xl overflow-hidden flex items-center justify-center relative">
+                                        <img id="company-hero-logo-img"
+                                            src="<?= !empty($company['logo_url']) ? htmlspecialchars(get_company_logo_url($company['logo_url'])) : '' ?>"
+                                            alt="<?= htmlspecialchars($company['name'] ?? 'Startup') ?>"
+                                            class="w-full h-full object-cover object-center rounded-xl transition duration-300 group-hover:scale-105 <?= empty($company['logo_url']) ? 'hidden' : '' ?>">
+
                                         <?php if (empty($company['logo_url'])): ?>
-                                            <div id="company-hero-logo-fallback" class="w-full h-full rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center shadow-inner">
+                                            <div id="company-hero-logo-fallback"
+                                                class="w-full h-full rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-600 text-white font-extrabold text-3xl sm:text-4xl flex items-center justify-center shadow-inner">
                                                 <?= htmlspecialchars($companyInitials) ?>
                                             </div>
                                         <?php endif; ?>
 
                                         <!-- Hover darken overlay indicating click to upload from gallery -->
-                                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center text-white text-xs font-bold gap-1.5 text-center px-2">
+                                        <div
+                                            class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex flex-col items-center justify-center text-white text-xs font-bold gap-1.5 text-center px-2">
                                             <i data-lucide="camera" class="w-7 h-7"></i>
                                             <span>Update Logo</span>
                                         </div>
@@ -506,7 +601,7 @@ $flashStyles = [
 
                                     <!-- Camera Action Floating Badge -->
                                     <div class="absolute -bottom-1.5 -right-1.5 w-10 h-10 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-white dark:border-[#111827] flex items-center justify-center shadow-lg transition transform group-hover:scale-110 active:scale-95"
-                                         title="Add / Change Company Picture from Gallery">
+                                        title="Add / Change Company Picture from Gallery">
                                         <i data-lucide="camera" class="w-4 h-4"></i>
                                     </div>
                                 </div>
@@ -515,11 +610,13 @@ $flashStyles = [
                             <!-- Headline & Name Info -->
                             <div class="pt-2 sm:pt-0 space-y-3 min-w-0">
                                 <div class="flex flex-wrap items-center gap-3">
-                                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                                    <h1
+                                        class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                                         <?= htmlspecialchars($company['name'] ?? 'Your Startup Name') ?>
                                     </h1>
                                     <?php if (!empty($company['legal_name'])): ?>
-                                        <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 text-xs sm:text-sm px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border border-slate-200/80 dark:border-slate-700/80 shadow-2xs">
                                             <i data-lucide="building-2" class="w-3.5 h-3.5 text-slate-400"></i>
                                             <?= htmlspecialchars($company['legal_name']) ?>
                                         </span>
@@ -527,44 +624,52 @@ $flashStyles = [
                                 </div>
 
                                 <!-- Pitch / Tagline (Larger & More Breathable) -->
-                                <p class="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-normal leading-relaxed max-w-3xl">
+                                <p
+                                    class="text-sm sm:text-base text-slate-700 dark:text-slate-200 font-normal leading-relaxed max-w-3xl">
                                     <?= !empty($company['pitch']) ? htmlspecialchars($company['pitch']) : '<span class="italic text-slate-400">Add an elevator pitch below to summarize your value proposition to investors.</span>' ?>
                                 </p>
 
                                 <!-- Modern Icon Badges (Clean, Visual, High Readability) -->
                                 <div class="flex flex-wrap items-center gap-2.5 pt-1">
                                     <?php if (!empty($company['industry'])): ?>
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50/90 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200/80 dark:border-indigo-800/80 text-xs sm:text-sm shadow-2xs">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50/90 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200/80 dark:border-indigo-800/80 text-xs sm:text-sm shadow-2xs">
                                             <i data-lucide="briefcase" class="w-4 h-4 text-indigo-500"></i>
                                             <span><?= htmlspecialchars($company['industry']) ?></span>
                                         </span>
                                     <?php endif; ?>
 
                                     <?php if (!empty($company['stage'])): ?>
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-semibold border border-amber-200/80 dark:border-amber-800/80 text-xs sm:text-sm shadow-2xs">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-semibold border border-amber-200/80 dark:border-amber-800/80 text-xs sm:text-sm shadow-2xs">
                                             <i data-lucide="trending-up" class="w-4 h-4 text-amber-500"></i>
                                             <span><?= htmlspecialchars($company['stage']) ?></span>
                                         </span>
                                     <?php endif; ?>
 
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm shadow-2xs">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm shadow-2xs">
                                         <i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i>
                                         <span><?= htmlspecialchars($company['city'] ?? 'Bengaluru') ?><?= !empty($company['country']) ? ', ' . htmlspecialchars($company['country']) : '' ?></span>
                                     </span>
 
                                     <?php if (!empty($company['employee_count'])): ?>
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm shadow-2xs">
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-semibold border border-slate-200/80 dark:border-slate-700/80 text-xs sm:text-sm shadow-2xs">
                                             <i data-lucide="users" class="w-4 h-4 text-cyan-500"></i>
                                             <span><?= htmlspecialchars($company['employee_count']) ?>+ Team</span>
                                         </span>
                                     <?php endif; ?>
 
                                     <?php if (!empty($company['website'])): ?>
-                                        <a href="<?= htmlspecialchars($company['website']) ?>" target="_blank" rel="noopener noreferrer" 
-                                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100/90 dark:hover:bg-blue-900/50 font-semibold border border-blue-200/80 dark:border-blue-800/70 text-xs sm:text-sm transition shadow-2xs group">
-                                            <i data-lucide="globe" class="w-4 h-4 text-blue-500 group-hover:rotate-12 transition-transform"></i>
+                                        <a href="<?= htmlspecialchars($company['website']) ?>" target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 hover:bg-blue-100/90 dark:hover:bg-blue-900/50 font-semibold border border-blue-200/80 dark:border-blue-800/70 text-xs sm:text-sm transition shadow-2xs group">
+                                            <i data-lucide="globe"
+                                                class="w-4 h-4 text-blue-500 group-hover:rotate-12 transition-transform"></i>
                                             <span><?= htmlspecialchars(preg_replace('#^https?://#', '', rtrim($company['website'], '/'))) ?></span>
-                                            <i data-lucide="external-link" class="w-3.5 h-3.5 text-blue-400 group-hover:translate-x-0.5 transition-transform"></i>
+                                            <i data-lucide="external-link"
+                                                class="w-3.5 h-3.5 text-blue-400 group-hover:translate-x-0.5 transition-transform"></i>
                                         </a>
                                     <?php endif; ?>
                                 </div>
@@ -573,21 +678,28 @@ $flashStyles = [
 
                         <!-- Right: Profile Strength Meter + Gallery Upload Action -->
                         <div class="lg:w-80 flex flex-col justify-between gap-3.5 flex-shrink-0">
-                            <div class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-700/80 shadow-xs">
+                            <div
+                                class="bg-slate-50 dark:bg-slate-800/60 rounded-2xl p-4 sm:p-5 border border-slate-200/90 dark:border-slate-700/80 shadow-xs">
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="font-bold text-slate-700 dark:text-slate-300 text-xs sm:text-sm flex items-center gap-1.5">
-                                        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                    <span
+                                        class="font-bold text-slate-700 dark:text-slate-300 text-xs sm:text-sm flex items-center gap-1.5">
+                                        <i data-lucide="sparkles"
+                                            class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                                         Profile Strength
                                     </span>
-                                    <span class="font-black text-indigo-600 dark:text-indigo-400 text-base sm:text-lg"><?= $profileStrength ?>%</span>
+                                    <span
+                                        class="font-black text-indigo-600 dark:text-indigo-400 text-base sm:text-lg"><?= $profileStrength ?>%</span>
                                 </div>
-                                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mb-2">
+                                <div
+                                    class="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden mb-2">
                                     <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 h-full rounded-full transition-all duration-700"
                                         style="width: <?= $profileStrength ?>%"></div>
                                 </div>
-                                <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                <div
+                                    class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
                                     <span><?= $completedChecks ?> of <?= count($checks) ?> fields ready</span>
-                                    <span class="<?= $profileStrength >= 80 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-medium' ?>">
+                                    <span
+                                        class="<?= $profileStrength >= 80 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-medium' ?>">
                                         <?= $profileStrength >= 80 ? '<span class="inline-flex items-center gap-1"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i> Investor Ready</span>' : 'Details Pending' ?>
                                     </span>
                                 </div>
@@ -595,716 +707,895 @@ $flashStyles = [
 
                             <!-- Direct Click Button to Add / Change Picture from Gallery -->
                             <button type="button" onclick="triggerCompanyLogoUpload()"
-                                    class="w-full py-3 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-bold border border-indigo-200 dark:border-indigo-800 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98">
+                                class="w-full py-3 px-4 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-bold border border-indigo-200 dark:border-indigo-800 transition flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98">
                                 <i data-lucide="image-plus" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                                 <span>Add / Change Company Picture</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Quick Navigation Links Bar (Modern Icon Pill Bar) -->
-                    <div class="pt-4 flex flex-wrap items-center gap-2 sm:gap-2.5">
-                        <span class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mr-1 py-1">
-                            <i data-lucide="compass" class="w-4 h-4 text-slate-400"></i>
-                            <span>Jump to:</span>
-                        </span>
+                    <!-- Navigation Jump Bar -->
+                    <div
+                        class="mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                        <span class="text-slate-400 font-bold mr-1 text-[10.5px] uppercase tracking-wider">Quick
+                            Jump:</span>
                         <a href="#sec-identity"
-                            class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-sm transition flex items-center gap-2">
-                            <i data-lucide="building-2" class="w-4 h-4 text-indigo-500"></i>
-                            <span>Corporate Identity</span>
+                            class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                            <i data-lucide="building" class="w-3 h-3 text-slate-400"></i>
+                            <span>1. Corporate Identity</span>
                         </a>
                         <a href="#sec-market"
-                            class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-sm transition flex items-center gap-2">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-amber-500"></i>
-                            <span>Market &amp; Model</span>
+                            class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                            <i data-lucide="pie-chart" class="w-3 h-3 text-slate-400"></i>
+                            <span>2. Market &amp; Model</span>
                         </a>
                         <a href="#sec-pitch"
-                            class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-sm transition flex items-center gap-2">
-                            <i data-lucide="presentation" class="w-4 h-4 text-emerald-500"></i>
-                            <span>Pitch &amp; Traction</span>
+                            class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                            <i data-lucide="message-square" class="w-3 h-3 text-slate-400"></i>
+                            <span>3. Pitch &amp; Traction</span>
                         </a>
                         <a href="#sec-team"
-                            class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-sm transition flex items-center gap-2">
-                            <i data-lucide="users-2" class="w-4 h-4 text-cyan-500"></i>
-                            <span>Team &amp; HQ</span>
+                            class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 shadow-2xs transition flex items-center gap-1">
+                            <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
+                            <span>4. Headquarters &amp; Team</span>
                         </a>
                         <a href="#company-data-room"
-                            class="px-3.5 py-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs sm:text-sm font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 hover:shadow-sm transition flex items-center gap-2">
-                            <i data-lucide="lock" class="w-4 h-4 text-indigo-600"></i>
-                            <span>Data Room</span>
+                            class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shadow-2xs transition flex items-center gap-1">
+                            <i data-lucide="lock" class="w-3 h-3 text-indigo-500"></i>
+                            <span>5. Confidential Data Room</span>
                         </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Profile Form -->
-            <form id="company-profile-form" action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
-                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                <input type="hidden" name="form_action" value="update_company">
+                <!-- Profile Form -->
+                <form id="company-profile-form" action="<?= url('founder/company.php') ?>" method="POST"
+                    enctype="multipart/form-data" class="space-y-6">
+                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                    <input type="hidden" name="form_action" value="update_company">
 
-                <!-- SECTION 1 -->
-                <div id="sec-identity" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                        <div class="flex items-center space-x-3">
-                            <div
-                                class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
-                                1</div>
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <span>Corporate & Legal Identity</span>
-                                    <i data-lucide="badge-check" class="w-5 h-5 text-indigo-600"></i>
-                                </h2>
-                                <p class="text-sm text-slate-500 mt-0.5">Foundational legal incorporation and commercial
-                                    branding details.</p>
+                    <!-- SECTION 1 -->
+                    <div id="sec-identity"
+                        class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                                    1</div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                        <span>Corporate & Legal Identity</span>
+                                        <i data-lucide="badge-check" class="w-5 h-5 text-indigo-600"></i>
+                                    </h2>
+                                    <p class="text-sm text-slate-500 mt-0.5">Foundational legal incorporation and
+                                        commercial
+                                        branding details.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span
+                                    class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Required
+                                    for KYC</span>
+                                <button type="submit"
+                                    class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save Section 1</span>
+                                </button>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Required
-                                for KYC</span>
-                            <button type="submit" class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+                            <div>
+                                <label class="form-label-clean"><span>Startup Brand Name <span
+                                            class="text-rose-500">*</span></span></label>
+                                <input type="text" name="name" required
+                                    value="<?= htmlspecialchars($company['name'] ?? '') ?>"
+                                    placeholder="e.g. TechPulse AI" class="form-input-clean">
+                                <p class="form-hint">The primary commercial brand name presented in discovery
+                                    catalogues.
+                                </p>
+                            </div>
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Registered Entity Legal Name</span>
+                                    <span class="text-xs text-slate-500 font-normal">As per ROC / MCA</span>
+                                </label>
+                                <input type="text" name="legal_name"
+                                    value="<?= htmlspecialchars($company['legal_name'] ?? '') ?>"
+                                    placeholder="e.g. TechPulse Intelligence Pvt Ltd" class="form-input-clean">
+                                <p class="form-hint">The official registered company name shown on investment term
+                                    sheets.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 pt-1">
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Corporate CIN / Registration Number</span>
+                                    <span class="text-xs text-slate-500 font-normal">MCA 21-digit</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="cin_number"
+                                        value="<?= htmlspecialchars($company['cin_number'] ?? '') ?>"
+                                        placeholder="U72900KA2023PTC123456"
+                                        class="form-input-clean font-mono uppercase tracking-wide pr-10">
+                                    <i data-lucide="hash"
+                                        class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                                </div>
+                                <p class="form-hint">21-character Corporate Identification Number issued by the Ministry
+                                    of
+                                    Corporate Affairs (MCA).</p>
+                            </div>
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Official Company Website</span>
+                                    <span class="text-xs text-slate-500 font-normal">https://</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="url" name="website"
+                                        value="<?= htmlspecialchars($company['website'] ?? '') ?>"
+                                        placeholder="https://techpulse.ai" class="form-input-clean pr-10">
+                                    <i data-lucide="globe"
+                                        class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                                </div>
+                                <p class="form-hint">Public domain address of your active product or marketing website.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Company Logo & Banner Media Section -->
+                        <div
+                            class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <!-- Company Logo Upload & Preview -->
+                            <div
+                                class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                                <label class="form-label-clean">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
+                                        <span>Company Logo / Picture</span>
+                                    </span>
+                                    <span class="text-xs text-slate-500 font-normal">PNG, JPG, WEBP (Max 10MB)</span>
+                                </label>
+
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-16 h-16 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 p-1 flex-shrink-0 shadow-sm flex items-center justify-center overflow-hidden">
+                                        <img id="sec1-logo-preview"
+                                            src="<?= htmlspecialchars(get_company_logo_url($company['logo_url'] ?? '')) ?>"
+                                            alt="Company Logo"
+                                            class="w-full h-full object-cover object-center rounded-lg">
+                                    </div>
+                                    <div class="flex-1 space-y-2">
+                                        <label for="sec1-logo-file"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                            <span>Choose from Gallery / Files</span>
+                                        </label>
+                                        <input type="file" id="sec1-logo-file" name="company_logo" accept="image/*"
+                                            class="hidden" onchange="previewSec1Logo(this)">
+                                        <p id="sec1-logo-filename" class="text-[11px] text-slate-500 truncate">Select
+                                            file or enter URL below</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input type="url" name="logo_url" id="sec1-logo-url"
+                                        value="<?= htmlspecialchars($company['logo_url'] ?? '') ?>"
+                                        placeholder="https://example.com/logo.png"
+                                        class="form-input-clean text-xs font-mono"
+                                        oninput="previewSec1LogoUrl(this.value)">
+                                </div>
+                            </div>
+
+                            <!-- Company Cover Banner Upload & Preview -->
+                            <div
+                                class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
+                                <label class="form-label-clean">
+                                    <span class="flex items-center gap-1.5">
+                                        <i data-lucide="layout-template" class="w-4 h-4 text-indigo-600"></i>
+                                        <span>Company Cover Banner (LinkedIn Style)</span>
+                                    </span>
+                                    <span class="text-xs text-slate-500 font-normal">PNG, JPG (Max 12MB)</span>
+                                </label>
+
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-24 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 flex-shrink-0 shadow-sm overflow-hidden relative">
+                                        <?php if (!empty($company['banner_url'])): ?>
+                                            <img id="sec1-banner-preview"
+                                                src="<?= htmlspecialchars(get_company_banner_url($company['banner_url'])) ?>"
+                                                alt="Banner Preview" class="w-full h-full object-cover object-center">
+                                        <?php else: ?>
+                                            <div id="sec1-banner-preview-fallback"
+                                                class="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-bold uppercase bg-slate-200 dark:bg-slate-800">
+                                                Default
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="flex-1 space-y-2">
+                                        <label for="sec1-banner-file"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
+                                            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                                            <span>Choose Banner File</span>
+                                        </label>
+                                        <input type="file" id="sec1-banner-file" name="company_banner" accept="image/*"
+                                            class="hidden" onchange="previewSec1Banner(this)">
+                                        <p id="sec1-banner-filename" class="text-[11px] text-slate-500 truncate">Select
+                                            file or enter URL below</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <input type="url" name="banner_url" id="sec1-banner-url"
+                                        value="<?= htmlspecialchars($company['banner_url'] ?? '') ?>"
+                                        placeholder="https://example.com/cover-banner.jpg"
+                                        class="form-input-clean text-xs font-mono"
+                                        oninput="previewSec1BannerUrl(this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 1 Card Footer Save Bar -->
+                        <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 text-xs text-slate-500">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                                <span>Corporate & Legal Identity details</span>
+                            </div>
+                            <button type="submit"
+                                class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="save" class="w-4 h-4"></i>
                                 <span>Save Section 1</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                        <div>
-                            <label class="form-label-clean"><span>Startup Brand Name <span
-                                        class="text-rose-500">*</span></span></label>
-                            <input type="text" name="name" required
-                                value="<?= htmlspecialchars($company['name'] ?? '') ?>" placeholder="e.g. TechPulse AI"
+                    <!-- SECTION 2 -->
+                    <div id="sec-market"
+                        class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                                    2</div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                        <span>Sector, Stage & Market Model</span>
+                                        <i data-lucide="layers" class="w-5 h-5 text-indigo-600"></i>
+                                    </h2>
+                                    <p class="text-sm text-slate-500 mt-0.5">Classification filters used by syndicate
+                                        leads
+                                        and venture funds.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span
+                                    class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Discovery
+                                    Filters</span>
+                                <button type="submit"
+                                    class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save Section 2</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Industry / Sector <span class="text-rose-500">*</span></span>
+                                    <span class="text-xs text-indigo-600 dark:text-indigo-400 font-normal">Custom
+                                        text</span>
+                                </label>
+                                <div class="relative">
+                                    <input type="text" name="industry" required list="industry-suggestions"
+                                        value="<?= htmlspecialchars($company['industry'] ?? '') ?>"
+                                        placeholder="e.g. Media Production, Music, AI/SaaS, FinTech"
+                                        class="form-input-clean pr-10">
+                                    <i data-lucide="briefcase"
+                                        class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                                </div>
+                                <datalist id="industry-suggestions">
+                                    <option value="Media & Entertainment">
+                                    <option value="Music & Audio Production">
+                                    <option value="Film & Video Production">
+                                    <option value="AI / Generative Tech">
+                                    <option value="SaaS & Cloud Software">
+                                    <option value="FinTech & Banking">
+                                    <option value="HealthTech & Biotech">
+                                    <option value="E-Commerce & D2C">
+                                    <option value="EdTech & Learning">
+                                    <option value="DeepTech & Hardware">
+                                    <option value="CleanTech & Energy">
+                                    <option value="Logistics & Supply Chain">
+                                    <option value="Cybersecurity">
+                                    <option value="Gaming & Esports">
+                                    <option value="Consumer Tech">
+                                </datalist>
+                                <p class="form-hint">Type your exact industry or sector. You can write any custom
+                                    domain.</p>
+                            </div>
+                            <div>
+                                <label class="form-label-clean"><span>Current Funding Stage <span
+                                            class="text-rose-500">*</span></span></label>
+                                <select name="stage" class="form-input-clean cursor-pointer">
+                                    <?php
+                                    $stages = ['Idea / MVP', 'Pre-Seed', 'Seed', 'Pre-Series A', 'Series A', 'Series B+', 'Growth'];
+                                    foreach ($stages as $stg): ?>
+                                        <option value="<?= htmlspecialchars($stg) ?>" <?= ($company['stage'] ?? '') === $stg ? 'selected' : '' ?>><?= htmlspecialchars($stg) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <p class="form-hint">Maturity level of your product and round structure.</p>
+                            </div>
+                            <div>
+                                <label class="form-label-clean"><span>Monetization Model</span></label>
+                                <input type="text" name="business_model"
+                                    value="<?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS') ?>"
+                                    placeholder="e.g. B2B SaaS, Marketplace, Usage-based" class="form-input-clean">
+                                <p class="form-hint">How your business generates recurring revenue.</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-1">
+                            <label class="form-label-clean">
+                                <span>Target Addressable Market (TAM) & Ideal Customer Profile</span>
+                            </label>
+                            <input type="text" name="target_market"
+                                value="<?= htmlspecialchars($company['target_market'] ?? '') ?>"
+                                placeholder="e.g. Mid-to-Large Enterprise BFSI Institutions across India & SEA ($14B Total TAM)"
                                 class="form-input-clean">
-                            <p class="form-hint">The primary commercial brand name presented in discovery catalogues.
-                            </p>
-                        </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Registered Entity Legal Name</span>
-                                <span class="text-xs text-slate-500 font-normal">As per ROC / MCA</span>
-                            </label>
-                            <input type="text" name="legal_name"
-                                value="<?= htmlspecialchars($company['legal_name'] ?? '') ?>"
-                                placeholder="e.g. TechPulse Intelligence Pvt Ltd" class="form-input-clean">
-                            <p class="form-hint">The official registered company name shown on investment term sheets.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 pt-1">
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Corporate CIN / Registration Number</span>
-                                <span class="text-xs text-slate-500 font-normal">MCA 21-digit</span>
-                            </label>
-                            <div class="relative">
-                                <input type="text" name="cin_number"
-                                    value="<?= htmlspecialchars($company['cin_number'] ?? '') ?>"
-                                    placeholder="U72900KA2023PTC123456"
-                                    class="form-input-clean font-mono uppercase tracking-wide pr-10">
-                                <i data-lucide="hash"
-                                    class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
-                            </div>
-                            <p class="form-hint">21-character Corporate Identification Number issued by the Ministry of
-                                Corporate Affairs (MCA).</p>
-                        </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Official Company Website</span>
-                                <span class="text-xs text-slate-500 font-normal">https://</span>
-                            </label>
-                            <div class="relative">
-                                <input type="url" name="website"
-                                    value="<?= htmlspecialchars($company['website'] ?? '') ?>"
-                                    placeholder="https://techpulse.ai" class="form-input-clean pr-10">
-                                <i data-lucide="globe"
-                                    class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
-                            </div>
-                            <p class="form-hint">Public domain address of your active product or marketing website.</p>
-                        </div>
-                    </div>
-
-                    <!-- Company Logo & Banner Media Section -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 pt-2 border-t border-slate-100 dark:border-slate-800">
-                        <!-- Company Logo Upload & Preview -->
-                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                            <label class="form-label-clean">
-                                <span class="flex items-center gap-1.5">
-                                    <i data-lucide="image" class="w-4 h-4 text-indigo-600"></i>
-                                    <span>Company Logo / Picture</span>
-                                </span>
-                                <span class="text-xs text-slate-500 font-normal">PNG, JPG, WEBP (Max 10MB)</span>
-                            </label>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="w-16 h-16 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 p-1 flex-shrink-0 shadow-sm flex items-center justify-center overflow-hidden">
-                                    <img id="sec1-logo-preview" 
-                                         src="<?= htmlspecialchars(get_company_logo_url($company['logo_url'] ?? '')) ?>" 
-                                         alt="Company Logo" 
-                                         class="w-full h-full object-cover object-center rounded-lg">
-                                </div>
-                                <div class="flex-1 space-y-2">
-                                    <label for="sec1-logo-file" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
-                                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                        <span>Choose from Gallery / Files</span>
-                                    </label>
-                                    <input type="file" id="sec1-logo-file" name="company_logo" accept="image/*" class="hidden" onchange="previewSec1Logo(this)">
-                                    <p id="sec1-logo-filename" class="text-[11px] text-slate-500 truncate">Select file or enter URL below</p>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <input type="url" name="logo_url" id="sec1-logo-url" 
-                                       value="<?= htmlspecialchars($company['logo_url'] ?? '') ?>" 
-                                       placeholder="https://example.com/logo.png" 
-                                       class="form-input-clean text-xs font-mono"
-                                       oninput="previewSec1LogoUrl(this.value)">
-                            </div>
+                            <p class="form-hint">Specify customer segments, geography, and estimated serviceable market
+                                size.</p>
                         </div>
 
-                        <!-- Company Cover Banner Upload & Preview -->
-                        <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/80 space-y-3">
-                            <label class="form-label-clean">
-                                <span class="flex items-center gap-1.5">
-                                    <i data-lucide="layout-template" class="w-4 h-4 text-indigo-600"></i>
-                                    <span>Company Cover Banner (LinkedIn Style)</span>
-                                </span>
-                                <span class="text-xs text-slate-500 font-normal">PNG, JPG (Max 12MB)</span>
-                            </label>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="w-24 h-14 rounded-xl bg-slate-100 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 flex-shrink-0 shadow-sm overflow-hidden relative">
-                                    <?php if (!empty($company['banner_url'])): ?>
-                                        <img id="sec1-banner-preview" 
-                                             src="<?= htmlspecialchars(get_company_banner_url($company['banner_url'])) ?>" 
-                                             alt="Banner Preview" 
-                                             class="w-full h-full object-cover object-center">
-                                    <?php else: ?>
-                                        <div id="sec1-banner-preview-fallback" class="w-full h-full flex items-center justify-center text-[10px] text-slate-400 font-bold uppercase bg-slate-200 dark:bg-slate-800">
-                                            Default
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="flex-1 space-y-2">
-                                    <label for="sec1-banner-file" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-200 dark:border-indigo-800 transition cursor-pointer">
-                                        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                        <span>Choose Banner File</span>
-                                    </label>
-                                    <input type="file" id="sec1-banner-file" name="company_banner" accept="image/*" class="hidden" onchange="previewSec1Banner(this)">
-                                    <p id="sec1-banner-filename" class="text-[11px] text-slate-500 truncate">Select file or enter URL below</p>
-                                </div>
+                        <!-- Section 2 Card Footer Save Bar -->
+                        <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 text-xs text-slate-500">
+                                <i data-lucide="layers" class="w-4 h-4 text-indigo-500"></i>
+                                <span>Sector, Stage & Market Model details</span>
                             </div>
-                            
-                            <div>
-                                <input type="url" name="banner_url" id="sec1-banner-url" 
-                                       value="<?= htmlspecialchars($company['banner_url'] ?? '') ?>" 
-                                       placeholder="https://example.com/cover-banner.jpg" 
-                                       class="form-input-clean text-xs font-mono"
-                                       oninput="previewSec1BannerUrl(this.value)">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 1 Card Footer Save Bar -->
-                    <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
-                            <span>Corporate & Legal Identity details</span>
-                        </div>
-                        <button type="submit" class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                            <span>Save Section 1</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECTION 2 -->
-                <div id="sec-market" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                        <div class="flex items-center space-x-3">
-                            <div
-                                class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
-                                2</div>
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <span>Sector, Stage & Market Model</span>
-                                    <i data-lucide="layers" class="w-5 h-5 text-indigo-600"></i>
-                                </h2>
-                                <p class="text-sm text-slate-500 mt-0.5">Classification filters used by syndicate leads
-                                    and venture funds.</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Discovery
-                                Filters</span>
-                            <button type="submit" class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                            <button type="submit"
+                                class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="save" class="w-4 h-4"></i>
                                 <span>Save Section 2</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+                    <!-- SECTION 3 -->
+                    <div id="sec-pitch"
+                        class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                                    3</div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                        <span>Investor Pitch & Traction Story</span>
+                                        <i data-lucide="sparkles" class="w-5 h-5 text-indigo-600"></i>
+                                    </h2>
+                                    <p class="text-sm text-slate-500 mt-0.5">High-impact summary and competitive moat
+                                        presented on investor discovery cards.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span
+                                    class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Core
+                                    Narrative</span>
+                                <button type="submit"
+                                    class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save Section 3</span>
+                                </button>
+                            </div>
+                        </div>
+
                         <div>
                             <label class="form-label-clean">
-                                <span>Industry / Sector <span class="text-rose-500">*</span></span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-normal">Custom text</span>
+                                <span>One-Line Elevator Pitch</span>
+                                <span class="text-xs text-indigo-600 font-semibold">Keep it punchy & clear</span>
                             </label>
-                            <div class="relative">
-                                <input type="text" name="industry" required list="industry-suggestions"
-                                    value="<?= htmlspecialchars($company['industry'] ?? '') ?>"
-                                    placeholder="e.g. Media Production, Music, AI/SaaS, FinTech" 
-                                    class="form-input-clean pr-10">
-                                <i data-lucide="briefcase" class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
-                            </div>
-                            <datalist id="industry-suggestions">
-                                <option value="Media & Entertainment">
-                                <option value="Music & Audio Production">
-                                <option value="Film & Video Production">
-                                <option value="AI / Generative Tech">
-                                <option value="SaaS & Cloud Software">
-                                <option value="FinTech & Banking">
-                                <option value="HealthTech & Biotech">
-                                <option value="E-Commerce & D2C">
-                                <option value="EdTech & Learning">
-                                <option value="DeepTech & Hardware">
-                                <option value="CleanTech & Energy">
-                                <option value="Logistics & Supply Chain">
-                                <option value="Cybersecurity">
-                                <option value="Gaming & Esports">
-                                <option value="Consumer Tech">
-                            </datalist>
-                            <p class="form-hint">Type your exact industry or sector. You can write any custom domain.</p>
+                            <input type="text" name="pitch" value="<?= htmlspecialchars($company['pitch'] ?? '') ?>"
+                                placeholder="e.g. Autonomous AI copilot that accelerates legal contract diligence by 10x for corporate teams."
+                                class="form-input-clean font-medium">
+                            <p class="form-hint">Appears in bold at the top of your public deal page and investor weekly
+                                digests.</p>
                         </div>
+
                         <div>
-                            <label class="form-label-clean"><span>Current Funding Stage <span
-                                        class="text-rose-500">*</span></span></label>
-                            <select name="stage" class="form-input-clean cursor-pointer">
-                                <?php
-                                $stages = ['Idea / MVP', 'Pre-Seed', 'Seed', 'Pre-Series A', 'Series A', 'Series B+', 'Growth'];
-                                foreach ($stages as $stg): ?>
-                                    <option value="<?= htmlspecialchars($stg) ?>" <?= ($company['stage'] ?? '') === $stg ? 'selected' : '' ?>><?= htmlspecialchars($stg) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                            <p class="form-hint">Maturity level of your product and round structure.</p>
+                            <label class="form-label-clean">
+                                <span>Comprehensive Business Overview, Moat & Traction</span>
+                                <span class="text-xs text-slate-500 font-normal">Markdown / Clean Text</span>
+                            </label>
+                            <textarea name="description" rows="6"
+                                placeholder="Highlight:&#10;• The Problem: What painful inefficiency exists today?&#10;• The Solution & Moat: Why can't competitors easily replicate your product?&#10;• Current Traction: MRR, customer logo count, retention rates, MoM growth.&#10;• 12-Month Milestones: What this funding round achieves."
+                                class="form-input-clean font-normal leading-relaxed"><?= htmlspecialchars($company['description'] ?? '') ?></textarea>
+                            <p class="form-hint">Provide investors with crisp insights into your customer economics,
+                                product
+                                roadmap, and unfair advantages.</p>
                         </div>
-                        <div>
-                            <label class="form-label-clean"><span>Monetization Model</span></label>
-                            <input type="text" name="business_model"
-                                value="<?= htmlspecialchars($company['business_model'] ?? 'B2B SaaS') ?>"
-                                placeholder="e.g. B2B SaaS, Marketplace, Usage-based" class="form-input-clean">
-                            <p class="form-hint">How your business generates recurring revenue.</p>
-                        </div>
-                    </div>
 
-                    <div class="pt-1">
-                        <label class="form-label-clean">
-                            <span>Target Addressable Market (TAM) & Ideal Customer Profile</span>
-                        </label>
-                        <input type="text" name="target_market"
-                            value="<?= htmlspecialchars($company['target_market'] ?? '') ?>"
-                            placeholder="e.g. Mid-to-Large Enterprise BFSI Institutions across India & SEA ($14B Total TAM)"
-                            class="form-input-clean">
-                        <p class="form-hint">Specify customer segments, geography, and estimated serviceable market
-                            size.</p>
-                    </div>
-
-                    <!-- Section 2 Card Footer Save Bar -->
-                    <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i data-lucide="layers" class="w-4 h-4 text-indigo-500"></i>
-                            <span>Sector, Stage & Market Model details</span>
-                        </div>
-                        <button type="submit" class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                            <span>Save Section 2</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECTION 3 -->
-                <div id="sec-pitch" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                        <div class="flex items-center space-x-3">
-                            <div
-                                class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
-                                3</div>
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <span>Investor Pitch & Traction Story</span>
-                                    <i data-lucide="sparkles" class="w-5 h-5 text-indigo-600"></i>
-                                </h2>
-                                <p class="text-sm text-slate-500 mt-0.5">High-impact summary and competitive moat
-                                    presented on investor discovery cards.</p>
+                        <!-- Section 3 Card Footer Save Bar -->
+                        <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 text-xs text-slate-500">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                                <span>Pitch & Traction Story details</span>
                             </div>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Core
-                                Narrative</span>
-                            <button type="submit" class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                            <button type="submit"
+                                class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="save" class="w-4 h-4"></i>
                                 <span>Save Section 3</span>
                             </button>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="form-label-clean">
-                            <span>One-Line Elevator Pitch</span>
-                            <span class="text-xs text-indigo-600 font-semibold">Keep it punchy & clear</span>
-                        </label>
-                        <input type="text" name="pitch"
-                            value="<?= htmlspecialchars($company['pitch'] ?? '') ?>"
-                            placeholder="e.g. Autonomous AI copilot that accelerates legal contract diligence by 10x for corporate teams."
-                            class="form-input-clean font-medium">
-                        <p class="form-hint">Appears in bold at the top of your public deal page and investor weekly
-                            digests.</p>
-                    </div>
-
-                    <div>
-                        <label class="form-label-clean">
-                            <span>Comprehensive Business Overview, Moat & Traction</span>
-                            <span class="text-xs text-slate-500 font-normal">Markdown / Clean Text</span>
-                        </label>
-                        <textarea name="description" rows="6"
-                            placeholder="Highlight:&#10;• The Problem: What painful inefficiency exists today?&#10;• The Solution & Moat: Why can't competitors easily replicate your product?&#10;• Current Traction: MRR, customer logo count, retention rates, MoM growth.&#10;• 12-Month Milestones: What this funding round achieves."
-                            class="form-input-clean font-normal leading-relaxed"><?= htmlspecialchars($company['description'] ?? '') ?></textarea>
-                        <p class="form-hint">Provide investors with crisp insights into your customer economics, product
-                            roadmap, and unfair advantages.</p>
-                    </div>
-
-                    <!-- Section 3 Card Footer Save Bar -->
-                    <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
-                            <span>Pitch & Traction Story details</span>
-                        </div>
-                        <button type="submit" class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
-                            <i data-lucide="save" class="w-4 h-4"></i>
-                            <span>Save Section 3</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SECTION 4 -->
-                <div id="sec-team" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
-                    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                        <div class="flex items-center space-x-3">
-                            <div
-                                class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
-                                4</div>
-                            <div>
-                                <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                                    <span>Headquarters & Operational Footprint</span>
-                                    <i data-lucide="map-pin" class="w-5 h-5 text-indigo-600"></i>
-                                </h2>
-                                <p class="text-sm text-slate-500 mt-0.5">Location and current full-time headcount
-                                    details.</p>
+                    <!-- SECTION 4 -->
+                    <div id="sec-team"
+                        class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24 transition-all duration-200">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                                    4</div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                                        <span>Headquarters & Operational Footprint</span>
+                                        <i data-lucide="map-pin" class="w-5 h-5 text-indigo-600"></i>
+                                    </h2>
+                                    <p class="text-sm text-slate-500 mt-0.5">Location and current full-time headcount
+                                        details.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <span
+                                    class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Team
+                                    &
+                                    Geo</span>
+                                <button type="submit"
+                                    class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                                    <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                                    <span>Save Section 4</span>
+                                </button>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xs sm:text-sm font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">Team &
-                                Geo</span>
-                            <button type="submit" class="section-save-btn px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95 flex items-center gap-1.5 cursor-pointer">
-                                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div>
+                                <label class="form-label-clean"><span>Headquarters City</span></label>
+                                <input type="text" name="city"
+                                    value="<?= htmlspecialchars($company['city'] ?? 'Bengaluru') ?>"
+                                    placeholder="e.g. Bengaluru" class="form-input-clean">
+                            </div>
+                            <div>
+                                <label class="form-label-clean"><span>State / Province</span></label>
+                                <input type="text" name="state"
+                                    value="<?= htmlspecialchars($company['state'] ?? 'Karnataka') ?>"
+                                    placeholder="e.g. Karnataka" class="form-input-clean">
+                            </div>
+                            <div>
+                                <label class="form-label-clean"><span>Country</span></label>
+                                <input type="text" name="country"
+                                    value="<?= htmlspecialchars($company['country'] ?? 'India') ?>"
+                                    placeholder="e.g. India" class="form-input-clean">
+                            </div>
+                            <div>
+                                <label class="form-label-clean"><span>Full-Time Team Size</span></label>
+                                <div class="relative">
+                                    <input type="number" name="employee_count" min="1" max="10000"
+                                        value="<?= htmlspecialchars($company['employee_count'] ?? 10) ?>"
+                                        class="form-input-clean pr-10">
+                                    <i data-lucide="users"
+                                        class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Section 4 Card Footer Save Bar -->
+                        <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 text-xs text-slate-500">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i>
+                                <span>Headquarters & Operational Footprint details</span>
+                            </div>
+                            <button type="submit"
+                                class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="save" class="w-4 h-4"></i>
                                 <span>Save Section 4</span>
                             </button>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <div>
-                            <label class="form-label-clean"><span>Headquarters City</span></label>
-                            <input type="text" name="city"
-                                value="<?= htmlspecialchars($company['city'] ?? 'Bengaluru') ?>"
-                                placeholder="e.g. Bengaluru" class="form-input-clean">
+                    <!-- Form Action Bar -->
+                    <div
+                        class="section-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50">
+                        <div class="flex items-center space-x-2 text-sm text-slate-600">
+                            <i data-lucide="info" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                            <span>Changes propagate to verified investor discovery cards immediately upon saving.</span>
                         </div>
-                        <div>
-                            <label class="form-label-clean"><span>State / Province</span></label>
-                            <input type="text" name="state"
-                                value="<?= htmlspecialchars($company['state'] ?? 'Karnataka') ?>"
-                                placeholder="e.g. Karnataka" class="form-input-clean">
-                        </div>
-                        <div>
-                            <label class="form-label-clean"><span>Country</span></label>
-                            <input type="text" name="country"
-                                value="<?= htmlspecialchars($company['country'] ?? 'India') ?>" placeholder="e.g. India"
-                                class="form-input-clean">
-                        </div>
-                        <div>
-                            <label class="form-label-clean"><span>Full-Time Team Size</span></label>
-                            <div class="relative">
-                                <input type="number" name="employee_count" min="1" max="10000"
-                                    value="<?= htmlspecialchars($company['employee_count'] ?? 10) ?>"
-                                    class="form-input-clean pr-10">
-                                <i data-lucide="users"
-                                    class="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Section 4 Card Footer Save Bar -->
-                    <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 text-xs text-slate-500">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i>
-                            <span>Headquarters & Operational Footprint details</span>
-                        </div>
-                        <button type="submit" class="section-save-btn px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-sm transition active:scale-95 flex items-center gap-2 cursor-pointer">
+                        <button type="submit"
+                            class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base rounded-xl shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
                             <i data-lucide="save" class="w-4 h-4"></i>
-                            <span>Save Section 4</span>
+                            <span>Save Profile Changes</span>
                         </button>
                     </div>
-                </div>
+                </form>
 
-                <!-- Form Action Bar -->
-                <div
-                    class="section-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50">
-                    <div class="flex items-center space-x-2 text-sm text-slate-600">
-                        <i data-lucide="info" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
-                        <span>Changes propagate to verified investor discovery cards immediately upon saving.</span>
-                    </div>
-                    <button type="submit"
-                        class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base rounded-xl shadow-md transition flex items-center justify-center space-x-2 cursor-pointer">
-                        <i data-lucide="save" class="w-4 h-4"></i>
-                        <span>Save Profile Changes</span>
-                    </button>
-                </div>
-            </form>
-
-            <!-- SECTION 5: Data Room -->
-            <div id="company-data-room" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24">
-                <div
-                    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-                    <div class="flex items-start space-x-3">
-                        <div
-                            class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-sm flex-shrink-0">
-                            <i data-lucide="shield-check" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <div class="flex flex-wrap items-center gap-2">
-                                <h2 class="text-xl font-bold text-slate-900 tracking-tight">Confidential Data Room &
-                                    Documents</h2>
-                                <span
-                                    class="px-2.5 py-0.5 text-sm font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                    <?= count($documents) ?> Files
-                                </span>
+                <!-- SECTION 5: Trust, Accreditations & Verified Awards -->
+                <div id="sec-awards" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                                <i data-lucide="award" class="w-5 h-5"></i>
                             </div>
-                            <p class="text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
-                                Securely gated compliance repository for Pitch Decks, Financial Models, and Cap Tables
-                                accessible only to accredited investors.
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Verified
+                                        Awards, Accreditations & Trust Proof</h2>
+                                    <span
+                                        class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                        <?= count($awards) ?> Verified
+                                    </span>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xl leading-relaxed">
+                                    Share trophy photos, DPIIT certificates, ISO/compliance badges, incubation proof,
+                                    and patents to establish undeniable trust with institutional and angel investors.
+                                </p>
+                            </div>
+                        </div>
+
+                        <?php if ($company): ?>
+                            <button type="button" onclick="openAwardModal()"
+                                class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition flex items-center justify-center space-x-1.5 shadow-sm flex-shrink-0">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                <span>Add Award or Document</span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!$company): ?>
+                        <div
+                            class="p-8 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="award" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">Save Company Profile First</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
+                                Save your company basics above to start attaching award certificates, trophy photos, and
+                                trust credentials.
                             </p>
                         </div>
-                    </div>
+                    <?php elseif (empty($awards)): ?>
+                        <div
+                            class="p-10 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="medal" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800 dark:text-white">No Awards or Trust Credentials
+                                Added Yet</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
+                                Showcase recognition from DPIIT, NASSCOM, MeitY, university incubators, or ISO
+                                certifications. Verified credentials increase investor response rates by 68%.
+                            </p>
+                            <button type="button" onclick="openAwardModal()"
+                                class="mt-4 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition inline-flex items-center space-x-1.5 shadow-sm">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>Add First Award / Trust Badge</span>
+                            </button>
+                        </div>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <?php foreach ($awards as $award):
+                                $isPdf = str_ends_with(strtolower($award['image_url']), '.pdf');
+                                ?>
+                                <!-- Certificate Photo Wall Frame -->
+                                <div class="group relative cursor-pointer"
+                                    onclick="<?= $isPdf ? "window.open('" . htmlspecialchars($award['image_url']) . "', '_blank')" : "openAwardLightbox('" . htmlspecialchars($award['image_url']) . "', '" . htmlspecialchars(addslashes($award['title'] ?? '')) . "', '" . htmlspecialchars(addslashes($award['issuer'] ?? '')) . "')" ?>"
+                                    title="Click to view full certificate">
+                                    <!-- Outer Frame Molding (Top, Right, Bottom, Left all framed) -->
+                                    <div
+                                        class="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 dark:from-slate-800 dark:via-slate-900 dark:to-black shadow-[0_10px_25px_-5px_rgba(0,0,0,0.25)] border-2 border-amber-600/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_16px_35px_-5px_rgba(0,0,0,0.35)] relative">
+                                        <!-- Delete Button on Hover -->
+                                        <form action="<?= url('founder/company.php') ?>" method="POST"
+                                            class="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onclick="event.stopPropagation();"
+                                            onsubmit="event.stopPropagation(); return confirm('Are you sure you want to remove this certificate photo?');">
+                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                            <input type="hidden" name="form_action" value="delete_award">
+                                            <input type="hidden" name="award_id" value="<?= (int) $award['id'] ?>">
+                                            <button type="submit"
+                                                class="p-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white shadow-md transition"
+                                                title="Delete certificate">
+                                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                            </button>
+                                        </form>
 
-                    <?php if ($company): ?>
-                        <button type="button" onclick="openUploadModal()"
-                            class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition flex items-center justify-center space-x-1.5 shadow-sm flex-shrink-0">
-                            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
-                            <span>Upload Document</span>
-                        </button>
+                                        <!-- Inner Matting (passe-partout on all sides) -->
+                                        <div
+                                            class="p-2 sm:p-2.5 rounded-lg bg-[#faf8f5] dark:bg-[#141820] border border-amber-200/40 dark:border-amber-900/40 shadow-inner">
+                                            <!-- Photo Mount Container -->
+                                            <div
+                                                class="relative w-full h-52 sm:h-60 rounded bg-white dark:bg-slate-950 overflow-hidden flex items-center justify-center border border-slate-300/80 dark:border-slate-800 shadow-xs">
+                                                <?php if ($isPdf): ?>
+                                                    <div class="text-center p-4">
+                                                        <div
+                                                            class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center mx-auto mb-2 border border-rose-100 dark:border-rose-900 shadow-xs">
+                                                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                                                        </div>
+                                                        <span
+                                                            class="text-xs font-bold text-slate-800 dark:text-slate-200 block">Certificate
+                                                            (PDF)</span>
+                                                        <span
+                                                            class="block text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1">Click
+                                                            to view &rarr;</span>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <img src="<?= htmlspecialchars($award['image_url']) ?>" alt="Award Certificate"
+                                                        class="w-full h-full object-contain p-1 group-hover:brightness-105 transition duration-300"
+                                                        loading="lazy"
+                                                        onerror="this.src='https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=800&auto=format&fit=crop&q=80'">
+                                                    <div
+                                                        class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center">
+                                                        <span
+                                                            class="px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-lg backdrop-blur-xs flex items-center gap-1.5">
+                                                            <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-amber-400"></i>
+                                                            <span>View Full Photo</span>
+                                                        </span>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
                     <?php endif; ?>
                 </div>
 
-                <?php if (!$company): ?>
-                    <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
-                            <i data-lucide="building" class="w-6 h-6"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-800">Save Company Profile First</h3>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">
-                            Please fill in and save your legal company details above to unlock your secure startup data room
-                            vault.
-                        </p>
-                    </div>
-                <?php elseif (empty($documents)): ?>
-                    <div class="p-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
-                        <div
-                            class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
-                            <i data-lucide="folder-plus" class="w-6 h-6"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-slate-800">Your Data Room is Currently Empty</h3>
-                        <p class="text-sm text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
-                            Startups with an uploaded Pitch Deck and Cap Table receive 4x more meeting requests from active
-                            institutional investors.
-                        </p>
-                        <button type="button" onclick="openUploadModal()"
-                            class="mt-4 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition inline-flex items-center space-x-1.5 shadow-sm">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>Add Pitch Deck or Model</span>
-                        </button>
-                    </div>
-                <?php else: ?>
-                    <div class="space-y-3.5">
-                        <?php foreach ($documents as $doc): ?>
-                            <div class="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xs hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/60 transition-all duration-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                                <!-- Left: Document Details -->
-                                <div class="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                                    <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 border border-indigo-100 dark:border-indigo-800/60 shadow-xs">
-                                        <?php if (stripos($doc['document_type'], 'deck') !== false): ?>
-                                            <i data-lucide="presentation" class="w-6 h-6 text-indigo-600 dark:text-indigo-400"></i>
-                                        <?php elseif (stripos($doc['document_type'], 'financial') !== false || stripos($doc['document_type'], 'cap') !== false): ?>
-                                            <i data-lucide="table" class="w-6 h-6 text-emerald-600 dark:text-emerald-400"></i>
-                                        <?php elseif (stripos($doc['document_type'], 'incorporation') !== false || stripos($doc['document_type'], 'gst') !== false): ?>
-                                            <i data-lucide="shield" class="w-6 h-6 text-violet-600 dark:text-violet-400"></i>
-                                        <?php else: ?>
-                                            <i data-lucide="file-text" class="w-6 h-6 text-slate-600 dark:text-slate-400"></i>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="min-w-0 flex-1 space-y-1">
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <h4 class="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-snug break-words">
-                                                <?= htmlspecialchars(!empty($doc['title']) ? $doc['title'] : ($doc['document_type'] ?: 'Confidential Document')) ?>
-                                            </h4>
-                                            <span class="text-xs px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-100 dark:border-indigo-800/60 flex-shrink-0">
-                                                <?= htmlspecialchars($doc['document_type']) ?>
-                                            </span>
-                                        </div>
-                                        <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-2.5 gap-y-1">
-                                            <span class="font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Size: <?= htmlspecialchars($doc['file_size'] ?: '1.8 MB') ?></span>
-                                            <span class="text-slate-300 dark:text-slate-600">•</span>
-                                            <span class="whitespace-nowrap">Uploaded: <?= date('M d, Y', strtotime($doc['uploaded_at'] ?? 'now')) ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Right: Access Badge, Status & Actions -->
-                                <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:justify-end flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800">
-                                    <span class="px-2.5 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 whitespace-nowrap">
-                                        <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
-                                        <span><?= htmlspecialchars(ucwords(str_replace('_', ' ', $doc['access_level'] ?? 'registered_investors'))) ?></span>
-                                    </span>
-
-                                    <span class="text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 whitespace-nowrap <?= $doc['is_verified'] ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800' : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800' ?>">
-                                        <span class="w-1.5 h-1.5 rounded-full <?= $doc['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>
-                                        <span><?= $doc['is_verified'] ? 'Verified' : 'Under Review' ?></span>
-                                    </span>
-
-                                    <div class="flex items-center gap-2 flex-wrap">
-                                        <a href="<?= htmlspecialchars(url($doc['file_path'])) ?>" target="_blank" rel="noopener"
-                                            class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition shadow-2xs">
-                                            <i data-lucide="eye" class="w-4 h-4 text-slate-500"></i>
-                                            <span>Preview</span>
-                                        </a>
-
-                                        <a href="<?= htmlspecialchars(url('download.php?id=' . (int) $doc['id'] . '&type=company')) ?>"
-                                            class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 transition shadow-2xs">
-                                            <i data-lucide="download" class="w-4 h-4"></i>
-                                            <span>Download</span>
-                                        </a>
-
-                                        <form action="<?= url('founder/company.php') ?>" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently remove this document from the Data Room?');">
-                                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                            <input type="hidden" name="form_action" value="delete_doc">
-                                            <input type="hidden" name="doc_id" value="<?= (int) $doc['id'] ?>">
-                                            <button type="submit" class="p-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400 transition shadow-2xs cursor-pointer" title="Delete document">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Upload Modal -->
-            <?php if ($company): ?>
-                <div id="upload-modal"
-                    class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                <!-- SECTION 6: Data Room -->
+                <div id="company-data-room" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24">
                     <div
-                        class="bg-white border border-slate-200 shadow-2xl max-w-lg w-full rounded-2xl p-6 sm:p-7 relative my-auto max-h-[92vh] overflow-y-auto">
-                        <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
-                            <div>
-                                <h3 class="font-bold text-slate-900 text-lg">Add Document to Data Room</h3>
-                                <p class="text-sm text-slate-500 mt-0.5">Attach investor decks, certificates or financial
-                                    models.</p>
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+                        <div class="flex items-start space-x-3">
+                            <div
+                                class="w-11 h-11 rounded-xl bg-gradient-to-tr from-indigo-500 to-indigo-700 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
                             </div>
-                            <button type="button" onclick="closeUploadModal()"
-                                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
-                                <i data-lucide="x" class="w-5 h-5"></i>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h2 class="text-xl font-bold text-slate-900 tracking-tight">Confidential Data Room &
+                                        Documents</h2>
+                                    <span
+                                        class="px-2.5 py-0.5 text-sm font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">
+                                        <?= count($documents) ?> Files
+                                    </span>
+                                </div>
+                                <p class="text-sm text-slate-500 mt-1 max-w-xl leading-relaxed">
+                                    Securely gated compliance repository for Pitch Decks, Financial Models, and Cap
+                                    Tables
+                                    accessible only to accredited investors.
+                                </p>
+                            </div>
+                        </div>
+
+                        <?php if ($company): ?>
+                            <button type="button" onclick="openUploadModal()"
+                                class="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition flex items-center justify-center space-x-1.5 shadow-sm flex-shrink-0">
+                                <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                <span>Upload Document</span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if (!$company): ?>
+                        <div class="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="building" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800">Save Company Profile First</h3>
+                            <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">
+                                Please fill in and save your legal company details above to unlock your secure startup data
+                                room
+                                vault.
+                            </p>
+                        </div>
+                    <?php elseif (empty($documents)): ?>
+                        <div class="p-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-300">
+                            <div
+                                class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-3">
+                                <i data-lucide="folder-plus" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-800">Your Data Room is Currently Empty</h3>
+                            <p class="text-sm text-slate-500 max-w-md mx-auto mt-1 leading-relaxed">
+                                Startups with an uploaded Pitch Deck and Cap Table receive 4x more meeting requests from
+                                active
+                                institutional investors.
+                            </p>
+                            <button type="button" onclick="openUploadModal()"
+                                class="mt-4 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition inline-flex items-center space-x-1.5 shadow-sm">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>Add Pitch Deck or Model</span>
                             </button>
                         </div>
+                    <?php else: ?>
+                        <div class="space-y-3.5">
+                            <?php foreach ($documents as $doc): ?>
+                                <div
+                                    class="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111827] shadow-xs hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-900/60 transition-all duration-200 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                    <!-- Left: Document Details -->
+                                    <div class="flex items-start sm:items-center gap-4 min-w-0 flex-1">
+                                        <div
+                                            class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0 border border-indigo-100 dark:border-indigo-800/60 shadow-xs">
+                                            <?php if (stripos($doc['document_type'], 'deck') !== false): ?>
+                                                <i data-lucide="presentation"
+                                                    class="w-6 h-6 text-indigo-600 dark:text-indigo-400"></i>
+                                            <?php elseif (stripos($doc['document_type'], 'financial') !== false || stripos($doc['document_type'], 'cap') !== false): ?>
+                                                <i data-lucide="table" class="w-6 h-6 text-emerald-600 dark:text-emerald-400"></i>
+                                            <?php elseif (stripos($doc['document_type'], 'incorporation') !== false || stripos($doc['document_type'], 'gst') !== false): ?>
+                                                <i data-lucide="shield" class="w-6 h-6 text-violet-600 dark:text-violet-400"></i>
+                                            <?php else: ?>
+                                                <i data-lucide="file-text" class="w-6 h-6 text-slate-600 dark:text-slate-400"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="min-w-0 flex-1 space-y-1">
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <h4
+                                                    class="font-bold text-slate-900 dark:text-white text-sm sm:text-base leading-snug break-words">
+                                                    <?= htmlspecialchars(!empty($doc['title']) ? $doc['title'] : ($doc['document_type'] ?: 'Confidential Document')) ?>
+                                                </h4>
+                                                <span
+                                                    class="text-xs px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-100 dark:border-indigo-800/60 flex-shrink-0">
+                                                    <?= htmlspecialchars($doc['document_type']) ?>
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                                                <span
+                                                    class="font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Size:
+                                                    <?= htmlspecialchars($doc['file_size'] ?: '1.8 MB') ?></span>
+                                                <span class="text-slate-300 dark:text-slate-600">•</span>
+                                                <span class="whitespace-nowrap">Uploaded:
+                                                    <?= date('M d, Y', strtotime($doc['uploaded_at'] ?? 'now')) ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <form action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data"
-                            class="space-y-4">
-                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                            <input type="hidden" name="form_action" value="upload_doc">
+                                    <!-- Right: Access Badge, Status & Actions -->
+                                    <div
+                                        class="flex flex-wrap items-center gap-2 sm:gap-2.5 lg:justify-end flex-shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800">
+                                        <span
+                                            class="px-2.5 py-1 rounded-full text-xs bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 whitespace-nowrap">
+                                            <i data-lucide="lock" class="w-3.5 h-3.5 text-slate-400"></i>
+                                            <span><?= htmlspecialchars(ucwords(str_replace('_', ' ', $doc['access_level'] ?? 'registered_investors'))) ?></span>
+                                        </span>
 
-                            <div>
-                                <label class="form-label-clean"><span>Document Category <span
-                                            class="text-rose-500">*</span></span></label>
-                                <select name="document_type" class="form-input-clean cursor-pointer">
-                                    <option value="Pitch Deck">Pitch Deck (PDF / PPT)</option>
-                                    <option value="Certificate of Incorporation">Certificate of Incorporation (ROC)</option>
-                                    <option value="Financial Projections">5-Year Financial Model</option>
-                                    <option value="Cap Table">Cap Table & Equity Breakdown</option>
-                                    <option value="GST Certificate">GST Registration Certificate</option>
-                                    <option value="Due Diligence Report">Due Diligence Report / Audit</option>
-                                    <option value="Other Document">Other Diligence Document</option>
-                                </select>
-                            </div>
+                                        <span
+                                            class="text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1.5 whitespace-nowrap <?= $doc['is_verified'] ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800' : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800' ?>">
+                                            <span
+                                                class="w-1.5 h-1.5 rounded-full <?= $doc['is_verified'] ? 'bg-emerald-500' : 'bg-amber-500' ?>"></span>
+                                            <span><?= $doc['is_verified'] ? 'Verified' : 'Under Review' ?></span>
+                                        </span>
 
-                            <div>
-                                <label class="form-label-clean"><span>Display Title <span
-                                            class="text-rose-500">*</span></span></label>
-                                <input type="text" name="title" required
-                                    placeholder="e.g. Q1 2026 Seed Investor Pitch Presentation" class="form-input-clean">
-                            </div>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <a href="<?= htmlspecialchars(url($doc['file_path'])) ?>" target="_blank"
+                                                rel="noopener"
+                                                class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition shadow-2xs">
+                                                <i data-lucide="eye" class="w-4 h-4 text-slate-500"></i>
+                                                <span>Preview</span>
+                                            </a>
 
-                            <div>
-                                <label class="form-label-clean">
-                                    <span>Choose Document File <span class="text-rose-500">*</span></span>
-                                    <span class="text-xs text-slate-500 font-normal">Max 25 MB</span>
-                                </label>
-                                <input type="file" name="doc_file" required
-                                    accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
-                                    class="form-input-clean file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-                                <p class="form-hint">Accepted formats: PDF, PPTX, DOCX, PNG, JPG.</p>
-                            </div>
+                                            <a href="<?= htmlspecialchars(url('download.php?id=' . (int) $doc['id'] . '&type=company')) ?>"
+                                                class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 transition shadow-2xs">
+                                                <i data-lucide="download" class="w-4 h-4"></i>
+                                                <span>Download</span>
+                                            </a>
 
-                            <div>
-                                <label class="form-label-clean"><span>Privacy & Access Level</span></label>
-                                <select name="access_level" class="form-input-clean cursor-pointer">
-                                    <option value="registered_investors">Registered & Verified Investors Only (Recommended)
-                                    </option>
-                                    <option value="request_only">Gated (Requires Founder Approval per request)</option>
-                                    <option value="public">Public (Visible to all platform visitors)</option>
-                                </select>
-                            </div>
-
-                            <div class="pt-3 flex items-center justify-end space-x-3">
-                                <button type="button" onclick="closeUploadModal()"
-                                    class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-sm transition">
-                                    Cancel
-                                </button>
-                                <button type="submit"
-                                    class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition text-sm flex items-center space-x-1.5">
-                                    <i data-lucide="upload" class="w-4 h-4"></i>
-                                    <span>Upload & Submit for Review</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
+                                            <form action="<?= url('founder/company.php') ?>" method="POST" class="inline"
+                                                onsubmit="return confirm('Are you sure you want to permanently remove this document from the Data Room?');">
+                                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                                <input type="hidden" name="form_action" value="delete_doc">
+                                                <input type="hidden" name="doc_id" value="<?= (int) $doc['id'] ?>">
+                                                <button type="submit"
+                                                    class="p-2 rounded-xl border border-rose-200 dark:border-rose-900/50 bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 text-rose-600 dark:text-rose-400 transition shadow-2xs cursor-pointer"
+                                                    title="Delete document">
+                                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
 
-            <!-- Hidden Quick Auto-Upload Form: Company Picture / Logo from Device Gallery -->
-            <?php if ($company): ?>
-                <form id="quick-logo-form" action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data" class="hidden">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <input type="hidden" name="form_action" value="quick_upload_logo">
-                    <input type="file" id="quick-company-logo-file" name="company_logo" accept="image/*" onchange="autoSubmitCompanyLogo(this)">
-                </form>
+                <!-- Upload Modal -->
+                <?php if ($company): ?>
+                    <div id="upload-modal"
+                        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                        <div
+                            class="bg-white border border-slate-200 shadow-2xl max-w-lg w-full rounded-2xl p-6 sm:p-7 relative my-auto max-h-[92vh] overflow-y-auto">
+                            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+                                <div>
+                                    <h3 class="font-bold text-slate-900 text-lg">Add Document to Data Room</h3>
+                                    <p class="text-sm text-slate-500 mt-0.5">Attach investor decks, certificates or
+                                        financial
+                                        models.</p>
+                                </div>
+                                <button type="button" onclick="closeUploadModal()"
+                                    class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                                    <i data-lucide="x" class="w-5 h-5"></i>
+                                </button>
+                            </div>
 
-                <!-- Hidden Quick Auto-Upload Form: Company Cover Banner from Device Gallery -->
-                <form id="quick-banner-form" action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data" class="hidden">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <input type="hidden" name="form_action" value="quick_upload_banner">
-                    <input type="file" id="quick-company-banner-file" name="company_banner" accept="image/*" onchange="autoSubmitCompanyBanner(this)">
-                </form>
-            <?php endif; ?>
+                            <form action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data"
+                                class="space-y-4">
+                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                <input type="hidden" name="form_action" value="upload_doc">
+
+                                <div>
+                                    <label class="form-label-clean"><span>Document Category <span
+                                                class="text-rose-500">*</span></span></label>
+                                    <select name="document_type" class="form-input-clean cursor-pointer">
+                                        <option value="Pitch Deck">Pitch Deck (PDF / PPT)</option>
+                                        <option value="Certificate of Incorporation">Certificate of Incorporation (ROC)
+                                        </option>
+                                        <option value="Financial Projections">5-Year Financial Model</option>
+                                        <option value="Cap Table">Cap Table & Equity Breakdown</option>
+                                        <option value="GST Certificate">GST Registration Certificate</option>
+                                        <option value="Due Diligence Report">Due Diligence Report / Audit</option>
+                                        <option value="Other Document">Other Diligence Document</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="form-label-clean"><span>Display Title <span
+                                                class="text-rose-500">*</span></span></label>
+                                    <input type="text" name="title" required
+                                        placeholder="e.g. Q1 2026 Seed Investor Pitch Presentation"
+                                        class="form-input-clean">
+                                </div>
+
+                                <div>
+                                    <label class="form-label-clean">
+                                        <span>Choose Document File <span class="text-rose-500">*</span></span>
+                                        <span class="text-xs text-slate-500 font-normal">Max 25 MB</span>
+                                    </label>
+                                    <input type="file" name="doc_file" required
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
+                                        class="form-input-clean file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                                    <p class="form-hint">Accepted formats: PDF, PPTX, DOCX, PNG, JPG.</p>
+                                </div>
+
+                                <div>
+                                    <label class="form-label-clean"><span>Privacy & Access Level</span></label>
+                                    <select name="access_level" class="form-input-clean cursor-pointer">
+                                        <option value="registered_investors">Registered & Verified Investors Only
+                                            (Recommended)
+                                        </option>
+                                        <option value="request_only">Gated (Requires Founder Approval per request)</option>
+                                        <option value="public">Public (Visible to all platform visitors)</option>
+                                    </select>
+                                </div>
+
+                                <div class="pt-3 flex items-center justify-end space-x-3">
+                                    <button type="button" onclick="closeUploadModal()"
+                                        class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-sm transition">
+                                        Cancel
+                                    </button>
+                                    <button type="submit"
+                                        class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-sm transition text-sm flex items-center space-x-1.5">
+                                        <i data-lucide="upload" class="w-4 h-4"></i>
+                                        <span>Upload & Submit for Review</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
         </main>
     </div>
@@ -1349,7 +1640,7 @@ $flashStyles = [
                 const file = input.files[0];
                 // Instant optimistic preview on the hero card
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const heroImg = document.getElementById('company-hero-logo-img');
                     if (heroImg) {
                         heroImg.src = e.target.result;
@@ -1375,7 +1666,7 @@ $flashStyles = [
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const bannerImg = document.getElementById('company-hero-banner-img');
                     if (bannerImg) {
                         bannerImg.src = e.target.result;
@@ -1406,7 +1697,7 @@ $flashStyles = [
                     label.className = 'text-[11px] text-emerald-600 font-bold';
                 }
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const prev = document.getElementById('sec1-logo-preview');
                     if (prev) prev.src = e.target.result;
                 };
@@ -1430,7 +1721,7 @@ $flashStyles = [
                     label.className = 'text-[11px] text-emerald-600 font-bold';
                 }
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     const prev = document.getElementById('sec1-banner-preview');
                     if (prev) {
                         prev.src = e.target.result;
@@ -1462,11 +1753,6 @@ $flashStyles = [
             if (m) m.classList.add('hidden');
         }
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeUploadModal(); });
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                window.lucide.createIcons();
-            }
-        });
     </script>
 
     <?php include __DIR__ . '/../includes/share_company_modal.php'; ?>

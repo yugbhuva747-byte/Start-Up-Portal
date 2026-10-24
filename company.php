@@ -60,7 +60,7 @@ if ($db) {
     $fStmt = $db->prepare("
         SELECT u.id as user_id, u.name, u.email, u.avatar_url, u.city as user_city,
                cf.designation, cf.equity_percent, cf.is_signatory,
-               fp.bio, fp.linkedin_url, fp.website_url
+               fp.bio, fp.linkedin_url, fp.website_url, fp.skills, fp.passions, fp.hobbies, fp.superpower, fp.education
         FROM company_founders cf
         JOIN users u ON cf.user_id = u.id
         LEFT JOIN founder_profiles fp ON u.id = fp.user_id
@@ -74,6 +74,11 @@ if ($db) {
     $dStmt = $db->prepare("SELECT * FROM company_documents WHERE company_id = ? ORDER BY uploaded_at DESC");
     $dStmt->execute([$companyId]);
     $documents = $dStmt->fetchAll();
+
+    // Awards, Accreditations & Trust Documents
+    $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
+    $aStmt->execute([$companyId]);
+    $awards = $aStmt->fetchAll();
 
     // Active Round
     $rStmt = $db->prepare("SELECT * FROM funding_rounds WHERE company_id = ? AND status IN ('LIVE', 'PARTIALLY_FUNDED', 'APPROVED') ORDER BY created_at DESC LIMIT 1");
@@ -476,6 +481,75 @@ foreach ($documents as $doc) {
                     <?php endif; ?>
                 </div>
 
+                <!-- Verified Awards, Accreditations & Trust Documents (Public Preview) -->
+                <?php if (!empty($awards)): ?>
+                <div class="card-dossier p-6 sm:p-8 space-y-6" id="company-awards-dossier">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="p-2 rounded-xl bg-amber-50 text-amber-600">
+                                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                    </svg>
+                                </span>
+                                <h2 class="text-lg sm:text-xl font-bold text-slate-900">Verified Awards &amp; Trust Accreditations</h2>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                                Verified institutional recognitions, government certifications, and third-party compliance proofs.
+                            </p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-bold self-start sm:self-auto flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                            <?= count($awards) ?> Verified Credentials
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <?php foreach ($awards as $award): 
+                            $isPdf = str_ends_with(strtolower($award['image_url']), '.pdf');
+                        ?>
+                            <!-- Certificate Photo Wall Frame -->
+                            <div class="group relative cursor-pointer"
+                                 onclick="<?= $isPdf ? "window.open('" . htmlspecialchars($award['image_url']) . "', '_blank')" : "openPublicAwardLightbox('" . htmlspecialchars($award['image_url']) . "', '" . htmlspecialchars(addslashes($award['title'] ?? '')) . "', '" . htmlspecialchars(addslashes($award['issuer'] ?? '')) . "')" ?>"
+                                 title="Click to view full certificate">
+                                <!-- Outer Frame Molding (All 4 sides) -->
+                                <div class="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.25)] border-2 border-amber-600/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_16px_35px_-5px_rgba(0,0,0,0.35)]">
+                                    <!-- Inner Matting (Passe-partout on all sides) -->
+                                    <div class="p-2 sm:p-2.5 rounded-lg bg-[#faf8f5] border border-amber-200/50 shadow-inner">
+                                        <!-- Photo Mount Container -->
+                                        <div class="relative w-full h-52 sm:h-60 rounded bg-white overflow-hidden flex items-center justify-center border border-slate-300/80 shadow-xs">
+                                            <?php if ($isPdf): ?>
+                                                <div class="text-center p-4">
+                                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-2 border border-rose-100 shadow-xs">
+                                                        <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="text-xs font-bold text-slate-800 block">Certificate (PDF)</span>
+                                                    <span class="block text-[10px] text-blue-600 font-semibold mt-1">Click to view &rarr;</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <img src="<?= htmlspecialchars($award['image_url']) ?>" 
+                                                     alt="Certificate Photo" 
+                                                     class="w-full h-full object-contain p-1 group-hover:brightness-105 transition duration-300"
+                                                     loading="lazy"
+                                                     onerror="this.src='https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=800&auto=format&fit=crop&q=80'">
+                                                <div class="absolute inset-0 bg-slate-900/20 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center">
+                                                    <span class="px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-lg backdrop-blur-xs flex items-center gap-1.5">
+                                                        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
+                                                        <span>View Full Photo</span>
+                                                    </span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Confidential Data Room & Documents (Direct Public Access) -->
                 <div class="card-dossier p-6 sm:p-8 space-y-6" id="company-data-room">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
@@ -683,17 +757,39 @@ foreach ($documents as $doc) {
                                     </p>
                                 <?php endif; ?>
 
-                                <?php if (!empty($f['linkedin_url'])): ?>
-                                    <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between">
-                                        <span class="text-[11px] text-slate-500 font-medium">Professional Profile</span>
-                                        <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
+                                <?php if (!empty($f['superpower'])): ?>
+                                    <div class="px-2.5 py-1.5 rounded-lg bg-indigo-50/70 border border-indigo-100 text-[11px] text-indigo-900 font-medium flex items-center gap-1.5">
+                                        <svg class="w-3 h-3 text-indigo-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                                        <span class="truncate"><strong class="font-bold">Edge:</strong> <?= htmlspecialchars($f['superpower']) ?></span>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($f['skills'])): 
+                                    $skPreview = array_slice(array_map('trim', explode(',', $f['skills'])), 0, 3);
+                                ?>
+                                    <div class="flex flex-wrap gap-1">
+                                        <?php foreach ($skPreview as $sk): if ($sk === '') continue; ?>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
+                                                <?= htmlspecialchars($sk) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
+                                    <a href="<?= url('founder/view.php?id=' . encode_id($f['user_id'])) ?>" class="font-bold text-indigo-600 hover:text-indigo-800 transition flex items-center gap-1">
+                                        <span>Founder Profile</span>
+                                        &rarr;
+                                    </a>
+                                    <?php if (!empty($f['linkedin_url'])): ?>
+                                        <a href="<?= htmlspecialchars($f['linkedin_url']) ?>" target="_blank" rel="noopener noreferrer" class="font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition">
                                             <span>LinkedIn</span>
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                             </svg>
                                         </a>
-                                    </div>
-                                <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -939,8 +1035,52 @@ foreach ($documents as $doc) {
     </script>
     <?php endif; ?>
 
+    <!-- Public Award Lightbox Modal -->
+    <div id="public-award-lightbox"
+        class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+        onclick="if (event.target === this) closePublicAwardLightbox();">
+        <div class="relative max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+            <div class="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/90 text-white">
+                <div>
+                    <h4 id="pub-lightbox-title" class="font-bold text-base text-white"></h4>
+                    <p id="pub-lightbox-issuer" class="text-xs text-amber-400 font-medium"></p>
+                </div>
+                <button type="button" onclick="closePublicAwardLightbox()"
+                    class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-2 bg-black flex items-center justify-center min-h-[300px] max-h-[75vh] overflow-hidden">
+                <img id="pub-lightbox-img" src="" alt="Award Photo" class="max-h-[72vh] max-w-full object-contain rounded-lg">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openPublicAwardLightbox(src, title, issuer) {
+            const modal = document.getElementById('public-award-lightbox');
+            const img = document.getElementById('pub-lightbox-img');
+            const titleEl = document.getElementById('pub-lightbox-title');
+            const issuerEl = document.getElementById('pub-lightbox-issuer');
+            if (modal && img) {
+                img.src = src;
+                if (titleEl) titleEl.textContent = title || 'Verified Award';
+                if (issuerEl) issuerEl.textContent = issuer ? ('Issued by: ' + issuer) : '';
+                modal.classList.remove('hidden');
+            }
+        }
+        function closePublicAwardLightbox() {
+            const modal = document.getElementById('public-award-lightbox');
+            if (modal) modal.classList.add('hidden');
+        }
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') closePublicAwardLightbox();
+        });
+    </script>
+
     <!-- Include Reusable Share Modal -->
     <?php include __DIR__ . '/includes/share_company_modal.php'; ?>
 
 </body>
 </html>
+

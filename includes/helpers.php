@@ -46,6 +46,15 @@ function asset(string $path = ''): string {
     return BASE_URL . '/assets/' . ltrim($path, '/');
 }
 
+// 1.2 Global Safe Redirection Helper
+function redirect(string $path, int $status = 302): void {
+    if (!preg_match('#^https?://#i', $path)) {
+        $path = url($path);
+    }
+    header('Location: ' . $path, true, $status);
+    exit;
+}
+
 // 2. Hash ID Encoding & Decoding (Reversible, URL-safe, secure obfuscation)
 function hash_id_encode(int|string|null $id): string
 {
@@ -412,8 +421,9 @@ function csrf_token(): string
     return $_SESSION['csrf_token'];
 }
 
-function verify_csrf(?string $token): bool
+function verify_csrf(?string $token = null): bool
 {
+    $token = $token ?? ($_POST['csrf_token'] ?? '');
     return !empty($token) && !empty($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
@@ -911,6 +921,57 @@ function handle_company_banner_upload(array $file, int $companyId): array
 }
 
 /**
+ * Handle Cover / Profile Banner Photo Upload (User profile)
+ */
+function handle_cover_upload(array $file, int $userId): array
+{
+    if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'url' => null, 'error' => null];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'url' => null, 'error' => 'Banner upload failed (code ' . $file['error'] . ').'];
+    }
+
+    if ($file['size'] > 12 * 1024 * 1024) {
+        return ['success' => false, 'url' => null, 'error' => 'Banner file size must be less than 12MB.'];
+    }
+
+    $imageInfo = @getimagesize($file['tmp_name']);
+    if (!$imageInfo) {
+        return ['success' => false, 'url' => null, 'error' => 'The selected banner file is not a valid image.'];
+    }
+
+    $allowedMimes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif'
+    ];
+
+    $mime = $imageInfo['mime'];
+    if (!isset($allowedMimes[$mime])) {
+        return ['success' => false, 'url' => null, 'error' => 'Only JPG, PNG, WEBP, and GIF banner images are supported.'];
+    }
+
+    $ext = $allowedMimes[$mime];
+    $uploadDir = ROOT_PATH . '/uploads/covers';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    $filename = 'cover_' . $userId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded banner image to disk.'];
+    }
+
+    $publicUrl = url('uploads/covers/' . $filename);
+    return ['success' => true, 'url' => $publicUrl, 'error' => null];
+}
+
+/**
  * 12e. Human-readable relative time string (e.g., 'just now', '5m ago', '2h ago', 'yesterday', '3d ago', 'Oct 24, 2026')
  */
 function time_ago(string|int|null $datetime): string
@@ -950,6 +1011,58 @@ function time_ago(string|int|null $datetime): string
     }
 
     return date('M j, Y', $timestamp);
+}
+
+/**
+ * Handle Company Award / Trust Photo & Certificate Upload
+ */
+function handle_award_upload(array $file, int $companyId): array
+{
+    if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'url' => null, 'error' => 'Please choose an award photo or certificate file to upload.'];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'url' => null, 'error' => 'Upload failed with error code ' . $file['error'] . '.'];
+    }
+
+    if ($file['size'] > 15 * 1024 * 1024) {
+        return ['success' => false, 'url' => null, 'error' => 'Award photo/document must be less than 15MB.'];
+    }
+
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+    $allowedImages = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    $allowedDocs = ['pdf'];
+
+    $isImage = in_array($ext, $allowedImages, true);
+    $isPdf = in_array($ext, $allowedDocs, true);
+
+    if (!$isImage && !$isPdf) {
+        return ['success' => false, 'url' => null, 'error' => 'Unsupported format. Allowed: JPG, PNG, WEBP, GIF photos or PDF certificates.'];
+    }
+
+    if ($isImage) {
+        $imgCheck = @getimagesize($file['tmp_name']);
+        if (!$imgCheck) {
+            return ['success' => false, 'url' => null, 'error' => 'Uploaded file is not a valid image.'];
+        }
+    }
+
+    $uploadDir = ROOT_PATH . '/uploads/awards';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    $safeExt = $isPdf ? 'pdf' : ($ext === 'jpeg' ? 'jpg' : $ext);
+    $filename = 'award_' . $companyId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $safeExt;
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'url' => null, 'error' => 'Failed to save award photo to server storage.'];
+    }
+
+    $publicUrl = url('uploads/awards/' . $filename);
+    return ['success' => true, 'url' => $publicUrl, 'error' => null, 'is_pdf' => $isPdf, 'filename' => $filename];
 }
 
 // 13. Security Event Logger
@@ -1932,6 +2045,3 @@ function enforce_maintenance_mode(): void
     header('Location: ' . url('maintenance.php'), true, 307);
     exit;
 }
-
-
-
