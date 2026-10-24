@@ -282,45 +282,23 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/founder/head.php'; ?>
-    <style>
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .custom-feed-scroll::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-feed-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-feed-scroll::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-            border-radius: 9999px;
-        }
-        .custom-feed-scroll::-webkit-scrollbar-thumb:hover {
-            background: rgba(99, 102, 241, 0.5);
-        }
-    </style>
 </head>
 
 <body
-    class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen lg:h-screen lg:overflow-hidden antialiased selection:bg-indigo-500 selection:text-white">
+    class="bg-[#F4F2EE] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 flex min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
 
     <!-- Founder Sidebar -->
     <?php include __DIR__ . '/../includes/founder/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col min-w-0 lg:h-screen lg:overflow-hidden">
+    <div class="flex-1 flex flex-col min-w-0">
         <?php include __DIR__ . '/../includes/founder/navbar.php'; ?>
 
-        <main class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8 py-3.5 flex-1 min-h-0 lg:overflow-hidden flex flex-col">
+        <main class="w-full max-w-[1440px] mx-auto px-3 sm:px-6 md:px-8 py-5">
 
             <!-- Flash Message -->
             <?php if ($flash): ?>
                 <div
-                    class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2.5 shadow-sm mb-3 flex-shrink-0">
+                    class="p-4 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800' : 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800' ?> flex items-center space-x-2.5 shadow-sm mb-4">
                     <i data-lucide="<?= $flash['type'] === 'success' ? 'check-circle' : 'alert-circle' ?>"
                         class="w-5 h-5 flex-shrink-0"></i>
                     <span><?= htmlspecialchars($flash['message']) ?></span>
@@ -330,12 +308,12 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
             <!-- ======================================================== -->
             <!-- 3-COLUMN LINKEDIN STYLE RESPONSIVE FLEX LAYOUT -->
             <!-- ======================================================== -->
-            <div class="flex flex-col lg:flex-row gap-5 items-start flex-1 min-h-0 lg:h-full lg:overflow-hidden pb-1">
+            <div class="flex flex-col lg:flex-row gap-6 items-start">
 
                 <!-- ---------------------------------------------------- -->
-                <!-- LEFT COLUMN: Founder & Startup Card - Fixed/Scrollable -->
+                <!-- LEFT COLUMN: Founder & Startup Card - Sticky Fixed -->
                 <!-- ---------------------------------------------------- -->
-                <div class="w-full lg:w-[240px] xl:w-[250px] flex-shrink-0 lg:h-full lg:overflow-y-auto no-scrollbar space-y-3 pb-6">
+                <div class="w-full lg:w-[240px] xl:w-[250px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5">
 
                     <!-- Profile Card -->
                     <div
@@ -449,7 +427,7 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 <!-- ---------------------------------------------------- -->
                 <!-- CENTER COLUMN: Wide Feed Stream (Flex-1) -->
                 <!-- ---------------------------------------------------- -->
-                <div class="flex-1 min-w-0 space-y-4 lg:h-full lg:overflow-y-auto pr-0 lg:pr-2 pb-16 custom-feed-scroll">
+                <div class="flex-1 min-w-0 space-y-5">
 
                     <!-- LinkedIn Style Create Post Box (Clean without Search Bar) -->
                     <div
@@ -701,9 +679,9 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 </div>
 
                 <!-- ---------------------------------------------------- -->
-                <!-- RIGHT COLUMN: Trending Startups & Network - Fixed -->
+                <!-- RIGHT COLUMN: Trending Startups & Network - Sticky Fixed -->
                 <!-- ---------------------------------------------------- -->
-                <div class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:h-full lg:overflow-y-auto no-scrollbar space-y-3 pb-6">
+                <div class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5">
 
                     <!-- Live Angel Syndicate Rounds (Placed at Top) -->
                     <?php if (!empty($liveRounds)): ?>
