@@ -240,7 +240,7 @@ if ($db) {
         FROM companies c 
         WHERE c.id != ?
         ORDER BY c.created_at DESC 
-        LIMIT 4
+        LIMIT 6
     ");
     $trStmt->execute([$myCompany['id'] ?? 0]);
     $trendingStartups = $trStmt->fetchAll();
@@ -734,9 +734,9 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                         </div>
 
                         <div class="space-y-3.5">
-                            <?php foreach ($trendingStartups as $ts): ?>
+                            <?php foreach ($trendingStartups as $idx => $ts): ?>
                                 <div
-                                    class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2">
+                                    class="<?= $idx >= 2 ? 'discover-startup-extra hidden' : '' ?> p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2">
                                     <div class="flex items-center gap-3">
                                         <img src="<?= htmlspecialchars(get_company_logo_url($ts['logo_url'] ?? '')) ?>"
                                             alt="<?= htmlspecialchars($ts['name']) ?>"
@@ -769,6 +769,15 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                 </div>
                             <?php endforeach; ?>
                         </div>
+
+                        <?php if (count($trendingStartups) > 2): ?>
+                            <button type="button" id="btn-toggle-discover-startups"
+                                onclick="toggleDiscoverStartups()"
+                                class="w-full py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                <span>Read More (+<?= count($trendingStartups) - 2 ?>)</span>
+                            </button>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Top Founders to Network With -->
@@ -1162,6 +1171,25 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 filterFeedPosts('');
                 input.focus();
             }
+        }
+
+        function toggleDiscoverStartups() {
+            const items = document.querySelectorAll('.discover-startup-extra');
+            const btn = document.getElementById('btn-toggle-discover-startups');
+            if (!items.length || !btn) return;
+            const isExpanded = !items[0].classList.contains('hidden');
+            const extraCount = items.length;
+            items.forEach(el => {
+                if (isExpanded) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            btn.innerHTML = isExpanded
+                ? `<i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"></i><span>Read More (+${extraCount})</span>`
+                : `<i data-lucide="chevrons-up" class="w-3.5 h-3.5 text-indigo-500"></i><span>Show Less</span>`;
+            if (window.lucide) lucide.createIcons();
         }
 
         document.addEventListener('keydown', (e) => {
