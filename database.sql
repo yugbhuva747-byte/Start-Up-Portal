@@ -710,7 +710,26 @@ CREATE TABLE IF NOT EXISTS `investor_diligence_notes` (
     `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY `unique_investor_company_diligence` (`investor_id`, `company_id`),
     INDEX `idx_diligence_investor` (`investor_id`),
-    INDEX `idx_diligence_company` (`company_id`),
     FOREIGN KEY (`investor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 38. Company Awards & Verified Trust Certificates
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `company_awards` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `company_id` INT NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `category` VARCHAR(100) DEFAULT 'Award & Recognition',
+    `issuer` VARCHAR(255) NULL,
+    `award_year` VARCHAR(50) NULL,
+    `description` TEXT NULL,
+    `image_url` TEXT NULL,
+    `verification_link` TEXT NULL,
+    `is_featured` TINYINT(1) DEFAULT 1,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX `idx_company_awards_company` (`company_id`),
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

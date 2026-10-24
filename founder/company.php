@@ -296,14 +296,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Load documents and awards AFTER POST handling
 $awards = [];
+$documents = [];
 if ($db && $company) {
-    $dStmt = $db->prepare("SELECT * FROM company_documents WHERE company_id = ? ORDER BY uploaded_at DESC");
-    $dStmt->execute([$company['id']]);
-    $documents = $dStmt->fetchAll();
+    try {
+        $dStmt = $db->prepare("SELECT * FROM company_documents WHERE company_id = ? ORDER BY uploaded_at DESC");
+        $dStmt->execute([$company['id']]);
+        $documents = $dStmt->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        $documents = [];
+    }
 
-    $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
-    $aStmt->execute([$company['id']]);
-    $awards = $aStmt->fetchAll();
+    try {
+        $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
+        $aStmt->execute([$company['id']]);
+        $awards = $aStmt->fetchAll() ?: [];
+    } catch (Throwable $e) {
+        $awards = [];
+    }
 }
 
 // Calculate Profile Strength Metrics
