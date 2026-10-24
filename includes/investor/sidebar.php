@@ -302,18 +302,12 @@ require_once __DIR__ . '/theme.php';
 
         <?php
         $navGroups = [
-           
-            'Syndicate & Network' => [
+            'Support' => [
                 [
-                    'title' => 'Investor Community',
-                    'url' => url('investor/community.php'),
-                    'icon' => 'users',
-                    'active' => ($currentPage === 'community.php')
-                ],
-                [
-                    'title' => 'Helpdesk & Support',
+                    'title' => 'Help & Support',
                     'url' => url('investor/support.php'),
                     'icon' => 'life-buoy',
+                    'tooltip' => 'Help & Support — FAQs & Assistance',
                     'active' => ($currentPage === 'support.php')
                 ],
             ],
@@ -322,18 +316,21 @@ require_once __DIR__ . '/theme.php';
                     'title' => 'Public Profile',
                     'url' => url('investor/view.php'),
                     'icon' => 'user-check',
+                    'tooltip' => 'Public Profile',
                     'active' => ($currentPage === 'view.php')
                 ],
                 [
                     'title' => 'Thesis & Settings',
                     'url' => url('investor/profile.php'),
                     'icon' => 'sliders-horizontal',
+                    'tooltip' => 'Thesis & Settings',
                     'active' => ($currentPage === 'profile.php')
                 ],
                 [
                     'title' => 'Verification Center',
                     'url' => url('investor/verification.php'),
                     'icon' => 'shield-check',
+                    'tooltip' => 'Verification Center',
                     'active' => ($currentPage === 'verification.php')
                 ],
             ]
@@ -351,8 +348,8 @@ require_once __DIR__ . '/theme.php';
                     <nav class="space-y-1">
                         <?php foreach ($items as $item): ?>
                             <a href="<?= $item['url'] ?>"
-                                data-tooltip="<?= htmlspecialchars($item['title']) ?>"
-                                title="<?= htmlspecialchars($item['title']) ?>"
+                                data-tooltip="<?= htmlspecialchars($item['tooltip'] ?? $item['title']) ?>"
+                                title="<?= htmlspecialchars($item['tooltip'] ?? $item['title']) ?>"
                                 class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition font-semibold group border <?= $item['active'] ? 'is-active bg-[#EAF2FF] dark:bg-blue-950/70 text-[#123B7A] dark:text-blue-300 font-bold shadow-xs border-[#123B7A]/20 dark:border-blue-700/60' : 'text-[#4B5563] dark:text-slate-300 hover:text-[#111827] dark:hover:text-white hover:bg-[#FAFBFD] dark:hover:bg-slate-800 border-transparent' ?>">
                                 <div class="flex items-center space-x-3 min-w-0">
                                     <i data-lucide="<?= $item['icon'] ?>"
@@ -525,6 +522,8 @@ require_once __DIR__ . '/theme.php';
             'portfolio.php',
             'watchlist.php',
             'messages.php',
+            'community.php',
+            'support.php',
             'verification.php',
             'profile.php',
             'view.php',
