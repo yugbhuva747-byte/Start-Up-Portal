@@ -480,6 +480,7 @@ require_once __DIR__ . '/theme.php';
             'updates.php',
             'blogs.php',
             'profile.php',
+            'edit_profile.php',
             'view.php'
         ];
 

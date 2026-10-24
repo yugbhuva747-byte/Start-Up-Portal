@@ -150,15 +150,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             header('Location: ' . url('founder/company.php#company-data-room'));
             exit;
+        } elseif ($action === 'add_award' && $company) {
+            $title = trim($_POST['title'] ?? '');
+            $category = trim($_POST['category'] ?? 'Industry Award');
+            $issuer = trim($_POST['issuer'] ?? '');
+            $awardYear = trim($_POST['award_year'] ?? date('Y'));
+            $description = trim($_POST['description'] ?? '');
+            $verificationLink = trim($_POST['verification_link'] ?? '');
+            $imageUrl = trim($_POST['image_url'] ?? '');
+
+            // Handle file upload
+            if (!empty($_FILES['award_file']['name'])) {
+                $upRes = handle_award_upload($_FILES['award_file'], $company['id']);
+                if (!empty($upRes['success'])) {
+                    $imageUrl = $upRes['url'];
+                } elseif (!empty($upRes['error'])) {
+                    $error = $upRes['error'];
+                }
+            }
+
+            if (empty($title)) {
+                $title = 'Certificate of Recognition';
+            }
+            if (empty($category)) {
+                $category = 'Award & Recognition';
+            }
+
+            if (empty($imageUrl) && empty($error)) {
+                $error = 'Please choose a certificate/award photo file or paste an image URL.';
+            }
+
+            if (empty($error)) {
+                $ins = $db->prepare("
+                    INSERT INTO company_awards (company_id, title, category, issuer, award_year, description, image_url, verification_link, is_featured)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+                ");
+                $ins->execute([$company['id'], $title, $category, $issuer, $awardYear, $description, $imageUrl, $verificationLink]);
+                $newAwardId = $db->lastInsertId();
+
+                log_audit($user['id'], 'ADD_COMPANY_AWARD', 'company_awards', $newAwardId, "Added certificate photo: $title");
+                set_flash('success', 'Certificate photo successfully framed and uploaded.');
+                header('Location: ' . url('founder/company.php#sec-awards'));
+                exit;
+            }
+        } elseif ($action === 'delete_award' && $company) {
+            $awardId = (int) ($_POST['award_id'] ?? 0);
+            if ($awardId > 0) {
+                $aQuery = $db->prepare("SELECT * FROM company_awards WHERE id = ? AND company_id = ?");
+                $aQuery->execute([$awardId, $company['id']]);
+                $awardToDelete = $aQuery->fetch();
+                if ($awardToDelete) {
+                    if (!empty($awardToDelete['image_url']) && str_contains($awardToDelete['image_url'], 'uploads/awards/')) {
+                        $parsedPath = parse_url($awardToDelete['image_url'], PHP_URL_PATH);
+                        $pos = strpos($parsedPath, 'uploads/awards/');
+                        if ($pos !== false) {
+                            $localRel = substr($parsedPath, $pos);
+                            $localFile = ROOT_PATH . '/' . $localRel;
+                            if (file_exists($localFile)) {
+                                @unlink($localFile);
+                            }
+                        }
+                    }
+                    $db->prepare("DELETE FROM company_awards WHERE id = ? AND company_id = ?")->execute([$awardId, $company['id']]);
+                    log_audit($user['id'], 'DELETE_COMPANY_AWARD', 'company_awards', $awardId, "Deleted trust award: " . ($awardToDelete['title'] ?? ''));
+                    set_flash('success', 'Award/trust item successfully deleted.');
+                }
+            }
+            header('Location: ' . url('founder/company.php#sec-awards'));
+            exit;
         }
     }
 }
 
-// Load documents AFTER POST handling
+// Load documents and awards AFTER POST handling
+$awards = [];
 if ($db && $company) {
     $dStmt = $db->prepare("SELECT * FROM company_documents WHERE company_id = ? ORDER BY uploaded_at DESC");
     $dStmt->execute([$company['id']]);
     $documents = $dStmt->fetchAll();
+
+    $aStmt = $db->prepare("SELECT * FROM company_awards WHERE company_id = ? ORDER BY is_featured DESC, created_at DESC");
+    $aStmt->execute([$company['id']]);
+    $awards = $aStmt->fetchAll();
 }
 
 // Calculate Profile Strength Metrics
@@ -174,7 +247,8 @@ $checks = [
     'description' => !empty($company['description']),
     'target_market' => !empty($company['target_market']),
     'location' => !empty($company['city']),
-    'documents' => !empty($documents)
+    'documents' => !empty($documents),
+    'awards' => !empty($awards)
 ];
 $completedChecks = count(array_filter($checks));
 $profileStrength = round(($completedChecks / count($checks)) * 100);
@@ -329,6 +403,11 @@ $flashStyles = [
                             <span>Share Public Link</span>
                         </button>
                     <?php endif; ?>
+                    <a href="#sec-awards"
+                        class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 text-amber-800 dark:text-amber-300 text-xs font-bold transition flex items-center space-x-1.5 border border-amber-200 dark:border-amber-800 shadow-2xs">
+                        <i data-lucide="award" class="w-3.5 h-3.5 text-amber-600"></i>
+                        <span>Awards &amp; Trust (<?= count($awards) ?>)</span>
+                    </a>
                     <a href="#company-data-room"
                         class="px-3.5 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center space-x-1.5 border border-indigo-200 dark:border-indigo-800 shadow-2xs">
                         <i data-lucide="folder-lock" class="w-3.5 h-3.5"></i>
@@ -447,10 +526,15 @@ $flashStyles = [
                         <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
                         <span>4. Headquarters &amp; Team</span>
                     </a>
+                    <a href="#sec-awards"
+                        class="px-2.5 py-1.5 rounded-lg bg-amber-50/70 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300 text-xs font-bold hover:bg-amber-100 shadow-2xs transition flex items-center gap-1">
+                        <i data-lucide="award" class="w-3 h-3 text-amber-600"></i>
+                        <span>5. Awards &amp; Trust (<?= count($awards) ?>)</span>
+                    </a>
                     <a href="#company-data-room"
                         class="px-2.5 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100 dark:hover:bg-indigo-900/60 shadow-2xs transition flex items-center gap-1">
                         <i data-lucide="lock" class="w-3 h-3 text-indigo-500"></i>
-                        <span>5. Confidential Data Room</span>
+                        <span>6. Confidential Data Room</span>
                     </a>
                 </div>
             </div>
@@ -716,7 +800,116 @@ $flashStyles = [
                 </div>
             </form>
 
-            <!-- SECTION 5: Data Room -->
+            <!-- SECTION 5: Trust, Accreditations & Verified Awards -->
+            <div id="sec-awards" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-5">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <h2 class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Verified Awards, Accreditations & Trust Proof</h2>
+                                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                    <?= count($awards) ?> Verified
+                                </span>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-xl leading-relaxed">
+                                Share trophy photos, DPIIT certificates, ISO/compliance badges, incubation proof, and patents to establish undeniable trust with institutional and angel investors.
+                            </p>
+                        </div>
+                    </div>
+
+                    <?php if ($company): ?>
+                        <button type="button" onclick="openAwardModal()"
+                            class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition flex items-center justify-center space-x-1.5 shadow-sm flex-shrink-0">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Add Award or Document</span>
+                        </button>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (!$company): ?>
+                    <div class="p-8 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="award" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white">Save Company Profile First</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1">
+                            Save your company basics above to start attaching award certificates, trophy photos, and trust credentials.
+                        </p>
+                    </div>
+                <?php elseif (empty($awards)): ?>
+                    <div class="p-10 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="medal" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white">No Awards or Trust Credentials Added Yet</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 leading-relaxed">
+                            Showcase recognition from DPIIT, NASSCOM, MeitY, university incubators, or ISO certifications. Verified credentials increase investor response rates by 68%.
+                        </p>
+                        <button type="button" onclick="openAwardModal()"
+                            class="mt-4 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold transition inline-flex items-center space-x-1.5 shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Add First Award / Trust Badge</span>
+                        </button>
+                    </div>
+                <?php else: ?>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach ($awards as $award): 
+                            $isPdf = str_ends_with(strtolower($award['image_url']), '.pdf');
+                        ?>
+                            <!-- Certificate Photo Wall Frame -->
+                            <div class="group relative cursor-pointer"
+                                 onclick="<?= $isPdf ? "window.open('" . htmlspecialchars($award['image_url']) . "', '_blank')" : "openAwardLightbox('" . htmlspecialchars($award['image_url']) . "', '" . htmlspecialchars(addslashes($award['title'] ?? '')) . "', '" . htmlspecialchars(addslashes($award['issuer'] ?? '')) . "')" ?>"
+                                 title="Click to view full certificate">
+                                <!-- Outer Frame Molding (Top, Right, Bottom, Left all framed) -->
+                                <div class="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 dark:from-slate-800 dark:via-slate-900 dark:to-black shadow-[0_10px_25px_-5px_rgba(0,0,0,0.25)] border-2 border-amber-600/30 group-hover:border-amber-500/70 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-[0_16px_35px_-5px_rgba(0,0,0,0.35)] relative">
+                                    <!-- Delete Button on Hover -->
+                                    <form action="<?= url('founder/company.php') ?>" method="POST" class="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation();" onsubmit="event.stopPropagation(); return confirm('Are you sure you want to remove this certificate photo?');">
+                                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                        <input type="hidden" name="form_action" value="delete_award">
+                                        <input type="hidden" name="award_id" value="<?= (int) $award['id'] ?>">
+                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white shadow-md transition" title="Delete certificate">
+                                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Inner Matting (passe-partout on all sides) -->
+                                    <div class="p-2 sm:p-2.5 rounded-lg bg-[#faf8f5] dark:bg-[#141820] border border-amber-200/40 dark:border-amber-900/40 shadow-inner">
+                                        <!-- Photo Mount Container -->
+                                        <div class="relative w-full h-52 sm:h-60 rounded bg-white dark:bg-slate-950 overflow-hidden flex items-center justify-center border border-slate-300/80 dark:border-slate-800 shadow-xs">
+                                            <?php if ($isPdf): ?>
+                                                <div class="text-center p-4">
+                                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 flex items-center justify-center mx-auto mb-2 border border-rose-100 dark:border-rose-900 shadow-xs">
+                                                        <i data-lucide="file-text" class="w-6 h-6"></i>
+                                                    </div>
+                                                    <span class="text-xs font-bold text-slate-800 dark:text-slate-200 block">Certificate (PDF)</span>
+                                                    <span class="block text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold mt-1">Click to view &rarr;</span>
+                                                </div>
+                                            <?php else: ?>
+                                                <img src="<?= htmlspecialchars($award['image_url']) ?>" 
+                                                     alt="Award Certificate" 
+                                                     class="w-full h-full object-contain p-1 group-hover:brightness-105 transition duration-300"
+                                                     loading="lazy"
+                                                     onerror="this.src='https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=800&auto=format&fit=crop&q=80'">
+                                                <div class="absolute inset-0 bg-slate-950/20 opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center">
+                                                    <span class="px-3 py-1.5 rounded-full bg-slate-900/90 text-white text-[11px] font-bold shadow-lg backdrop-blur-xs flex items-center gap-1.5">
+                                                        <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-amber-400"></i>
+                                                        <span>View Full Photo</span>
+                                                    </span>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- SECTION 6: Data Room -->
             <div id="company-data-room" class="section-card p-6 sm:p-7 space-y-6 scroll-mt-24">
                 <div
                     class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
@@ -936,6 +1129,123 @@ $flashStyles = [
                 </div>
             <?php endif; ?>
 
+            <!-- Award & Trust Upload Modal -->
+            <?php if ($company): ?>
+                <div id="award-modal"
+                    class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full rounded-2xl p-6 sm:p-7 relative my-auto max-h-[92vh] overflow-y-auto">
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-5">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i data-lucide="award" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-slate-900 dark:text-white text-lg">Upload Award or Certificate Photo</h3>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">Upload your certificate to display in an elegant framed showcase.</p>
+                                </div>
+                            </div>
+                            <button type="button" onclick="closeAwardModal()"
+                                class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <form action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="form_action" value="add_award">
+
+                            <!-- Direct Photo / File Upload Zone -->
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Certificate / Award Photo <span class="text-rose-500">*</span></span>
+                                    <span class="text-xs text-slate-500 font-normal">JPG, PNG, WEBP, PDF (Max 15MB)</span>
+                                </label>
+                                <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-amber-500 dark:hover:border-amber-500 rounded-2xl p-6 text-center cursor-pointer transition bg-slate-50/50 dark:bg-slate-800/40 relative" onclick="document.getElementById('award-file-input').click()">
+                                    <input type="file" id="award-file-input" name="award_file" accept=".jpg,.jpeg,.png,.webp,.gif,.pdf" class="hidden" onchange="previewAwardFile(this)">
+                                    <div id="award-upload-placeholder">
+                                        <div class="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto mb-2">
+                                            <i data-lucide="image-plus" class="w-6 h-6"></i>
+                                        </div>
+                                        <p class="text-sm font-bold text-slate-700 dark:text-slate-200">Click to choose certificate photo</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Stage photo, trophy snapshot, or official certificate (JPG/PNG/PDF)</p>
+                                    </div>
+                                    <div id="award-upload-preview" class="hidden">
+                                        <img id="award-preview-img" src="" alt="Preview" class="max-h-40 mx-auto rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 mb-2 object-contain bg-white">
+                                        <p id="award-preview-filename" class="text-xs font-bold text-amber-600 dark:text-amber-400 truncate max-w-xs mx-auto"></p>
+                                        <span class="text-[11px] text-slate-400 block mt-1">Click to choose a different photo</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="form-label-clean">
+                                    <span>Or Web Photo URL</span>
+                                    <span class="text-xs text-slate-400 font-normal">Optional fallback</span>
+                                </label>
+                                <input type="url" name="image_url" placeholder="https://example.com/certificate.png" class="form-input-clean">
+                            </div>
+
+                            <!-- Optional Details Accordion -->
+                            <details class="group border border-slate-200 dark:border-slate-800 rounded-xl p-3 text-xs bg-slate-50/50 dark:bg-slate-800/30">
+                                <summary class="font-bold text-slate-700 dark:text-slate-300 cursor-pointer list-none flex items-center justify-between">
+                                    <span>Optional Title &amp; Details</span>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+                                </summary>
+                                <div class="space-y-3 pt-3 mt-2 border-t border-slate-200 dark:border-slate-700/60">
+                                    <div>
+                                        <label class="form-label-clean"><span>Title / Caption</span></label>
+                                        <input type="text" name="title" placeholder="e.g. National Startup Award" class="form-input-clean">
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="form-label-clean"><span>Year</span></label>
+                                            <input type="text" name="award_year" value="<?= date('Y') ?>" class="form-input-clean">
+                                        </div>
+                                        <div>
+                                            <label class="form-label-clean"><span>Issuing Body</span></label>
+                                            <input type="text" name="issuer" placeholder="e.g. Govt / Industry" class="form-input-clean">
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <div class="pt-3 flex items-center justify-end space-x-3">
+                                <button type="button" onclick="closeAwardModal()"
+                                    class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-sm transition">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl shadow-sm transition text-sm flex items-center space-x-1.5">
+                                    <i data-lucide="upload" class="w-4 h-4"></i>
+                                    <span>Upload Certificate</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Award Photo Lightbox Modal -->
+                <div id="award-lightbox-modal"
+                    class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4"
+                    onclick="if (event.target === this) closeAwardLightbox();">
+                    <div class="relative max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+                        <div class="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/90 text-white">
+                            <div>
+                                <h4 id="lightbox-title" class="font-bold text-base text-white"></h4>
+                                <p id="lightbox-issuer" class="text-xs text-amber-400 font-medium"></p>
+                            </div>
+                            <button type="button" onclick="closeAwardLightbox()"
+                                class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        <div class="p-2 bg-black flex items-center justify-center min-h-[300px] max-h-[75vh] overflow-hidden">
+                            <img id="lightbox-img" src="" alt="Award High-Res View" class="max-h-[72vh] max-w-full object-contain rounded-lg">
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
         </main>
     </div>
 
@@ -953,7 +1263,67 @@ $flashStyles = [
             const m = document.getElementById('upload-modal');
             if (m) m.classList.add('hidden');
         }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeUploadModal(); });
+
+        function openAwardModal() {
+            const m = document.getElementById('award-modal');
+            if (m) m.classList.remove('hidden');
+        }
+        function closeAwardModal() {
+            const m = document.getElementById('award-modal');
+            if (m) m.classList.add('hidden');
+        }
+
+        function openAwardLightbox(src, title, issuer) {
+            const modal = document.getElementById('award-lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const titleEl = document.getElementById('lightbox-title');
+            const issuerEl = document.getElementById('lightbox-issuer');
+            if (modal && img) {
+                img.src = src;
+                if (titleEl) titleEl.textContent = title || 'Verified Award';
+                if (issuerEl) issuerEl.textContent = issuer ? ('Issued by: ' + issuer) : '';
+                modal.classList.remove('hidden');
+            }
+        }
+        function closeAwardLightbox() {
+            const modal = document.getElementById('award-lightbox-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function previewAwardFile(input) {
+            const placeholder = document.getElementById('award-upload-placeholder');
+            const preview = document.getElementById('award-upload-preview');
+            const previewImg = document.getElementById('award-preview-img');
+            const filenameEl = document.getElementById('award-preview-filename');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (filenameEl) filenameEl.textContent = file.name;
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (previewImg) {
+                            previewImg.src = e.target.result;
+                            previewImg.classList.remove('hidden');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    if (previewImg) {
+                        previewImg.classList.add('hidden');
+                    }
+                }
+                if (placeholder) placeholder.classList.add('hidden');
+                if (preview) preview.classList.remove('hidden');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => { 
+            if (e.key === 'Escape') {
+                closeUploadModal();
+                closeAwardModal();
+                closeAwardLightbox();
+            }
+        });
     </script>
 
     <?php include __DIR__ . '/../includes/share_company_modal.php'; ?>

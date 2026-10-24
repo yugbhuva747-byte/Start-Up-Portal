@@ -94,6 +94,7 @@ Whenever a new user registers as a **Founder** or **Investor** ([http://localhos
 - **Security Operations Center (WAF/Firewall):** [http://localhost/start%20up%20portal/admin/security.php](http://localhost/start%20up%20portal/admin/security.php)
 
 
+
 back up 2fa code 
 
 709A-3BEC

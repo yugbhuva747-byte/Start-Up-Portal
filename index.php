@@ -14,27 +14,14 @@ require_once __DIR__ . '/config.php';
 $basePath = __DIR__;
 
 // ------------------------------------------------------------
-// 00. Role Selection Flow for First-Time Visitors
+// 00. Active Role Resolution (Direct Homepage Access)
 // ------------------------------------------------------------
-if (isset($_GET['choose']) && $_GET['choose'] === '1') {
-    unset($_SESSION['portal_role']);
-    setcookie('portal_role', '', time() - 3600, '/');
-    require_once __DIR__ . '/welcome.php';
-    exit;
-}
-
 if (isset($_GET['role']) && in_array($_GET['role'], ['investor', 'founder'], true)) {
     $currentRole = $_GET['role'];
     $_SESSION['portal_role'] = $currentRole;
     setcookie('portal_role', $currentRole, time() + (86400 * 30), '/');
 } else {
-    $currentRole = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? null;
-}
-
-// First-time visitor: display Upwork-style Welcome / Role selection screen
-if ($currentRole === null) {
-    require_once __DIR__ . '/welcome.php';
-    exit;
+    $currentRole = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
 }
 
 // ------------------------------------------------------------
@@ -46,37 +33,26 @@ require_once $basePath . '/includes/layout/header.php';
 <main id="nx-page" class="nx-page relative w-full overflow-x-clip bg-[#F8FAFC] text-[#0F172A]">
 
     <?php
-    if ($currentRole === 'founder') {
-        // ------------------------------------------------------------
-        // FOUNDER HOME EXPERIENCE: 4 Growth Sections
-        // ------------------------------------------------------------
-        // 01. Founder Hero & Live Raise Room Engine
-        require_once $basePath . '/includes/founder_home/hero.php';
+    // ============================================================
+    // NEXORA — 5-STEP SOVEREIGN FUNNEL FLOW
+    // ============================================================
+    // Step 01: The Hook — First Impression & Invite-Only Positioning
+    require_once $basePath . '/includes/home/01_hero.php';
 
-        // 02. The 4-Pillar Founder Growth Flywheel (How NEXORA scales your business)
-        require_once $basePath . '/includes/founder_home/growth-pillars.php';
+    // Step 02: The Mechanism — Two Pathways, Zero Public Leaks
+    require_once $basePath . '/includes/home/02_how_it_works.php';
 
-        // 03. 3-Step Journey from Pitch to Wire
-        require_once $basePath . '/includes/founder_home/raise-steps.php';
+    // Step 03: The Vault — Forensic Dealroom & Redacted Intelligence
+    require_once $basePath . '/includes/home/03_dealroom.php';
 
-        // 04. Proof Metrics & Grand Final Founder CTA
-        require_once $basePath . '/includes/founder_home/perks-cta.php';
-    } else {
-        // ------------------------------------------------------------
-        // INVESTOR HOME EXPERIENCE: Curated Institutional Journey
-        // ------------------------------------------------------------
-        // 01. Hero — Value Proposition & Live Dealroom Showcase
-        require_once $basePath . '/includes/investor_home/hero.php';
+    // Step 04: The Privilege — Restricted Allocations & Stealth Permissions
+    require_once $basePath . '/includes/home/04_private_access.php';
 
-        // 02. Curated Dealflow & Investment Flywheel
-        require_once $basePath . '/includes/investor_home/dealflow-pillars.php';
+    // Step 05: The Transparency — Two-Sided Flat Seat Venture Pricing
+    require_once $basePath . '/includes/home/pricing.php';
 
-        // 03. 3-Step Journey from Accreditation to Wire
-        require_once $basePath . '/includes/investor_home/investment-steps.php';
-
-        // 04. Proof Metrics, Live Deals, FAQ & Grand Syndicate CTA
-        require_once $basePath . '/includes/investor_home/syndicate-cta.php';
-    }
+    // Step 06: The Clearance Gate — Dual Role Verification & Entry
+    require_once $basePath . '/includes/home/05_conversion.php';
     ?>
 
 </main>
@@ -100,7 +76,7 @@ require_once $basePath . '/includes/layout/footer.php';
         /* 2. Check GSAP & ScrollTrigger Availability */
         if (reduceMotion || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
             // Failsafe: Ensure everything is immediately visible if animation is disabled/missing
-            document.querySelectorAll('.nx-reveal, .nx-text-reveal, .nx-image-reveal').forEach(el => {
+            document.querySelectorAll('.nx-reveal, .nx-text-reveal, .nx-image-reveal, .nx-hero-elem').forEach(el => {
                 el.style.opacity = '1';
                 el.style.transform = 'none';
             });
@@ -109,21 +85,64 @@ require_once $basePath . '/includes/layout/footer.php';
 
         gsap.registerPlugin(ScrollTrigger);
 
+        /* 2.1 Initialize High-Performance Lenis Momentum Smooth Scroll */
+        let lenis = null;
+        if (!reduceMotion && typeof Lenis !== 'undefined') {
+            lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Silky exponential ease-out
+                orientation: 'vertical',
+                gestureOrientation: 'vertical',
+                smoothWheel: true,
+                wheelMultiplier: 0.95,
+                touchMultiplier: 1.4,
+                smoothTouch: false,
+                infinite: false,
+            });
+            window.__lenis = lenis;
+
+            // Connect Lenis to ScrollTrigger
+            lenis.on('scroll', ScrollTrigger.update);
+
+            // Synchronize GSAP ticker with Lenis (butter-smooth frame-rate synchronization)
+            gsap.ticker.add((time) => {
+                lenis.raf(time * 1000);
+            });
+            gsap.ticker.lagSmoothing(0);
+        }
+
+        /* 2.2 Hero Gentle Entrance Sequence */
+        const heroElems = document.querySelectorAll('.nx-hero-elem');
+        if (heroElems.length > 0) {
+            gsap.fromTo(
+                heroElems,
+                { y: 22, opacity: 0 },
+                {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.85,
+                    stagger: 0.1,
+                    ease: 'power3.out',
+                    clearProps: 'all'
+                }
+            );
+        }
+
         /* 3. Global Section / Card Reveal (.nx-reveal) */
         const revealElements = gsap.utils.toArray('.nx-reveal');
         revealElements.forEach((element) => {
             gsap.fromTo(
                 element,
-                { y: 35, opacity: 0 },
+                { y: 28, opacity: 0 },
                 {
                     y: 0,
                     opacity: 1,
                     duration: 0.85,
-                    ease: 'power3.out',
-                    clearProps: 'transform,opacity',
+                    ease: 'power2.out',
+                    clearProps: 'all',
                     scrollTrigger: {
                         trigger: element,
-                        start: 'top 88%',
+                        start: 'top 90%',
                         once: true
                     }
                 }
@@ -135,16 +154,16 @@ require_once $basePath . '/includes/layout/footer.php';
         textElements.forEach((element) => {
             gsap.fromTo(
                 element,
-                { y: 25, opacity: 0 },
+                { y: 20, opacity: 0 },
                 {
                     y: 0,
                     opacity: 1,
                     duration: 0.8,
-                    ease: 'power3.out',
-                    clearProps: 'transform,opacity',
+                    ease: 'power2.out',
+                    clearProps: 'all',
                     scrollTrigger: {
                         trigger: element,
-                        start: 'top 90%',
+                        start: 'top 92%',
                         once: true
                     }
                 }
@@ -156,17 +175,17 @@ require_once $basePath . '/includes/layout/footer.php';
         imageElements.forEach((element) => {
             gsap.fromTo(
                 element,
-                { clipPath: 'inset(8% 4% 8% 4%)', scale: 1.03, opacity: 0 },
+                { clipPath: 'inset(6% 3% 6% 3%)', scale: 1.02, opacity: 0 },
                 {
                     clipPath: 'inset(0% 0% 0% 0%)',
                     scale: 1,
                     opacity: 1,
-                    duration: 1,
+                    duration: 0.95,
                     ease: 'power3.inOut',
-                    clearProps: 'clip-path,transform,opacity',
+                    clearProps: 'all',
                     scrollTrigger: {
                         trigger: element,
-                        start: 'top 85%',
+                        start: 'top 88%',
                         once: true
                     }
                 }
@@ -204,13 +223,14 @@ require_once $basePath . '/includes/layout/footer.php';
                 event.preventDefault();
 
                 const header = document.querySelector('#nx-header-bar, #nx-header, header');
-                const headerHeight = header ? header.offsetHeight : 0;
+                const headerHeight = header ? header.offsetHeight + 18 : 80;
 
-                // Priority A: Smooth via Lenis if loaded in header
+                // Priority A: Smooth via Lenis
                 if (window.__lenis) {
                     window.__lenis.scrollTo(target, {
                         offset: -headerHeight,
-                        duration: 1.2
+                        duration: 1.2,
+                        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
                     });
                     return;
                 }

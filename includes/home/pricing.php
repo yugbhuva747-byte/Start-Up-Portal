@@ -1,1297 +1,843 @@
 <?php
 /**
  * ============================================================================
- * include/home/pricing.php
+ * NEXORA — TRANSPARENT VENTURE PRICING
+ * File: includes/home/pricing.php
  * ----------------------------------------------------------------------------
- * SECTION — TWO-SIDED TRANSPARENT VENTURE PRICING (PASTEL LUXE EDITION)
- * 2 Audiences: Startup Founders & Angel Investors / VCs
- * 4 Tiers per Audience: Free Trial, 1 Month, 6 Months, 1 Year
- * Dual Controls: Role Switcher (Founder / Investor) + Billing Switcher (Monthly / Annual)
+ * Two-Sided Flat Seat Venture Pricing:
+ * 1. For Builders & Teams — Founder Basic Plan (₹3,500 / mo)
+ * 2. For Backers & Angels — Investor Pass (₹2,500 / mo)
+ * 
+ * Features:
+ * - 0% Commission & No Secret Broker Retainers
+ * - Self-contained HTML + CSS + JS (No dependencies)
+ * - Accessible, responsive, aligned with NEXORA design language
  * ============================================================================
  */
+
+$nxpEscape = static fn($v) => htmlspecialchars((string) $v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+$nxpRoute = static function ($path) {
+  $v = function_exists('url') ? url($path) : $path;
+  return preg_match('~^[a-z][a-z0-9+.-]*:~i', (string) $v) && !preg_match('~^https?://~i', (string) $v) ? $path : $v;
+};
 ?>
 
-<style>
-  /* ── Canvas Container with Pastel Aurora Mesh ────────────────── */
-  .nx-pricing-section {
-    padding: clamp(72px, 8vw, 120px) 0;
-    background-color: #F8FAFC;
-    background-image: 
-      radial-gradient(at 10% 20%, rgba(219, 234, 254, 0.6) 0px, transparent 48%),
-      radial-gradient(at 90% 15%, rgba(224, 231, 255, 0.5) 0px, transparent 45%),
-      radial-gradient(at 50% 65%, rgba(241, 245, 249, 0.7) 0px, transparent 45%),
-      radial-gradient(at 85% 90%, rgba(209, 250, 229, 0.4) 0px, transparent 45%);
-    border-top: 1px solid #E2E8F0;
-    position: relative;
-    overflow: hidden;
-    z-index: 50;
-    color: #0F172A;
-    font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  }
+<section class="nxp" id="nx-pricing" data-nxp aria-labelledby="nxp-title">
+  <div class="nxp-wrap">
 
-  .nx-pricing-wrap {
-    max-width: 1360px;
-    margin: 0 auto;
-    padding: 0 clamp(20px, 4vw, 48px);
-    position: relative;
-    z-index: 2;
-  }
+    <!-- Top Line / Section Tag -->
+    <div class="nxp-topline">
+      <span>05 / FAIR VENTURE PRICING</span>
+      <span>100% DIRECT CAPITAL · ZERO COMMISSIONS · FULL TRANSPARENCY</span>
+    </div>
 
-  /* Frosted Glass Cards */
-  .nx-price-card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1.5px solid rgba(255, 255, 255, 0.95);
-    box-shadow: 
-      0 20px 50px -15px rgba(15, 23, 42, 0.06),
-      0 10px 25px -5px rgba(37, 99, 235, 0.04),
-      inset 0 1px 1px rgba(255, 255, 255, 0.95);
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .nx-price-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 
-      0 28px 60px -12px rgba(15, 23, 42, 0.12),
-      0 16px 32px -8px rgba(37, 99, 235, 0.08),
-      inset 0 1px 1px rgba(255, 255, 255, 1);
-  }
-
-  /* Featured / Most Popular Highlight Card */
-  .nx-price-card-popular {
-    background: #FFFFFF;
-    border: 2px solid #2563EB;
-    box-shadow: 
-      0 30px 70px -15px rgba(37, 99, 235, 0.22),
-      0 15px 35px -8px rgba(30, 58, 138, 0.12),
-      inset 0 1px 2px rgba(255, 255, 255, 1);
-    position: relative;
-  }
-
-  .nx-price-card-popular:hover {
-    transform: translateY(-8px);
-    box-shadow: 
-      0 35px 80px -15px rgba(37, 99, 235, 0.3),
-      0 20px 40px -8px rgba(30, 58, 138, 0.18);
-  }
-
-  /* Jewel Gradient Texts */
-  .gradient-text-pricing {
-    background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 50%, #0F172A 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-
-  /* Pill Switchers */
-  .nx-pill-container {
-    background: rgba(241, 245, 249, 0.95);
-    border: 1px solid #E2E8F0;
-    backdrop-filter: blur(12px);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
-  }
-
-  .nx-pill-btn {
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .nx-pill-btn.active {
-    background: #FFFFFF;
-    color: #1D4ED8;
-    box-shadow: 0 4px 16px -2px rgba(37, 99, 235, 0.2), 0 2px 4px rgba(0, 0, 0, 0.04);
-    border-color: #BFDBFE;
-  }
-
-  /* Feature Checklist Check Icons */
-  .nx-feature-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-</style>
-
-<section id="nx-pricing" class="nx-pricing-section w-full">
-  <div class="nx-pricing-wrap">
-
-    <!-- Section Header -->
-    <div class="text-center max-w-[840px] mx-auto mb-10 sm:mb-14 nx-text-reveal">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-[11.5px] font-bold uppercase tracking-wider text-blue-900 mb-3.5 shadow-xs">
-        <span class="w-2 h-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 animate-pulse"></span>
-        <span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-blue-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span>HONESTY ABOVE PROFIT &middot; ZERO EQUITY OR SUCCESS FEES</span></span>
+    <!-- Header Section -->
+    <header class="nxp-header">
+      <!-- Top Indicator Badge -->
+      <div class="nxp-badge-wrap">
+        <span class="nxp-badge">
+          <span class="nxp-badge-dot" aria-hidden="true"></span>
+          Direct Capital · 0% Success Fee
+        </span>
       </div>
 
-      <h2 class="text-[32px] sm:text-[44px] lg:text-[48px] font-extrabold tracking-[-0.035em] text-slate-900 leading-[1.14]">
-        Keep Every Single Percent<br>
-        <span class="gradient-text-pricing" id="nx-pricing-dynamic-title">Of What You Bleed For.</span>
+      <!-- Main Headline: Distinct, Premium & Clear -->
+      <h2 id="nxp-title">
+        Keep 100% of your round.<br class="nxp-br-desktop">
+        Direct access at <span class="nxp-highlight">a flat monthly seat.</span>
       </h2>
-      <p class="text-[15px] sm:text-[16.5px] text-slate-600 mt-3 max-w-[700px] mx-auto leading-relaxed" id="nx-pricing-dynamic-desc">
-        Traditional middlemen siphon 3% to 7% of your hard-earned capital simply for making an introduction. We believe that is fundamentally wrong. NEXORA is a fair, fixed subscription. Zero commission. Zero equity deductions. Always.
-      </p>
 
-      <!-- Dual Controls: 1. Role Switcher (Founder / Investor) -->
-      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-        
-        <!-- Role Toggle (Founders vs Investors) -->
-        <div class="nx-pill-container p-1.5 rounded-2xl flex items-center gap-1 shadow-sm">
-          <button type="button" id="nx-pricing-role-founder" class="nx-pill-btn active px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 cursor-pointer">
-            <svg class="w-4 h-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.32l2.47-2.47a1.5 1.5 0 012.122 0l1.414 1.414a1.5 1.5 0 010 2.122l-2.47 2.47a4.493 4.493 0 004.32-1.757m-6.109-6.109a15.09 15.09 0 012.448-2.448" />
-            </svg>
-            <span>For Startup Founders</span>
-          </button>
-          
-          <button type="button" id="nx-pricing-role-investor" class="nx-pill-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:text-slate-900 flex items-center gap-2 cursor-pointer">
-            <svg class="w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            <span>For Angel Investors / VCs</span>
-          </button>
+      <!-- Subtitle Description: Fast & Scannable -->
+     
+    </header>
+
+    <!-- 2 Types of Pricing Cards Grid -->
+    <div class="nxp-grid">
+
+      <!-- ============================================================ -->
+      <!-- CARD 01: FOR BUILDERS & TEAMS (FOUNDER BASIC PLAN) -->
+      <!-- ============================================================ -->
+      <article class="nxp-card nxp-card-founder" data-plan="founder">
+        <!-- Floating Role Anchor Pill on Top Edge -->
+        <div class="nxp-card-badge nxp-badge-navy">
+          FOR BUILDERS &amp; TEAMS
         </div>
 
-        <!-- 2. Billing Toggle (Monthly vs Annual) -->
-        <div class="nx-pill-container p-1.5 rounded-2xl flex items-center gap-1 shadow-sm">
-          <button type="button" id="nx-billing-monthly-btn" class="nx-pill-btn active px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 cursor-pointer">
-            Monthly
-          </button>
-          
-          <button type="button" id="nx-billing-annual-btn" class="nx-pill-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-slate-600 cursor-pointer flex items-center gap-1.5">
-            <span>Annually</span>
-            <span class="px-2 py-0.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-[10px] font-extrabold uppercase tracking-wide">
-              Save 40%
-            </span>
-          </button>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- 4 Tiers Pricing Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 items-stretch nx-reveal" style="isolation: isolate;">
-
-      <!-- ========================================================
-           TIER 1: Free Trial (14 Days)
-           ======================================================== -->
-      <div class="nx-price-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative border border-slate-200">
-        <div>
-          <!-- Plan Header -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600" id="tier1-icon">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        <div class="nxp-card-inner">
+          <!-- Card Header: Icon + Titles -->
+          <div class="nxp-card-head">
+            <div class="nxp-icon-box nxp-icon-founder" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z">
+                </path>
+                <path
+                  d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z">
+                </path>
+                <path d="M9 12H4s.55-3.03 2-4.5c1.62-1.63 5-2 5-2"></path>
+                <path d="M15 9v5s3.03-.55 4.5-2c1.63-1.62 2-5 2-5"></path>
               </svg>
             </div>
-            <span class="px-3 py-1 rounded-full bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-bold uppercase tracking-wider" id="tier1-badge">
-              14-Day Trial
-            </span>
-          </div>
-
-          <h3 class="text-[20px] font-extrabold text-slate-900 leading-snug" id="tier1-name">Free Trial</h3>
-          <p class="text-[12.5px] text-slate-500 mt-1 min-h-[38px]" id="tier1-desc">
-            Test drive deal rooms &amp; verified investor network with zero commitment.
-          </p>
-
-          <!-- Price Display -->
-          <div class="my-6 pt-4 border-t border-slate-100">
-            <div class="flex items-baseline gap-1">
-              <span class="text-[36px] font-extrabold text-slate-900 tracking-tight">$0</span>
-              <span class="text-[13px] text-slate-500 font-medium">/ 14 days</span>
-            </div>
-            <div class="text-[11px] text-emerald-600 font-bold mt-1">
-              No credit card required
+            <div class="nxp-head-meta">
+              <h3 class="nxp-plan-name">Founder Basic Plan</h3>
+              <p class="nxp-plan-desc">For early ideas, startups, and growing projects</p>
             </div>
           </div>
 
-          <!-- Feature List -->
-          <div class="space-y-3 mb-8" id="tier1-features">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN TRIAL:</div>
-            
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>1 Live Pitch Deck Listing</span>
+          <!-- Price & Rate Pill Row -->
+          <div class="nxp-price-row">
+            <div class="nxp-price-display">
+              <span class="nxp-currency">₹</span>
+              <span class="nxp-amount">3,500</span>
+              <span class="nxp-interval">/ month</span>
             </div>
+            <div class="nxp-rate-pill nxp-pill-emerald">
+              0% Success Fee
+            </div>
+          </div>
 
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Basic Cap Table Viewer</span>
-            </div>
+          <!-- Feature Bullets (Checkmarks) — Concise & Scannable -->
+          <ul class="nxp-features" aria-label="Founder Basic Plan features">
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Live Project Showcase</strong> — Open discovery for verified backers
+              </div>
+            </li>
 
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Public Syndicate Directory</span>
-            </div>
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Verified Founder Badge</strong> — Fast legal &amp; entity trust checks
+              </div>
+            </li>
 
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Standard Community Support</span>
-            </div>
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Direct Inquiries</strong> — Unfiltered conversations with angels
+              </div>
+            </li>
+
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Protected Data Room</strong> — Share decks &amp; metrics under NDA
+              </div>
+            </li>
+          </ul>
+
+          <!-- CTA Button -->
+          <div class="nxp-action-wrap">
+            <a href="<?= $nxpEscape($nxpRoute('auth/register.php?role=founder&plan=basic')) ?>"
+              class="nxp-btn nxp-btn-solid">
+              <span>Get Started as Founder</span>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 10h12m-5-5 5 5-5 5" />
+              </svg>
+            </a>
+            <p class="nxp-microcopy font-mono">Cancel anytime · No lock-in</p>
           </div>
         </div>
+      </article>
 
-        <!-- CTA Button -->
-        <div>
-          <button type="button" id="tier1-cta-btn" data-plan="free_trial" onclick="window.nxOpenPlanModal('free_trial')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs sm:text-sm font-bold transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
-            <span id="tier1-cta" class="pointer-events-none">Start Free Trial</span>
-            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
-          </button>
+      <!-- ============================================================ -->
+      <!-- CARD 02: FOR BACKERS & ANGELS (INVESTOR PASS) -->
+      <!-- ============================================================ -->
+      <article class="nxp-card nxp-card-investor" data-plan="investor">
+        <!-- Floating Role Anchor Pill on Top Edge -->
+        <div class="nxp-card-badge nxp-badge-slate">
+          FOR BACKERS &amp; ANGELS
         </div>
-      </div>
 
-      <!-- ========================================================
-           TIER 2: 1 Month Plan
-           ======================================================== -->
-      <div class="nx-price-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative border border-slate-200">
-        <div>
-          <!-- Plan Header -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-blue-50 border border-slate-200 flex items-center justify-center text-blue-600" id="tier2-icon">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        <div class="nxp-card-inner">
+          <!-- Card Header: Icon + Titles -->
+          <div class="nxp-card-head">
+            <div class="nxp-icon-box nxp-icon-investor" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
               </svg>
             </div>
-            <span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold uppercase tracking-wider" id="tier2-badge">
-              Flexible Monthly
-            </span>
-          </div>
-
-          <h3 class="text-[20px] font-extrabold text-slate-900 leading-snug" id="tier2-name">1 Month Plan</h3>
-          <p class="text-[12.5px] text-slate-500 mt-1 min-h-[38px]" id="tier2-desc">
-            Perfect for startups currently actively running a seed fundraise sprint.
-          </p>
-
-          <!-- Price Display -->
-          <div class="my-6 pt-4 border-t border-slate-100">
-            <div class="flex items-baseline gap-1">
-              <span class="text-[36px] font-extrabold text-slate-900 tracking-tight" id="tier2-price">$49</span>
-              <span class="text-[13px] text-slate-500 font-medium">/ month</span>
-            </div>
-            <div class="text-[11px] text-slate-500 font-medium mt-1" id="tier2-subtext">
-              Billed monthly &middot; Cancel anytime
+            <div class="nxp-head-meta">
+              <h3 class="nxp-plan-name">Investor Pass</h3>
+              <p class="nxp-plan-desc">For angels, syndicates, and active allocators</p>
             </div>
           </div>
 
-          <!-- Feature List -->
-          <div class="space-y-3 mb-8" id="tier2-features">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN TRIAL, PLUS:</div>
-            
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>3 Active Deal Rooms</span>
+          <!-- Price & Rate Pill Row -->
+          <div class="nxp-price-row">
+            <div class="nxp-price-display">
+              <span class="nxp-currency">₹</span>
+              <span class="nxp-amount">2,500</span>
+              <span class="nxp-interval">/ month</span>
             </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Direct Founder-Investor DMs</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>DigiLocker KYC Badge</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Real-Time Pitch Deck Analytics</span>
+            <div class="nxp-rate-pill nxp-pill-blue">
+              Direct Allocations
             </div>
           </div>
-        </div>
 
-        <!-- CTA Button -->
-        <div>
-          <button type="button" id="tier2-cta-btn" data-plan="1_month" onclick="window.nxOpenPlanModal('1_month')" class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-blue-600/20 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
-            <span id="tier2-cta" class="pointer-events-none">Choose 1 Month</span>
-            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
-          </button>
-        </div>
-      </div>
+          <!-- Feature Bullets (Checkmarks) — Concise & Scannable -->
+          <ul class="nxp-features" aria-label="Investor Pass features">
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Full Deal Room Access</strong> — Browse vetted startups across all stages
+              </div>
+            </li>
 
-      <!-- ========================================================
-           TIER 3: 6 Months Plan (MOST POPULAR)
-           ======================================================== -->
-      <div class="nx-price-card-popular rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative transform lg:-translate-y-2" style="z-index: 1;">
-        <!-- Most Popular Floating Pill -->
-        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[11px] font-extrabold uppercase tracking-wider shadow-md flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-          </svg>
-          <span>MOST POPULAR</span>
-        </div>
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Audited Numbers</strong> — Direct visibility into revenue &amp; cap tables
+              </div>
+            </li>
 
-        <div>
-          <!-- Plan Header -->
-          <div class="flex items-center justify-between mb-4 mt-2">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-sm" id="tier3-icon">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Direct Founder Chat</strong> — Instant private channels &amp; introductions
+              </div>
+            </li>
+
+            <li>
+              <span class="nxp-check" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </span>
+              <div class="nxp-feat-text">
+                <strong>Escrow Custody</strong> — Safe transaction routing &amp; share allocations
+              </div>
+            </li>
+          </ul>
+
+          <!-- CTA Button -->
+          <div class="nxp-action-wrap">
+            <a href="<?= $nxpEscape($nxpRoute('auth/register.php?role=investor&plan=pass')) ?>"
+              class="nxp-btn nxp-btn-outline">
+              <span>Get Started as Investor</span>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 10h12m-5-5 5 5-5 5" />
               </svg>
-            </div>
-            <span class="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[11px] font-bold uppercase tracking-wider" id="tier3-badge">
-              Save 33%
-            </span>
-          </div>
-
-          <h3 class="text-[20px] font-extrabold text-slate-900 leading-snug" id="tier3-name">6 Months Plan</h3>
-          <p class="text-[12.5px] text-slate-600 mt-1 min-h-[38px]" id="tier3-desc">
-            Comprehensive runway for closing Seed to Pre-Series A funding rounds.
-          </p>
-
-          <!-- Price Display -->
-          <div class="my-6 pt-4 border-t border-slate-100">
-            <div class="flex items-baseline gap-1">
-              <span class="text-[36px] font-extrabold text-blue-900 tracking-tight" id="tier3-price">$35</span>
-              <span class="text-[13px] text-slate-600 font-medium">/ mo</span>
-            </div>
-            <div class="text-[11px] text-blue-700 font-bold mt-1" id="tier3-subtext">
-              $210 billed for 6 months
-            </div>
-          </div>
-
-          <!-- Feature List -->
-          <div class="space-y-3 mb-8" id="tier3-features">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN 1 MONTH, PLUS:</div>
-            
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Unlimited Active Deal Rooms</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Featured Dealflow Placement</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Direct WhatsApp Warm Intros</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>SEBI &amp; MCA Legal SAFE Templates</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-              <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Dedicated Venture Scout Manager</span>
-            </div>
+            </a>
+            <p class="nxp-microcopy font-mono">SEBI accredited badge · Deal alerts</p>
           </div>
         </div>
-
-        <!-- CTA Button -->
-        <div>
-          <button type="button" id="tier3-cta-btn" data-plan="6_months" onclick="window.nxOpenPlanModal('6_months')" class="nx-plan-cta-btn w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
-            <span id="tier3-cta" class="pointer-events-none">Get 6-Month Pass</span>
-            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- ========================================================
-           TIER 4: 1 Year Plan (Annual Pro)
-           ======================================================== -->
-      <div class="nx-price-card rounded-3xl p-6 sm:p-7 flex flex-col justify-between relative border border-slate-200" style="z-index: 3;">
-        <div>
-          <!-- Plan Header -->
-          <div class="flex items-center justify-between mb-4">
-            <div class="w-10 h-10 rounded-2xl bg-indigo-50 border border-slate-200 flex items-center justify-center text-indigo-700" id="tier4-icon">
-              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <span class="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[11px] font-bold uppercase tracking-wider" id="tier4-badge">
-              Save 40%
-            </span>
-          </div>
-
-          <h3 class="text-[20px] font-extrabold text-slate-900 leading-snug" id="tier4-name">1 Year Plan</h3>
-          <p class="text-[12.5px] text-slate-500 mt-1 min-h-[38px]" id="tier4-desc">
-            Full annual suite for high-growth serial founders and venture teams.
-          </p>
-
-          <!-- Price Display -->
-          <div class="my-6 pt-4 border-t border-slate-100">
-            <div class="flex items-baseline gap-1">
-              <span class="text-[36px] font-extrabold text-slate-900 tracking-tight" id="tier4-price">$29</span>
-              <span class="text-[13px] text-slate-500 font-medium">/ mo</span>
-            </div>
-            <div class="text-[11px] text-indigo-600 font-bold mt-1" id="tier4-subtext">
-              $348 billed annually
-            </div>
-          </div>
-
-          <!-- Feature List -->
-          <div class="space-y-3 mb-8" id="tier4-features">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">FULL ENTERPRISE SUITE:</div>
-            
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>All 6-Month Growth Features</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>SPV Pooling &amp; Syndicate Lead Tools</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>White-Label LP Data Room</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Full Platform REST API Access</span>
-            </div>
-
-            <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-              <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-              <span>Dedicated Partner Success Director</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- CTA Button -->
-        <div style="position: relative; z-index: 10;">
-          <button type="button" id="tier4-cta-btn" data-plan="1_year"
-            style="position: relative; z-index: 10; pointer-events: all; cursor: pointer;"
-            onclick="event.stopPropagation(); window.nxOpenPlanModal('1_year');"
-            class="nx-plan-cta-btn w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-md shadow-slate-900/15 transition flex items-center justify-center gap-1.5 cursor-pointer select-none">
-            <span id="tier4-cta" class="pointer-events-none">Unlock 1 Year Pro</span>
-            <span aria-hidden="true" class="pointer-events-none">&rarr;</span>
-          </button>
-        </div>
-      </div>
+      </article>
 
     </div>
 
-    <!-- Assurance & Trust Strip -->
-    <div class="mt-14 p-6 rounded-3xl bg-white/70 border border-slate-200/90 shadow-xs backdrop-blur-md flex flex-wrap items-center justify-around gap-6 text-slate-600 text-xs sm:text-sm font-medium">
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    <!-- Bottom Trust Guarantee Bar -->
+    <div class="nxp-guarantee-bar">
+      <div class="nxp-guar-content">
+        <div class="nxp-guar-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <path d="m9 12 2 2 4-4"></path>
           </svg>
         </div>
-        <span>100% Secure 256-bit Razorpay / Stripe Payments</span>
+        <div class="nxp-guar-text">
+          <strong>No Hidden Deductions:</strong> 100% of the capital you raise stays in your company.
+        </div>
       </div>
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <span>Instant Deal Room &amp; Dealflow Activation</span>
-      </div>
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <span>GST Compliant Invoicing &amp; Tax Deductible</span>
-      </div>
-      <div class="flex items-center gap-2.5">
-        <div class="w-7 h-7 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        </div>
-        <span>0% Success Cuts or Hidden Fees</span>
-      </div>
-    </div>
-
-    <!-- ========================================================
-         MODAL: Plan Priority & Checkout Confirmation
-         ======================================================== -->
-    <div id="nx-plan-modal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md transition-all">
-      <div class="relative w-full max-w-[560px] bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-200 overflow-hidden transform transition-all max-h-[92vh] overflow-y-auto">
-        
-        <!-- Floating Close Button -->
-        <button type="button" id="nx-plan-modal-close" onclick="window.nxClosePlanModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 flex items-center justify-center font-bold text-sm transition cursor-pointer z-10" aria-label="Close modal">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
-
-        <!-- Plan Header -->
-        <div class="flex items-center gap-3.5 mb-4 pr-8">
-          <div id="modal-plan-icon" class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shadow-md shrink-0">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-            </svg>
-          </div>
-          <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10.5px] font-extrabold uppercase tracking-wide" id="modal-plan-pill">
-              Level 4 Priority Granted
-            </div>
-            <h3 class="text-[21px] sm:text-[23px] font-extrabold text-slate-900 leading-tight mt-0.5" id="modal-plan-title">
-              1 Year Scale Pro
-            </h3>
-          </div>
-        </div>
-
-        <!-- Price & Cycle Breakdown -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 mb-4 flex items-center justify-between">
-          <div>
-            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">TOTAL BILLING</div>
-            <div class="text-[24px] font-extrabold text-slate-900 leading-none mt-1" id="modal-plan-price">$348</div>
-          </div>
-          <div class="text-right">
-            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold" id="modal-plan-cycle">
-              1 Year Pass
-            </span>
-            <div class="text-[11px] text-slate-500 mt-1" id="modal-plan-period">$29 / month</div>
-          </div>
-        </div>
-
-        <!-- Action Alert Box -->
-        <div id="modal-alert-box" class="hidden mb-3.5 p-3 rounded-xl text-xs font-bold"></div>
-
-        <?php if (function_exists('auth_check') && auth_check()): ?>
-          <!-- LOGGED-IN USERS: Direct Plan Purchase / Upgrade -->
-          <div class="space-y-4">
-            <!-- Priority Perks Breakdown -->
-            <div class="mb-3">
-              <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-                YOUR PRIORITY PRIVILEGES:
-              </div>
-              <div class="space-y-2 text-[12px] text-slate-700 font-medium max-h-[140px] overflow-y-auto pr-1" id="modal-plan-perks">
-                <!-- Dynamic Perks inserted here -->
-              </div>
-            </div>
-
-            <button type="button" id="modal-confirm-action-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-              <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-              <span>Confirm Plan &amp; Activate Priority</span>
-              <span aria-hidden="true">&rarr;</span>
-            </button>
-          </div>
-        <?php else: ?>
-          <!-- GUEST / VISITOR: Instant Checkout & Quick Registration -->
-          <form id="modal-checkout-form" class="space-y-3.5">
-            <input type="hidden" id="modal-form-plan-code" name="plan_code" value="1_year">
-            <input type="hidden" id="modal-form-billing-cycle" name="billing_cycle" value="monthly">
-            <input type="hidden" id="modal-form-role" name="role" value="founder">
-
-            <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-1 flex items-center gap-1.5">
-              <svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-              <span>INSTANT ACCOUNT CREATION &amp; PLAN ACTIVATION</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  FULL NAME <span class="text-red-500">*</span>
-                </label>
-                <input type="text" id="modal-input-name" name="name" required placeholder="e.g. John Doe"
-                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              </div>
-
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  EMAIL ADDRESS <span class="text-red-500">*</span>
-                </label>
-                <input type="email" id="modal-input-email" name="email" required placeholder="name@company.com"
-                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  PASSWORD <span class="text-red-500">*</span>
-                </label>
-                <input type="password" id="modal-input-password" name="password" required placeholder="Min 6 characters" autocomplete="new-password"
-                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              </div>
-
-              <div id="modal-founder-org-wrap">
-                <label class="block text-[10.5px] font-bold uppercase tracking-wider text-slate-700 mb-1" id="modal-label-org">
-                  STARTUP / COMPANY NAME <span class="text-red-500">*</span>
-                </label>
-                <input type="text" id="modal-input-org" name="company_name" placeholder="e.g. NextGen AI Labs"
-                  class="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-              </div>
-            </div>
-
-            <div class="pt-1.5 space-y-2">
-              <button type="submit" id="modal-submit-btn" class="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:opacity-95 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center justify-center gap-2 cursor-pointer">
-                <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-                <span id="modal-submit-text">Complete Purchase &amp; Activate Plan</span>
-                <span aria-hidden="true">&rarr;</span>
-              </button>
-
-              <button type="button" id="modal-scroll-to-register-btn" class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5 cursor-pointer">
-                <svg class="w-3.5 h-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Or Fill Full Landing Page Form (Scroll Up)</span>
-              </button>
-            </div>
-          </form>
-        <?php endif; ?>
-
-        <p class="text-center text-[10px] text-slate-500 font-medium mt-3 flex items-center justify-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-          <span>256-bit encrypted checkout &middot; 0% broker fee &middot; Instant priority activation</span>
-        </p>
-
+      <div class="nxp-guar-action">
+        <span class="nxp-guar-chip font-mono">Cancel Anytime in 1-Click</span>
       </div>
     </div>
 
   </div>
 </section>
 
-<!-- Dual Role & Billing Switcher Logic -->
-<script>
-(function() {
-  const roleFounderBtn = document.getElementById('nx-pricing-role-founder');
-  const roleInvestorBtn = document.getElementById('nx-pricing-role-investor');
+<!-- ===================================================================== -->
+<!-- STYLES (Self-Contained, Pristine NEXORA Standard)                     -->
+<!-- ===================================================================== -->
+<style>
+  .nxp {
+    --nxp-ink: #0F172A;
+    --nxp-navy: #182435;
+    --nxp-muted: #5E6D82;
+    --nxp-blue: #2563EB;
+    --nxp-blue-dark: #1D4ED8;
+    --nxp-line: #E2E8F0;
+    --nxp-bg-subtle: #F8FAFC;
 
-  const monthlyBtn = document.getElementById('nx-billing-monthly-btn');
-  const annualBtn = document.getElementById('nx-billing-annual-btn');
+    position: relative;
+    background-color: #F8FAFC;
+    background-image:
+      radial-gradient(at 15% 15%, rgba(219, 234, 254, 0.45) 0px, transparent 50%),
+      radial-gradient(at 85% 10%, rgba(224, 231, 255, 0.4) 0px, transparent 45%),
+      radial-gradient(at 50% 90%, rgba(241, 245, 249, 0.8) 0px, transparent 55%);
+    color: var(--nxp-ink);
+    padding: 85px 0 65px;
+    font-family: 'Satoshi', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+    border-bottom: 1px solid var(--nxp-line);
+    -webkit-font-smoothing: antialiased;
+  }
 
-  const dynTitle = document.getElementById('nx-pricing-dynamic-title');
-  const dynDesc = document.getElementById('nx-pricing-dynamic-desc');
+  .nxp *,
+  .nxp *::before,
+  .nxp *::after {
+    box-sizing: border-box;
+  }
 
-  // Tier Elements
-  const t1Name = document.getElementById('tier1-name');
-  const t1Desc = document.getElementById('tier1-desc');
-  const t1Features = document.getElementById('tier1-features');
-  const t1Cta = document.getElementById('tier1-cta');
+  .nxp p,
+  .nxp h2,
+  .nxp h3,
+  .nxp h4 {
+    margin: 0;
+  }
 
-  const t2Name = document.getElementById('tier2-name');
-  const t2Desc = document.getElementById('tier2-desc');
-  const t2Price = document.getElementById('tier2-price');
-  const t2Subtext = document.getElementById('tier2-subtext');
-  const t2Features = document.getElementById('tier2-features');
-  const t2Cta = document.getElementById('tier2-cta');
+  .nxp a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-  const t3Name = document.getElementById('tier3-name');
-  const t3Desc = document.getElementById('tier3-desc');
-  const t3Price = document.getElementById('tier3-price');
-  const t3Subtext = document.getElementById('tier3-subtext');
-  const t3Features = document.getElementById('tier3-features');
-  const t3Cta = document.getElementById('tier3-cta');
+  .nxp svg {
+    display: block;
+    flex-shrink: 0;
+  }
 
-  const t4Name = document.getElementById('tier4-name');
-  const t4Desc = document.getElementById('tier4-desc');
-  const t4Price = document.getElementById('tier4-price');
-  const t4Subtext = document.getElementById('tier4-subtext');
-  const t4Features = document.getElementById('tier4-features');
-  const t4Cta = document.getElementById('tier4-cta');
+  .nxp button {
+    font: inherit;
+    cursor: pointer;
+  }
 
-  // Modal Elements
-  const modal = document.getElementById('nx-plan-modal');
-  const modalClose = document.getElementById('nx-plan-modal-close');
-  const modalTitle = document.getElementById('modal-plan-title');
-  const modalPill = document.getElementById('modal-plan-pill');
-  const modalPrice = document.getElementById('modal-plan-price');
-  const modalCycle = document.getElementById('modal-plan-cycle');
-  const modalPeriod = document.getElementById('modal-plan-period');
-  const modalPerks = document.getElementById('modal-plan-perks');
-  const modalAlert = document.getElementById('modal-alert-box');
+  .nxp-wrap {
+    width: min(1200px, calc(100% - 64px));
+    margin-inline: auto;
+  }
 
-  const modalForm = document.getElementById('modal-checkout-form');
-  const modalSubmitBtn = document.getElementById('modal-submit-btn');
-  const modalSubmitText = document.getElementById('modal-submit-text');
-  const modalScrollBtn = document.getElementById('modal-scroll-to-register-btn');
-  const modalConfirmActionBtn = document.getElementById('modal-confirm-action-btn');
+  /* ── Section Topline (04 / FAIR VENTURE PRICING) ── */
+  .nxp-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--nxp-line);
+    font-size: 12px;
+    letter-spacing: .12em;
+    line-height: 1.6;
+    color: #64748B;
+    font-weight: 600;
+  }
 
-  const modalFormPlanCode = document.getElementById('modal-form-plan-code');
-  const modalFormBillingCycle = document.getElementById('modal-form-billing-cycle');
-  const modalFormRole = document.getElementById('modal-form-role');
-  const modalLabelOrg = document.getElementById('modal-label-org');
-  const modalInputOrg = document.getElementById('modal-input-org');
+  .nxp-topline>span:first-child {
+    color: var(--nxp-blue);
+    font-weight: 700;
+  }
 
-  const isLoggedIn = <?= (function_exists('auth_check') && auth_check()) ? 'true' : 'false' ?>;
+  /* ── Section Header ── */
+  .nxp-header {
+    text-align: center;
+    padding: 42px 0 46px;
+    max-width: 860px;
+    margin-inline: auto;
+  }
 
-  let currentRole = 'founder';
-  let isAnnual = false;
-  let selectedPlanCode = '1_year';
+  .nxp-badge-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
 
-  const founderData = {
-    title: 'Startup Founders Raising Capital.',
-    desc: 'Transparent pricing with 0% broker commission. Connect directly with check-writing angels, manage diligence rooms, and close your round faster.',
-    t1: {
-      code: 'free_trial',
-      name: '14-Day Free Trial',
-      priorityLevel: 1,
-      priorityName: 'Standard Access',
-      desc: 'Test drive deal rooms & verified investor network with zero commitment.',
-      price: '$0',
-      period: 'No credit card required',
-      cta: 'Start Free Trial',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN TRIAL:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>1 Live Pitch Deck Listing</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Basic Cap Table Viewer</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Public Syndicate Directory</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Standard Community Support</span>
-        </div>
-      `
-    },
-    t2: {
-      code: '1_month',
-      name: '1 Month Sprint',
-      priorityLevel: 2,
-      priorityName: 'Verified Fast-Track',
-      desc: 'Perfect for startups actively running a fast seed fundraise sprint.',
-      priceMonthly: '$49',
-      subtextMonthly: 'Billed monthly · Cancel anytime',
-      priceAnnual: '$39',
-      subtextAnnual: '$468 billed annually (Save 20%)',
-      cta: 'Choose 1 Month',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN TRIAL, PLUS:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>3 Active Deal Rooms</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Direct Founder-Investor DMs</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>DigiLocker KYC Badge</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Real-Time Pitch Deck Analytics</span>
-        </div>
-      `
-    },
-    t3: {
-      code: '6_months',
-      name: '6 Months Dealmaker',
-      priorityLevel: 3,
-      priorityName: 'Featured Dealflow Priority',
-      desc: 'Comprehensive runway for closing Seed to Pre-Series A funding rounds.',
-      priceMonthly: '$35',
-      subtextMonthly: '$210 billed for 6 months',
-      priceAnnual: '$29',
-      subtextAnnual: '$174 billed for 6 months (Save 33%)',
-      cta: 'Get 6-Month Pass',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN 1 MONTH, PLUS:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Top Featured Dealflow Placement</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Unlimited Active Deal Rooms</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Direct WhatsApp Warm Intros</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>SEBI &amp; MCA Legal SAFE Templates</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Dedicated Venture Scout Manager</span>
-        </div>
-      `
-    },
-    t4: {
-      code: '1_year',
-      name: '1 Year Scale Pro',
-      priorityLevel: 4,
-      priorityName: 'VIP Spotlight Pro',
-      desc: 'Full annual suite for high-growth serial founders and scaleups.',
-      priceMonthly: '$29',
-      subtextMonthly: '$348 billed annually',
-      priceAnnual: '$19',
-      subtextAnnual: '$228 billed annually (Save 40%)',
-      cta: 'Unlock 1 Year Pro',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">FULL ENTERPRISE SUITE:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>#1 Top Spotlight Placement &amp; Gold Badge</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>SPV Pooling &amp; Syndicate Tools</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>White-Label LP Data Room</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Full Platform REST API &amp; Webhooks</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Dedicated Partner Success Director</span>
-        </div>
-      `
+  .nxp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid #CBD5E1;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0F172A;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+  }
+
+  .nxp-badge-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10B981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+
+  .nxp-header h2 {
+    font-size: clamp(34px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.16;
+    letter-spacing: -0.04em;
+    color: #0F172A;
+  }
+
+  .nxp-highlight {
+    color: #1E40AF;
+    font-weight: 750;
+    position: relative;
+    display: inline-block;
+  }
+
+  .nxp-lead {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--nxp-muted);
+    max-width: 660px;
+    margin: 18px auto 0;
+    font-weight: 450;
+  }
+
+  /* ── The 2 Pricing Cards Grid ── */
+  .nxp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    margin-top: 15px;
+  }
+
+  .nxp-card {
+    position: relative;
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: 1.5px solid #E2E8F0;
+    box-shadow: 0 14px 34px -10px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+  }
+
+  .nxp-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(37, 99, 235, 0.06);
+    border-color: #CBD5E1;
+  }
+
+  /* Floating Anchor Badge on Top Right */
+  .nxp-card-badge {
+    position: absolute;
+    top: -13px;
+    right: 28px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    z-index: 5;
+    box-shadow: 0 3px 8px rgba(15, 23, 42, 0.08);
+  }
+
+  .nxp-badge-navy {
+    background: #0F172A;
+    color: #FFFFFF;
+    border: 1px solid #1E293B;
+  }
+
+  .nxp-badge-slate {
+    background: #F1F5F9;
+    color: #475569;
+    border: 1px solid #CBD5E1;
+  }
+
+  /* Card Content Inner */
+  .nxp-card-inner {
+    padding: 38px 36px 34px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Head: Icon + Titles */
+  .nxp-card-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .nxp-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  .nxp-icon-founder {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1D4ED8;
+  }
+
+  .nxp-icon-investor {
+    background: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #047857;
+  }
+
+  .nxp-icon-box svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .nxp-head-meta {
+    min-width: 0;
+  }
+
+  .nxp-plan-name {
+    font-size: 21px;
+    font-weight: 700;
+    color: #0F172A;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+
+  .nxp-plan-desc {
+    font-size: 13.5px;
+    color: #64748B;
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Price Row */
+  .nxp-price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #F1F5F9;
+    margin-bottom: 24px;
+  }
+
+  .nxp-price-display {
+    display: flex;
+    align-items: baseline;
+    color: #0F172A;
+  }
+
+  .nxp-currency {
+    font-size: 26px;
+    font-weight: 700;
+    margin-right: 2px;
+  }
+
+  .nxp-amount {
+    font-size: 40px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .nxp-interval {
+    font-size: 14.5px;
+    font-weight: 500;
+    color: #64748B;
+    margin-left: 6px;
+  }
+
+  /* Rate Pill */
+  .nxp-rate-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 5px 12px;
+    border-radius: 6px;
+    line-height: 1.3;
+    white-space: nowrap;
+  }
+
+  .nxp-pill-emerald {
+    background: #ECFDF5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+  }
+
+  .nxp-pill-blue {
+    background: #EFF6FF;
+    color: #1D4ED8;
+    border: 1px solid #BFDBFE;
+  }
+
+  /* Feature List */
+  .nxp-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex-grow: 1;
+  }
+
+  .nxp-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #334155;
+  }
+
+  .nxp-check {
+    width: 19px;
+    height: 19px;
+    border-radius: 50%;
+    background: #EFF6FF;
+    color: #2563EB;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .nxp-check svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .nxp-feat-text strong {
+    color: #0F172A;
+    font-weight: 650;
+  }
+
+  /* Action Area */
+  .nxp-action-wrap {
+    margin-top: auto;
+  }
+
+  .nxp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 650;
+    text-align: center;
+    transition: all 0.22s ease;
+  }
+
+  .nxp-btn svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  .nxp-btn:hover svg {
+    transform: translateX(3px);
+  }
+
+  .nxp-btn-solid {
+    background: #1D4ED8;
+    color: #FFFFFF;
+    border: 1px solid #1D4ED8;
+    box-shadow: 0 4px 14px rgba(29, 78, 216, 0.25);
+  }
+
+  .nxp-btn-solid:hover {
+    background: #1E40AF;
+    box-shadow: 0 6px 20px rgba(29, 78, 216, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .nxp-btn-outline {
+    background: #FFFFFF;
+    color: #0F172A;
+    border: 1.5px solid #CBD5E1;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  }
+
+  .nxp-btn-outline:hover {
+    background: #F8FAFC;
+    border-color: #0F172A;
+    transform: translateY(-1px);
+  }
+
+  .nxp-microcopy {
+    text-align: center;
+    font-size: 11.5px;
+    color: #64748B;
+    margin-top: 12px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Guarantee Bar (Trust Banner) ── */
+  .nxp-guarantee-bar {
+    margin-top: 36px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.03);
+  }
+
+  .nxp-guar-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nxp-guar-icon {
+    width: 28px;
+    height: 28px;
+    color: #1D4ED8;
+    flex-shrink: 0;
+  }
+
+  .nxp-guar-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .nxp-guar-text {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #334155;
+  }
+
+  .nxp-guar-text strong {
+    color: #0F172A;
+    font-weight: 700;
+  }
+
+  .nxp-guar-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 6px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+  }
+
+  /* ── Responsive Queries ── */
+  @media (max-width: 960px) {
+    .nxp-grid {
+      grid-template-columns: 1fr;
+      gap: 34px;
+      max-width: 580px;
+      margin-inline: auto;
     }
-  };
 
-  const investorData = {
-    title: 'Accredited Angels & Institutional VCs.',
-    desc: 'Gain instant access to verified, pre-screened seed & Series A dealflow with audited financials, cap tables, and seamless co-investment syndication.',
-    t1: {
-      code: 'free_trial',
-      name: '14-Day Explorer Pass',
-      priorityLevel: 1,
-      priorityName: 'Explorer Access',
-      desc: 'Browse curated deal flow summaries and public venture directories.',
-      price: '$0',
-      period: 'No commitment',
-      cta: 'Start Free Trial',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INCLUDED IN PASS:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Browse 300+ Verified Deals</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>High-Level Pitch Summaries</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-emerald-100 text-emerald-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Weekly Dealflow Newsletter</span>
-        </div>
-      `
-    },
-    t2: {
-      code: '1_month',
-      name: '1 Month Active Angel',
-      priorityLevel: 2,
-      priorityName: 'Verified Angel',
-      desc: 'Direct access to confidential diligence rooms and verified founders.',
-      priceMonthly: '$79',
-      subtextMonthly: 'Billed monthly · Cancel anytime',
-      priceAnnual: '$59',
-      subtextAnnual: '$708 billed annually (Save 25%)',
-      cta: 'Choose 1 Month',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">EVERYTHING IN EXPLORER, PLUS:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Audited MRR &amp; Cap Tables</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Direct Founder 1-on-1 Messaging</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Full Pitch Deck Downloads</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-blue-100 text-blue-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Co-Invest From $2,500</span>
-        </div>
-      `
-    },
-    t3: {
-      code: '6_months',
-      name: '6 Months Syndicate Lead',
-      priorityLevel: 3,
-      priorityName: 'Syndicate Priority',
-      desc: 'For active angel syndicates and super-angels leading rounds.',
-      priceMonthly: '$49',
-      subtextMonthly: '$354 billed for 6 months',
-      priceAnnual: '$39',
-      subtextAnnual: '$270 billed for 6 months (Save 30%)',
-      cta: 'Get 6-Month Pass',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-blue-900 mb-2">EVERYTHING IN ANGEL, PLUS:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Lead Syndicates &amp; SPV Pooling</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Priority Allocation in Hot Rounds</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Direct WhatsApp Founder Connect</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Automated Carry &amp; Distribution CRM</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-800 font-medium">
-          <span class="nx-feature-check bg-blue-600 text-white text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Dedicated Venture Scout</span>
-        </div>
-      `
-    },
-    t4: {
-      code: '1_year',
-      name: '1 Year Institutional Suite',
-      priorityLevel: 4,
-      priorityName: 'Institutional VIP',
-      desc: 'Full platform pipeline for VCs, Family Offices & Accelerators.',
-      priceMonthly: '$49',
-      subtextMonthly: '$588 billed annually',
-      priceAnnual: '$35',
-      subtextAnnual: '$420 billed annually (Save 40%)',
-      cta: 'Unlock 1 Year Pro',
-      features: `
-        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">INSTITUTIONAL SUITE:</div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Custom Institutional Research Reports</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>White-Label LP Deal Portal</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Full Dealflow API &amp; Webhooks</span>
-        </div>
-        <div class="flex items-start gap-2.5 text-[12.5px] text-slate-700">
-          <span class="nx-feature-check bg-indigo-100 text-indigo-700 text-[11px] font-bold"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-          <span>Dedicated Partner Relationship Manager</span>
-        </div>
-      `
+    .nxp-header h2 {
+      font-size: 36px;
     }
-  };
 
-  function updatePricingUI() {
-    const data = (currentRole === 'investor') ? investorData : founderData;
-
-    if (dynTitle) dynTitle.textContent = data.title;
-    if (dynDesc) dynDesc.textContent = data.desc;
-
-    // Tier 1
-    if (t1Name) t1Name.textContent = data.t1.name;
-    if (t1Desc) t1Desc.textContent = data.t1.desc;
-    if (t1Cta) t1Cta.textContent = data.t1.cta;
-    if (t1Features) t1Features.innerHTML = data.t1.features;
-
-    // Tier 2
-    if (t2Name) t2Name.textContent = data.t2.name;
-    if (t2Desc) t2Desc.textContent = data.t2.desc;
-    if (t2Price) t2Price.textContent = isAnnual ? data.t2.priceAnnual : data.t2.priceMonthly;
-    if (t2Subtext) t2Subtext.textContent = isAnnual ? data.t2.subtextAnnual : data.t2.subtextMonthly;
-    if (t2Cta) t2Cta.textContent = data.t2.cta;
-    if (t2Features) t2Features.innerHTML = data.t2.features;
-
-    // Tier 3
-    if (t3Name) t3Name.textContent = data.t3.name;
-    if (t3Desc) t3Desc.textContent = data.t3.desc;
-    if (t3Price) t3Price.textContent = isAnnual ? data.t3.priceAnnual : data.t3.priceMonthly;
-    if (t3Subtext) t3Subtext.textContent = isAnnual ? data.t3.subtextAnnual : data.t3.subtextMonthly;
-    if (t3Cta) t3Cta.textContent = data.t3.cta;
-    if (t3Features) t3Features.innerHTML = data.t3.features;
-
-    // Tier 4
-    if (t4Name) t4Name.textContent = data.t4.name;
-    if (t4Desc) t4Desc.textContent = data.t4.desc;
-    if (t4Price) t4Price.textContent = isAnnual ? data.t4.priceAnnual : data.t4.priceMonthly;
-    if (t4Subtext) t4Subtext.textContent = isAnnual ? data.t4.subtextAnnual : data.t4.subtextMonthly;
-    if (t4Cta) t4Cta.textContent = data.t4.cta;
-    if (t4Features) t4Features.innerHTML = data.t4.features;
-
-    // Sync modal role labels if present
-    if (modalFormRole) modalFormRole.value = currentRole;
-    if (modalLabelOrg) {
-      modalLabelOrg.innerHTML = currentRole === 'investor' ? 'INVESTOR FIRM / SYNDICATE' : 'STARTUP / COMPANY NAME <span class="text-red-500">*</span>';
-    }
-    if (modalInputOrg) {
-      modalInputOrg.placeholder = currentRole === 'investor' ? 'e.g. Nexus Angel Syndicate' : 'e.g. NextGen AI Labs';
+    .nxp-br-desktop {
+      display: none;
     }
   }
 
-  // Role Buttons Event Listeners
-  if (roleFounderBtn) {
-    roleFounderBtn.addEventListener('click', () => {
-      currentRole = 'founder';
-      roleFounderBtn.classList.add('active');
-      if (roleInvestorBtn) roleInvestorBtn.classList.remove('active');
-      updatePricingUI();
-    });
-  }
-
-  if (roleInvestorBtn) {
-    roleInvestorBtn.addEventListener('click', () => {
-      currentRole = 'investor';
-      roleInvestorBtn.classList.add('active');
-      if (roleFounderBtn) roleFounderBtn.classList.remove('active');
-      updatePricingUI();
-    });
-  }
-
-  // Billing Buttons Event Listeners
-  if (monthlyBtn) {
-    monthlyBtn.addEventListener('click', () => {
-      isAnnual = false;
-      monthlyBtn.classList.add('active');
-      if (annualBtn) annualBtn.classList.remove('active');
-      updatePricingUI();
-    });
-  }
-
-  if (annualBtn) {
-    annualBtn.addEventListener('click', () => {
-      isAnnual = true;
-      annualBtn.classList.add('active');
-      if (monthlyBtn) monthlyBtn.classList.remove('active');
-      updatePricingUI();
-    });
-  }
-
-  // Open Plan Modal Function (Global & Local)
-  window.nxOpenPlanModal = function(planCode) {
-    const modalEl = document.getElementById('nx-plan-modal');
-    if (modalEl && modalEl.parentElement !== document.body) {
-      document.body.appendChild(modalEl);
+  @media (max-width: 680px) {
+    .nxp {
+      padding: 60px 0 45px;
     }
 
-    selectedPlanCode = planCode || '1_year';
-    const data = (currentRole === 'investor') ? investorData : founderData;
-    let planObj = data.t4;
-    if (selectedPlanCode === 'free_trial') planObj = data.t1;
-    else if (selectedPlanCode === '1_month') planObj = data.t2;
-    else if (selectedPlanCode === '6_months') planObj = data.t3;
-    else if (selectedPlanCode === '1_year') planObj = data.t4;
-
-    if (modalTitle) modalTitle.textContent = planObj.name;
-    if (modalPill) modalPill.textContent = 'Level ' + planObj.priorityLevel + ' Priority: ' + planObj.priorityName;
-    
-    if (modalPrice) {
-      if (selectedPlanCode === 'free_trial') {
-        modalPrice.textContent = '$0';
-      } else if (selectedPlanCode === '1_month') {
-        modalPrice.textContent = isAnnual ? (planObj.subtextAnnual ? planObj.subtextAnnual.split(' ')[0] : '$468') : (planObj.priceMonthly || '$49');
-      } else if (selectedPlanCode === '6_months') {
-        modalPrice.textContent = isAnnual ? (planObj.subtextAnnual ? planObj.subtextAnnual.split(' ')[0] : '$174') : (planObj.subtextMonthly ? planObj.subtextMonthly.split(' ')[0] : '$210');
-      } else if (selectedPlanCode === '1_year') {
-        modalPrice.textContent = isAnnual ? (planObj.subtextAnnual ? planObj.subtextAnnual.split(' ')[0] : '$228') : (planObj.subtextMonthly ? planObj.subtextMonthly.split(' ')[0] : '$348');
-      }
+    .nxp-wrap {
+      width: calc(100% - 36px);
     }
 
-    if (modalCycle) {
-      modalCycle.textContent = (selectedPlanCode === 'free_trial') ? '14-Day Pass' : (isAnnual ? 'Annual Billing' : 'Monthly Billing');
+    .nxp-header h2 {
+      font-size: 28px;
     }
 
-    if (modalPeriod) {
-      modalPeriod.textContent = (selectedPlanCode === 'free_trial') ? 'Zero commitment' : (isAnnual ? (planObj.priceAnnual + ' / mo') : (planObj.priceMonthly + ' / mo'));
+    .nxp-lead {
+      font-size: 14.5px;
     }
 
-    if (modalPerks) {
-      modalPerks.innerHTML = planObj.features;
+    .nxp-card-inner {
+      padding: 30px 22px 24px;
     }
 
-    if (modalFormPlanCode) modalFormPlanCode.value = selectedPlanCode;
-    if (modalFormBillingCycle) modalFormBillingCycle.value = isAnnual ? 'annually' : 'monthly';
-    if (modalFormRole) modalFormRole.value = currentRole;
-
-    if (modalSubmitText) {
-      modalSubmitText.textContent = 'Complete Purchase & Activate ' + planObj.name;
+    .nxp-card-badge {
+      right: 18px;
+      font-size: 9.5px;
+      padding: 4px 10px;
     }
 
-    if (modalAlert) {
-      modalAlert.classList.add('hidden');
+    .nxp-plan-name {
+      font-size: 18px;
     }
 
-    if (modalEl) {
-      modalEl.classList.remove('hidden');
-      modalEl.style.display = 'flex';
-      modalEl.style.zIndex = '999999';
-      document.body.style.overflow = 'hidden';
+    .nxp-amount {
+      font-size: 32px;
     }
-  };
 
-  window.nxClosePlanModal = function() {
-    const modalEl = document.getElementById('nx-plan-modal');
-    if (modalEl) {
-      modalEl.classList.add('hidden');
-      modalEl.style.display = 'none';
-      document.body.style.overflow = '';
+    .nxp-currency {
+      font-size: 22px;
     }
-  };
 
-  if (modalClose) {
-    modalClose.addEventListener('click', window.nxClosePlanModal);
-  }
-
-  const modalEl = document.getElementById('nx-plan-modal');
-  if (modalEl) {
-    modalEl.addEventListener('click', (e) => {
-      if (e.target === modalEl) window.nxClosePlanModal();
-    });
-  }
-
-  // Global event delegation for all plan CTA buttons
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.nx-plan-cta-btn');
-    if (btn) {
-      e.preventDefault();
-      const planCode = btn.getAttribute('data-plan') || '1_year';
-      window.nxOpenPlanModal(planCode);
+    .nxp-rate-pill {
+      font-size: 10.5px;
+      padding: 4px 8px;
     }
-  });
 
-  // Action Button inside Modal (Logged-In Users)
-  if (modalConfirmActionBtn) {
-    modalConfirmActionBtn.addEventListener('click', async () => {
-      modalConfirmActionBtn.disabled = true;
-      const prevText = modalConfirmActionBtn.innerHTML;
-      modalConfirmActionBtn.innerHTML = '<svg class="w-4 h-4 animate-spin inline-block mr-1.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg><span>Activating Priority Plan...</span>';
+    .nxp-guarantee-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 18px;
+    }
 
-      try {
-        const res = await fetch('<?= function_exists('url') ? url('api/subscribe.php') : 'api/subscribe.php' ?>', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Accept': 'application/json',
-            'X-CSRF-Token': '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
-          },
-          body: JSON.stringify({
-            csrf_token: '<?= function_exists('csrf_token') ? csrf_token() : '' ?>',
-            plan_code: selectedPlanCode,
-            billing_cycle: isAnnual ? 'annually' : 'monthly'
-          })
-        });
-
-        const json = await res.json();
-        if (json && json.success) {
-          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span> <span>' + (json.message || 'Plan activated successfully!') + '</span>';
-          modalAlert.classList.remove('hidden');
-
-          setTimeout(() => {
-            window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
-          }, 800);
-        } else {
-          modalConfirmActionBtn.disabled = false;
-          modalConfirmActionBtn.innerHTML = prevText;
-          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>' + (json.error || 'Activation failed.') + '</span>';
-          modalAlert.classList.remove('hidden');
-        }
-      } catch (err) {
-        modalConfirmActionBtn.disabled = false;
-        modalConfirmActionBtn.innerHTML = prevText;
-        modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-        modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>Network error. Please try again.</span>';
-        modalAlert.classList.remove('hidden');
-      }
-    });
-  }
-
-  // Instant Checkout Form inside Modal (Guest Users)
-  if (modalForm) {
-    modalForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      modalSubmitBtn.disabled = true;
-      const prevText = modalSubmitBtn.innerHTML;
-      modalSubmitBtn.innerHTML = '<svg class="w-4 h-4 animate-spin inline-block mr-1.5" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg><span>Processing Plan Activation...</span>';
-
-      const formData = new FormData(modalForm);
-      const payload = {
-        csrf_token: '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
-      };
-      formData.forEach((value, key) => { payload[key] = value; });
-
-      try {
-        const res = await fetch('<?= function_exists('url') ? url('api/register.php') : 'api/register.php' ?>', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json', 
-            'Accept': 'application/json',
-            'X-CSRF-Token': '<?= function_exists('csrf_token') ? csrf_token() : '' ?>'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        const json = await res.json();
-        if (json && json.success) {
-          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span> <span>' + (json.message || 'Account created & Priority plan activated!') + '</span>';
-          modalAlert.classList.remove('hidden');
-
-          setTimeout(() => {
-            window.location.href = json.redirect || (currentRole === 'investor' ? 'investor/dashboard.php' : 'founder/dashboard.php');
-          }, 800);
-        } else {
-          modalSubmitBtn.disabled = false;
-          modalSubmitBtn.innerHTML = prevText;
-          modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-          modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>' + (json.error || 'Registration failed. Please try again.') + '</span>';
-          modalAlert.classList.remove('hidden');
-        }
-      } catch (err) {
-        modalSubmitBtn.disabled = false;
-        modalSubmitBtn.innerHTML = prevText;
-        modalAlert.className = 'mb-3.5 p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-bold leading-tight flex items-center gap-2';
-        modalAlert.innerHTML = '<span><svg class="w-3.5 h-3.5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></span> <span>Network error. Please try again.</span>';
-        modalAlert.classList.remove('hidden');
-      }
-    });
-  }
-
-  // Scroll to full landing page register form button
-  if (modalScrollBtn) {
-    modalScrollBtn.addEventListener('click', () => {
-      window.nxClosePlanModal();
-      const data = (currentRole === 'investor') ? investorData : founderData;
-      let planObj = data.t4;
-      if (selectedPlanCode === 'free_trial') planObj = data.t1;
-      else if (selectedPlanCode === '1_month') planObj = data.t2;
-      else if (selectedPlanCode === '6_months') planObj = data.t3;
-      else if (selectedPlanCode === '1_year') planObj = data.t4;
-
-      if (typeof window.nxSelectPlan === 'function') {
-        window.nxSelectPlan(selectedPlanCode, isAnnual ? 'annually' : 'monthly', currentRole, planObj.name, planObj.priorityName, planObj.priorityLevel);
-      }
-
-      const registerSection = document.getElementById('nx-portal-register');
-      if (registerSection) {
-        registerSection.style.visibility = 'visible';
-        registerSection.style.opacity = '1';
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // Initialize UI
-  updatePricingUI();
-
-  // ── CRITICAL: Direct binding for Tier 4 (1 Year Pro) button ──────────────
-  // Belt-and-suspenders: directly bind to avoid any z-index / stacking issue.
-  function bindTier4Btn() {
-    const t4Btn = document.getElementById('tier4-cta-btn');
-    if (t4Btn && !t4Btn._nxBound) {
-      t4Btn._nxBound = true;
-      t4Btn.style.cssText += '; position: relative !important; z-index: 100 !important; pointer-events: all !important; cursor: pointer !important;';
-      t4Btn.addEventListener('click', function(e) {
-        e.stopImmediatePropagation();
-        window.nxOpenPlanModal('1_year');
-      }, true); // capture phase — fires before any other handler
+    .nxp-guar-chip {
+      font-size: 11px;
     }
   }
-  bindTier4Btn();
-  // Also re-bind on any DOM change (e.g. role/billing switch re-renders)
-  setTimeout(bindTier4Btn, 500);
-  setTimeout(bindTier4Btn, 1500);
-
-})();
-</script>
-
+</style>

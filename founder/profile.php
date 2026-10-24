@@ -1,20 +1,62 @@
 <?php
 /**
- * Founder Module: Profile & Account Settings Studio
- * Executive Persona, Credentials, Social Links & Security Management
- * Clean Visual Contrast, Modern Glassmorphic Badges, Full Responsive Layout
+ * Founder Module: Profile Overview & Persona Hub
+ * Full-width Tech Mesh Wireframe Cover Banner with Non-Clipped Overlapping Circular Avatar
+ * Direct Instant Banner & Avatar Upload Support
  */
 require_once __DIR__ . '/../config.php';
 $user = require_auth('founder');
 $db = get_db();
-$pageTitle = 'Founder Profile & Account Settings';
+$pageTitle = 'Founder Profile Overview';
 
 $founderProfile = null;
 $company = null;
-$error = '';
 $flash = get_flash();
 
 if ($db) {
+    // Handle Direct One-Click Banner and Avatar Uploads
+    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+        if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+            set_flash('error', 'Security token invalid. Please refresh the page.');
+        } else {
+            $action = $_POST['form_action'] ?? '';
+
+            if ($action === 'update_banner') {
+                if (!empty($_FILES['cover_file']['name'])) {
+                    $coverRes = handle_cover_upload($_FILES['cover_file'], $user['id']);
+                    if (!empty($coverRes['success'])) {
+                        $upd = $db->prepare("
+                            INSERT INTO founder_profiles (user_id, cover_url)
+                            VALUES (?, ?)
+                            ON DUPLICATE KEY UPDATE cover_url = VALUES(cover_url)
+                        ");
+                        $upd->execute([$user['id'], $coverRes['url']]);
+                        log_audit($user['id'], 'UPDATE_BANNER', 'founder_profiles', $user['id'], 'Founder updated cover banner');
+                        set_flash('success', 'Profile cover banner updated successfully!');
+                    } else {
+                        set_flash('error', $coverRes['error'] ?? 'Failed to upload cover banner.');
+                    }
+                }
+                header('Location: ' . url('founder/profile.php'));
+                exit;
+
+            } elseif ($action === 'update_avatar') {
+                if (!empty($_FILES['avatar_file']['name'])) {
+                    $avatarRes = handle_avatar_upload($_FILES['avatar_file'], $user['id']);
+                    if (!empty($avatarRes['success'])) {
+                        $db->prepare("UPDATE users SET avatar_url = ? WHERE id = ?")->execute([$avatarRes['url'], $user['id']]);
+                        log_audit($user['id'], 'UPDATE_AVATAR', 'users', $user['id'], 'Founder updated avatar photo');
+                        set_flash('success', 'Profile photo updated successfully!');
+                    } else {
+                        set_flash('error', $avatarRes['error'] ?? 'Failed to upload avatar photo.');
+                    }
+                }
+                header('Location: ' . url('founder/profile.php'));
+                exit;
+            }
+        }
+    }
+
     $fpStmt = $db->prepare("SELECT * FROM founder_profiles WHERE user_id = ?");
     $fpStmt->execute([$user['id']]);
     $founderProfile = $fpStmt->fetch();
@@ -28,78 +70,6 @@ if ($db) {
     ");
     $cStmt->execute([$user['id']]);
     $company = $cStmt->fetch();
-}
-
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    if (!verify_csrf($_POST['csrf_token'] ?? '')) {
-        $error = 'Security token invalid. Please refresh the page.';
-    } else {
-        $action = $_POST['form_action'] ?? 'update_profile';
-
-        if ($action === 'update_profile') {
-            $name = trim($_POST['name'] ?? '');
-            $phone = trim($_POST['phone'] ?? '');
-            $city = trim($_POST['city'] ?? '');
-            $avatarUrl = trim($_POST['avatar_url'] ?? '');
-            $designation = trim($_POST['designation'] ?? 'Founder & CEO');
-            $bio = trim($_POST['bio'] ?? '');
-            $linkedin = trim($_POST['linkedin_url'] ?? '');
-            $website = trim($_POST['website_url'] ?? '');
-            $pan = strtoupper(trim($_POST['pan_number'] ?? ''));
-
-            // Handle custom avatar photo upload
-            if (!empty($_FILES['avatar_file']['name'])) {
-                $uploadRes = handle_avatar_upload($_FILES['avatar_file'], $user['id']);
-                if ($uploadRes['success']) {
-                    $avatarUrl = $uploadRes['url'];
-                } elseif (!empty($uploadRes['error'])) {
-                    $error = $uploadRes['error'];
-                }
-            }
-            if (empty($avatarUrl)) {
-                $avatarUrl = $user['avatar_url'] ?? '';
-            }
-
-            if (empty($error)) {
-                // Update user record
-                $db->prepare("UPDATE users SET name = ?, phone = ?, city = ?, avatar_url = ? WHERE id = ?")
-                   ->execute([$name, $phone, $city, $avatarUrl, $user['id']]);
-
-                // Update founder profile record
-                $updFP = $db->prepare("
-                    INSERT INTO founder_profiles (user_id, designation, bio, linkedin_url, website_url, pan_number)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ON DUPLICATE KEY UPDATE designation = VALUES(designation), bio = VALUES(bio), linkedin_url = VALUES(linkedin_url), website_url = VALUES(website_url), pan_number = VALUES(pan_number)
-                ");
-                $updFP->execute([$user['id'], $designation, $bio, $linkedin, $website, $pan]);
-
-                log_audit($user['id'], 'UPDATE_PROFILE', 'users', $user['id'], 'Founder updated personal profile');
-                set_flash('success', 'Profile details successfully updated.');
-                header('Location: ' . url('founder/profile.php'));
-                exit;
-            }
-
-        } elseif ($action === 'change_password') {
-            $currentPass = $_POST['current_password'] ?? '';
-            $newPass = $_POST['new_password'] ?? '';
-            $confirmPass = $_POST['confirm_password'] ?? '';
-
-            if (password_verify($currentPass, $user['password_hash'])) {
-                if (strlen($newPass) >= 6 && $newPass === $confirmPass) {
-                    $newHash = password_hash($newPass, PASSWORD_BCRYPT);
-                    $db->prepare("UPDATE users SET password_hash = ? WHERE id = ?")->execute([$newHash, $user['id']]);
-                    log_audit($user['id'], 'PASSWORD_CHANGED', 'users', $user['id'], 'Founder changed password');
-                    set_flash('success', 'Password updated successfully.');
-                    header('Location: ' . url('founder/profile.php'));
-                    exit;
-                } else {
-                    $error = 'New passwords must match and be at least 6 characters long.';
-                }
-            } else {
-                $error = 'Current password entered is incorrect.';
-            }
-        }
-    }
 }
 
 // Compute initials
@@ -120,78 +90,24 @@ $publicCompanyUrl = $company ? url('company.php?id=' . hash_id_encode($company['
     <title><?= htmlspecialchars($pageTitle ?? APP_NAME) ?> • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/founder/head.php'; ?>
     <style>
-        .hero-profile-banner {
-            border-radius: 1.5rem;
-            position: relative;
-            background: radial-gradient(130% 100% at 0% 0%, #EEF2FF 0%, #F8FAFC 50%, #F1F5F9 100%);
-            border: 1px solid #E2E8F0;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
-        }
-        .dark .hero-profile-banner, html.dark .hero-profile-banner {
-            background: radial-gradient(130% 100% at 0% 0%, #17213A 0%, #0F172A 55%, #111827 100%) !important;
-            border-color: #1E293B !important;
-            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5) !important;
+        .profile-cover-mesh {
+            background-color: #060919;
+            background-image: 
+                radial-gradient(circle, rgba(255, 255, 255, 0.22) 1.2px, transparent 1.2px),
+                linear-gradient(110deg, #050814 0%, #0d1b54 45%, #081133 75%, #020409 100%);
+            background-size: 22px 22px, 100% 100%;
         }
 
         .section-card {
             background-color: #FFFFFF;
             border: 1px solid #E2E8F0;
-            border-radius: 1.25rem;
+            border-radius: 1.5rem;
             box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
         }
         .dark .section-card, html.dark .section-card {
             background-color: #111827 !important;
             border-color: #1E293B !important;
             color: #F8FAFC !important;
-        }
-
-        .form-input-clean {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background-color: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 0.75rem;
-            color: #0F172A;
-            font-size: 0.875rem;
-            line-height: 1.4rem;
-            transition: all 0.15s ease;
-            outline: none;
-        }
-        .dark .form-input-clean, html.dark .form-input-clean {
-            background-color: #1E293B !important;
-            border-color: #334155 !important;
-            color: #F8FAFC !important;
-        }
-        .form-input-clean:hover {
-            background-color: #F1F5F9;
-            border-color: #CBD5E1;
-        }
-        .dark .form-input-clean:hover, html.dark .form-input-clean:hover {
-            background-color: #243047 !important;
-            border-color: #475569 !important;
-        }
-        .form-input-clean:focus {
-            background-color: #FFFFFF;
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-        }
-        .dark .form-input-clean:focus, html.dark .form-input-clean:focus {
-            background-color: #1E293B !important;
-            border-color: #6366F1 !important;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
-        }
-
-        .form-label-clean {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: #1E293B;
-            margin-bottom: 0.4rem;
-        }
-        .dark .form-label-clean, html.dark .form-label-clean {
-            color: #E2E8F0 !important;
         }
     </style>
 </head>
@@ -219,247 +135,295 @@ $publicCompanyUrl = $company ? url('company.php?id=' . hash_id_encode($company['
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($error)): ?>
-                <div class="p-4 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800 flex items-center space-x-3 shadow-xs">
-                    <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
-                    <span><?= htmlspecialchars($error) ?></span>
+            <!-- Master Profile Header Card -->
+            <div class="section-card rounded-3xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm relative">
+                
+                <!-- 1. Cover Banner Area (Top rounded, overflow-hidden for banner graphic) -->
+                <div class="relative h-48 sm:h-60 md:h-68 w-full overflow-hidden bg-[#060919] group">
+                    
+                    <?php if (!empty($founderProfile['cover_url'])): ?>
+                        <!-- User's Uploaded Custom Banner: Shows full graphic cleanly without SVG obstruction -->
+                        <img src="<?= htmlspecialchars($founderProfile['cover_url']) ?>" 
+                             alt="Profile Cover Banner" 
+                             class="w-full h-full object-cover object-center transition duration-500">
+                    <?php else: ?>
+                        <!-- Default 3D Geometric Mesh Wireframe (when no banner is uploaded) -->
+                        <div class="w-full h-full profile-cover-mesh relative flex items-center justify-between">
+                            <!-- SVG 3D Wireframe Geometric Polyhedron Mesh - Left -->
+                            <svg class="absolute -left-10 sm:-left-4 -bottom-10 w-52 sm:w-68 md:w-80 h-52 sm:h-68 md:h-80 pointer-events-none opacity-45 sm:opacity-60" viewBox="0 0 300 300" fill="none" stroke="rgba(147, 197, 253, 0.75)" stroke-width="1.3">
+                                <polygon points="50,220 110,140 180,180" />
+                                <polygon points="110,140 160,70 180,180" />
+                                <polygon points="160,70 240,110 180,180" />
+                                <polygon points="180,180 260,220 220,280" />
+                                <polygon points="50,220 180,180 120,290" />
+                                <polygon points="120,290 180,180 220,280" />
+                                <polygon points="160,70 190,20 240,110" />
+                                <polygon points="110,140 190,20 160,70" />
+                                <polygon points="40,130 110,140 50,220" />
+                                <circle cx="110" cy="140" r="2.5" fill="#60A5FA" />
+                                <circle cx="160" cy="70" r="2.5" fill="#60A5FA" />
+                                <circle cx="180" cy="180" r="2.5" fill="#60A5FA" />
+                                <circle cx="240" cy="110" r="2.5" fill="#60A5FA" />
+                                <circle cx="50" cy="220" r="2.5" fill="#60A5FA" />
+                                <circle cx="120" cy="290" r="2.5" fill="#60A5FA" />
+                                <circle cx="220" cy="280" r="2.5" fill="#60A5FA" />
+                            </svg>
+
+                            <!-- SVG 3D Wireframe Geodesic Sphere / Icosahedron - Right -->
+                            <svg class="absolute -right-8 sm:-right-4 -top-8 w-48 sm:w-64 md:w-76 h-48 sm:h-64 md:h-76 pointer-events-none opacity-45 sm:opacity-60" viewBox="0 0 260 260" fill="none" stroke="rgba(255, 255, 255, 0.75)" stroke-width="1.2">
+                                <polygon points="130,30 195,65 210,135" />
+                                <polygon points="130,30 210,135 155,175" />
+                                <polygon points="130,30 155,175 105,175" />
+                                <polygon points="130,30 105,175 50,135" />
+                                <polygon points="130,30 50,135 65,65" />
+                                <polygon points="130,30 65,65 195,65" />
+                                <polygon points="195,65 230,120 210,135" />
+                                <circle cx="130" cy="30" r="2" fill="#FFFFFF" />
+                                <circle cx="195" cy="65" r="2" fill="#FFFFFF" />
+                                <circle cx="210" cy="135" r="2" fill="#FFFFFF" />
+                                <circle cx="155" cy="175" r="2" fill="#FFFFFF" />
+                                <circle cx="105" cy="175" r="2" fill="#FFFFFF" />
+                            </svg>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Direct Banner Upload Action Button (Top Right) -->
+                    <form id="banner-quick-form" action="<?= url('founder/profile.php') ?>" method="POST" enctype="multipart/form-data" class="absolute top-4 right-4 z-20">
+                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                        <input type="hidden" name="form_action" value="update_banner">
+                        <input type="file" name="cover_file" id="quick_cover_file" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="uploadBannerDirectly(this)">
+                        
+                        <label for="quick_cover_file" class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white text-xs font-bold border border-white/20 transition shadow-lg hover:scale-105 active:scale-95" title="Click to upload/change cover banner">
+                            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                            <span class="hidden sm:inline">Change Banner</span>
+                        </label>
+                    </form>
                 </div>
-            <?php endif; ?>
 
-            <!-- Executive Persona Hero Card -->
-            <div class="hero-profile-banner p-6 sm:p-8 relative overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800">
-                <div class="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute right-32 -bottom-16 w-56 h-56 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <!-- 2. Profile Identity & Overlapping Circular Avatar -->
+                <div class="px-6 sm:px-8 pb-7 pt-0 relative">
+                    
+                    <!-- Row 1: Circular Avatar (Left) & Action Buttons (Right) -->
+                    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 md:-mt-24 mb-4">
+                        
+                        <!-- Circular Avatar with Camera Upload Icon -->
+                        <div class="relative flex-shrink-0 self-start group">
+                            <form id="avatar-quick-form" action="<?= url('founder/profile.php') ?>" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                                <input type="hidden" name="form_action" value="update_avatar">
+                                <input type="file" name="avatar_file" id="quick_avatar_file" accept="image/jpeg,image/png,image/webp" class="hidden" onchange="uploadAvatarDirectly(this)">
+                            </form>
 
-                <div class="flex flex-col lg:flex-row items-center lg:items-start justify-between gap-6 relative z-10">
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-5 min-w-0 flex-1">
-                        <div class="relative group flex-shrink-0">
                             <?php if (!empty($user['avatar_url'])): ?>
                                 <img src="<?= htmlspecialchars($user['avatar_url']) ?>" 
                                      alt="<?= htmlspecialchars($user['name']) ?>"
-                                     class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900" id="avatar-preview-img">
+                                     class="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-xl bg-white dark:bg-slate-900" id="profile-avatar-display">
                             <?php else: ?>
-                                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-bold text-2xl border-4 border-white dark:border-slate-800 shadow-md flex-shrink-0" id="avatar-preview-placeholder">
+                                <div class="w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-black text-3xl sm:text-4xl md:text-5xl border-4 border-white dark:border-slate-900 shadow-xl" id="profile-avatar-placeholder">
                                     <?= htmlspecialchars($userInitials) ?>
                                 </div>
-                                <img src="" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-4 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 hidden" id="avatar-preview-img">
                             <?php endif; ?>
-                            <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 <?= $user['is_verified'] ? 'bg-emerald-500' : 'bg-amber-400' ?>" title="<?= $user['is_verified'] ? 'Verified Account' : 'Verification Pending' ?>"></span>
+
+                            <!-- Quick Avatar Photo Change Badge -->
+                            <label for="quick_avatar_file" class="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white border-2 border-white dark:border-slate-900 shadow-md flex items-center justify-center cursor-pointer transition hover:scale-110 active:scale-95" title="Click to upload headshot">
+                                <i data-lucide="camera" class="w-4 h-4"></i>
+                            </label>
                         </div>
 
-                        <div class="text-center sm:text-left space-y-1.5 min-w-0 flex-1">
-                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                                <h1 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                                    <?= htmlspecialchars($user['name']) ?>
-                                </h1>
-                                <?php if ($user['is_verified']): ?>
-                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                                        <span>KYC VERIFIED FOUNDER</span>
-                                    </span>
-                                <?php else: ?>
-                                    <a href="<?= url('founder/verification.php') ?>" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 flex items-center gap-1 transition" title="Click to complete verification">
-                                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
-                                        <span>KYC PENDING &rarr;</span>
+                        <!-- Action Buttons on Top Right (Balanced opposite Avatar) -->
+                        <div class="flex flex-wrap items-center gap-2.5 pt-2 sm:pt-0 self-start sm:self-end">
+                            <a href="<?= url('founder/edit_profile.php') ?>" class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white text-xs font-bold rounded-xl shadow-sm shadow-indigo-500/25 transition flex items-center space-x-1.5 hover:scale-105 active:scale-95">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                <span>Edit Profile</span>
+                            </a>
+
+                            <?php if ($company): ?>
+                                <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicCompanyUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')"
+                                    class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm shadow-blue-500/25 transition flex items-center space-x-1.5 hover:scale-105 active:scale-95">
+                                    <i data-lucide="share-2" class="w-4 h-4"></i>
+                                    <span>Share Company Link</span>
+                                </button>
+                            <?php endif; ?>
+                            
+                            <a href="<?= url('founder/view.php') ?>" class="px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-1.5 hover:scale-105 active:scale-95">
+                                <i data-lucide="external-link" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                <span>View Public Profile</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Full-Width Identity Block with Refined Typography & Clean Alignment -->
+                    <div class="space-y-2 pt-1">
+                        
+                        <!-- Name & Verification Badge -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                <?= htmlspecialchars($user['name']) ?>
+                            </h1>
+                            <?php if ($user['is_verified']): ?>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1.5 shadow-xs">
+                                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                                    <span>KYC VERIFIED FOUNDER</span>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?= url('founder/verification.php') ?>" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 inline-flex items-center gap-1.5 transition shadow-xs" title="Complete KYC verification">
+                                    <i data-lucide="alert-circle" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
+                                    <span>KYC PENDING &rarr;</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Designation & Company Affiliation -->
+                        <div class="text-base font-semibold text-slate-700 dark:text-slate-300 flex flex-wrap items-center gap-2">
+                            <span><?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?></span>
+                            <?php if ($company): ?>
+                                <span class="text-slate-400 dark:text-slate-600 font-normal">at</span>
+                                <span class="text-indigo-600 dark:text-indigo-400 font-bold"><?= htmlspecialchars($company['name']) ?></span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Contact Metadata Row -->
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 pt-0.5">
+                            <span class="inline-flex items-center gap-1.5">
+                                <i data-lucide="mail" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                                <span><?= htmlspecialchars($user['email']) ?></span>
+                            </span>
+                            <span class="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+                            <span class="inline-flex items-center gap-1.5">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                                <span><?= htmlspecialchars($user['city'] ?? 'India') ?></span>
+                            </span>
+                            <?php if (!empty($user['phone'])): ?>
+                                <span class="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+                                <span class="inline-flex items-center gap-1.5">
+                                    <i data-lucide="phone" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                                    <span><?= htmlspecialchars($user['phone']) ?></span>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Social & Website Pills (Seamlessly nested, no disjointed dividers!) -->
+                        <?php if (!empty($founderProfile['linkedin_url']) || !empty($founderProfile['website_url'])): ?>
+                            <div class="flex flex-wrap items-center gap-2.5 pt-2">
+                                <?php if (!empty($founderProfile['linkedin_url'])): ?>
+                                    <a href="<?= htmlspecialchars($founderProfile['linkedin_url']) ?>" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800 transition inline-flex items-center gap-1.5 shadow-xs hover:scale-105 active:scale-95">
+                                        <i data-lucide="linkedin" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+                                        <span>LinkedIn Profile</span>
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (!empty($founderProfile['website_url'])): ?>
+                                    <a href="<?= htmlspecialchars($founderProfile['website_url']) ?>" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 transition inline-flex items-center gap-1.5 shadow-xs hover:scale-105 active:scale-95">
+                                        <i data-lucide="globe" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+                                        <span>Personal Website</span>
                                     </a>
                                 <?php endif; ?>
                             </div>
-                            
-                            <div class="text-xs sm:text-sm text-indigo-600 dark:text-indigo-400 font-bold">
-                                <?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>
-                                <?php if ($company): ?>
-                                    &bull; <span class="text-slate-800 dark:text-slate-200 font-semibold"><?= htmlspecialchars($company['name']) ?></span>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center justify-center sm:justify-start gap-3 pt-0.5">
-                                <span class="flex items-center gap-1">
-                                    <i data-lucide="mail" class="w-3 h-3 text-slate-400"></i>
-                                    <?= htmlspecialchars($user['email']) ?>
-                                </span>
-                                <span>&bull;</span>
-                                <span class="flex items-center gap-1">
-                                    <i data-lucide="map-pin" class="w-3 h-3 text-slate-400"></i>
-                                    <?= htmlspecialchars($user['city'] ?? 'India') ?>
-                                </span>
-                                <?php if (!empty($user['phone'])): ?>
-                                    <span>&bull;</span>
-                                    <span class="flex items-center gap-1">
-                                        <i data-lucide="phone" class="w-3 h-3 text-slate-400"></i>
-                                        <?= htmlspecialchars($user['phone']) ?>
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-wrap items-center justify-center sm:justify-end gap-2.5 flex-shrink-0">
-                        <?php if ($company): ?>
-                            <button type="button" onclick="openShareModal('<?= htmlspecialchars($publicCompanyUrl) ?>', '<?= htmlspecialchars(addslashes($company['name'])) ?>')"
-                                class="px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm shadow-blue-500/25 transition flex items-center space-x-1.5">
-                                <i data-lucide="share-2" class="w-4 h-4"></i>
-                                <span>Share Company Link</span>
-                            </button>
                         <?php endif; ?>
-                        
-                        <a href="<?= url('founder/view.php') ?>" class="px-4 py-2.5 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl shadow-xs transition flex items-center space-x-1.5">
-                            <i data-lucide="external-link" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                            <span>View Public Profile</span>
-                        </a>
-                    </div>
 
+                    </div>
                 </div>
             </div>
 
-            <!-- Profile Info Edit Form -->
-            <div class="section-card p-6 sm:p-7 space-y-6">
-
-                <form action="<?= url('founder/profile.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <input type="hidden" name="form_action" value="update_profile">
-
-                    <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-                        <div>
-                            <h2 class="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
-                                <i data-lucide="user-check" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                                <span>Personal Information &amp; Bio</span>
-                            </h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Visible to angel syndicates and venture investors reviewing your leadership track record.</p>
-                        </div>
+            <!-- Founder Persona, Passions & Domain DNA Card -->
+            <div class="section-card p-6 sm:p-7 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                        <h2 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Persona &amp; Passions</h2>
                     </div>
+                </div>
 
-                    <!-- Clean Photo Upload Studio -->
-                    <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5">
-                        <div class="relative flex-shrink-0 group">
-                            <?php if (!empty($user['avatar_url'])): ?>
-                                <img src="<?= htmlspecialchars($user['avatar_url']) ?>" 
-                                     alt="Headshot"
-                                     class="w-20 h-20 rounded-2xl object-cover border-2 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 transition group-hover:brightness-95" id="avatar-form-img">
-                            <?php else: ?>
-                                <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white flex items-center justify-center font-bold text-xl border-2 border-white dark:border-slate-800 shadow-md" id="avatar-form-placeholder">
-                                    <?= htmlspecialchars($userInitials) ?>
-                                </div>
-                                <img src="" alt="Headshot" class="w-20 h-20 rounded-2xl object-cover border-2 border-white dark:border-slate-800 shadow-md bg-white dark:bg-slate-900 hidden" id="avatar-form-img">
-                            <?php endif; ?>
-                            <label for="avatar_file" class="absolute inset-0 bg-black/40 rounded-2xl flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition cursor-pointer" title="Click to choose photo">
-                                <i data-lucide="camera" class="w-5 h-5 mb-0.5"></i>
-                                <span class="text-[9px] font-bold">Change</span>
-                            </label>
-                        </div>
+                <!-- Bio Text -->
+                <?php if (!empty($founderProfile['bio'])): ?>
+                    <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
+                        <?= nl2br(htmlspecialchars($founderProfile['bio'])) ?>
+                    </p>
+                <?php endif; ?>
 
-                        <div class="flex-1 text-center sm:text-left space-y-2 w-full">
-                            <div class="font-bold text-slate-800 dark:text-white text-xs flex items-center justify-center sm:justify-start space-x-2">
-                                <span>Executive Headshot</span>
-                                <span class="text-[10px] px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full font-bold">JPG, PNG, WEBP</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                    <!-- Superpower -->
+                    <?php if (!empty($founderProfile['superpower'])): ?>
+                        <div class="p-3.5 rounded-xl bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-indigo-950/40 dark:to-violet-950/30 border border-indigo-100 dark:border-indigo-900/50 flex items-start gap-2.5">
+                            <div class="p-1.5 rounded-lg bg-indigo-600 text-white flex-shrink-0 mt-0.5">
+                                <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                             </div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Upload a professional headshot. Max file size: 8MB.</p>
-                            
-                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 pt-1">
-                                <label for="avatar_file" class="cursor-pointer inline-flex items-center space-x-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-xs transition">
-                                    <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-                                    <span>Choose New Photo</span>
-                                </label>
-                                <input type="file" name="avatar_file" id="avatar_file" accept="image/jpeg,image/png,image/webp,image/gif" class="hidden" onchange="previewAvatar(this)">
-                                <span id="file-chosen-name" class="text-xs text-slate-500 italic">No file chosen</span>
-                            </div>
-
-                            <!-- Single, Clean Web Link Toggle -->
-                            <details class="text-xs text-slate-500 dark:text-slate-400 pt-1 cursor-pointer">
-                                <summary class="hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold select-none flex items-center gap-1.5">
-                                    <i data-lucide="link" class="w-3.5 h-3.5"></i>
-                                    <span>Or paste an online photo URL</span>
-                                </summary>
-                                <div class="mt-2">
-                                    <input type="url" name="avatar_url" id="avatar_url_input" value="<?= htmlspecialchars($user['avatar_url'] ?? '') ?>" placeholder="https://images.unsplash.com/your-photo.jpg"
-                                           class="form-input-clean text-xs font-mono"
-                                           oninput="previewUrlAvatar(this.value)">
-                                </div>
-                            </details>
-                        </div>
-                    </div>
-
-                    <!-- Fields in 2 & 3 Columns -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Legal Full Name <span class="text-rose-500">*</span></span>
-                            </label>
-                            <input type="text" name="name" required value="<?= htmlspecialchars($user['name']) ?>"
-                                   class="form-input-clean font-semibold">
-                        </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Official Designation</span>
-                            </label>
-                            <input type="text" name="designation" value="<?= htmlspecialchars($founderProfile['designation'] ?? 'Founder & CEO') ?>"
-                                   class="form-input-clean font-semibold">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Direct Phone</span>
-                            </label>
-                            <input type="tel" name="phone" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" placeholder="+91 98765 43210"
-                                   class="form-input-clean font-medium">
-                        </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Operating City</span>
-                            </label>
-                            <input type="text" name="city" value="<?= htmlspecialchars($user['city'] ?? 'Bengaluru') ?>" placeholder="e.g. Bengaluru, Mumbai"
-                                   class="form-input-clean font-medium">
-                        </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Tax PAN Number</span>
-                                <span class="text-[11px] text-slate-400 font-normal">Confidential</span>
-                            </label>
-                            <input type="text" name="pan_number" value="<?= htmlspecialchars($founderProfile['pan_number'] ?? '') ?>" placeholder="ABCDE1234F"
-                                   class="form-input-clean font-mono uppercase">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="form-label-clean">
-                                <span>LinkedIn Profile URL</span>
-                            </label>
-                            <div class="relative">
-                                <input type="url" name="linkedin_url" value="<?= htmlspecialchars($founderProfile['linkedin_url'] ?? '') ?>" placeholder="https://linkedin.com/in/username"
-                                       class="form-input-clean pl-10 font-medium">
-                                <i data-lucide="linkedin" class="w-4 h-4 text-blue-600 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                            <div>
+                                <span class="text-[10px] uppercase font-extrabold tracking-wider text-indigo-700 dark:text-indigo-300 block">Founder Superpower</span>
+                                <span class="text-xs font-bold text-slate-900 dark:text-white leading-snug"><?= htmlspecialchars($founderProfile['superpower']) ?></span>
                             </div>
                         </div>
-                        <div>
-                            <label class="form-label-clean">
-                                <span>Personal Portfolio / Blog URL</span>
-                            </label>
-                            <div class="relative">
-                                <input type="url" name="website_url" value="<?= htmlspecialchars($founderProfile['website_url'] ?? '') ?>" placeholder="https://founder.io"
-                                       class="form-input-clean pl-10 font-medium">
-                                <i data-lucide="globe" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <?php endif; ?>
+
+                    <!-- Education -->
+                    <?php if (!empty($founderProfile['education'])): ?>
+                        <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                            <i data-lucide="graduation-cap" class="w-4 h-4 text-slate-400 flex-shrink-0"></i>
+                            <div class="min-w-0 text-xs">
+                                <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Education &amp; Background</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 truncate block"><?= htmlspecialchars($founderProfile['education']) ?></span>
                             </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
+                </div>
 
-                    <div>
-                        <label class="form-label-clean">
-                            <span>Founder Narrative &amp; Entrepreneurial Bio</span>
-                        </label>
-                        <textarea name="bio" rows="4" placeholder="Detail your background, prior startups founded, engineering patents, or key domain authority..."
-                                  class="form-input-clean font-normal leading-relaxed"><?= htmlspecialchars($founderProfile['bio'] ?? '') ?></textarea>
-                    </div>
+                <!-- Tags Grid: Skills, Passions, Hobbies -->
+                <div class="space-y-3.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <?php if (!empty($founderProfile['skills'])): 
+                        $sList = array_map('trim', explode(',', $founderProfile['skills']));
+                    ?>
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                                <i data-lucide="briefcase" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+                                <span>Domain Expertise &amp; Skills</span>
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <?php foreach ($sList as $sk): if ($sk === '') continue; ?>
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/80 dark:border-indigo-800 inline-flex items-center gap-1">
+                                        <?= htmlspecialchars($sk) ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-                    <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                        <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md shadow-indigo-600/20 transition flex items-center space-x-2">
-                            <i data-lucide="save" class="w-3.5 h-3.5"></i>
-                            <span>Save Profile Changes</span>
-                        </button>
-                    </div>
-                </form>
+                    <?php if (!empty($founderProfile['passions'])): 
+                        $pList = array_map('trim', explode(',', $founderProfile['passions']));
+                    ?>
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                                <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-500"></i>
+                                <span>Passions &amp; Focus Areas</span>
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <?php foreach ($pList as $ps): if ($ps === '') continue; ?>
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 inline-flex items-center gap-1">
+                                        <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i>
+                                        <?= htmlspecialchars($ps) ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($founderProfile['hobbies'])): 
+                        $hList = array_map('trim', explode(',', $founderProfile['hobbies']));
+                    ?>
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
+                                <i data-lucide="compass" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                                <span>Hobbies &amp; Personal Interests</span>
+                            </span>
+                            <div class="flex flex-wrap gap-1.5">
+                                <?php foreach ($hList as $hb): if ($hb === '') continue; ?>
+                                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 inline-flex items-center gap-1">
+                                        <?= htmlspecialchars($hb) ?>
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Associated Startup Entity Card -->
@@ -526,60 +490,30 @@ $publicCompanyUrl = $company ? url('company.php?id=' . hash_id_encode($company['
                 </div>
             <?php endif; ?>
 
-            <!-- Password Change Security Card (With Working Visibility Toggles) -->
+            <!-- Security & Account Protection Card -->
             <div class="section-card p-6 sm:p-7 space-y-4">
-                <div class="flex items-center space-x-2 border-b border-slate-100 dark:border-slate-800 pb-3">
-                    <i data-lucide="lock" class="w-4 h-4 text-slate-600 dark:text-slate-400"></i>
-                    <h2 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Security &amp; Account Password</h2>
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-600 dark:text-slate-400"></i>
+                        <h2 class="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">Security &amp; Account Protection</h2>
+                    </div>
                 </div>
 
-                <form action="<?= url('founder/profile.php') ?>" method="POST" class="space-y-4 text-xs">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <input type="hidden" name="form_action" value="change_password">
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-                        <!-- Current Password -->
-                        <div>
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 text-[11px] mb-1 uppercase tracking-wider">Current Password</label>
-                            <div class="relative">
-                                <input type="password" id="current_password" name="current_password" required class="form-input-clean text-xs pr-10">
-                                <button type="button" onclick="togglePass('current_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
                         </div>
-
-                        <!-- New Password -->
                         <div>
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 text-[11px] mb-1 uppercase tracking-wider">New Password</label>
-                            <div class="relative">
-                                <input type="password" id="new_password" name="new_password" required minlength="6" class="form-input-clean text-xs pr-10">
-                                <button type="button" onclick="togglePass('new_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                            <span class="text-[10.5px] text-slate-400 mt-1 block">Min. 6 characters</span>
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div>
-                            <label class="block font-bold text-slate-700 dark:text-slate-300 text-[11px] mb-1 uppercase tracking-wider">Confirm Password</label>
-                            <div class="relative">
-                                <input type="password" id="confirm_password" name="confirm_password" required minlength="6" class="form-input-clean text-xs pr-10">
-                                <button type="button" onclick="togglePass('confirm_password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                            <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Password &amp; Authentication Active</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Keep your account secure with an encrypted master passphrase.</div>
                         </div>
                     </div>
-
-                    <div class="pt-2 flex justify-end">
-                        <button type="submit" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center gap-1.5">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
-                            <span>Update Security Password</span>
-                        </button>
-                    </div>
-                </form>
+                    <a href="<?= url('founder/edit_profile.php') ?>" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs flex items-center gap-1.5 self-start sm:self-auto">
+                        <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                        <span>Update Password</span>
+                    </a>
+                </div>
             </div>
 
         </main>
@@ -596,74 +530,16 @@ $publicCompanyUrl = $company ? url('company.php?id=' . hash_id_encode($company['
         document.addEventListener('DOMContentLoaded', refreshIcons);
         window.addEventListener('load', refreshIcons);
 
-        if (window.gsap) {
-            gsap.from("#profile-main", { duration: 0.35, y: 8, opacity: 0, ease: "power2.out" });
-        }
-
-        function previewAvatar(input) {
+        function uploadBannerDirectly(input) {
             if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const label = document.getElementById('file-chosen-name');
-                if (label) {
-                    label.textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
-                    label.className = 'text-xs text-emerald-600 font-bold';
-                }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const formImg = document.getElementById('avatar-form-img');
-                    const formPl = document.getElementById('avatar-form-placeholder');
-                    const prevImg = document.getElementById('avatar-preview-img');
-                    const prevPl = document.getElementById('avatar-preview-placeholder');
-
-                    if (formImg) {
-                        formImg.src = e.target.result;
-                        formImg.classList.remove('hidden');
-                    }
-                    if (formPl) formPl.classList.add('hidden');
-
-                    if (prevImg) {
-                        prevImg.src = e.target.result;
-                        prevImg.classList.remove('hidden');
-                    }
-                    if (prevPl) prevPl.classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
+                document.getElementById('banner-quick-form').submit();
             }
         }
 
-        function previewUrlAvatar(url) {
-            if (url && url.length > 5) {
-                const formImg = document.getElementById('avatar-form-img');
-                const formPl = document.getElementById('avatar-form-placeholder');
-                const prevImg = document.getElementById('avatar-preview-img');
-                const prevPl = document.getElementById('avatar-preview-placeholder');
-
-                if (formImg) {
-                    formImg.src = url;
-                    formImg.classList.remove('hidden');
-                }
-                if (formPl) formPl.classList.add('hidden');
-
-                if (prevImg) {
-                    prevImg.src = url;
-                    prevImg.classList.remove('hidden');
-                }
-                if (prevPl) prevPl.classList.add('hidden');
+        function uploadAvatarDirectly(input) {
+            if (input.files && input.files[0]) {
+                document.getElementById('avatar-quick-form').submit();
             }
-        }
-
-        function togglePass(inputId, btn) {
-            const el = document.getElementById(inputId);
-            if (!el) return;
-            if (el.type === 'password') {
-                el.type = 'text';
-                btn.innerHTML = '<i data-lucide="eye-off" class="w-4 h-4 text-indigo-600"></i>';
-            } else {
-                el.type = 'password';
-                btn.innerHTML = '<i data-lucide="eye" class="w-4 h-4 text-slate-400"></i>';
-            }
-            refreshIcons();
         }
     </script>
 </body>

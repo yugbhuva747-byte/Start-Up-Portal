@@ -174,7 +174,11 @@ require_once __DIR__ . '/theme.php';
                 <div class="py-1 space-y-0.5 text-sm">
                     <a href="<?= url('founder/profile.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
                         <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
-                        <span>Founder Profile & Settings</span>
+                        <span>Founder Profile</span>
+                    </a>
+                    <a href="<?= url('founder/edit_profile.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
+                        <i data-lucide="edit-3" class="w-4 h-4 text-slate-400"></i>
+                        <span>Edit Profile</span>
                     </a>
                     <a href="<?= url('founder/view.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
                         <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>

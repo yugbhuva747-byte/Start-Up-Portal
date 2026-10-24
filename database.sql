@@ -33,6 +33,12 @@ CREATE TABLE IF NOT EXISTS `founder_profiles` (
     `bio` TEXT NULL,
     `linkedin_url` VARCHAR(255) NULL,
     `website_url` VARCHAR(255) NULL,
+    `cover_url` VARCHAR(255) NULL,
+    `skills` VARCHAR(500) NULL,
+    `passions` VARCHAR(500) NULL,
+    `hobbies` VARCHAR(500) NULL,
+    `superpower` VARCHAR(255) NULL,
+    `education` VARCHAR(255) NULL,
     `pan_number` VARCHAR(20) NULL,
     `designation` VARCHAR(100) DEFAULT 'Founder & CEO',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -40,10 +46,12 @@ CREATE TABLE IF NOT EXISTS `founder_profiles` (
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
 -- 3. Investor Profiles
 CREATE TABLE IF NOT EXISTS `investor_profiles` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `user_id` INT NOT NULL UNIQUE,
+    `investment_budget` DECIMAL(15,2) DEFAULT 5000000.00, -- Total capital pool / allocation budget
     `investor_type` VARCHAR(100) DEFAULT 'Angel Investor', -- Angel, VC, Family Office, Syndicate
     `experience_years` INT DEFAULT 3,
     `pan_number` VARCHAR(20) NULL,
@@ -122,6 +130,23 @@ CREATE TABLE IF NOT EXISTS `company_documents` (
     `is_verified` TINYINT(1) DEFAULT 1,
     `access_level` ENUM('public', 'registered_investors', 'request_only') DEFAULT 'registered_investors',
     `uploaded_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 7.1 Company Awards, Accreditations & Trust Documents
+CREATE TABLE IF NOT EXISTS `company_awards` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `company_id` INT NOT NULL,
+    `title` VARCHAR(255) NOT NULL,
+    `category` VARCHAR(100) DEFAULT 'Award & Recognition',
+    `issuer` VARCHAR(255) NULL,
+    `award_year` VARCHAR(20) NULL,
+    `description` TEXT NULL,
+    `image_url` VARCHAR(255) NOT NULL,
+    `document_url` VARCHAR(255) NULL,
+    `verification_link` VARCHAR(255) NULL,
+    `is_featured` TINYINT(1) DEFAULT 1,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -664,5 +689,28 @@ CREATE TABLE IF NOT EXISTS `founder_invites` (
     INDEX `idx_code` (`invite_code`),
     INDEX `idx_status` (`status`),
     FOREIGN KEY (`founder_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- 37. Investor Due Diligence Scorecards & Private Notes
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `investor_diligence_notes` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `investor_id` INT NOT NULL,
+    `company_id` INT NOT NULL,
+    `score_team` TINYINT NOT NULL DEFAULT 8,
+    `score_market` TINYINT NOT NULL DEFAULT 8,
+    `score_traction` TINYINT NOT NULL DEFAULT 7,
+    `score_defensibility` TINYINT NOT NULL DEFAULT 7,
+    `overall_score` DECIMAL(3,1) NOT NULL DEFAULT 7.5,
+    `recommendation` ENUM('strong_buy', 'watch', 'pass', 'pending') NOT NULL DEFAULT 'watch',
+    `private_notes` TEXT NULL DEFAULT NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY `unique_investor_company_diligence` (`investor_id`, `company_id`),
+    INDEX `idx_diligence_investor` (`investor_id`),
+    INDEX `idx_diligence_company` (`company_id`),
+    FOREIGN KEY (`investor_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

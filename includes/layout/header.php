@@ -66,7 +66,12 @@
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
   <!-- ===================== LENIS SMOOTH SCROLL ===================== -->
-  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="<?= function_exists('url') ? url('assets/js/lenis.min.js') : 'assets/js/lenis.min.js' ?>"></script>
+  <script>
+    if (typeof Lenis === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"><\/script>');
+    }
+  </script>
 
   <style>
     /* ===================== LUXURY DESIGN TOKENS ===================== */
@@ -91,6 +96,47 @@
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       overflow-x: clip;
+    }
+
+    /* ===================== LENIS SMOOTH SCROLLING STYLES ===================== */
+    html.lenis, html.lenis body {
+      height: auto;
+    }
+    .lenis.lenis-smooth {
+      scroll-behavior: auto !important;
+    }
+    .lenis.lenis-smooth [data-lenis-prevent] {
+      overscroll-behavior: contain;
+    }
+    .lenis.lenis-stopped {
+      overflow: hidden;
+    }
+    .lenis.lenis-smooth iframe {
+      pointer-events: none;
+    }
+
+    /* Custom Ultra-Smooth Minimalist Scrollbar */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+      transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(100, 116, 139, 0.75);
+    }
+
+    /* Universal Smooth Easing for interactive UI */
+    a, button, input, select {
+      transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     h1, h2, h3, h4, .font-heading {
@@ -537,32 +583,16 @@
           </div>
         </div>
 
-        <!-- Navigation Links Based on Persona -->
-        <?php if ($activePersona === 'investor'): ?>
-          <a href="#nx-investors" class="nx-nav-link nx-hoverable">Diligence Terminal</a>
-          <a href="#nx-opportunities" class="nx-nav-link nx-hoverable">Opportunities</a>
-          <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
-          <a href="#nx-about" class="nx-nav-link nx-hoverable">About</a>
-        <?php else: ?>
-          <a href="#nx-growth-pillars" class="nx-nav-link nx-hoverable">Growth Pillars</a>
-          <a href="#nx-raise-steps" class="nx-nav-link nx-hoverable">Raise Flow</a>
-          <a href="#nx-perks-cta" class="nx-nav-link nx-hoverable">Founder Perks</a>
-        <?php endif; ?>
+        <!-- Navigation Links for Unified Home -->
+        <a href="#nx-how" class="nx-nav-link nx-hoverable">How It Works</a>
+        <a href="#nx-opportunities" class="nx-nav-link nx-hoverable">Dealflow Radar</a>
+        <a href="#nx-access" class="nx-nav-link nx-hoverable">Private Access</a>
+        <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
       </nav>
 
       <!-- Right: Action Button -->
       <!-- Right: Action Buttons (Log In for existing users + Sign Up with choice for new users) -->
       <div class="hidden md:flex items-center gap-2">
-        <?php 
-          $activePersona = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
-        ?>
-        <a href="<?= function_exists('url') ? url('index.php?choose=1') : 'index.php?choose=1' ?>" 
-           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-all"
-           title="Click to switch landing page view between Investor and Founder">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Role: <?= htmlspecialchars(ucfirst($activePersona)) ?></span>
-          <span class="text-[10px] text-slate-400">⇄</span>
-        </a>
 
         <?php if (function_exists('auth_check') && auth_check()): ?>
           <!-- Log Out for active session -->
@@ -698,17 +728,10 @@
           </div>
         </div>
 
-        <!-- Mobile Nav Links Based on Persona -->
-        <?php if ($activePersona === 'investor'): ?>
-          <a href="#nx-investors" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Diligence Terminal</a>
-          <a href="#nx-opportunities" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Opportunities</a>
-          <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
-          <a href="#nx-about" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">About</a>
-        <?php else: ?>
-          <a href="#nx-growth-pillars" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Growth Pillars</a>
-          <a href="#nx-raise-steps" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Raise Flow</a>
-          <a href="#nx-perks-cta" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Founder Perks</a>
-        <?php endif; ?>
+        <a href="#nx-how" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">How It Works</a>
+        <a href="#nx-opportunities" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Dealflow Radar</a>
+        <a href="#nx-access" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Private Access</a>
+        <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
       </nav>
 
       <div class="flex flex-col gap-3 pt-6 border-t border-nx-border">
@@ -877,6 +900,21 @@
         mobileDrawer.querySelectorAll('a').forEach((link) => {
           link.addEventListener('click', closeDrawer);
         });
+      }
+
+      // 2b. Floating Navbar Scroll Elevation
+      const headerBar = document.getElementById('nx-header-bar');
+      if (headerBar) {
+        const updateHeaderElevation = () => {
+          const currentY = window.__lenis ? window.__lenis.scroll : window.scrollY;
+          if (currentY > 25) {
+            headerBar.classList.add('nx-scrolled');
+          } else {
+            headerBar.classList.remove('nx-scrolled');
+          }
+        };
+        window.addEventListener('scroll', updateHeaderElevation, { passive: true });
+        updateHeaderElevation();
       }
 
       // 3. Desktop active pill highlight
