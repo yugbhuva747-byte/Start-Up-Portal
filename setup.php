@@ -74,7 +74,7 @@ try {
         $stmt->execute(['Mr. Kaushik Shah', 'rohan@solarispulse.in', '+91 9123456782', $passwordHash, 'founder', 'uploads/avatars/kaushik_shah.png']);
         $founder3Id = $db->lastInsertId();
 
-        $stmt->execute(['Vikramaditya Singhania', 'investor@venturecapital.com', '+91 9988776655', $passwordHash, 'investor', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80']);
+        $stmt->execute(['Saumil Halani', 'investor@venturecapital.com', '+91 9988776655', $passwordHash, 'investor', 'uploads/avatars/saumil_halani.jpg']);
         $investor1Id = $db->lastInsertId();
 
         $stmt->execute(['Ananya Deshmukh', 'ananya@angelsyn.io', '+91 9988776656', $passwordHash, 'investor', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80']);
@@ -206,12 +206,12 @@ try {
 
         $msgStmt = $db->prepare("INSERT INTO messages (conversation_id, sender_user_id, message_text, is_read, created_at) VALUES (?, ?, ?, 1, ?)");
         $msgStmt->execute([$convId, $investor1Id, 'Hello Aarav, I reviewed your seed deck and traction in the BFSI sector. Impressive unit economics!', date('Y-m-d H:i:s', strtotime('-2 hours'))]);
-        $msgStmt->execute([$convId, $founder1Id, 'Thank you Vikramaditya! We just completed pilot integrations with 3 leading private banks. Happy to answer any questions or share the detailed data room.', date('Y-m-d H:i:s', strtotime('-1 hour'))]);
+        $msgStmt->execute([$convId, $founder1Id, 'Thank you Saumil! We just completed pilot integrations with 3 leading private banks. Happy to answer any questions or share the detailed data room.', date('Y-m-d H:i:s', strtotime('-1 hour'))]);
         $msgStmt->execute([$convId, $investor1Id, 'Sounds excellent. I have confirmed our ₹25L allocation into the round. Looking forward to our scheduled sync next Tuesday.', date('Y-m-d H:i:s', strtotime('-30 minutes'))]);
 
         // Notifications
         $notifStmt = $db->prepare("INSERT INTO notifications (user_id, title, message, type, action_url) VALUES (?, ?, ?, ?, ?)");
-        $notifStmt->execute([$founder1Id, 'Investment Confirmed!', 'Vikramaditya Singhania invested ₹25,00,000 in your Seed Round.', 'success', 'founder/funding_rounds.php']);
+        $notifStmt->execute([$founder1Id, 'Investment Confirmed!', 'Saumil Halani invested ₹25,00,000 in your Seed Round.', 'success', 'founder/funding_rounds.php']);
         $notifStmt->execute([$investor1Id, 'Allocation Allotted', 'Your investment of ₹25,00,000 in TechPulse AI has been confirmed.', 'success', 'investor/portfolio.php']);
 
         // Seed Categories

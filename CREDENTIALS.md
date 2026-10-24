@@ -48,12 +48,13 @@ All demo accounts share the same default password: **`password123`**
 ## 💼 3. Investor Accounts
 
 ### Investor 1 (Primary Demo Investor - Angel Syndicate Lead)
-- **Name:** Vikramaditya Singhania
+- **Name:** Saumil Halani
 - **Type:** Angel Syndicate Lead (DeepTech / AI / FinTech)
 - **Email:** `investor@venturecapital.com`
 - **Password:** `password123`
 - **Dashboard:** [http://localhost/start%20up%20portal/investor/discover.php](http://localhost/start%20up%20portal/investor/discover.php)
 - **Full Profile View:** [http://localhost/start%20up%20portal/investor/view.php](http://localhost/start%20up%20portal/investor/view.php)
+- **Profile Picture:** `uploads/avatars/saumil_halani.jpg`
 
 ### Investor 2 (Venture Capital Partner)
 - **Name:** Ananya Deshmukh
