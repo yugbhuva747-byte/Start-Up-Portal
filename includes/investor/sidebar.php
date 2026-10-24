@@ -273,7 +273,8 @@ require_once __DIR__ . '/theme.php';
         <!-- Investor Identity Strip -->
         <div class="investor-identity-card pb-5 border-b border-[#E4E8EF] dark:border-slate-800">
             <div class="flex items-center space-x-3.5 mb-3.5">
-                <img src="<?= $investorUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>"
+                <img src="<?= htmlspecialchars(get_avatar_url($investorUser['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100')) ?>"
+                    alt="<?= htmlspecialchars($investorUser['name'] ?? 'Investor') ?>"
                     class="w-11 h-11 rounded-full object-cover border-2 border-[#E4E8EF] dark:border-slate-700 shadow-xs flex-shrink-0">
                 <div class="min-w-0">
                     <div class="text-sm font-black text-[#0B1F3A] dark:text-white truncate">

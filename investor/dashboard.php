@@ -553,7 +553,8 @@ $firstName = htmlspecialchars(explode(' ', $user['name'] ?? 'Investor')[0]);
                         </div>
 
                         <div class="pt-4 flex items-center space-x-3.5">
-                            <img src="<?= $user['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160' ?>"
+                            <img src="<?= htmlspecialchars(get_avatar_url($user['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160')) ?>"
+                                alt="<?= htmlspecialchars($user['name']) ?>"
                                 class="w-14 h-14 rounded-full object-cover border-2 border-slate-200 dark:border-slate-700">
                             <div>
                                 <h3 class="text-base font-extrabold text-slate-900 dark:text-white"><?= htmlspecialchars($user['name']) ?></h3>

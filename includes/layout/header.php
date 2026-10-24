@@ -468,35 +468,35 @@
               
               <!-- 4-Column Grid for India -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <a href="#nx-opportunities" data-city="Bengaluru" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Bengaluru" class="nx-city-link nx-loc-card group">
                   <span>Bengaluru</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Mumbai" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Mumbai" class="nx-city-link nx-loc-card group">
                   <span>Mumbai</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Delhi NCR" class="nx-city-link nx-loc-card group">
                   <span>Delhi NCR</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="GIFT City" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="GIFT City" class="nx-city-link nx-loc-card group">
                   <span>GIFT City</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Hyderabad" class="nx-city-link nx-loc-card group">
                   <span>Hyderabad</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Chennai" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Chennai" class="nx-city-link nx-loc-card group">
                   <span>Chennai</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Pune" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Pune" class="nx-city-link nx-loc-card group">
                   <span>Pune</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Ahmedabad" class="nx-city-link nx-loc-card group">
                   <span>Ahmedabad</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
@@ -515,19 +515,19 @@
               
               <!-- 4-Column Grid for UAE -->
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                <a href="#nx-opportunities" data-city="Dubai" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Dubai" class="nx-city-link nx-loc-card group">
                   <span>Dubai (DIFC)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Abu Dhabi" class="nx-city-link nx-loc-card group">
                   <span>Abu Dhabi (ADGM)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Dubai Internet City" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Dubai Internet City" class="nx-city-link nx-loc-card group">
                   <span>Dubai Internet City</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Sharjah" class="nx-city-link nx-loc-card group">
+                <a href="#nx-vault" data-city="Sharjah" class="nx-city-link nx-loc-card group">
                   <span>Sharjah (SRTIP)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
@@ -537,32 +537,15 @@
           </div>
         </div>
 
-        <!-- Navigation Links Based on Persona -->
-        <?php if ($activePersona === 'investor'): ?>
-          <a href="#nx-investors" class="nx-nav-link nx-hoverable">Diligence Terminal</a>
-          <a href="#nx-opportunities" class="nx-nav-link nx-hoverable">Opportunities</a>
-          <a href="#nx-pricing" class="nx-nav-link nx-hoverable">Pricing</a>
-          <a href="#nx-about" class="nx-nav-link nx-hoverable">About</a>
-        <?php else: ?>
-          <a href="#nx-growth-pillars" class="nx-nav-link nx-hoverable">Growth Pillars</a>
-          <a href="#nx-raise-steps" class="nx-nav-link nx-hoverable">Raise Flow</a>
-          <a href="#nx-perks-cta" class="nx-nav-link nx-hoverable">Founder Perks</a>
-        <?php endif; ?>
+        <!-- Navigation Links -->
+        <a href="#nx-roles" class="nx-nav-link nx-hoverable">Roles &amp; Benefits</a>
+        <a href="#nx-vault" class="nx-nav-link nx-hoverable">Private Vault</a>
+        <a href="#nx-how" class="nx-nav-link nx-hoverable">How It Works</a>
       </nav>
 
       <!-- Right: Action Button -->
       <!-- Right: Action Buttons (Log In for existing users + Sign Up with choice for new users) -->
       <div class="hidden md:flex items-center gap-2">
-        <?php 
-          $activePersona = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? 'investor';
-        ?>
-        <a href="<?= function_exists('url') ? url('index.php?choose=1') : 'index.php?choose=1' ?>" 
-           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/90 hover:bg-slate-100 border border-slate-200 shadow-2xs transition-all"
-           title="Click to switch landing page view between Investor and Founder">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-          <span>Role: <?= htmlspecialchars(ucfirst($activePersona)) ?></span>
-          <span class="text-[10px] text-slate-400">⇄</span>
-        </a>
 
         <?php if (function_exists('auth_check') && auth_check()): ?>
           <!-- Log Out for active session -->
@@ -643,27 +626,27 @@
                   <span>Mumbai</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Delhi NCR" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Delhi NCR" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Delhi NCR</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="GIFT City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="GIFT City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>GIFT City</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Hyderabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Hyderabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Hyderabad</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Chennai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Chennai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Chennai</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Pune" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Pune" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Pune</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Ahmedabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Ahmedabad" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Ahmedabad</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
@@ -677,19 +660,19 @@
                 <span class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">Gateway</span>
               </div>
               <div class="grid grid-cols-2 gap-2">
-                <a href="#nx-opportunities" data-city="Dubai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Dubai" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Dubai (DIFC)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Abu Dhabi" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Abu Dhabi" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Abu Dhabi (ADGM)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Dubai Internet City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Dubai Internet City" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Internet City</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
-                <a href="#nx-opportunities" data-city="Sharjah" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
+                <a href="#nx-vault" data-city="Sharjah" class="nx-mobile-city-link nx-loc-card !py-2 !px-3 !text-[13px]">
                   <span>Sharjah (SRTIP)</span>
                   <span class="nx-loc-arrow">&#x2197;</span>
                 </a>
@@ -698,17 +681,10 @@
           </div>
         </div>
 
-        <!-- Mobile Nav Links Based on Persona -->
-        <?php if ($activePersona === 'investor'): ?>
-          <a href="#nx-investors" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Diligence Terminal</a>
-          <a href="#nx-opportunities" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Opportunities</a>
-          <a href="#nx-pricing" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Pricing</a>
-          <a href="#nx-about" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">About</a>
-        <?php else: ?>
-          <a href="#nx-growth-pillars" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Growth Pillars</a>
-          <a href="#nx-raise-steps" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Raise Flow</a>
-          <a href="#nx-perks-cta" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Founder Perks</a>
-        <?php endif; ?>
+        <!-- Mobile Nav Links -->
+        <a href="#nx-roles" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Roles &amp; Benefits</a>
+        <a href="#nx-vault" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">Private Vault</a>
+        <a href="#nx-how" class="text-[24px] font-semibold tracking-[-0.02em] text-nx-grey hover:text-nx-black transition-colors">How It Works</a>
       </nav>
 
       <div class="flex flex-col gap-3 pt-6 border-t border-nx-border">
@@ -769,12 +745,16 @@
         <a href="<?= function_exists('url') ? url('auth/register.php?role=founder') : 'auth/register.php?role=founder' ?>" 
            class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-blue-50/50 to-white hover:from-blue-50 hover:to-blue-50/30 border-2 border-slate-200/90 hover:border-blue-600 transition-all duration-200 text-left flex flex-col justify-between shadow-2xs hover:shadow-lg hover:-translate-y-1">
           <div>
-            <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl mb-4 shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
-              🚀
+            <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center mb-4 shadow-md shadow-blue-600/30 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.458 14.98 14.98 0 01.06-.312m7.458 5.09a3 3 0 10-4.243-4.243m4.243 4.243L19 19" />
+              </svg>
             </div>
             <div class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-700 transition font-satoshi flex items-center justify-between">
               <span>I am a Founder</span>
-              <span class="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+              <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </div>
             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
               Raise Seed or Series A capital, access 450+ verified angel networks, MCA compliance cap tables, and confidential dealrooms.
@@ -782,7 +762,9 @@
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-bold text-blue-600">
             <span>Apply to Raise Capital</span>
-            <span>&rarr;</span>
+            <svg class="w-3.5 h-3.5 text-blue-600 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </div>
         </a>
 
@@ -790,12 +772,16 @@
         <a href="<?= function_exists('url') ? url('auth/register.php?role=investor') : 'auth/register.php?role=investor' ?>" 
            class="group p-5 sm:p-6 rounded-2xl bg-gradient-to-b from-emerald-50/50 to-white hover:from-emerald-50 hover:to-emerald-50/30 border-2 border-slate-200/90 hover:border-emerald-600 transition-all duration-200 text-left flex flex-col justify-between shadow-2xs hover:shadow-lg hover:-translate-y-1">
           <div>
-            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center text-2xl mb-4 shadow-md shadow-emerald-600/30 group-hover:scale-105 transition-transform">
-              💼
+            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center mb-4 shadow-md shadow-emerald-600/30 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v1.069m7.5 0c-1.22-.072-2.46-.11-3.75-.11s-2.53.038-3.75.11" />
+              </svg>
             </div>
             <div class="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition font-satoshi flex items-center justify-between">
               <span>I am an Investor</span>
-              <span class="text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform">&rarr;</span>
+              <svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </div>
             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
               Discover curated private deals, view audited MCA financial records, receive standardized SAFE term sheets & co-invest.
@@ -803,7 +789,9 @@
           </div>
           <div class="mt-4 pt-3 border-t border-slate-100 flex items-center gap-1.5 text-[11px] font-bold text-emerald-600">
             <span>Join as Investor</span>
-            <span>&rarr;</span>
+            <svg class="w-3.5 h-3.5 text-emerald-600 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
           </div>
         </a>
 

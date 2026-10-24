@@ -65,13 +65,13 @@ try {
         // Initialize Admin 2FA
         $db->prepare("INSERT INTO two_factor_auth (user_id, auth_type, is_enabled, created_at) VALUES (?, 'email_otp', 1, NOW())")->execute([$adminId]);
 
-        $stmt->execute(['Aarav Sharma', 'founder@techpulse.io', '+91 9123456780', $passwordHash, 'founder', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80']);
+        $stmt->execute(['Vivek Morwadiya', 'founder@techpulse.io', '+91 9123456780', $passwordHash, 'founder', 'uploads/avatars/vivek_morwadiya.jpg']);
         $founder1Id = $db->lastInsertId();
 
         $stmt->execute(['Priya Patel', 'priya@biozenith.com', '+91 9123456781', $passwordHash, 'founder', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80']);
         $founder2Id = $db->lastInsertId();
 
-        $stmt->execute(['Rohan Mehta', 'rohan@solarispulse.in', '+91 9123456782', $passwordHash, 'founder', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80']);
+        $stmt->execute(['Mr. Kaushik Shah', 'rohan@solarispulse.in', '+91 9123456782', $passwordHash, 'founder', 'uploads/avatars/kaushik_shah.png']);
         $founder3Id = $db->lastInsertId();
 
         $stmt->execute(['Vikramaditya Singhania', 'investor@venturecapital.com', '+91 9988776655', $passwordHash, 'investor', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80']);
@@ -82,7 +82,7 @@ try {
 
         // Founder Profiles
         $fpStmt = $db->prepare("INSERT INTO founder_profiles (user_id, bio, linkedin_url, website_url, pan_number, designation) VALUES (?, ?, ?, ?, ?, ?)");
-        $fpStmt->execute([$founder1Id, 'Serial Entrepreneur with 8+ years building enterprise AI and B2B SaaS platforms. Ex-Googler, IIT Bombay alumnus.', 'https://linkedin.com/in/aarav-sharma-demo', 'https://techpulse.io', 'ABCPS1234F', 'Founder & CEO']);
+        $fpStmt->execute([$founder1Id, '', '', '', 'ABCPS1234F', 'Founder & CEO']);
         $fpStmt->execute([$founder2Id, 'Biotechnology researcher and health-tech founder developing non-invasive AI diagnostics tools.', 'https://linkedin.com/in/priya-patel-demo', 'https://biozenith.com', 'BNMPP5678K', 'Co-Founder & CEO']);
         $fpStmt->execute([$founder3Id, 'CleanTech pioneer with patented smart EV battery swapping solutions.', 'https://linkedin.com/in/rohan-mehta-demo', 'https://solarispulse.in', 'XYZPR9012M', 'Founder & CTO']);
 

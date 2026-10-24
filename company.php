@@ -659,9 +659,13 @@ foreach ($documents as $doc) {
                         ?>
                             <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
-                                        <?= htmlspecialchars($fInitials) ?>
-                                    </div>
+                                    <?php if (!empty($f['avatar_url'])): ?>
+                                        <img src="<?= htmlspecialchars(get_avatar_url($f['avatar_url'])) ?>" alt="<?= htmlspecialchars($f['name']) ?>" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-xs flex-shrink-0">
+                                    <?php else: ?>
+                                        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+                                            <?= htmlspecialchars($fInitials) ?>
+                                        </div>
+                                    <?php endif; ?>
                                     <div class="min-w-0 flex-1">
                                         <div class="flex items-center gap-1.5">
                                             <h3 class="text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($f['name']) ?></h3>

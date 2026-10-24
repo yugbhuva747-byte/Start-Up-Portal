@@ -164,7 +164,8 @@ $flash = get_flash();
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 pb-6 border-b border-slate-100 dark:border-slate-800">
                         <div class="flex flex-col sm:flex-row sm:items-center gap-5">
                             <div class="relative -mt-14 sm:-mt-16 flex-shrink-0">
-                                <img src="<?= $investor['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160' ?>" 
+                                <img src="<?= htmlspecialchars(get_avatar_url($investor['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=160')) ?>" 
+                                     alt="<?= htmlspecialchars($investor['name'] ?? 'Investor') ?>"
                                      class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl sm:rounded-3xl object-cover border-4 border-white dark:border-slate-900 shadow-md bg-white">
 
                                 <?php if ($investor['is_verified']): ?>

@@ -65,11 +65,16 @@
             Direct Portals
           </span>
           <ul class="space-y-3 text-[14px]" role="list">
-            <?php if (($activePersona ?? '') === 'investor' || (isset($_SESSION['portal_role']) && $_SESSION['portal_role'] === 'investor')): ?>
             <li>
               <a href="<?= function_exists('url') ? url('auth/login.php?role=investor') : 'auth/login.php?role=investor' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
                 <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Investor Terminal Login</span>
+                <span>Investor Login</span>
+              </a>
+            </li>
+            <li>
+              <a href="<?= function_exists('url') ? url('auth/login.php?role=founder') : 'auth/login.php?role=founder' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Founder Login</span>
               </a>
             </li>
             <li>
@@ -79,55 +84,17 @@
               </a>
             </li>
             <li>
-              <a href="#nx-opportunities" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+              <a href="<?= function_exists('url') ? url('auth/register.php?role=founder') : 'auth/register.php?role=founder' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
+                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
+                <span>Apply to Raise Capital</span>
+              </a>
+            </li>
+            <li>
+              <a href="#nx-vault" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
                 <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
                 <span>Live Deal Pipeline</span>
               </a>
             </li>
-            <li>
-              <a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Diligence &amp; Cap Tables</span>
-              </a>
-            </li>
-            <li>
-              <a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Syndicate Memberships</span>
-              </a>
-            </li>
-            <?php else: ?>
-            <li>
-              <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Investor Login</span>
-              </a>
-            </li>
-            <li>
-              <a href="<?= function_exists('url') ? url('auth/login.php') : 'auth/login.php' ?>" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Founder Login</span>
-              </a>
-            </li>
-            <li>
-              <a href="#nx-portal-register" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Join Investor Network</span>
-              </a>
-            </li>
-            <li>
-              <a href="#nx-portal-register" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Apply for Capital</span>
-              </a>
-            </li>
-            <li>
-              <a href="#nx-opportunities" class="text-slate-400 hover:text-white transition-colors flex items-center gap-1.5 group">
-                <span class="text-blue-400 opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all">&rarr;</span>
-                <span>Live Deal Pipeline</span>
-              </a>
-            </li>
-            <?php endif; ?>
           </ul>
         </div>
 
@@ -138,20 +105,11 @@
             Platform &amp; Diligence
           </span>
           <ul class="space-y-3 text-[14px]" role="list">
-            <?php if (($activePersona ?? '') === 'investor' || (isset($_SESSION['portal_role']) && $_SESSION['portal_role'] === 'investor')): ?>
-            <li><a href="#nx-opportunities" class="text-slate-400 hover:text-white transition-colors">Vetted Dealflow</a></li>
-            <li><a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors">Diligence Terminal</a></li>
-            <li><a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors">Investor Subscriptions</a></li>
-            <li><a href="#nx-ecosystem" class="text-slate-400 hover:text-white transition-colors">Co-Investment Protocol</a></li>
-            <li><a href="#nx-faq" class="text-slate-400 hover:text-white transition-colors">Frequently Asked Questions</a></li>
-            <?php else: ?>
-            <li><a href="#nx-ecosystem" class="text-slate-400 hover:text-white transition-colors">How It Works</a></li>
-            <li><a href="#nx-pricing" class="text-slate-400 hover:text-white transition-colors">Venture Pricing Plans</a></li>
-            <li><a href="#nx-investors" class="text-slate-400 hover:text-white transition-colors">Vetted Cap Tables</a></li>
-            <li><a href="#nx-startups-raise" class="text-slate-400 hover:text-white transition-colors">Founder Raise Dossier</a></li>
-            <li><a href="#nx-learning" class="text-slate-400 hover:text-white transition-colors">Regulatory Framework</a></li>
-            <li><a href="#nx-faq" class="text-slate-400 hover:text-white transition-colors">Frequently Asked Questions</a></li>
-            <?php endif; ?>
+            <li><a href="#nx-vault" class="text-slate-400 hover:text-white transition-colors">Private Deal Vault</a></li>
+            <li><a href="#nx-roles" class="text-slate-400 hover:text-white transition-colors">Founder &amp; Investor Roles</a></li>
+            <li><a href="#nx-how" class="text-slate-400 hover:text-white transition-colors">How It Works (60s)</a></li>
+            <li><a href="<?= function_exists('url') ? url('auth/register.php?role=founder') : 'auth/register.php?role=founder' ?>" class="text-slate-400 hover:text-white transition-colors">Apply to Raise Capital</a></li>
+            <li><a href="<?= function_exists('url') ? url('auth/register.php?role=investor') : 'auth/register.php?role=investor' ?>" class="text-slate-400 hover:text-white transition-colors">Join as Accredited Investor</a></li>
           </ul>
         </div>
 

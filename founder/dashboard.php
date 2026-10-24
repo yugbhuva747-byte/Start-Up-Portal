@@ -196,6 +196,36 @@ if ($company && !empty($company['name'])) {
                 </div>
             <?php endif; ?>
 
+            <!-- Missing Company Profile Action Banner -->
+            <?php if (!$company): ?>
+                <div class="p-5 sm:p-6 rounded-2xl bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-rose-950/30 border-2 border-amber-400 dark:border-amber-600/60 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-amber-500/25 flex-shrink-0">
+                            <i data-lucide="building-2" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
+                                    Company Profile Not Found (Action Required)
+                                </h3>
+                                <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200">
+                                    Incomplete Setup
+                                </span>
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-2xl">
+                                Aapke founder account ke sath abhi tak koi <strong>Company Profile</strong> register nahi hui hai. Investors ko pitch karne, institutional funding rounds launch karne, cap table aur data room use karne ke liye pehle apni Company Profile create karein.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5 w-full md:w-auto flex-shrink-0">
+                        <a href="<?= url('founder/company.php') ?>" class="w-full md:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                            <span>Create Company Profile Now</span>
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <!-- Streamlined Smart Notification Strip -->
             <?php if (!$progress['is_complete'] || $pendingInterests > 0): ?>
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 dark:from-indigo-950/40 dark:via-slate-900 dark:to-slate-900 border border-indigo-200/80 dark:border-indigo-900/50 shadow-2xs">
@@ -204,6 +234,8 @@ if ($company && !empty($company['name'])) {
                         <div class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 truncate">
                             <?php if ($pendingInterests > 0): ?>
                                 <strong><?= $pendingInterests ?> Investor Interest<?= $pendingInterests > 1 ? 's' : '' ?></strong> received for your startup!
+                            <?php elseif (!$company): ?>
+                                Profile Readiness: <strong><?= (int)$progress['percentage'] ?>%</strong> &mdash; Set up your company profile &amp; KYC verification to unlock allocators.
                             <?php else: ?>
                                 Profile Readiness: <strong><?= (int)$progress['percentage'] ?>%</strong> &mdash; Complete KYC verification to unlock all institutional allocators.
                             <?php endif; ?>
@@ -214,6 +246,11 @@ if ($company && !empty($company['name'])) {
                         <?php if ($pendingInterests > 0): ?>
                             <a href="<?= url('founder/investor_interests.php') ?>" class="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1">
                                 <span>Review Interests</span>
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+                        <?php elseif (!$company): ?>
+                            <a href="<?= url('founder/company.php') ?>" class="px-3.5 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow-xs flex items-center gap-1">
+                                <span>Create Profile</span>
                                 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                             </a>
                         <?php else: ?>
@@ -232,9 +269,15 @@ if ($company && !empty($company['name'])) {
                     
                     <!-- Left: Greetings & Status -->
                     <div class="flex items-start sm:items-center gap-4 min-w-0 flex-1">
-                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-500/20 flex-shrink-0">
-                            <?= htmlspecialchars($compInitials) ?>
-                        </div>
+                        <?php if (!empty($user['avatar_url'])): ?>
+                            <img src="<?= htmlspecialchars(get_avatar_url($user['avatar_url'])) ?>"
+                                 alt="<?= htmlspecialchars($user['name']) ?>"
+                                 class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover object-center border-2 border-white dark:border-slate-700 shadow-md shadow-indigo-500/20 flex-shrink-0">
+                        <?php else: ?>
+                            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-500/20 flex-shrink-0">
+                                <?= htmlspecialchars($compInitials) ?>
+                            </div>
+                        <?php endif; ?>
                         <div class="min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-2 mb-1">
                                 <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -243,6 +286,11 @@ if ($company && !empty($company['name'])) {
                                 <?php if ($company): ?>
                                     <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                         <?= htmlspecialchars($company['name']) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 flex items-center gap-1">
+                                        <i data-lucide="alert-triangle" class="w-3 h-3"></i>
+                                        No Company Profile
                                     </span>
                                 <?php endif; ?>
                                 <?= $user['is_verified'] ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">KYC Verified</span>' : '' ?>
@@ -261,23 +309,30 @@ if ($company && !empty($company['name'])) {
                                 <i data-lucide="share-2" class="w-4 h-4"></i>
                                 <span>Share Company Link</span>
                             </button>
+
+                            <a href="<?= url('founder/company.php') ?>"
+                                class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold shadow-2xs transition flex items-center space-x-2">
+                                <i data-lucide="building-2" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
+                                <span>Company Profile</span>
+                            </a>
+
+                            <a href="<?= url('founder/funding_rounds.php?action=new') ?>"
+                                class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center space-x-1.5">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>Launch Round</span>
+                            </a>
+                        <?php else: ?>
+                            <a href="<?= url('founder/company.php') ?>"
+                                class="flex-1 sm:flex-initial justify-center px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 via-orange-600 to-indigo-600 hover:from-amber-700 hover:to-indigo-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-amber-500/25 transition flex items-center space-x-2">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                <span>Create Company Profile</span>
+                            </a>
                         <?php endif; ?>
-
-                        <a href="<?= url('founder/company.php') ?>"
-                            class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-bold shadow-2xs transition flex items-center space-x-2">
-                            <i data-lucide="folder-lock" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
-                            <span>Data Room</span>
-                        </a>
-
-                        <a href="<?= url('founder/funding_rounds.php?action=new') ?>"
-                            class="flex-1 sm:flex-initial justify-center px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center space-x-1.5">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span>Launch Round</span>
-                        </a>
                     </div>
 
                 </div>
             </div>
+
 
             <!-- 4 Clean, Breathing KPI Cards -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="stats-grid">
@@ -473,8 +528,8 @@ if ($company && !empty($company['name'])) {
                                                     <a href="<?= url('investor/view.php?id=' . encode_id($ord['investor_user_id'])) ?>"
                                                         class="flex items-center space-x-2.5 hover:text-indigo-600 transition group"
                                                         title="View Investor Profile">
-                                                        <img src="<?= htmlspecialchars($ord['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80') ?>"
-                                                            alt=""
+                                                        <img src="<?= htmlspecialchars(get_avatar_url($ord['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80')) ?>"
+                                                            alt="<?= htmlspecialchars($ord['investor_name'] ?? '') ?>"
                                                             class="w-8 h-8 rounded-full object-cover border border-slate-200 group-hover:ring-2 group-hover:ring-indigo-500 transition">
                                                         <div>
                                                             <span class="font-bold text-slate-800 dark:text-slate-200 text-sm group-hover:text-indigo-600 transition block">
@@ -556,6 +611,19 @@ if ($company && !empty($company['name'])) {
                         
                         <div class="space-y-2 text-xs sm:text-sm font-semibold">
                             <a href="<?= url('founder/company.php') ?>" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 flex items-center justify-between transition group">
+                                <div class="flex items-center gap-2.5">
+                                    <i data-lucide="building-2" class="w-4 h-4 text-indigo-600"></i>
+                                    <span>Company Master Profile</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[11px] font-bold <?= $company ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400' ?>">
+                                        <?= $company ? 'Active' : 'Setup Required' ?>
+                                    </span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition"></i>
+                                </div>
+                            </a>
+
+                            <a href="<?= url('founder/company.php#documents') ?>" class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 text-slate-800 dark:text-slate-200 flex items-center justify-between transition group">
                                 <div class="flex items-center gap-2.5">
                                     <i data-lucide="folder-lock" class="w-4 h-4 text-blue-600"></i>
                                     <span>Manage Data Room (<?= $stats['doc_count'] ?>)</span>

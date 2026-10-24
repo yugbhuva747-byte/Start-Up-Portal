@@ -119,7 +119,7 @@ if ($db) {
     $preferences = $prefStmt->fetch();
 }
 
-$avatarSrc = !empty($user['avatar_url']) ? $user['avatar_url'] : $defaultAvatar;
+$avatarSrc = get_avatar_url($user['avatar_url'] ?? '', $defaultAvatar);
 $flashStyles = [
     'success' => 'bg-emerald-50 text-emerald-800 border-emerald-200',
     'info' => 'bg-blue-50 text-blue-800 border-blue-200',
@@ -355,9 +355,9 @@ $flashStyles = [
                                     <summary class="hover:text-[#123B7A] font-medium select-none">Or paste an image web
                                         link instead</summary>
                                     <div class="mt-2">
-                                        <input type="url" name="avatar_url" id="avatar_url_input"
+                                        <input type="text" name="avatar_url" id="avatar_url_input"
                                             value="<?= htmlspecialchars($user['avatar_url'] ?? '') ?>"
-                                            placeholder="https://example.com/photo.jpg" class="inv-input"
+                                            placeholder="https://example.com/photo.jpg or uploads/..." class="inv-input"
                                             oninput="previewUrlAvatar(this.value)">
                                     </div>
                                 </details>

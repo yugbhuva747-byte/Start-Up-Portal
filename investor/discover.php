@@ -699,9 +699,9 @@ $roundLabels = [
                                 <div class="flex flex-wrap items-center justify-between gap-3 text-xs">
                                     <div class="flex items-center space-x-2.5 min-w-0">
                                         <?php if (!empty($s['founder_avatar'])): ?>
-                                            <img src="<?= htmlspecialchars($s['founder_avatar']) ?>" loading="lazy"
+                                            <img src="<?= htmlspecialchars(get_avatar_url($s['founder_avatar'] ?? '')) ?>" loading="lazy"
                                                 class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700"
-                                                alt="">
+                                                alt="<?= htmlspecialchars($s['founder_name'] ?? 'Founder') ?>">
                                         <?php else: ?>
                                             <div
                                                 class="w-8 h-8 rounded-full bg-[#0A66C2] text-white flex items-center justify-center text-xs font-black">

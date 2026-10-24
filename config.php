@@ -106,13 +106,18 @@ $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
 $protocol = $isHttps ? "https://" : "http://";
 
 // Calculate relative path from web server DOCUMENT_ROOT
-$docRoot = str_replace('\\', '/', realpath($_SERVER['DOCUMENT_ROOT'] ?? '') ?: ($_SERVER['DOCUMENT_ROOT'] ?? ''));
+$rawDocRoot = trim($_SERVER['DOCUMENT_ROOT'] ?? '');
+$docRoot = !empty($rawDocRoot) ? str_replace('\\', '/', realpath($rawDocRoot) ?: $rawDocRoot) : '';
 $currentDir = str_replace('\\', '/', realpath(__DIR__) ?: __DIR__);
 
 if (!empty($docRoot) && strpos($currentDir, $docRoot) === 0) {
     $relativeAppPath = substr($currentDir, strlen($docRoot));
-} else {
+} elseif (!empty($docRoot)) {
     $relativeAppPath = str_ireplace($docRoot, '', $currentDir);
+} elseif (($htdocsPos = stripos($currentDir, '/htdocs')) !== false) {
+    $relativeAppPath = substr($currentDir, $htdocsPos + 7);
+} else {
+    $relativeAppPath = '';
 }
 $relativeAppPath = '/' . ltrim(str_replace('\\', '/', $relativeAppPath), '/');
 if ($relativeAppPath === '/') {

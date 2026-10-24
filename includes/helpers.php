@@ -616,6 +616,74 @@ function get_profile_progress(int $userId, string $role): array
 }
 
 /**
+ * 11. Fetch Founder's Associated Company
+ */
+function get_founder_company(int $userId): ?array
+{
+    $db = get_db();
+    if (!$db) return null;
+    try {
+        $stmt = $db->prepare("
+            SELECT c.*, cf.designation as founder_designation, cf.is_signatory, cf.equity_percent
+            FROM companies c
+            JOIN company_founders cf ON c.id = cf.company_id
+            WHERE cf.user_id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$userId]);
+        $comp = $stmt->fetch();
+        return $comp ?: null;
+    } catch (\Throwable $e) {
+        return null;
+    }
+}
+
+/**
+ * Check if a founder user has an associated company profile
+ */
+function founder_has_company(int $userId): bool
+{
+    return get_founder_company($userId) !== null;
+}
+
+/**
+ * Resolve Avatar URL cleanly (supports external URLs, local uploads, and auto-adapts base paths)
+ */
+function get_avatar_url(?string $avatarUrl, string $default = ''): string
+{
+    $fallback = $default ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150';
+    $avatar = trim($avatarUrl ?? '');
+    if ($avatar === '') {
+        return $fallback;
+    }
+
+    // Auto-heal local avatar file paths or mismatched base urls pointing to uploads/avatars/
+    if (preg_match('~(?:^|/)uploads/avatars/([^/?#]+)~i', $avatar, $m)) {
+        $filename = $m[1];
+        $diskPath = ROOT_PATH . '/uploads/avatars/' . $filename;
+        if (file_exists($diskPath)) {
+            return url('uploads/avatars/' . $filename) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($avatar, 'uploads/')) {
+        $diskPath = ROOT_PATH . '/' . $avatar;
+        if (file_exists($diskPath)) {
+            return url($avatar) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($avatar, 'http://') || str_starts_with($avatar, 'https://')) {
+        return $avatar;
+    }
+
+    return url($avatar);
+}
+
+
+/**
  * 12. Handle Avatar File Upload
  * Validates, saves to /uploads/avatars/, and returns array ['success', 'url', 'error']
  */
@@ -667,6 +735,221 @@ function handle_avatar_upload(array $file, int $userId): array
 
     $publicUrl = url('uploads/avatars/' . $filename);
     return ['success' => true, 'url' => $publicUrl, 'error' => null];
+}
+
+/**
+ * 12b. Resolve Company Logo URL cleanly (supports external URLs, local uploads, and initials fallback)
+ */
+function get_company_logo_url(?string $logoUrl, string $default = ''): string
+{
+    $fallback = $default ?: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80';
+    $logo = trim($logoUrl ?? '');
+    if ($logo === '') {
+        return $fallback;
+    }
+
+    if (preg_match('~(?:^|/)uploads/company_logos/([^/?#]+)~i', $logo, $m)) {
+        $filename = $m[1];
+        $diskPath = ROOT_PATH . '/uploads/company_logos/' . $filename;
+        if (file_exists($diskPath)) {
+            return url('uploads/company_logos/' . $filename) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($logo, 'uploads/')) {
+        $diskPath = ROOT_PATH . '/' . $logo;
+        if (file_exists($diskPath)) {
+            return url($logo) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($logo, 'http://') || str_starts_with($logo, 'https://')) {
+        return $logo;
+    }
+
+    return url($logo);
+}
+
+/**
+ * 12c. Handle Company Logo File Upload
+ * Validates, saves to /uploads/company_logos/, and returns array ['success', 'url', 'error']
+ */
+function handle_company_logo_upload(array $file, int $companyId): array
+{
+    if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'url' => null, 'error' => null];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'url' => null, 'error' => 'Company logo upload failed (code ' . $file['error'] . ').'];
+    }
+
+    if ($file['size'] > 10 * 1024 * 1024) {
+        return ['success' => false, 'url' => null, 'error' => 'Logo file size must be less than 10MB.'];
+    }
+
+    $imageInfo = @getimagesize($file['tmp_name']);
+    if (!$imageInfo) {
+        return ['success' => false, 'url' => null, 'error' => 'The selected file is not a valid image.'];
+    }
+
+    $allowedMimes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif'
+    ];
+
+    $mime = $imageInfo['mime'];
+    if (!isset($allowedMimes[$mime])) {
+        return ['success' => false, 'url' => null, 'error' => 'Only JPG, PNG, WEBP, and GIF images are supported.'];
+    }
+
+    $ext = $allowedMimes[$mime];
+    $uploadDir = ROOT_PATH . '/uploads/company_logos';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    $filename = 'logo_' . $companyId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded logo to disk.'];
+    }
+
+    $publicUrl = url('uploads/company_logos/' . $filename);
+    return ['success' => true, 'url' => $publicUrl, 'error' => null];
+}
+
+/**
+ * 12c-2. Resolve Company Cover Banner URL cleanly
+ */
+function get_company_banner_url(?string $bannerUrl, string $default = ''): string
+{
+    $fallback = $default ?: '';
+    $banner = trim($bannerUrl ?? '');
+    if ($banner === '') {
+        return $fallback;
+    }
+
+    if (preg_match('~(?:^|/)uploads/company_banners/([^/?#]+)~i', $banner, $m)) {
+        $filename = $m[1];
+        $diskPath = ROOT_PATH . '/uploads/company_banners/' . $filename;
+        if (file_exists($diskPath)) {
+            return url('uploads/company_banners/' . $filename) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($banner, 'uploads/')) {
+        $diskPath = ROOT_PATH . '/' . $banner;
+        if (file_exists($diskPath)) {
+            return url($banner) . '?v=' . filemtime($diskPath);
+        }
+        return $fallback;
+    }
+
+    if (str_starts_with($banner, 'http://') || str_starts_with($banner, 'https://')) {
+        return $banner;
+    }
+
+    return url($banner);
+}
+
+/**
+ * 12d. Handle Company Cover Banner File Upload
+ */
+function handle_company_banner_upload(array $file, int $companyId): array
+{
+    if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'url' => null, 'error' => null];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'url' => null, 'error' => 'Cover banner upload failed (code ' . $file['error'] . ').'];
+    }
+
+    if ($file['size'] > 12 * 1024 * 1024) {
+        return ['success' => false, 'url' => null, 'error' => 'Cover banner file size must be less than 12MB.'];
+    }
+
+    $imageInfo = @getimagesize($file['tmp_name']);
+    if (!$imageInfo) {
+        return ['success' => false, 'url' => null, 'error' => 'The selected file is not a valid image.'];
+    }
+
+    $allowedMimes = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp',
+        'image/gif' => 'gif'
+    ];
+
+    $mime = $imageInfo['mime'];
+    if (!isset($allowedMimes[$mime])) {
+        return ['success' => false, 'url' => null, 'error' => 'Only JPG, PNG, and WEBP banners are supported.'];
+    }
+
+    $ext = $allowedMimes[$mime];
+    $uploadDir = ROOT_PATH . '/uploads/company_banners';
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    $filename = 'banner_' . $companyId . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded banner to disk.'];
+    }
+
+    $publicUrl = url('uploads/company_banners/' . $filename);
+    return ['success' => true, 'url' => $publicUrl, 'error' => null];
+}
+
+/**
+ * 12e. Human-readable relative time string (e.g., 'just now', '5m ago', '2h ago', 'yesterday', '3d ago', 'Oct 24, 2026')
+ */
+function time_ago(string|int|null $datetime): string
+{
+    if (empty($datetime)) {
+        return 'recently';
+    }
+
+    $timestamp = is_numeric($datetime) ? (int)$datetime : strtotime((string)$datetime);
+    if (!$timestamp) {
+        return 'recently';
+    }
+
+    $diff = time() - $timestamp;
+
+    if ($diff < 0 || $diff < 45) {
+        return 'just now';
+    }
+    if ($diff < 3600) {
+        $mins = max(1, (int)floor($diff / 60));
+        return $mins . 'm ago';
+    }
+    if ($diff < 86400) {
+        $hours = (int)floor($diff / 3600);
+        return $hours . 'h ago';
+    }
+    if ($diff < 172800) {
+        return 'yesterday';
+    }
+    if ($diff < 604800) {
+        $days = (int)floor($diff / 86400);
+        return $days . 'd ago';
+    }
+    if ($diff < 2592000) {
+        $weeks = (int)floor($diff / 604800);
+        return $weeks . 'w ago';
+    }
+
+    return date('M j, Y', $timestamp);
 }
 
 // 13. Security Event Logger

@@ -249,7 +249,37 @@ require_once __DIR__ . '/theme.php';
                 <span class="sidebar-text-item whitespace-nowrap">Overview</span>
             </a>
 
-           
+            <a href="<?= url('founder/feed.php') ?>"
+               data-tooltip="Founder Network &amp; Feed"
+               title="Founder Network &amp; Feed"
+               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'feed.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                <i data-lucide="rss"
+                    class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'feed.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
+                <span class="sidebar-text-item whitespace-nowrap">Network &amp; Feed</span>
+            </a>
+
+            <?php
+            $hasCompanyProfile = false;
+            if ($founderUser) {
+                $hasCompanyProfile = function_exists('founder_has_company') ? founder_has_company((int)$founderUser['id']) : false;
+            }
+            ?>
+            <a href="<?= url('founder/company.php') ?>"
+               data-tooltip="Company Profile<?= !$hasCompanyProfile ? ' (Setup Required)' : '' ?>"
+               title="Company Profile"
+               class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'company.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                <div class="flex items-center space-x-3 min-w-0">
+                    <i data-lucide="building-2"
+                        class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'company.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
+                    <span class="sidebar-text-item whitespace-nowrap">Company Profile</span>
+                </div>
+                <?php if (!$hasCompanyProfile): ?>
+                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs">
+                        Setup
+                    </span>
+                <?php endif; ?>
+            </a>
+
             <a href="<?= url('founder/funding_rounds.php') ?>"
                data-tooltip="Funding Rounds"
                title="Funding Rounds"

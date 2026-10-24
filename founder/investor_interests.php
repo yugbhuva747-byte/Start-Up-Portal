@@ -258,7 +258,7 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                         $investorIdEncoded = encode_id($item['investor_user_id']);
                         $interestId = (int)$item['id'];
                         $formattedDate = date('M d, Y, h:i A', strtotime($item['created_at']));
-                        $avatarUrl = !empty($item['investor_avatar']) ? $item['investor_avatar'] : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120';
+                        $avatarUrl = get_avatar_url($item['investor_avatar'] ?? '', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120');
                         $ticketStr = '';
                         if (!empty($item['min_ticket']) || !empty($item['max_ticket'])) {
                             $ticketStr = format_inr((float)$item['min_ticket']) . ' - ' . format_inr((float)$item['max_ticket']);

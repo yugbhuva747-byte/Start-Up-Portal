@@ -367,7 +367,8 @@ $flash = get_flash();
                             class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#FAFBFD] transition">
                             <div class="flex items-start space-x-4 min-w-0">
                                 <a href="<?= url('founder/view.php?id=' . encode_id($fId)) ?>">
-                                    <img src="<?= $f['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>"
+                                    <img src="<?= htmlspecialchars(get_avatar_url($f['avatar_url'] ?? '')) ?>"
+                                        alt="<?= htmlspecialchars($f['name']) ?>"
                                         class="w-12 h-12 rounded-full object-cover border border-[#E4E8EF] flex-shrink-0">
                                 </a>
                                 <div class="min-w-0">

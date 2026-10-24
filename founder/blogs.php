@@ -295,7 +295,7 @@ $old = $openModal ? $_POST : [];
                                     <img src="<?= htmlspecialchars($coverSrc) ?>" alt="<?= htmlspecialchars($b['title']) ?>"
                                         loading="lazy"
                                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80';"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                        class="w-full h-full object-cover object-center group-hover:scale-105 transition duration-500">
                                     <div class="absolute top-3 left-3">
                                         <span
                                             class="px-3 py-1 rounded-full text-xs font-bold bg-white/95 text-indigo-700 shadow-sm backdrop-blur-sm border border-white">

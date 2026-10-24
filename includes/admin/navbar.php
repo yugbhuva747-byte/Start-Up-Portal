@@ -118,7 +118,7 @@ require_once __DIR__ . '/theme.php';
                     class="flex items-center space-x-2 h-9 sm:h-10 pl-1 pr-2 sm:pr-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-slate-50 dark:hover:bg-slate-800 transition bg-white dark:bg-slate-900 shadow-2xs group cursor-pointer flex-shrink-0" 
                     aria-label="Admin Profile Menu"
                     aria-expanded="false">
-                <img src="<?= (!empty($currentUser['avatar_url']) ? htmlspecialchars($currentUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') ?>" 
+                <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')) ?>" 
                      alt="<?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?>" 
                      style="width: 28px; height: 28px; min-width: 28px; min-height: 28px; max-width: 28px; max-height: 28px; border-radius: 9999px; object-fit: cover;"
                      class="w-7 h-7 rounded-full object-cover border border-blue-200 dark:border-slate-700 flex-shrink-0">
@@ -135,7 +135,7 @@ require_once __DIR__ . '/theme.php';
             <div id="admin-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <!-- Profile Header -->
                 <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-3 bg-slate-50/80 dark:bg-slate-800/60 rounded-xl mb-1.5">
-                    <img src="<?= (!empty($currentUser['avatar_url']) ? htmlspecialchars($currentUser['avatar_url']) : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') ?>" 
+                    <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100')) ?>" 
                          alt="<?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?>"
                          style="width: 38px; height: 38px; min-width: 38px; min-height: 38px; max-width: 38px; max-height: 38px; border-radius: 9999px; object-fit: cover;"
                          class="w-9 h-9 rounded-full object-cover border border-blue-200 dark:border-slate-700 flex-shrink-0">

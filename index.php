@@ -14,30 +14,6 @@ require_once __DIR__ . '/config.php';
 $basePath = __DIR__;
 
 // ------------------------------------------------------------
-// 00. Role Selection Flow for First-Time Visitors
-// ------------------------------------------------------------
-if (isset($_GET['choose']) && $_GET['choose'] === '1') {
-    unset($_SESSION['portal_role']);
-    setcookie('portal_role', '', time() - 3600, '/');
-    require_once __DIR__ . '/welcome.php';
-    exit;
-}
-
-if (isset($_GET['role']) && in_array($_GET['role'], ['investor', 'founder'], true)) {
-    $currentRole = $_GET['role'];
-    $_SESSION['portal_role'] = $currentRole;
-    setcookie('portal_role', $currentRole, time() + (86400 * 30), '/');
-} else {
-    $currentRole = $_SESSION['portal_role'] ?? $_COOKIE['portal_role'] ?? null;
-}
-
-// First-time visitor: display Upwork-style Welcome / Role selection screen
-if ($currentRole === null) {
-    require_once __DIR__ . '/welcome.php';
-    exit;
-}
-
-// ------------------------------------------------------------
 // Layout: Header
 // ------------------------------------------------------------
 require_once $basePath . '/includes/layout/header.php';
@@ -46,37 +22,27 @@ require_once $basePath . '/includes/layout/header.php';
 <main id="nx-page" class="nx-page relative w-full overflow-x-clip bg-[#F8FAFC] text-[#0F172A]">
 
     <?php
-    if ($currentRole === 'founder') {
-        // ------------------------------------------------------------
-        // FOUNDER HOME EXPERIENCE: 4 Growth Sections
-        // ------------------------------------------------------------
-        // 01. Founder Hero & Live Raise Room Engine
-        require_once $basePath . '/includes/founder_home/hero.php';
+    // ------------------------------------------------------------
+    // 01. The Suspense Hero & Interactive Role Switcher
+    // ------------------------------------------------------------
+    require_once $basePath . '/includes/home/hero-suspense.php';
 
-        // 02. The 4-Pillar Founder Growth Flywheel (How NEXORA scales your business)
-        require_once $basePath . '/includes/founder_home/growth-pillars.php';
+    // ------------------------------------------------------------
+    // 02. Two Roles & Synergy (Founder Raise vs Investor Democracy)
+    // ------------------------------------------------------------
+    require_once $basePath . '/includes/home/roles-synergy.php';
 
-        // 03. 3-Step Journey from Pitch to Wire
-        require_once $basePath . '/includes/founder_home/raise-steps.php';
 
-        // 04. Proof Metrics & Grand Final Founder CTA
-        require_once $basePath . '/includes/founder_home/perks-cta.php';
-    } else {
-        // ------------------------------------------------------------
-        // INVESTOR HOME EXPERIENCE: Curated Institutional Journey
-        // ------------------------------------------------------------
-        // 01. Hero — Value Proposition & Live Dealroom Showcase
-        require_once $basePath . '/includes/investor_home/hero.php';
 
-        // 02. Curated Dealflow & Investment Flywheel
-        require_once $basePath . '/includes/investor_home/dealflow-pillars.php';
+    // ------------------------------------------------------------
+    // 03. Transparent Seat Pricing & 0% Commission
+    // ------------------------------------------------------------
+    require_once $basePath . '/includes/home/pricing-plans.php';
 
-        // 03. 3-Step Journey from Accreditation to Wire
-        require_once $basePath . '/includes/investor_home/investment-steps.php';
-
-        // 04. Proof Metrics, Live Deals, FAQ & Grand Syndicate CTA
-        require_once $basePath . '/includes/investor_home/syndicate-cta.php';
-    }
+    // ------------------------------------------------------------
+    // 04. 3-Step Onboarding & High-Conversion Grand Closing CTA
+    // ------------------------------------------------------------
+    require_once $basePath . '/includes/home/conversion-cta.php';
     ?>
 
 </main>

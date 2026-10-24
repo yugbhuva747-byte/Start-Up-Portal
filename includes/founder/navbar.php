@@ -145,10 +145,10 @@ require_once __DIR__ . '/theme.php';
         <!-- User Profile Dropdown -->
         <div class="relative" id="user-profile-wrapper">
             <button id="founder-profile-btn" onclick="toggleUserProfile(event)" type="button" class="flex items-center space-x-2 h-10 pl-1.5 pr-2.5 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition bg-white dark:bg-slate-900 shadow-2xs group cursor-pointer flex-shrink-0" aria-label="Founder Profile Menu" aria-expanded="false">
-                <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>" 
+                <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '')) ?>" 
                      alt="<?= htmlspecialchars($currentUser['name'] ?? 'Founder') ?>" 
-                     style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; border-radius: 9999px; object-fit: cover;"
-                     class="w-8 h-8 rounded-full object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0 pointer-events-none">
+                     style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; border-radius: 9999px; object-fit: cover; object-position: center;"
+                     class="w-8 h-8 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0 pointer-events-none">
                 <div class="hidden sm:flex flex-col text-left pointer-events-none">
                     <span class="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 transition truncate max-w-[110px] leading-tight"><?= htmlspecialchars(explode(' ', $currentUser['name'] ?? 'Founder')[0]) ?></span>
                     <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider leading-none">Founder</span>
@@ -160,10 +160,10 @@ require_once __DIR__ . '/theme.php';
             <div id="user-profile-menu" onclick="event.stopPropagation()" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <!-- User Header Summary -->
                 <div class="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center space-x-3 bg-slate-50/70 dark:bg-slate-800/50 rounded-xl mb-1">
-                    <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100' ?>" 
+                    <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '')) ?>" 
                          alt="<?= htmlspecialchars($currentUser['name'] ?? 'Founder') ?>" 
-                         style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 9999px; object-fit: cover;"
-                         class="w-10 h-10 rounded-full object-cover border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                         style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 9999px; object-fit: cover; object-position: center;"
+                         class="w-10 h-10 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
                     <div class="min-w-0 flex-1">
                         <div class="text-sm font-bold text-slate-900 dark:text-slate-100 truncate leading-tight"><?= htmlspecialchars($currentUser['name'] ?? 'Founder') ?></div>
                         <div class="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5"><?= htmlspecialchars($currentUser['email'] ?? '') ?></div>
@@ -175,10 +175,6 @@ require_once __DIR__ . '/theme.php';
                     <a href="<?= url('founder/profile.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
                         <i data-lucide="user" class="w-4 h-4 text-slate-400"></i>
                         <span>Founder Profile & Settings</span>
-                    </a>
-                    <a href="<?= url('founder/view.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
-                        <i data-lucide="external-link" class="w-4 h-4 text-slate-400"></i>
-                        <span>Public Profile Preview</span>
                     </a>
                     <a href="<?= url('founder/company.php') ?>" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 font-bold transition">
                         <i data-lucide="building-2" class="w-4 h-4 text-slate-400"></i>

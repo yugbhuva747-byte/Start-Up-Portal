@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                         ?>
                             <a href="<?= url('founder/messages.php?conv=' . $hash) ?>" class="p-4 block transition <?= $isActive ? 'bg-indigo-50/70 border-l-4 border-indigo-600' : 'hover:bg-slate-50' ?>">
                                 <div class="flex items-start space-x-3.5">
-                                    <img src="<?= $c['other_user_avatar'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-10 h-10 rounded-full object-cover border border-slate-200 flex-shrink-0">
+                                    <img src="<?= htmlspecialchars(get_avatar_url($c['other_user_avatar'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80')) ?>" class="w-10 h-10 rounded-full object-cover border border-slate-200 flex-shrink-0" alt="<?= htmlspecialchars($c['other_user_name'] ?? '') ?>">
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm font-bold text-slate-900 truncate"><?= htmlspecialchars($c['other_user_name']) ?></span>
@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                             <a href="<?= url('founder/messages.php') ?>" class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition" title="Back to discussions">
                                 <i data-lucide="arrow-left" class="w-4.5 h-4.5"></i>
                             </a>
-                            <img src="<?= $activeConv['other_user_avatar'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                            <img src="<?= htmlspecialchars(get_avatar_url($activeConv['other_user_avatar'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80')) ?>" class="w-10 h-10 rounded-full object-cover border border-slate-200" alt="<?= htmlspecialchars($activeConv['other_user_name'] ?? '') ?>">
                             <div>
                                 <div class="text-sm sm:text-base font-extrabold text-slate-900 truncate"><?= htmlspecialchars($activeConv['other_user_name']) ?></div>
                                 <div class="text-xs text-emerald-600 flex items-center space-x-1.5 font-bold">
@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $activeConv) {
                         ?>
                             <div class="flex items-end space-x-2.5 <?= $isMe ? 'justify-end' : 'justify-start' ?>">
                                 <?php if (!$isMe): ?>
-                                    <img src="<?= $msg['sender_avatar'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80' ?>" class="w-7 h-7 rounded-full object-cover mb-1">
+                                    <img src="<?= htmlspecialchars(get_avatar_url($msg['sender_avatar'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80')) ?>" class="w-7 h-7 rounded-full object-cover mb-1" alt="<?= htmlspecialchars($msg['sender_name'] ?? '') ?>">
                                 <?php endif; ?>
 
                                 <div class="max-w-lg rounded-2xl p-4 text-sm leading-relaxed <?= $isMe ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' : 'bg-white border border-slate-200 text-slate-900 rounded-bl-none shadow-sm' ?>">

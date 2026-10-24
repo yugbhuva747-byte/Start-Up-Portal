@@ -362,7 +362,7 @@ require_once __DIR__ . '/theme.php';
         <!-- User Profile Dropdown -->
         <div class="relative" id="investor-profile-wrapper">
             <button onclick="toggleInvestorProfile()" type="button" class="flex items-center space-x-2 h-10 pl-1.5 pr-2.5 rounded-full border border-[#E4E8EF] dark:border-slate-700 hover:bg-[#FAFBFD] dark:hover:bg-slate-800 transition bg-white dark:bg-slate-900 shadow-2xs group cursor-pointer flex-shrink-0" aria-label="Investor Profile Menu">
-                <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>" 
+                <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100')) ?>" 
                      alt="<?= htmlspecialchars($currentUser['name'] ?? 'Investor') ?>" 
                      style="width: 32px; height: 32px; min-width: 32px; min-height: 32px; max-width: 32px; max-height: 32px; border-radius: 9999px; object-fit: cover;"
                      class="w-8 h-8 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">
@@ -377,7 +377,7 @@ require_once __DIR__ . '/theme.php';
             <div id="investor-profile-menu" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-[#E4E8EF] dark:border-slate-800 rounded-2xl shadow-xl p-2 z-50">
                 <!-- User Header Summary -->
                 <div class="p-3 border-b border-[#E4E8EF] dark:border-slate-800 flex items-center space-x-3 bg-slate-50/70 dark:bg-slate-800/50 rounded-xl mb-1">
-                    <img src="<?= $currentUser['avatar_url'] ?: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100' ?>" 
+                    <img src="<?= htmlspecialchars(get_avatar_url($currentUser['avatar_url'] ?? '', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100')) ?>" 
                          alt="<?= htmlspecialchars($currentUser['name'] ?? 'Investor') ?>"
                          style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; max-width: 40px; max-height: 40px; border-radius: 9999px; object-fit: cover;"
                          class="w-10 h-10 rounded-full object-cover border border-[#E4E8EF] dark:border-slate-700 flex-shrink-0">

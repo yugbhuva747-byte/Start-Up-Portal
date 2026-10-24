@@ -20,8 +20,8 @@ All demo accounts share the same default password: **`password123`**
 
 ## 🚀 2. Founder Accounts
 
-### Founder 1 (Primary Demo Founder - TechPulse AI)
-- **Name:** Aarav Sharma (Founder & CEO)
+### Founder 1 (Primary Demo Founder)
+- **Name:** Vivek Morwadiya (Founder & CEO)
 - **Company:** TechPulse AI (Enterprise B2B SaaS)
 - **Email:** `founder@techpulse.io`
 - **Password:** `password123`
@@ -36,11 +36,12 @@ All demo accounts share the same default password: **`password123`**
 - **Dashboard:** [http://localhost/start%20up%20portal/founder/dashboard.php](http://localhost/start%20up%20portal/founder/dashboard.php)
 
 ### Founder 3 (SolarisPulse Energy)
-- **Name:** Rohan Mehta (Founder & CTO)
+- **Name:** Mr. Kaushik Shah (Founder & CTO)
 - **Company:** SolarisPulse Energy (CleanTech & EV)
 - **Email:** `rohan@solarispulse.in`
 - **Password:** `password123`
 - **Dashboard:** [http://localhost/start%20up%20portal/founder/dashboard.php](http://localhost/start%20up%20portal/founder/dashboard.php)
+- **Profile Picture:** `uploads/avatars/kaushik_shah.png`
 
 ---
 
