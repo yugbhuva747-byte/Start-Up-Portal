@@ -267,7 +267,7 @@ if ($db) {
         JOIN companies c ON fr.company_id = c.id
         WHERE fr.status IN ('LIVE', 'PARTIALLY_FUNDED')
         ORDER BY fr.amount_raised DESC
-        LIMIT 3
+        LIMIT 5
     ");
     $liveRounds = $lrStmt ? $lrStmt->fetchAll() : [];
 }
@@ -282,6 +282,15 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> • <?= APP_NAME ?></title>
     <?php include __DIR__ . '/../includes/founder/head.php'; ?>
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
 </head>
 
 <body
@@ -313,43 +322,43 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 <!-- ---------------------------------------------------- -->
                 <!-- LEFT COLUMN: Founder & Startup Card - Sticky -->
                 <!-- ---------------------------------------------------- -->
-                <div class="w-full lg:w-[240px] xl:w-[250px] flex-shrink-0 lg:sticky lg:top-20 lg:self-start space-y-4">
+                <div class="w-full lg:w-[240px] xl:w-[250px] flex-shrink-0 lg:sticky lg:top-20 lg:self-start space-y-3 lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto no-scrollbar">
 
                     <!-- Profile Card -->
                     <div
-                        class="rounded-3xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm text-center">
+                        class="rounded-2xl overflow-hidden bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm text-center">
                         <!-- Top Mini Banner -->
-                        <div class="h-20 bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 relative">
+                        <div class="h-14 bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 relative">
                             <?php if (!empty($myCompany['banner_url'])): ?>
                                 <img src="<?= htmlspecialchars(get_company_banner_url($myCompany['banner_url'])) ?>"
                                     class="w-full h-full object-cover object-center opacity-70">
                             <?php endif; ?>
                         </div>
 
-                        <div class="px-5 pb-5 pt-0 relative">
+                        <div class="px-4 pb-4 pt-0 relative">
                             <!-- Avatar -->
                             <div
-                                class="relative -mt-10 mx-auto w-20 h-20 rounded-full border-4 border-white dark:border-[#111827] shadow-md overflow-hidden bg-white dark:bg-slate-800">
+                                class="relative -mt-8 mx-auto w-16 h-16 rounded-full border-3 border-white dark:border-[#111827] shadow-md overflow-hidden bg-white dark:bg-slate-800">
                                 <img src="<?= htmlspecialchars(get_avatar_url($user['avatar_url'] ?? '')) ?>"
                                     alt="<?= htmlspecialchars($user['name']) ?>"
                                     class="w-full h-full object-cover object-center">
                             </div>
 
-                            <h3 class="text-base font-extrabold text-slate-900 dark:text-white mt-2.5">
+                            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white mt-1.5 truncate">
                                 <?= htmlspecialchars($user['name']) ?>
                             </h3>
-                            <p class="text-xs text-indigo-600 dark:text-indigo-400 font-bold truncate">
+                            <p class="text-[11px] text-indigo-600 dark:text-indigo-400 font-bold truncate">
                                 <?= htmlspecialchars($myCompany['designation'] ?? 'Founder & Executive') ?>
                             </p>
 
                             <?php if ($myCompany): ?>
                                 <div
-                                    class="mt-2.5 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2">
+                                    class="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5">
                                     <img src="<?= htmlspecialchars(get_company_logo_url($myCompany['logo_url'] ?? '')) ?>"
                                         alt="<?= htmlspecialchars($myCompany['name']) ?>"
-                                        class="w-5 h-5 rounded-md object-cover object-center">
+                                        class="w-4 h-4 rounded object-cover object-center">
                                     <span
-                                        class="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">
+                                        class="text-[11px] font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[140px]">
                                         <?= htmlspecialchars($myCompany['name']) ?>
                                     </span>
                                 </div>
@@ -357,32 +366,32 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
 
                             <!-- Network Stats -->
                             <div
-                                class="grid grid-cols-2 gap-2 pt-3.5 mt-3 border-t border-slate-100 dark:border-slate-800 text-left">
-                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                                class="grid grid-cols-2 gap-1.5 pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 text-left">
+                                <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
                                     <span
-                                        class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Startups</span>
+                                        class="text-[9.5px] uppercase font-bold text-slate-400 block tracking-wider">Startups</span>
                                     <span
-                                        class="text-sm font-black text-slate-900 dark:text-white"><?= count($trendingStartups) + 1 ?></span>
+                                        class="text-xs font-black text-slate-900 dark:text-white"><?= count($trendingStartups) + 1 ?></span>
                                 </div>
-                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60">
+                                <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60">
                                     <span
-                                        class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Syndicates</span>
+                                        class="text-[9.5px] uppercase font-bold text-slate-400 block tracking-wider">Syndicates</span>
                                     <span
-                                        class="text-sm font-black text-indigo-600 dark:text-indigo-400"><?= count($liveRounds) ?>
+                                        class="text-xs font-black text-indigo-600 dark:text-indigo-400"><?= count($liveRounds) ?>
                                         Live</span>
                                 </div>
                             </div>
 
                             <!-- Quick Profile & Startup Shortcuts -->
-                            <div class="pt-3 mt-3 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                            <div class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 space-y-1">
                                 <a href="<?= url('founder/view.php') ?>"
-                                    class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60">
+                                    class="w-full py-1.5 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60">
                                     <i data-lucide="user" class="w-3.5 h-3.5 text-indigo-500"></i>
                                     <span>My Public Profile</span>
                                 </a>
                                 <?php if ($myCompany): ?>
                                     <a href="<?= url('founder/company_view.php?id=' . encode_id($myCompany['id'])) ?>"
-                                        class="w-full py-1.5 px-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-indigo-200/60 dark:border-indigo-800/60">
+                                        class="w-full py-1.5 px-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-700 dark:text-indigo-300 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-indigo-200/60 dark:border-indigo-800/60">
                                         <i data-lucide="building-2" class="w-3.5 h-3.5 text-indigo-500"></i>
                                         <span>My Startup Page</span>
                                     </a>
@@ -393,33 +402,33 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
 
                     <!-- Filter Pill Nav -->
                     <div
-                        class="rounded-3xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-1">
+                        class="rounded-2xl p-3 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-0.5">
                         <span
-                            class="text-[10.5px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1 block">Feed
+                            class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-0.5 block">Feed
                             Views</span>
 
                         <a href="<?= url('founder/feed.php?filter=all') ?>"
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'all' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                            <i data-lucide="layers" class="w-4 h-4"></i>
+                            class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'all' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                            <i data-lucide="layers" class="w-3.5 h-3.5"></i>
                             <span>All Network Activity</span>
                         </a>
 
                         <a href="<?= url('founder/feed.php?filter=milestones') ?>"
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'milestones' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                            <i data-lucide="rocket" class="w-4 h-4 text-emerald-500"></i>
+                            class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'milestones' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                            <i data-lucide="rocket" class="w-3.5 h-3.5 text-emerald-500"></i>
                             <span>Milestones &amp; Traction</span>
                         </a>
 
                         <a href="<?= url('founder/feed.php?filter=funding') ?>"
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'funding' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                            <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-amber-500"></i>
+                            class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'funding' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                            <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-amber-500"></i>
                             <span>Funding &amp; Angel Deals</span>
                         </a>
 
                         <a href="<?= url('founder/feed.php?filter=founder_posts') ?>"
-                            class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'founder_posts' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                            <i data-lucide="user-check" class="w-4 h-4 text-indigo-500"></i>
-                            <span>Founder Thought Leadership</span>
+                            class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-bold transition <?= $selectedFilter === 'founder_posts' ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-indigo-500"></i>
+                            <span>Founder Leadership</span>
                         </a>
                     </div>
                 </div>
@@ -569,7 +578,9 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                     class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/80 font-medium">
                                     <div class="flex items-center gap-1.5">
                                         <span
-                                            class="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center text-[10px]">❤️</span>
+                                            class="w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-xs">
+                                            <i data-lucide="heart" class="w-2.5 h-2.5 fill-white text-white"></i>
+                                        </span>
                                         <span id="likes-count-<?= $p['id'] ?>"><?= (int) $p['likes_count'] ?> likes</span>
                                     </div>
                                     <div>
@@ -679,34 +690,34 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 <!-- ---------------------------------------------------- -->
                 <!-- RIGHT COLUMN: Trending Startups & Network - Sticky -->
                 <!-- ---------------------------------------------------- -->
-                <div class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-20 lg:self-start space-y-5">
+                <div class="w-full lg:w-[280px] xl:w-[300px] flex-shrink-0 lg:sticky lg:top-20 lg:self-start space-y-3 lg:max-h-[calc(100vh-5.5rem)] lg:overflow-y-auto no-scrollbar">
 
                     <!-- Live Angel Syndicate Rounds (Placed at Top) -->
                     <?php if (!empty($liveRounds)): ?>
                         <div
-                            class="rounded-3xl p-5 bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-transparent border border-amber-500/30 dark:border-amber-500/20 shadow-sm space-y-3.5">
+                            class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-transparent border border-amber-500/30 dark:border-amber-500/20 shadow-sm space-y-2.5">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                                 <h3 class="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
                                     Live Angel Syndicates</h3>
                             </div>
 
-                            <div class="space-y-3">
-                                <?php foreach ($liveRounds as $lr):
+                            <div class="space-y-2.5">
+                                <?php foreach ($liveRounds as $lIdx => $lr):
                                     $pct = $lr['target_amount'] > 0 ? min(100, round(($lr['amount_raised'] / $lr['target_amount']) * 100)) : 0;
                                     ?>
                                     <div
-                                        class="p-3 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-700 space-y-2">
+                                        class="<?= $lIdx >= 2 ? 'live-syndicate-extra hidden' : '' ?> p-2.5 rounded-xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-700/80 space-y-1.5">
                                         <div class="flex items-center justify-between text-xs">
                                             <span
-                                                class="font-extrabold text-slate-900 dark:text-white truncate"><?= htmlspecialchars($lr['company_name']) ?></span>
+                                                class="font-extrabold text-slate-900 dark:text-white truncate max-w-[170px]"><?= htmlspecialchars($lr['company_name']) ?></span>
                                             <span class="font-black text-emerald-600 dark:text-emerald-400"><?= $pct ?>%</span>
                                         </div>
                                         <div class="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                                             <div class="bg-gradient-to-r from-amber-500 to-emerald-500 h-full rounded-full"
                                                 style="width: <?= $pct ?>%"></div>
                                         </div>
-                                        <div class="flex items-center justify-between text-[11px] text-slate-500">
+                                        <div class="flex items-center justify-between text-[10.5px] text-slate-500">
                                             <span>Target: ₹<?= number_format($lr['target_amount'] / 100000, 1) ?>L</span>
                                             <button type="button"
                                                 onclick="triggerFeedAngelModal(<?= $lr['company_id'] ?>, '<?= htmlspecialchars(addslashes($lr['company_name'])) ?>')"
@@ -717,52 +728,61 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                     </div>
                                 <?php endforeach; ?>
                             </div>
+
+                            <?php if (count($liveRounds) > 2): ?>
+                                <button type="button" id="btn-toggle-live-syndicates"
+                                    onclick="toggleLiveSyndicates()"
+                                    class="w-full py-1.5 px-3 rounded-xl bg-white/90 dark:bg-slate-800/80 hover:bg-amber-50 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-400 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-200/60 dark:border-amber-800/60 cursor-pointer shadow-2xs">
+                                    <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-amber-500"></i>
+                                    <span>Read More (+<?= count($liveRounds) - 2 ?>)</span>
+                                </button>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
 
                     <!-- Trending Startups to Explore -->
                     <div
-                        class="rounded-3xl p-5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                         <div
-                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-                            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <i data-lucide="compass" class="w-4 h-4 text-indigo-600"></i>
+                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="compass" class="w-3.5 h-3.5 text-indigo-600"></i>
                                 <span>Discover Startups</span>
                             </h3>
-                            <span class="text-[11px] text-indigo-600 font-bold"><?= count($trendingStartups) ?>
+                            <span class="text-[10.5px] text-indigo-600 font-bold"><?= count($trendingStartups) ?>
                                 Live</span>
                         </div>
 
-                        <div class="space-y-3.5">
+                        <div class="space-y-2.5">
                             <?php foreach ($trendingStartups as $idx => $ts): ?>
                                 <div
-                                    class="<?= $idx >= 2 ? 'discover-startup-extra hidden' : '' ?> p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-2">
-                                    <div class="flex items-center gap-3">
+                                    class="<?= $idx >= 2 ? 'discover-startup-extra hidden' : '' ?> p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 space-y-1.5">
+                                    <div class="flex items-center gap-2.5">
                                         <img src="<?= htmlspecialchars(get_company_logo_url($ts['logo_url'] ?? '')) ?>"
                                             alt="<?= htmlspecialchars($ts['name']) ?>"
-                                            class="w-10 h-10 rounded-xl object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                            class="w-8 h-8 rounded-lg object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
                                         <div class="min-w-0 flex-1">
                                             <a href="<?= url('founder/company_view.php?id=' . encode_id($ts['id'])) ?>"
-                                                class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 block truncate">
+                                                class="text-xs font-extrabold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 block truncate">
                                                 <?= htmlspecialchars($ts['name']) ?>
                                             </a>
-                                            <div class="text-[11px] text-slate-500 truncate">
+                                            <div class="text-[10.5px] text-slate-500 truncate">
                                                 <?= htmlspecialchars($ts['industry'] ?? 'Tech') ?> •
                                                 <?= htmlspecialchars($ts['city'] ?? 'India') ?>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center justify-between pt-1 text-xs">
+                                    <div class="flex items-center justify-between pt-0.5 text-xs">
                                         <a href="<?= url('founder/company_view.php?id=' . encode_id($ts['id'])) ?>"
-                                            class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1">
+                                            class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline flex items-center gap-1 text-[11px]">
                                             <span>Deal Room</span>
                                             <i data-lucide="arrow-right" class="w-3 h-3"></i>
                                         </a>
 
                                         <button type="button"
                                             onclick="triggerFeedAngelModal(<?= $ts['id'] ?>, '<?= htmlspecialchars(addslashes($ts['name'])) ?>')"
-                                            class="px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10.5px] uppercase tracking-wider cursor-pointer">
+                                            class="px-2 py-0.5 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider cursor-pointer">
                                             Invest
                                         </button>
                                     </div>
@@ -773,7 +793,7 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                         <?php if (count($trendingStartups) > 2): ?>
                             <button type="button" id="btn-toggle-discover-startups"
                                 onclick="toggleDiscoverStartups()"
-                                class="w-full py-2 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
+                                class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
                                 <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"></i>
                                 <span>Read More (+<?= count($trendingStartups) - 2 ?>)</span>
                             </button>
@@ -782,41 +802,50 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
 
                     <!-- Top Founders to Network With -->
                     <div
-                        class="rounded-3xl p-5 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                        class="rounded-2xl p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
                         <div
-                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-                            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <i data-lucide="users" class="w-4 h-4 text-indigo-600"></i>
+                            class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                            <h3 class="text-xs font-extrabold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-600"></i>
                                 <span>Peer Founders</span>
                             </h3>
-                            <span class="text-[11px] text-slate-400">Network</span>
+                            <span class="text-[10.5px] text-slate-400">Network</span>
                         </div>
 
-                        <div class="space-y-3">
-                            <?php foreach ($networkFounders as $nf): ?>
-                                <div class="flex items-center justify-between gap-3">
-                                    <div class="flex items-center gap-2.5 min-w-0">
+                        <div class="space-y-2.5">
+                            <?php foreach ($networkFounders as $nfIdx => $nf): ?>
+                                <div class="<?= $nfIdx >= 2 ? 'peer-founder-extra hidden' : '' ?> flex items-center justify-between gap-2.5">
+                                    <div class="flex items-center gap-2 min-w-0">
                                         <img src="<?= htmlspecialchars(get_avatar_url($nf['avatar_url'] ?? '')) ?>"
                                             alt="<?= htmlspecialchars($nf['name']) ?>"
-                                            class="w-9 h-9 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                            class="w-8 h-8 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
                                         <div class="min-w-0">
                                             <a href="<?= url('founder/view.php?id=' . encode_id($nf['id'])) ?>"
                                                 class="text-xs font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 truncate block">
                                                 <?= htmlspecialchars($nf['name']) ?>
                                             </a>
-                                            <div class="text-[10.5px] text-slate-500 truncate">
+                                            <div class="text-[10px] text-slate-500 truncate">
                                                 <?= htmlspecialchars($nf['company_name'] ?? 'Startup Founder') ?>
                                             </div>
                                         </div>
                                     </div>
 
                                     <a href="<?= url('founder/view.php?id=' . encode_id($nf['id'])) ?>"
-                                        class="px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-slate-700 dark:text-slate-200 text-xs font-bold transition flex-shrink-0">
+                                        class="px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 hover:border-indigo-400 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition flex-shrink-0">
                                         View
                                     </a>
                                 </div>
                             <?php endforeach; ?>
                         </div>
+
+                        <?php if (count($networkFounders) > 2): ?>
+                            <button type="button" id="btn-toggle-peer-founders"
+                                onclick="togglePeerFounders()"
+                                class="w-full py-1.5 px-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200/60 dark:border-slate-700/60 cursor-pointer shadow-2xs">
+                                <i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                <span>Read More (+<?= count($networkFounders) - 2 ?>)</span>
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -887,12 +916,12 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                         Type</label>
                     <select name="category" id="post-category-select"
                         class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                        <option value="Milestone">🚀 Major Traction Milestone</option>
-                        <option value="Product Launch">✨ Product Launch &amp; Feature</option>
-                        <option value="Funding Round">💰 Funding Round &amp; Angel Pitch</option>
-                        <option value="Partnership">🤝 Strategic Partnership / Customer Win</option>
-                        <option value="Hiring">💼 Executive / Tech Hiring</option>
-                        <option value="News Update">📢 General Company Announcement</option>
+                        <option value="Milestone">Major Traction Milestone</option>
+                        <option value="Product Launch">Product Launch &amp; Feature</option>
+                        <option value="Funding Round">Funding Round &amp; Angel Pitch</option>
+                        <option value="Partnership">Strategic Partnership / Customer Win</option>
+                        <option value="Hiring">Executive / Tech Hiring</option>
+                        <option value="News Update">General Company Announcement</option>
                     </select>
                 </div>
 
@@ -1173,9 +1202,47 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
             }
         }
 
+        function toggleLiveSyndicates() {
+            const items = document.querySelectorAll('.live-syndicate-extra');
+            const btn = document.getElementById('btn-toggle-live-syndicates');
+            if (!items.length || !btn) return;
+            const isExpanded = !items[0].classList.contains('hidden');
+            const extraCount = items.length;
+            items.forEach(el => {
+                if (isExpanded) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            btn.innerHTML = isExpanded
+                ? `<i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-amber-500"></i><span>Read More (+${extraCount})</span>`
+                : `<i data-lucide="chevrons-up" class="w-3.5 h-3.5 text-amber-500"></i><span>Show Less</span>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
         function toggleDiscoverStartups() {
             const items = document.querySelectorAll('.discover-startup-extra');
             const btn = document.getElementById('btn-toggle-discover-startups');
+            if (!items.length || !btn) return;
+            const isExpanded = !items[0].classList.contains('hidden');
+            const extraCount = items.length;
+            items.forEach(el => {
+                if (isExpanded) {
+                    el.classList.add('hidden');
+                } else {
+                    el.classList.remove('hidden');
+                }
+            });
+            btn.innerHTML = isExpanded
+                ? `<i data-lucide="chevrons-down" class="w-3.5 h-3.5 text-indigo-500"></i><span>Read More (+${extraCount})</span>`
+                : `<i data-lucide="chevrons-up" class="w-3.5 h-3.5 text-indigo-500"></i><span>Show Less</span>`;
+            if (window.lucide) lucide.createIcons();
+        }
+
+        function togglePeerFounders() {
+            const items = document.querySelectorAll('.peer-founder-extra');
+            const btn = document.getElementById('btn-toggle-peer-founders');
             if (!items.length || !btn) return;
             const isExpanded = !items[0].classList.contains('hidden');
             const extraCount = items.length;
