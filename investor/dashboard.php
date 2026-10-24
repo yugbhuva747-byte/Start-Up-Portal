@@ -670,14 +670,14 @@ $firstName = htmlspecialchars(explode(' ', $user['name'] ?? 'Investor')[0]);
                             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
                         </a>
 
-                        <a href="<?= url('investor/community.php') ?>" class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        <a href="<?= url('investor/support.php') ?>" class="flex items-center justify-between p-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition group border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
                             <div class="flex items-center space-x-3">
-                                <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                <div class="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-[#123B7A] dark:text-blue-400 flex items-center justify-center">
+                                    <i data-lucide="life-buoy" class="w-4 h-4"></i>
                                 </div>
                                 <div>
-                                    <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-600 transition">Investor Syndicate Forum</div>
-                                    <div class="text-[11px] text-slate-500 dark:text-slate-400">Co-invest & network</div>
+                                    <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-blue-600 transition">Help & Support</div>
+                                    <div class="text-[11px] text-slate-500 dark:text-slate-400">FAQs & WhatsApp desk</div>
                                 </div>
                             </div>
                             <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>

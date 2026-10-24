@@ -65,13 +65,6 @@ $navItems = [
         'title' => 'Deal Conversations',
         'active' => $currentPage === 'messages.php',
     ],
-    [
-        'href' => url('investor/community.php'),
-        'icon' => 'users',
-        'label' => 'Community',
-        'title' => 'Syndicate Network & Demo Days',
-        'active' => $currentPage === 'community.php',
-    ],
 ];
 
 // Load Investor Dark & Light Theme Controller
@@ -258,20 +251,8 @@ require_once __DIR__ . '/theme.php';
                             <i data-lucide="zap" class="w-4 h-4 text-violet-600 dark:text-violet-400 group-hover:text-white transition"></i>
                         </div>
                         <div class="min-w-0">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition">Live Helpdesk</div>
-                            <div class="text-[10px] text-slate-400 dark:text-slate-500">Raise a ticket · Track status</div>
-                        </div>
-                    </a>
-
-                    <!-- Investor Community -->
-                    <a href="<?= url('investor/community.php') ?>"
-                        class="flex items-center space-x-3 px-3 py-2.5 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-800 group transition">
-                        <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-950/50 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 transition">
-                            <i data-lucide="users" class="w-4 h-4 text-amber-600 dark:text-amber-400 group-hover:text-white transition"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition">Investor Community</div>
-                            <div class="text-[10px] text-slate-400 dark:text-slate-500">Forum · Peer network · Events</div>
+                            <div class="text-xs font-bold text-slate-800 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition">Help & Support</div>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500">Raise a ticket · FAQs & WhatsApp</div>
                         </div>
                     </a>
 
