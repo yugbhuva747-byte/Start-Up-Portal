@@ -423,14 +423,14 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
             <!-- ======================================================== -->
             <!-- 3-COLUMN LINKEDIN STYLE RESPONSIVE FLEX LAYOUT (Full Screen Width) -->
             <!-- ======================================================== -->
-            <div class="flex flex-col lg:flex-row gap-5 xl:gap-6 items-start">
+            <div class="flex flex-col lg:flex-row gap-4 xl:gap-5 items-start justify-center max-w-[1600px] mx-auto">
 
                 <!-- ---------------------------------------------------- -->
                 <!-- LEFT COLUMN: Founder & Startup Card - Sticky Fixed & Scrollable -->
                 <!-- ---------------------------------------------------- -->
                 <div id="feed-left-column"
                     data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
-                    class="w-full lg:w-[260px] xl:w-[280px] 2xl:w-[300px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto custom-scroll no-scrollbar overscroll-contain pb-12 pr-1">
+                    class="w-full lg:w-[220px] xl:w-[240px] 2xl:w-[255px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto custom-scroll no-scrollbar overscroll-contain pb-12 pr-1">
 
                     <!-- Profile Card -->
                     <div
@@ -553,9 +553,9 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 </div>
 
                 <!-- ---------------------------------------------------- -->
-                <!-- CENTER COLUMN: Wide Feed Stream (Flex-1) -->
+                <!-- CENTER COLUMN: Wide Feed Stream (Flex-1 Medium Size) -->
                 <!-- ---------------------------------------------------- -->
-                <div class="flex-1 min-w-0 space-y-5">
+                <div class="flex-1 min-w-0 max-w-[700px] 2xl:max-w-[760px] space-y-5">
 
                     <!-- Feed Create Post Trigger Card (World-Class Clean 2-Row Studio Bar) -->
                     <div
@@ -788,9 +788,9 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                 <!-- Post Media Image (If Provided) -->
                                 <?php if (!empty($p['image_url'])): ?>
                                     <div
-                                        class="rounded-2xl overflow-hidden max-h-96 border border-slate-100 dark:border-slate-800 bg-slate-900">
+                                        class="rounded-2xl overflow-hidden max-h-[460px] border border-slate-100 dark:border-slate-800 bg-slate-950/5 dark:bg-slate-900/60 flex items-center justify-center">
                                         <img src="<?= htmlspecialchars($p['image_url']) ?>" alt="Post image"
-                                            class="w-full h-full max-h-96 object-cover object-center hover:scale-101 transition duration-500">
+                                            class="w-full h-auto max-h-[460px] object-cover object-center hover:scale-101 transition duration-500">
                                     </div>
                                 <?php endif; ?>
 
@@ -917,7 +917,7 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 <!-- ---------------------------------------------------- -->
                 <div id="feed-right-column"
                     data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
-                    class="w-full lg:w-[300px] xl:w-[330px] 2xl:w-[360px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto custom-scroll no-scrollbar overscroll-contain pb-12 pr-1">
+                    class="w-full lg:w-[270px] xl:w-[290px] 2xl:w-[310px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto custom-scroll no-scrollbar overscroll-contain pb-12 pr-1">
 
                     <!-- Live Angel Syndicate Rounds (Placed at Top) -->
                     <?php if (!empty($liveRounds)): ?>
