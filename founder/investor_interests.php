@@ -379,15 +379,17 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                                     <?php elseif ($item['status'] === 'accepted'): ?>
                                         <?php if (!empty($item['conv_id'])): ?>
                                             <a href="<?= url('founder/messages.php?conv=' . hash_id_encode($item['conv_id'])) ?>"
-                                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+                                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                                                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                                                <span>Open Conversation →</span>
+                                                <span>Open Conversation</span>
+                                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                             </a>
                                         <?php else: ?>
                                             <a href="<?= url('founder/messages.php') ?>"
-                                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+                                                class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
                                                 <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                                                <span>Go to Chat →</span>
+                                                <span>Go to Chat</span>
+                                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                             </a>
                                         <?php endif; ?>
                                     <?php endif; ?>
@@ -473,7 +475,7 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
             const csrfToken = document.getElementById('csrf-token').value;
             const originalHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="inline-block animate-spin mr-1">⟳</span> Connecting...';
+            btn.innerHTML = '<span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Connecting...</span>';
 
             try {
                 const formData = new FormData();
@@ -515,7 +517,7 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
             const csrfToken = document.getElementById('csrf-token').value;
             const originalHtml = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<span class="inline-block animate-spin mr-1">⟳</span> Declining...';
+            btn.innerHTML = '<span class="inline-flex items-center gap-1.5"><svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Declining...</span>';
 
             try {
                 const formData = new FormData();

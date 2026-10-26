@@ -471,7 +471,11 @@ $roundLabels = [
                                                     title="MCA &amp; SEBI Verified Deal"></i>
                                             </div>
                                             <p class="text-[11.5px] text-slate-500 dark:text-slate-400 truncate">
-                                                Led by <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?>
+                                                Led by <?php if (!empty($founderHash)): ?>
+                                                    <a href="<?= url('founder/view.php?id=' . $founderHash) ?>" class="font-bold text-slate-800 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 hover:underline"><?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?></a>
+                                                <?php else: ?>
+                                                    <?= htmlspecialchars($s['founder_name'] ?? 'Founding Team') ?>
+                                                <?php endif; ?>
                                                 (<?= htmlspecialchars($s['founder_designation'] ?? 'Founder') ?>) •
                                                 <?= htmlspecialchars($s['stage']) ?>        <?php if ($city): ?> •
                                                     <?= htmlspecialchars($city) ?>        <?php endif; ?>
@@ -486,7 +490,7 @@ $roundLabels = [
                                                 'name' => $s['founder_name'] ?? 'Founder',
                                                 'headline' => ($s['founder_designation'] ?? 'Founder') . ' at ' . $s['name'],
                                                 'avatar' => get_avatar_url($s['founder_avatar'] ?? ''),
-                                                'class' => 'text-[11px] py-1 px-2.5 hidden sm:inline-flex'
+                                                'class' => 'text-[11px] py-1 px-2.5 inline-flex'
                                             ]) ?>
                                         <?php endif; ?>
 

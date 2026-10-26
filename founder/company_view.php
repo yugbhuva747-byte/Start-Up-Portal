@@ -502,9 +502,12 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                             <?php foreach ($founders as $f): ?>
                                 <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 space-y-3">
                                     <div class="flex items-center gap-3">
-                                        <img src="<?= htmlspecialchars(get_avatar_url($f['avatar_url'] ?? '')) ?>" 
-                                             alt="<?= htmlspecialchars($f['name']) ?>" 
-                                             class="w-13 h-13 rounded-full object-cover object-center border-2 border-white dark:border-slate-700 shadow-xs flex-shrink-0">
+                                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 flex-shrink-0 border-2 border-white dark:border-slate-700 shadow-xs" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                                            <img src="<?= htmlspecialchars(get_avatar_url($f['avatar_url'] ?? '')) ?>" 
+                                                 alt="<?= htmlspecialchars($f['name']) ?>" 
+                                                 class="w-full h-full object-cover object-center rounded-full"
+                                                 style="width: 48px; height: 48px; object-fit: cover;">
+                                        </div>
                                         
                                         <div class="min-w-0 flex-1">
                                             <a href="<?= url('founder/view.php?id=' . encode_id($f['id'])) ?>" class="text-sm font-extrabold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition block truncate">

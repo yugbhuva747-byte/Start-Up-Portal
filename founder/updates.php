@@ -637,7 +637,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     <i data-lucide="smartphone" class="w-4 h-4 text-indigo-600 dark:text-indigo-400"></i>
                                     <span class="text-xs font-bold text-slate-800 dark:text-white">Live Investor View Simulator</span>
                                 </div>
-                                <span class="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">● Realtime Sync</span>
+                                <span class="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-100 dark:border-emerald-800/80 px-2.5 py-0.5 rounded-full font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    <span>Realtime Sync</span>
+                                </span>
                             </div>
 
                             <!-- The Simulated Card Screen Container -->

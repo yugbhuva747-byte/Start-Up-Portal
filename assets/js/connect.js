@@ -196,7 +196,7 @@
             if (data.success) {
                 const finalTargetId = data.target_id || targetId;
                 const finalCompanyId = data.company_id || companyId;
-                window.NexoraConnect.updateButtons(finalTargetId, 'pending_sent', finalCompanyId);
+                window.NexoraConnect.updateButtons(finalTargetId, 'pending_sent', finalCompanyId, data.connection_id);
             }
             return data;
         },
@@ -268,7 +268,7 @@
             }
         },
 
-        updateButtons: function (targetId, newStatus, companyId = '') {
+        updateButtons: function (targetId, newStatus, companyId = '', newConnId = '') {
             const userSelector = targetId ? `[data-connect-user="${targetId}"]` : null;
             const companySelector = companyId ? `[data-connect-company="${companyId}"]` : null;
             const selector = [userSelector, companySelector].filter(Boolean).join(',');
@@ -277,6 +277,11 @@
             const btns = document.querySelectorAll(selector);
             btns.forEach(btn => {
                 btn.setAttribute('data-connect-status', newStatus);
+                if (newConnId) {
+                    btn.setAttribute('data-connection-id', newConnId);
+                } else if (newStatus === 'none') {
+                    btn.removeAttribute('data-connection-id');
+                }
                 const isCompany = btn.hasAttribute('data-connect-company');
                 const compId = btn.getAttribute('data-connect-company');
                 const connId = btn.getAttribute('data-connection-id') || '';
@@ -290,7 +295,7 @@
                 } else if (newStatus === 'pending_sent') {
                     btn.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs border border-slate-200 dark:border-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition shadow-2xs cursor-pointer';
                     btn.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400"></i><span>Pending</span>`;
-                    btn.onclick = () => window.NexoraConnect.withdraw(targetId, connId);
+                    btn.onclick = () => window.NexoraConnect.withdraw(targetId, btn.getAttribute('data-connection-id') || connId);
                     btn.title = 'Click to withdraw invitation';
                 } else {
                     btn.className = 'inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer';

@@ -21,6 +21,9 @@ $connectionsCount = count($myConnections);
 // If there are pending invitations and no explicit tab, highlight invitations
 if ($pendingCount > 0 && !isset($_GET['tab'])) {
     $activeTab = 'invitations';
+} elseif ($connectionsCount === 0 && !isset($_GET['tab'])) {
+    // If brand new user with 0 connections, automatically present Discover tab
+    $activeTab = 'discover';
 }
 
 // Recommended people to connect with (Founders & Investors not yet connected)
@@ -28,24 +31,26 @@ $suggestedPeople = [];
 if ($db) {
     try {
         $stmt = $db->prepare("
-            SELECT u.id, u.name, u.email, u.avatar_url, u.role, u.city, u.country, u.is_verified,
-                   fp.designation as founder_designation, fp.bio as founder_bio,
-                   c.name as company_name, c.logo_url as company_logo,
-                   ip.investor_type
+            SELECT u.id, u.name, u.email, u.avatar_url, u.role, u.city, u.country, u.is_verified, u.created_at,
+                   fp.designation as founder_designation, fp.bio as founder_bio, fp.linkedin_url as founder_linkedin,
+                   c.id as company_id, c.name as company_name, c.logo_url as company_logo, c.industry as company_industry, c.stage as company_stage, c.pitch as company_pitch,
+                   ip.investor_type, ip.experience_years,
+                   pref.min_ticket, pref.max_ticket, pref.preferred_industries, pref.investment_thesis
             FROM users u
             LEFT JOIN founder_profiles fp ON u.id = fp.user_id AND u.role = 'founder'
             LEFT JOIN company_founders cf ON u.id = cf.user_id
             LEFT JOIN companies c ON cf.company_id = c.id
             LEFT JOIN investor_profiles ip ON u.id = ip.user_id AND u.role = 'investor'
-            WHERE u.id != ? AND u.status = 'active'
+            LEFT JOIN investor_preferences pref ON u.id = pref.user_id AND u.role = 'investor'
+            WHERE u.id != ? AND u.status = 'active' AND u.role IN ('founder', 'investor')
               AND u.id NOT IN (
-                  SELECT receiver_id FROM user_connections WHERE requester_id = ?
+                  SELECT receiver_id FROM user_connections WHERE requester_id = ? AND status IN ('accepted', 'pending')
                   UNION
-                  SELECT requester_id FROM user_connections WHERE receiver_id = ?
+                  SELECT requester_id FROM user_connections WHERE receiver_id = ? AND status IN ('accepted', 'pending')
               )
             GROUP BY u.id
             ORDER BY u.is_verified DESC, u.created_at DESC
-            LIMIT 12
+            LIMIT 60
         ");
         $stmt->execute([$user['id'], $user['id'], $user['id']]);
         $suggestedPeople = $stmt->fetchAll();
@@ -183,10 +188,11 @@ if ($db) {
                                             <div id="invitation-card-<?= $req['connection_id'] ?>" 
                                                  class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 transition hover:border-slate-300 dark:hover:border-slate-700">
                                                 <div class="flex items-start gap-3.5 min-w-0">
-                                                    <a href="<?= $profileUrl ?>" class="flex-shrink-0">
+                                                    <a href="<?= $profileUrl ?>" class="w-14 h-14 rounded-full overflow-hidden shrink-0 flex-shrink-0 block border border-slate-200 dark:border-slate-700 shadow-2xs" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;">
                                                         <img src="<?= htmlspecialchars(get_avatar_url($req['avatar_url'] ?? '')) ?>" 
                                                              alt="<?= htmlspecialchars($req['name']) ?>" 
-                                                             class="w-13 h-13 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 shadow-2xs">
+                                                             class="w-full h-full object-cover object-center rounded-full"
+                                                             style="width: 56px; height: 56px; object-fit: cover;">
                                                     </a>
 
                                                     <div class="space-y-1 min-w-0">
@@ -281,10 +287,11 @@ if ($db) {
                                                  data-name="<?= strtolower(htmlspecialchars($conn['name'])) ?>"
                                                  data-role="<?= strtolower(htmlspecialchars($headline)) ?>">
                                                 <div class="flex items-start gap-3.5 min-w-0">
-                                                    <a href="<?= $profileUrl ?>" class="flex-shrink-0">
+                                                    <a href="<?= $profileUrl ?>" class="w-14 h-14 rounded-full overflow-hidden shrink-0 flex-shrink-0 block border border-slate-200 dark:border-slate-700 shadow-2xs" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;">
                                                         <img src="<?= htmlspecialchars(get_avatar_url($conn['avatar_url'] ?? '')) ?>" 
                                                              alt="<?= htmlspecialchars($conn['name']) ?>" 
-                                                             class="w-13 h-13 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 shadow-2xs">
+                                                             class="w-full h-full object-cover object-center rounded-full"
+                                                             style="width: 56px; height: 56px; object-fit: cover;">
                                                     </a>
 
                                                     <div class="min-w-0 flex-1 space-y-1">
@@ -366,9 +373,12 @@ if ($db) {
                                         ?>
                                             <div class="p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
                                                 <div class="flex items-center gap-3.5 min-w-0">
-                                                    <img src="<?= htmlspecialchars(get_avatar_url($sReq['avatar_url'] ?? '')) ?>" 
-                                                         alt="<?= htmlspecialchars($sReq['name']) ?>" 
-                                                         class="w-12 h-12 rounded-full object-cover object-center border border-slate-200 dark:border-slate-700 flex-shrink-0">
+                                                    <div class="w-12 h-12 rounded-full overflow-hidden shrink-0 flex-shrink-0 border border-slate-200 dark:border-slate-700" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
+                                                        <img src="<?= htmlspecialchars(get_avatar_url($sReq['avatar_url'] ?? '')) ?>" 
+                                                             alt="<?= htmlspecialchars($sReq['name']) ?>" 
+                                                             class="w-full h-full object-cover object-center rounded-full"
+                                                             style="width: 48px; height: 48px; object-fit: cover;">
+                                                    </div>
                                                     <div class="space-y-0.5 min-w-0">
                                                         <div class="text-sm font-extrabold text-slate-900 dark:text-white truncate">
                                                             <?= htmlspecialchars($sReq['name']) ?>

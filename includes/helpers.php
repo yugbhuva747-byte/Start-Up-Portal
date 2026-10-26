@@ -96,6 +96,12 @@ function encode_id(int|string|null $id): string
 
 function decode_id(?string $hash): int
 {
+    if (empty($hash)) {
+        return 0;
+    }
+    if (is_numeric($hash) && (int)$hash > 0) {
+        return (int)$hash;
+    }
     return hash_id_decode($hash);
 }
 
@@ -1063,6 +1069,58 @@ function handle_award_upload(array $file, int $companyId): array
 
     $publicUrl = url('uploads/awards/' . $filename);
     return ['success' => true, 'url' => $publicUrl, 'error' => null, 'is_pdf' => $isPdf, 'filename' => $filename];
+}
+
+/**
+ * Handle Generic File/Media Upload (e.g. Feed updates, post graphics, announcements)
+ * Validates file size, allowed extensions, ensures clean storage under /uploads/{subfolder}/,
+ * and returns ['success' => bool, 'url' => ?string, 'error' => ?string, 'filename' => ?string]
+ */
+function handle_file_upload(array $file, string $subfolder = 'posts', array $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'], int $maxSizeBytes = 15728640): array
+{
+    if (empty($file) || !isset($file['error']) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+        return ['success' => false, 'url' => null, 'error' => null, 'filename' => null];
+    }
+
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['success' => false, 'url' => null, 'error' => 'Upload failed with error code ' . $file['error'] . '.', 'filename' => null];
+    }
+
+    if ($file['size'] > $maxSizeBytes) {
+        $maxMB = round($maxSizeBytes / (1024 * 1024));
+        return ['success' => false, 'url' => null, 'error' => "File size exceeds the allowed limit of {$maxMB}MB.", 'filename' => null];
+    }
+
+    $ext = strtolower(pathinfo($file['name'] ?? '', PATHINFO_EXTENSION));
+    if (!in_array($ext, $allowedExtensions, true)) {
+        return ['success' => false, 'url' => null, 'error' => 'Unsupported format (' . htmlspecialchars($ext) . '). Allowed: ' . implode(', ', $allowedExtensions), 'filename' => null];
+    }
+
+    // If image format, verify valid image stream
+    $imageExts = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    if (in_array($ext, $imageExts, true)) {
+        $imgCheck = @getimagesize($file['tmp_name']);
+        if (!$imgCheck) {
+            return ['success' => false, 'url' => null, 'error' => 'The selected file is not a valid image.', 'filename' => null];
+        }
+    }
+
+    $safeFolder = preg_replace('/[^a-zA-Z0-9_\-]/', '', $subfolder) ?: 'posts';
+    $uploadDir = ROOT_PATH . '/uploads/' . $safeFolder;
+    if (!is_dir($uploadDir)) {
+        @mkdir($uploadDir, 0777, true);
+    }
+
+    $safeExt = ($ext === 'jpeg') ? 'jpg' : $ext;
+    $filename = $safeFolder . '_' . time() . '_' . bin2hex(random_bytes(6)) . '.' . $safeExt;
+    $destination = $uploadDir . '/' . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
+        return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded file to server storage.', 'filename' => null];
+    }
+
+    $publicUrl = url('uploads/' . $safeFolder . '/' . $filename);
+    return ['success' => true, 'url' => $publicUrl, 'error' => null, 'filename' => $filename];
 }
 
 // 13. Security Event Logger
@@ -2387,7 +2445,7 @@ function get_user_connections(int $userId): array {
                    u.id as user_id, u.name, u.email, u.phone, u.avatar_url, u.role, u.city, u.country, u.is_verified,
                    fp.designation as founder_designation, fp.bio as founder_bio, fp.linkedin_url as founder_linkedin,
                    c.id as company_id, c.name as company_name, c.logo_url as company_logo,
-                   ip.investor_type, ip.linkedin_url as investor_linkedin
+                   ip.investor_type, NULL as investor_linkedin
             FROM user_connections uc
             JOIN users u ON (CASE WHEN uc.requester_id = ? THEN uc.receiver_id ELSE uc.requester_id END) = u.id
             LEFT JOIN founder_profiles fp ON u.id = fp.user_id AND u.role = 'founder'
@@ -2515,6 +2573,7 @@ function render_connect_button(int $targetUserId, array $options = []): string {
         return '
         <button type="button" 
                 data-connect-user="' . $targetHash . '" 
+                data-connection-id="' . $connHash . '"
                 data-connect-status="pending_sent"
                 onclick="window.NexoraConnect ? window.NexoraConnect.withdraw(\'' . $targetHash . '\', \'' . $connHash . '\') : null"
                 title="Click to withdraw invitation"
@@ -2528,12 +2587,14 @@ function render_connect_button(int $targetUserId, array $options = []): string {
         return '
         <div class="inline-flex items-center gap-1.5 ' . htmlspecialchars($customClass) . '">
             <button type="button" 
+                    data-connection-id="' . $connHash . '"
                     onclick="window.NexoraConnect ? window.NexoraConnect.respond(\'' . $connHash . '\', \'accept\', \'' . $targetHash . '\') : null"
                     class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer">
                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
                 <span>Accept</span>
             </button>
             <button type="button" 
+                    data-connection-id="' . $connHash . '"
                     onclick="window.NexoraConnect ? window.NexoraConnect.respond(\'' . $connHash . '\', \'decline\', \'' . $targetHash . '\') : null"
                     class="px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 text-xs font-bold transition cursor-pointer">
                 Ignore
@@ -2545,6 +2606,7 @@ function render_connect_button(int $targetUserId, array $options = []): string {
     return '
     <button type="button"
             data-connect-user="' . $targetHash . '"
+            data-connection-id="' . $connHash . '"
             data-connect-name="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '"
             data-connect-headline="' . htmlspecialchars($headline, ENT_QUOTES, 'UTF-8') . '"
             data-connect-avatar="' . htmlspecialchars($avatar, ENT_QUOTES, 'UTF-8') . '"

@@ -326,6 +326,7 @@ CREATE TABLE IF NOT EXISTS `startup_updates` (
     `image_url` VARCHAR(255) NULL,
     `content` TEXT NOT NULL,
     `visibility` ENUM('all_investors', 'portfolio_only') DEFAULT 'all_investors',
+    `post_as` VARCHAR(20) DEFAULT 'company',
     `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`company_id`) REFERENCES `companies`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`founder_user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE

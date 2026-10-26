@@ -44,11 +44,11 @@ if ($db) {
 
     $ipStmt = $db->prepare("SELECT * FROM investor_profiles WHERE user_id = ?");
     $ipStmt->execute([$targetUserId]);
-    $profile = $ipStmt->fetch();
+    $profile = $ipStmt->fetch() ?: [];
 
     $prefStmt = $db->prepare("SELECT * FROM investor_preferences WHERE user_id = ?");
     $prefStmt->execute([$targetUserId]);
-    $preferences = $prefStmt->fetch();
+    $preferences = $prefStmt->fetch() ?: [];
 
     // 3. Fetch Portfolio Investments
     $pStmt = $db->prepare("
@@ -274,7 +274,7 @@ $flash = get_flash();
                             <span>Investment Thesis</span>
                         </h2>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">
-                            "<?= nl2br(htmlspecialchars($preferences['investment_thesis'] ?: 'Backing high-conviction founders solving massive infrastructure and B2B workflow challenges.')) ?>"
+                            "<?= nl2br(htmlspecialchars(($preferences['investment_thesis'] ?? '') ?: 'Backing high-conviction founders solving massive infrastructure and B2B workflow challenges.')) ?>"
                         </p>
                     </div>
 

@@ -431,430 +431,311 @@ $cur = $roleMeta[$role] ?? $roleMeta['unified'];
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
             border-color: #2563EB;
         }
+        .auth-glow-button {
+            background-size: 200% auto;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .auth-glow-button:hover {
+            background-position: right center;
+        }
+        .demo-pass-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .demo-pass-card:hover {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-900 min-h-screen selection:bg-blue-600 selection:text-white">
+<body class="bg-[#F8FAFC] text-slate-900 min-h-screen lg:h-screen lg:overflow-hidden selection:bg-blue-600 selection:text-white relative flex flex-col justify-between antialiased">
 
-    <div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col lg:flex-row">
-        
-        <!-- ========================================================
-             LEFT SIDE: ROLE-DEDICATED SHOWCASE (FOUNDER / INVESTOR)
-             ======================================================== -->
-        <div class="lg:w-1/2 xl:w-7/12 mesh-bg text-white p-6 sm:p-8 xl:p-10 2xl:p-12 flex flex-col justify-between relative overflow-y-auto custom-scroll border-b lg:border-b-0 lg:border-r border-slate-800/80" id="left-column">
-            
-            <!-- Subtle background ambient dot grid -->
-            <div class="absolute inset-0 dot-pattern opacity-35 pointer-events-none"></div>
-            
-            <!-- Ambient Glow Orbs -->
-            <div class="absolute -top-20 -left-20 w-80 h-80 bg-blue-600/25 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute bottom-8 -right-8 w-72 h-72 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="relative z-10">
-                <!-- Top Brand Header & Return Link -->
-                <div class="flex items-center justify-between mb-5 xl:mb-6">
-                    <a href="<?= url('index.php') ?>" class="inline-flex items-center gap-2.5 group" aria-label="NEXORA Home">
-                        <span class="text-2xl font-black tracking-tight text-white font-satoshi flex items-center gap-1.5">
-                            NEXORA
-                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.9)] animate-pulse"></span>
-                        </span>
-                        <span class="hidden sm:inline-block text-[9.5px] tracking-widest text-slate-400 font-bold uppercase pl-2.5 border-l border-slate-700/80">
-                            <?= ucfirst($role) ?> Portal
-                        </span>
-                    </a>
-
-                    <a href="<?= url('index.php') ?>" class="inline-flex items-center text-xs font-semibold text-slate-300 hover:text-white transition group space-x-1.5 px-3.5 py-1.5 rounded-xl glass-panel hover:bg-white/10">
-                        <i data-lucide="arrow-left" class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"></i>
-                        <span>Explore Platform</span>
-                    </a>
-                </div>
-
-                <!-- Category Pill Tag -->
-                <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full glass-panel text-[11px] font-semibold text-blue-300 mb-3 border border-blue-500/30 shadow-sm">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span><?= htmlspecialchars($cur['badge']) ?></span>
-                </div>
-
-                <!-- Big Headline -->
-                <h1 class="text-2xl sm:text-3xl xl:text-4xl font-black text-white tracking-tight leading-snug mb-2 font-satoshi">
-                    <?= htmlspecialchars($cur['headline']) ?>
-                </h1>
-
-                <!-- Subtitle -->
-                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-4 max-w-xl">
-                    <?= htmlspecialchars($cur['subtitle']) ?>
-                </p>
-
-                <!-- ==============================================
-                     VENTURE TERMINAL & LIVE DEALROOM HUD
-                     ============================================== -->
-                <div class="relative rounded-2xl overflow-hidden border border-slate-700/70 shadow-2xl shadow-blue-950/70 group mb-4 bg-slate-950/60 backdrop-blur-xl">
-                    
-                    <div class="relative h-44 sm:h-52 xl:h-56 overflow-hidden">
-                        <img src="<?= url('assets/images/login_hero.jpg') ?>" 
-                             alt="NEXORA Dealroom" 
-                             class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-75">
-                        
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/20"></div>
-
-                        <!-- Top Floating Glass HUD Badges -->
-                        <div class="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-white/15 text-[10.5px] font-semibold text-white shadow-lg">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span>Live Deal Pipeline</span>
-                        </div>
-
-                        <div class="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-white/15 text-[10.5px] font-semibold text-blue-300 shadow-lg">
-                            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-                            <span>MCA & SEBI Verified</span>
-                        </div>
-
-                        <!-- Center Active Deal Spotlight Card -->
-                        <div class="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-slate-900/85 backdrop-blur-md border border-white/10 shadow-xl">
-                            <div class="flex items-center justify-between mb-1.5">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center text-white text-[10px] font-black">
-                                        <?= strtoupper(substr($cur['terminal_title'], 0, 2)) ?>
-                                    </div>
-                                    <div>
-                                        <div class="text-[11px] font-bold text-white flex items-center gap-1.5">
-                                            <span><?= htmlspecialchars($cur['terminal_title']) ?></span>
-                                            <span class="px-1.5 py-0.2 rounded text-[9px] bg-blue-500/20 text-blue-300 border border-blue-500/30 font-medium"><?= htmlspecialchars($cur['terminal_round']) ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-[11px] font-black text-emerald-400"><?= htmlspecialchars($cur['terminal_target']) ?></span>
-                                </div>
-                            </div>
-
-                            <!-- Progress Track -->
-                            <div class="w-full bg-slate-800 rounded-full h-1.5 mb-2 overflow-hidden">
-                                <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-1.5 rounded-full" style="width: <?= htmlspecialchars($cur['terminal_percent']) ?>"></div>
-                            </div>
-
-                            <div class="flex items-center justify-between text-[10px] text-slate-300">
-                                <div class="flex items-center gap-1.5">
-                                    <div class="flex -space-x-1">
-                                        <span class="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[8px] font-bold text-white border border-slate-900">AS</span>
-                                        <span class="w-5 h-5 rounded-full bg-emerald-600 flex items-center justify-center text-[8px] font-bold text-white border border-slate-900">VS</span>
-                                        <span class="w-5 h-5 rounded-full bg-violet-600 flex items-center justify-center text-[8px] font-bold text-white border border-slate-900">PP</span>
-                                    </div>
-                                    <span class="text-[10px] text-slate-300"><?= htmlspecialchars($cur['terminal_subtext']) ?></span>
-                                </div>
-                                <span class="text-blue-300 font-semibold flex items-center gap-1">
-                                    <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
-                                    <?= htmlspecialchars($cur['stat_metric']) ?>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3 Capability Pillars -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-4">
-                    <div class="p-2.5 rounded-xl glass-panel glass-panel-hover transition duration-200">
-                        <div class="flex items-center space-x-2 mb-1">
-                            <div class="w-6 h-6 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
-                                <i data-lucide="<?= $cur['pillar1_icon'] ?>" class="w-3.5 h-3.5"></i>
-                            </div>
-                            <h3 class="text-[11px] font-bold text-white tracking-wide uppercase font-satoshi"><?= htmlspecialchars($cur['pillar1_title']) ?></h3>
-                        </div>
-                        <p class="text-[10px] text-slate-300 leading-snug">
-                            <?= htmlspecialchars($cur['pillar1_desc']) ?>
-                        </p>
-                    </div>
-
-                    <div class="p-2.5 rounded-xl glass-panel glass-panel-hover transition duration-200">
-                        <div class="flex items-center space-x-2 mb-1">
-                            <div class="w-6 h-6 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 flex-shrink-0">
-                                <i data-lucide="<?= $cur['pillar2_icon'] ?>" class="w-3.5 h-3.5"></i>
-                            </div>
-                            <h3 class="text-[11px] font-bold text-white tracking-wide uppercase font-satoshi"><?= htmlspecialchars($cur['pillar2_title']) ?></h3>
-                        </div>
-                        <p class="text-[10px] text-slate-300 leading-snug">
-                            <?= htmlspecialchars($cur['pillar2_desc']) ?>
-                        </p>
-                    </div>
-
-                    <div class="p-2.5 rounded-xl glass-panel glass-panel-hover transition duration-200">
-                        <div class="flex items-center space-x-2 mb-1">
-                            <div class="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
-                                <i data-lucide="<?= $cur['pillar3_icon'] ?>" class="w-3.5 h-3.5"></i>
-                            </div>
-                            <h3 class="text-[11px] font-bold text-white tracking-wide uppercase font-satoshi"><?= htmlspecialchars($cur['pillar3_title']) ?></h3>
-                        </div>
-                        <p class="text-[10px] text-slate-300 leading-snug">
-                            <?= htmlspecialchars($cur['pillar3_desc']) ?>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Testimonial -->
-                <div class="p-3 rounded-xl glass-panel border border-blue-500/20 mb-4 shadow-sm">
-                    <div class="flex items-center justify-between mb-1">
-                        <div class="flex items-center space-x-2.5">
-                            <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-[10px] text-white">
-                                <?= htmlspecialchars($cur['testimonial_avatar']) ?>
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-bold text-white"><?= htmlspecialchars($cur['testimonial_name']) ?></span>
-                                <span class="text-[9.5px] text-slate-400 ml-1"><?= htmlspecialchars($cur['testimonial_role']) ?></span>
-                            </div>
-                        </div>
-                        <div class="flex items-center text-amber-400 text-xs gap-0.5">
-                            <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
-                            <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
-                            <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
-                            <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
-                            <i data-lucide="star" class="w-3 h-3 fill-amber-400"></i>
-                        </div>
-                    </div>
-                    <p class="text-[10.5px] text-slate-300 italic leading-snug">
-                        <?= htmlspecialchars($cur['testimonial_quote']) ?>
-                    </p>
-                </div>
-            </div>
-
-            <!-- Bottom Proof & Trust Bar -->
-            <div class="relative z-10 pt-4 mt-auto border-t border-slate-800/80">
-                <div class="grid grid-cols-3 gap-3 text-center">
-                    <div>
-                        <div class="text-base xl:text-lg font-black text-white tracking-tight font-satoshi"><?= htmlspecialchars($cur['stat1_num']) ?></div>
-                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider"><?= htmlspecialchars($cur['stat1_label']) ?></div>
-                    </div>
-                    <div class="border-x border-slate-800">
-                        <div class="text-base xl:text-lg font-black text-white tracking-tight font-satoshi"><?= htmlspecialchars($cur['stat2_num']) ?></div>
-                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider"><?= htmlspecialchars($cur['stat2_label']) ?></div>
-                    </div>
-                    <div>
-                        <div class="text-base xl:text-lg font-black text-white tracking-tight font-satoshi"><?= htmlspecialchars($cur['stat3_num']) ?></div>
-                        <div class="text-[9px] uppercase font-bold text-slate-400 tracking-wider"><?= htmlspecialchars($cur['stat3_label']) ?></div>
-                    </div>
-                </div>
-
-                <div class="mt-3 flex items-center justify-center space-x-1.5 text-[9.5px] text-slate-400">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-                    <span>SEBI & MCA Compliant Governance • 256-Bit SSL Protection</span>
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- ========================================================
-             RIGHT SIDE: PURE ROLE AUTHENTICATION FORM (NO TABS)
-             ======================================================== -->
-        <div class="lg:w-1/2 xl:w-5/12 bg-white flex flex-col justify-between p-6 sm:p-8 xl:p-12 overflow-y-auto custom-scroll relative" id="right-column">
-            
-            <!-- Mobile Header with Brand & Sign Up Link -->
-            <div class="flex items-center justify-between pb-4 mb-2 border-b border-slate-100 lg:border-none lg:pb-0">
-                <div class="flex items-center space-x-2 lg:hidden">
-                    <span class="text-lg font-black tracking-tight text-slate-900 font-satoshi flex items-center gap-1">
-                        NEXORA
-                        <span class="w-2 h-2 rounded-full bg-blue-600"></span>
-                    </span>
-                    <span class="text-[9px] text-slate-400 font-bold uppercase pl-1.5 border-l border-slate-200"><?= ucfirst($role) ?></span>
-                </div>
-                
-                <div class="text-right ml-auto flex items-center gap-2">
-                    <span class="text-xs text-slate-500 hidden sm:inline">New to NEXORA?</span>
-                    <a href="<?= url('auth/register.php') ?>" class="text-xs font-bold text-blue-600 hover:text-blue-800 transition inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200/50">
-                        <span>Sign Up &rarr;</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Form Container (Centered Vertically) -->
-            <div class="max-w-md w-full mx-auto my-auto py-2">
-                
-                <!-- Main Form Header -->
-                <div class="mb-5">
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold mb-2 <?= $cur['badge_color'] ?>">
-                        <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-                        <span><?= htmlspecialchars($cur['portal_badge']) ?></span>
-                    </div>
-
-                    <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 font-satoshi" id="portalHeaderTitle">
-                        <?= htmlspecialchars($cur['portal_title']) ?>
-                    </h2>
-                    <p class="text-sm sm:text-base text-slate-600 mt-1.5 font-medium leading-relaxed" id="portalHeaderSub">
-                        <?= htmlspecialchars($cur['portal_sub']) ?>
-                    </p>
-                </div>
-
-                <!-- Alerts (Flash & Errors) -->
-                <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
-                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold bg-amber-50 text-amber-900 border border-amber-200 flex items-start space-x-2.5 shadow-sm">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-amber-600 mt-0.5"></i>
-                        <div>
-                            <span class="font-bold block text-sm">Maintenance Mode Active</span>
-                            <span class="text-xs text-amber-800 leading-relaxed font-normal">Public access is temporarily paused. Only Platform Administrators may sign in.</span>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <?php if ($flash): ?>
-                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-rose-50 text-rose-800 border-rose-200' ?> flex items-center space-x-2.5 shadow-sm">
-                        <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600"></i>
-                        <span><?= htmlspecialchars($flash['message']) ?></span>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($error)): ?>
-                    <div class="mb-4 p-3.5 rounded-xl text-sm font-semibold bg-rose-50 text-rose-800 border border-rose-200 flex items-center justify-between shadow-sm">
-                        <div class="flex items-center space-x-2.5">
-                            <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
-                            <span><?= htmlspecialchars($error) ?></span>
-                        </div>
-                        <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-xs text-blue-700 hover:text-blue-900 font-bold underline whitespace-nowrap ml-2">
-                            Reset Password?
-                        </a>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Sign In Form -->
-                <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-4" id="loginForm">
-                    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                    <?= security_honeypot_field() ?>
-
-                    <!-- Email Field -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="email" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800">
-                                Email Address <span class="text-rose-500">*</span>
-                            </label>
-                            <span id="roleDetectStatus" class="text-xs text-slate-400 font-medium"></span>
-                        </div>
-                        <div class="relative input-glow rounded-xl">
-                            <i data-lucide="mail" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                            <input type="email" id="email" name="email" required placeholder="Enter your registered email ID..." autocomplete="email"
-                                   class="w-full pl-11 pr-4 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
-                        </div>
-
-                        <!-- Real-Time Role Detection Pill -->
-                        <div id="roleDetectIndicator" class="mt-2.5 transition-all duration-300 hidden">
-                            <!-- Injected by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Password Field with Show/Hide Toggle -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="password" class="block text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-800">
-                                Password <span class="text-rose-500">*</span>
-                            </label>
-                            <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-bold transition">
-                                Forgot Password?
-                            </a>
-                        </div>
-                        <div class="relative input-glow rounded-xl">
-                            <i data-lucide="lock" class="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                            <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password"
-                                   class="w-full pl-11 pr-11 py-3 bg-slate-50 hover:bg-slate-50/80 border border-slate-200 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-600/10 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium">
-                            
-                            <!-- Toggle Password Visibility Button -->
-                            <button type="button" 
-                                    id="togglePassBtn"
-                                    onclick="togglePasswordVisibility()" 
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition"
-                                    title="Toggle password visibility">
-                                <i data-lucide="eye" id="togglePassIcon" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Remember Me Option & Encryption Indicator -->
-                    <div class="flex items-center justify-between pt-1">
-                        <label class="flex items-center space-x-2 cursor-pointer">
-                            <input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                            <span class="text-xs sm:text-sm text-slate-700 font-medium">Remember this browser</span>
-                        </label>
-                        <span class="text-xs text-slate-400 flex items-center gap-1.5">
-                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
-                            <span>256-Bit Encrypted</span>
-                        </span>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" id="submitBtn" class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 active:scale-[0.99] text-white text-sm sm:text-base font-black rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 transition-all flex items-center justify-center gap-2 group mt-3 font-satoshi tracking-wide">
-                        <span id="btnText"><?= htmlspecialchars($cur['btn_text']) ?></span>
-                        <i data-lucide="arrow-right" id="btnIcon" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
-                    </button>
-                </form>
-
-                <!-- Quick 1-Click Demo Accounts -->
-                <div class="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200/80">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                            <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i>
-                            1-Click Demo Accounts
-                        </span>
-                        <span class="text-[10px] text-slate-400 font-mono">pass: password123</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button type="button" onclick="fillRoleDemo('founder@techpulse.io', 'password123', 'founder')" 
-                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                            <i data-lucide="rocket" class="w-3 h-3 text-blue-600"></i>
-                            <span>Founder</span>
-                        </button>
-                        <button type="button" onclick="fillRoleDemo('investor@venturecapital.com', 'password123', 'investor')" 
-                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-slate-700 hover:text-emerald-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                            <i data-lucide="briefcase" class="w-3 h-3 text-emerald-600"></i>
-                            <span>Investor</span>
-                        </button>
-                        <button type="button" onclick="fillRoleDemo('admin@portal.com', 'password123', 'admin')" 
-                                class="px-2 py-1.5 rounded-lg bg-white hover:bg-purple-50 border border-slate-200 hover:border-purple-300 text-slate-700 hover:text-purple-700 text-xs font-bold transition flex items-center justify-center gap-1 shadow-2xs cursor-pointer">
-                            <i data-lucide="shield" class="w-3 h-3 text-purple-600"></i>
-                            <span>Admin</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Registration Prompt -->
-                <div class="mt-5 pt-4 border-t border-slate-100 text-center">
-                    <p class="text-xs sm:text-sm text-slate-600 font-medium">
-                        Don't have an account yet? 
-                        <a href="<?= url('auth/register.php') ?>" class="text-blue-600 font-bold hover:text-blue-800 hover:underline transition">
-                            Create an Account &rarr;
-                        </a>
-                    </p>
-                </div>
-
-                <!-- Back to Home Link -->
-                <div class="mt-4 text-center">
-                    <a href="<?= url('index.php') ?>" class="text-[11px] text-slate-400 hover:text-slate-600 transition underline">
-                        &larr; Return to NEXORA Homepage
-                    </a>
-                </div>
-            </div>
-
-            <!-- Bottom Security Note -->
-            <div class="pt-4 border-t border-slate-100 text-center text-[10.5px] text-slate-400 flex items-center justify-center gap-1.5">
-                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
-                <span>SEBI & MCA Compliant Governance • ISO 27001 Certified • 256-Bit SSL</span>
-            </div>
-
-        </div>
-
+    <!-- Ambient background decorative graphics -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-500/10 via-indigo-500/5 to-transparent rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-blue-400/8 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-400/8 rounded-full blur-3xl"></div>
+        <div class="absolute inset-0 dot-pattern opacity-50"></div>
     </div>
 
-    <!-- Interactive Scripts -->
+    <!-- Top Navigation Header -->
+    <header class="w-full max-w-6xl mx-auto px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
+        <a href="<?= url('index.php') ?>" class="inline-flex items-center gap-2.5 group" aria-label="NEXORA Home">
+            <span class="text-2xl font-black tracking-tight text-slate-900 font-satoshi flex items-center gap-1.5">
+                NEXORA
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-[0_0_12px_rgba(37,99,235,0.7)] animate-pulse"></span>
+            </span>
+            <span class="hidden sm:inline-block text-xs tracking-wider text-slate-500 font-bold uppercase pl-2.5 border-l border-slate-300">
+                <?= ucfirst($role) ?> Portal
+            </span>
+        </a>
+
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-slate-600 font-medium hidden sm:inline">New to NEXORA?</span>
+            <a href="<?= url('auth/register.php') ?>" class="text-xs sm:text-sm font-bold text-blue-700 hover:text-blue-900 transition inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 shadow-xs">
+                <span>Sign Up</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="<?= url('index.php') ?>" class="text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 transition inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-300 hover:bg-slate-100 bg-white shadow-xs">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="hidden xs:inline">Back to Home</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Centered Content (Big Width, Easy-to-Read, Zero Scroll) -->
+    <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 my-auto py-2 shrink-0" id="auth-main-container">
+        
+        <!-- Elevated Wide Login Card -->
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-[0_20px_50px_rgba(15,23,42,0.08)] p-6 sm:p-8 lg:p-9 relative overflow-hidden" id="auth-card">
+            
+            <!-- Top Subtle Gradient Line Accent -->
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500"></div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+                
+                <!-- LEFT COLUMN: 50% Width with Founder & Investor Switching -->
+                <div class="space-y-4 lg:border-r lg:border-slate-200 lg:pr-8">
+
+                    <!-- Role Switcher Tabs (Founder & Investor) -->
+                    <div class="p-1 rounded-xl bg-slate-100 border border-slate-300 grid grid-cols-2 gap-1.5 shrink-0 w-full shadow-2xs">
+                        <a href="<?= url('auth/login.php?role=founder') ?>" 
+                           class="py-2 px-3 rounded-lg text-center text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 <?= $role === 'founder' ? 'bg-white text-blue-700 shadow-sm border border-slate-300' : 'text-slate-600 hover:text-slate-900' ?>">
+                            <i data-lucide="rocket" class="w-4 h-4 <?= $role === 'founder' ? 'text-blue-600' : 'text-slate-500' ?>"></i>
+                            <span>Founder</span>
+                        </a>
+                        <a href="<?= url('auth/login.php?role=investor') ?>" 
+                           class="py-2 px-3 rounded-lg text-center text-xs sm:text-sm font-extrabold transition-all flex items-center justify-center gap-1.5 <?= $role === 'investor' ? 'bg-white text-emerald-700 shadow-sm border border-slate-300' : 'text-slate-600 hover:text-slate-900' ?>">
+                            <i data-lucide="briefcase" class="w-4 h-4 <?= $role === 'investor' ? 'text-emerald-600' : 'text-slate-500' ?>"></i>
+                            <span>Investor</span>
+                        </a>
+                    </div>
+
+                    <div>
+                        <div class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold mb-2.5 <?= $cur['badge_color'] ?> border border-blue-200 shadow-2xs">
+                            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                            <span class="tracking-wide"><?= htmlspecialchars($cur['portal_badge']) ?></span>
+                        </div>
+
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-satoshi leading-tight" id="portalHeaderTitle">
+                            <?= htmlspecialchars($cur['portal_title']) ?>
+                        </h1>
+                        <p class="text-sm text-slate-600 mt-1.5 font-medium leading-relaxed" id="portalHeaderSub">
+                            <?= htmlspecialchars($cur['portal_sub']) ?>
+                        </p>
+                    </div>
+
+                    <!-- Real-Time Role Detection Pill -->
+                    <div id="roleDetectIndicator" class="transition-all duration-300 hidden">
+                        <!-- Injected by JavaScript -->
+                    </div>
+
+                    <!-- Quick 1-Click Fast Demo Accounts (High Contrast & Clear) -->
+                    <div class="p-4 rounded-2xl bg-slate-50/90 border border-slate-200 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5 font-satoshi">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-500 fill-amber-500"></i>
+                                1-Click Demo Accounts
+                            </span>
+                            <span class="text-xs text-slate-600 font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-slate-300">pass: password123</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <!-- Founder Demo -->
+                            <button type="button" onclick="fillRoleDemo('founder@techpulse.io', 'password123', 'founder')" 
+                                    class="p-2.5 rounded-xl bg-white hover:bg-blue-50 border border-slate-300 hover:border-blue-400 text-left transition flex flex-col justify-between shadow-2xs group cursor-pointer">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                        <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-blue-700 group-hover:translate-x-0.5 transition-transform">Use &rarr;</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-extrabold text-slate-900 group-hover:text-blue-700">Founder</span>
+                                    <span class="block text-[11px] text-slate-500 font-medium truncate">TechPulse AI</span>
+                                </div>
+                            </button>
+
+                            <!-- Investor Demo -->
+                            <button type="button" onclick="fillRoleDemo('investor@venturecapital.com', 'password123', 'investor')" 
+                                    class="p-2.5 rounded-xl bg-white hover:bg-emerald-50 border border-slate-300 hover:border-emerald-400 text-left transition flex flex-col justify-between shadow-2xs group cursor-pointer">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                                        <i data-lucide="briefcase" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">Use &rarr;</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-extrabold text-slate-900 group-hover:text-emerald-700">Investor</span>
+                                    <span class="block text-[11px] text-slate-500 font-medium truncate">Venture VC</span>
+                                </div>
+                            </button>
+
+                            <!-- Admin Demo -->
+                            <button type="button" onclick="fillRoleDemo('admin@portal.com', 'password123', 'admin')" 
+                                    class="p-2.5 rounded-xl bg-white hover:bg-purple-50 border border-slate-300 hover:border-purple-400 text-left transition flex flex-col justify-between shadow-2xs group cursor-pointer">
+                                <div class="flex items-center justify-between mb-1">
+                                    <div class="w-6 h-6 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
+                                        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                                    </div>
+                                    <span class="text-[10px] font-bold text-purple-700 group-hover:translate-x-0.5 transition-transform">Use &rarr;</span>
+                                </div>
+                                <div>
+                                    <span class="block text-xs font-extrabold text-slate-900 group-hover:text-purple-700">Admin</span>
+                                    <span class="block text-[11px] text-slate-500 font-medium truncate">Compliance</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <p class="text-xs text-slate-500 leading-normal flex items-center gap-1.5 font-medium">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-blue-600 shrink-0"></i>
+                            <span>Click any card to auto-fill credentials and test login.</span>
+                        </p>
+                    </div>
+
+                    <!-- Trust Tags Strip -->
+                    <div class="flex items-center gap-3 text-xs text-slate-500 pt-1 font-semibold">
+                        <span class="flex items-center gap-1 text-slate-700">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                            SEBI &amp; MCA Diligence
+                        </span>
+                        <span>&bull;</span>
+                        <span class="flex items-center gap-1 text-slate-700">
+                            <i data-lucide="lock" class="w-4 h-4 text-blue-600"></i>
+                            256-Bit SSL
+                        </span>
+                        <span>&bull;</span>
+                        <span class="text-slate-700">0% Commission</span>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: 50% Width Authentication Form -->
+                <div class="space-y-4">
+                    
+                    <!-- Alerts (Maintenance, Flash & Errors) -->
+                    <?php if (function_exists('is_maintenance_mode') && is_maintenance_mode()): ?>
+                        <div class="p-3.5 rounded-2xl text-sm font-semibold bg-amber-50 text-amber-950 border border-amber-300 flex items-start space-x-2.5 shadow-sm">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 flex-shrink-0 text-amber-600 mt-0.5"></i>
+                            <div>
+                                <span class="font-bold block text-sm">Maintenance Mode Active</span>
+                                <span class="text-xs text-amber-900 font-normal">Public access is paused. Platform Administrators only.</span>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($flash): ?>
+                        <div class="p-3.5 rounded-2xl text-sm font-semibold border <?= $flash['type'] === 'success' ? 'bg-emerald-50 text-emerald-950 border-emerald-300' : 'bg-rose-50 text-rose-950 border-rose-300' ?> flex items-center space-x-2.5 shadow-sm">
+                            <i data-lucide="check-circle" class="w-5 h-5 flex-shrink-0 text-emerald-600"></i>
+                            <span><?= htmlspecialchars($flash['message']) ?></span>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($error)): ?>
+                        <div class="p-3.5 rounded-2xl text-sm font-semibold bg-rose-50 text-rose-950 border border-rose-300 flex items-center justify-between shadow-sm">
+                            <div class="flex items-center space-x-2.5">
+                                <i data-lucide="alert-circle" class="w-5 h-5 flex-shrink-0 text-rose-600"></i>
+                                <span><?= htmlspecialchars($error) ?></span>
+                            </div>
+                            <a href="<?= url('auth/forgot_password.php') . (!empty($email) ? '?email=' . urlencode($email) : '') ?>" class="text-xs text-blue-700 hover:text-blue-900 font-extrabold underline whitespace-nowrap ml-2">
+                                Reset Password?
+                            </a>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Sign In Form -->
+                    <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-4" id="loginForm">
+                        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                        <?= security_honeypot_field() ?>
+
+                        <!-- Email Field -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="email" class="block text-sm font-bold text-slate-800">
+                                    Email Address <span class="text-rose-600 font-bold">*</span>
+                                </label>
+                                <span id="roleDetectStatus" class="text-xs font-semibold text-blue-600"></span>
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="mail" class="w-5 h-5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <input type="email" id="email" name="email" required placeholder="name@company.com" autocomplete="email"
+                                       class="w-full pl-11 pr-4 py-3 bg-white border-2 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium shadow-2xs">
+                            </div>
+                        </div>
+
+                        <!-- Password Field with Show/Hide Toggle -->
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label for="password" class="block text-sm font-bold text-slate-800">
+                                    Password <span class="text-rose-600 font-bold">*</span>
+                                </label>
+                                <a href="<?= url('auth/forgot_password.php') ?>" id="forgotPassLink" class="text-xs sm:text-sm text-blue-600 hover:text-blue-800 font-bold transition">
+                                    Forgot Password?
+                                </a>
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="lock" class="w-5 h-5 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password"
+                                       class="w-full pl-11 pr-11 py-3 bg-white border-2 border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-4 focus:ring-blue-100 rounded-xl text-sm sm:text-base text-slate-900 placeholder-slate-400 outline-none transition font-medium shadow-2xs">
+                                
+                                <button type="button" 
+                                        id="togglePassBtn"
+                                        onclick="togglePasswordVisibility()" 
+                                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-800 p-1.5 rounded-lg transition"
+                                        title="Toggle password visibility">
+                                    <i data-lucide="eye" id="togglePassIcon" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Remember Me Option & Encryption Indicator -->
+                        <div class="flex items-center justify-between pt-1">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="remember" name="remember" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                <span class="text-sm text-slate-700 font-semibold">Remember this device</span>
+                            </label>
+                            <span class="text-xs text-slate-500 font-semibold flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
+                                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                                <span>256-Bit Encrypted</span>
+                            </span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="submitBtn" class="w-full py-3.5 px-6 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-base font-extrabold rounded-xl shadow-lg shadow-blue-600/30 hover:shadow-blue-600/40 transition-all flex items-center justify-center gap-2 group mt-2 font-satoshi tracking-wide cursor-pointer">
+                            <span id="btnText"><?= htmlspecialchars($cur['btn_text']) ?></span>
+                            <i data-lucide="arrow-right" id="btnIcon" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                    </form>
+
+                    <!-- Registration Prompt -->
+                    <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-sm text-slate-600 font-medium">
+                        <span>Don't have an account yet?</span>
+                        <a href="<?= url('auth/register.php') ?>" class="text-blue-600 font-bold hover:text-blue-800 hover:underline transition">
+                            Create New Account &rarr;
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Footer Trust Strip -->
+    <footer class="w-full max-w-6xl mx-auto px-4 sm:px-8 py-3 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-200 shrink-0 font-medium">
+        <div class="flex items-center gap-2">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+            <span>SEBI &amp; MCA Compliant Governance &bull; 256-Bit SSL Protection</span>
+        </div>
+        <div class="flex items-center gap-4 text-slate-600">
+            <a href="<?= url('legal/terms.php') ?>" class="hover:text-slate-900 transition font-semibold">Terms of Service</a>
+            <a href="<?= url('legal/privacy.php') ?>" class="hover:text-slate-900 transition font-semibold">Privacy Policy</a>
+            <span>&copy; <?= date('Y') ?> NEXORA Portal</span>
+        </div>
+    </footer>
+
+<!-- Interactive Scripts -->
     <script>
         lucide.createIcons();
 
         // GSAP Entrance Animations
-        gsap.from("#left-column > div", { 
-            duration: 0.6, 
-            y: 15, 
-            opacity: 0, 
-            stagger: 0.08, 
-            ease: "power2.out" 
-        });
-        gsap.from("#right-column", { 
-            duration: 0.5, 
-            opacity: 0, 
-            delay: 0.15, 
-            ease: "power2.out" 
-        });
+        gsap.from("#auth-card", { duration: 0.6, y: 20, opacity: 0, ease: "power2.out" });
 
         // 1-Click Fast Demo Fill with Auto-Detection Trigger
         function fillRoleDemo(email, pass, roleHint) {

@@ -167,7 +167,7 @@ if ($db && $user):
                 <?php if (!empty($banner['image_url'])): ?>
                     <!-- Professional Studio Thumbnail with subtle ring & badge -->
                     <div class="relative flex-shrink-0">
-                        <div class="w-13 h-13 sm:w-16 sm:h-16 rounded-xl overflow-hidden ring-2 <?= $theme['img_ring'] ?> shadow-sm bg-slate-100 dark:bg-slate-800">
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden ring-2 <?= $theme['img_ring'] ?> shadow-sm bg-slate-100 dark:bg-slate-800">
                             <img src="<?= htmlspecialchars($banner['image_url']) ?>" 
                                  alt="Notice visual" 
                                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

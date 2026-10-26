@@ -43,7 +43,7 @@ if ($db) {
 
     $fpStmt = $db->prepare("SELECT * FROM founder_profiles WHERE user_id = ?");
     $fpStmt->execute([$targetUserId]);
-    $profile = $fpStmt->fetch();
+    $profile = $fpStmt->fetch() ?: [];
 
     // 3. Fetch Associated Companies
     $cStmt = $db->prepare("
@@ -343,7 +343,7 @@ $flash = get_flash();
                                 <span>About</span>
                             </h2>
                             <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-                                <?= nl2br(htmlspecialchars($profile['bio'] ?: 'High-conviction startup founder building disruptive solutions.')) ?>
+                                <?= nl2br(htmlspecialchars(($profile['bio'] ?? '') ?: 'High-conviction startup founder building disruptive solutions.')) ?>
                             </p>
                         </div>
 

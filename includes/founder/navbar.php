@@ -106,6 +106,18 @@ require_once __DIR__ . '/theme.php';
             <?php endif; ?>
         </a>
 
+        <!-- Post Performance & Live Traction Analytics Header Button -->
+        <button type="button" 
+            onclick="typeof openPostAnalyticsModal === 'function' ? openPostAnalyticsModal() : (window.location.href = '<?= url('founder/feed.php?open_analytics=1') ?>')"
+            class="relative p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 text-slate-700 dark:text-slate-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition flex items-center justify-center cursor-pointer shadow-xs group"
+            title="Post Analytics &amp; Views Tracker">
+            <i data-lucide="bar-chart-2" class="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform"></i>
+            <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+        </button>
+
         <!-- Notifications Bell -->
         <div class="relative" id="notif-dropdown-wrapper">
             <button id="founder-notif-btn" 
@@ -155,7 +167,10 @@ require_once __DIR__ . '/theme.php';
                 </div>
                 <div class="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 text-center">
                     <a href="<?= url('notifications.php') ?>"
-                        class="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700">View all notifications →</a>
+                        class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700">
+                        <span>View all notifications</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
                 </div>
             </div>
         </div>

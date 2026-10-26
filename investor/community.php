@@ -144,7 +144,7 @@ if ($db) {
                     <!-- Event Card 1 -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-blue-300 dark:hover:border-blue-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-start space-x-4">
-                            <div class="w-13 h-13 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex flex-col items-center justify-center font-bold flex-shrink-0 border border-indigo-100 dark:border-indigo-900/40">
+                            <div class="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex flex-col items-center justify-center font-bold flex-shrink-0 border border-indigo-100 dark:border-indigo-900/40">
                                 <span class="text-[10px] uppercase tracking-wider font-extrabold text-indigo-400">OCT</span>
                                 <span class="text-lg font-black leading-none mt-0.5">28</span>
                             </div>
@@ -172,7 +172,7 @@ if ($db) {
                     <!-- Event Card 2 -->
                     <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-start space-x-4">
-                            <div class="w-13 h-13 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex flex-col items-center justify-center font-bold flex-shrink-0 border border-emerald-100 dark:border-emerald-900/40">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex flex-col items-center justify-center font-bold flex-shrink-0 border border-emerald-100 dark:border-emerald-900/40">
                                 <span class="text-[10px] uppercase tracking-wider font-extrabold text-emerald-400">NOV</span>
                                 <span class="text-lg font-black leading-none mt-0.5">04</span>
                             </div>
