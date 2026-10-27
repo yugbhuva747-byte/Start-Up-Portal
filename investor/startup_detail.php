@@ -637,8 +637,10 @@ $flash = get_flash();
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                             <label class="cursor-pointer">
                                 <input type="radio" name="recommendation" value="strong_buy" class="peer hidden" <?= $diligence['recommendation'] === 'strong_buy' ? 'checked' : '' ?>>
-                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/50 peer-checked:text-emerald-800 dark:peer-checked:text-emerald-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div class="text-base mb-0.5">🚀</div>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-950/50 peer-checked:text-emerald-800 dark:peer-checked:text-emerald-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col items-center">
+                                    <div class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-1">
+                                        <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+                                    </div>
                                     <div class="text-xs font-bold">Strong Buy</div>
                                     <div class="text-[10px] text-slate-400 mt-0.5">High Conviction</div>
                                 </div>
@@ -646,8 +648,10 @@ $flash = get_flash();
 
                             <label class="cursor-pointer">
                                 <input type="radio" name="recommendation" value="watch" class="peer hidden" <?= $diligence['recommendation'] === 'watch' ? 'checked' : '' ?>>
-                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-blue-600 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-950/50 peer-checked:text-blue-800 dark:peer-checked:text-blue-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div class="text-base mb-0.5">👁️</div>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-blue-600 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-950/50 peer-checked:text-blue-800 dark:peer-checked:text-blue-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col items-center">
+                                    <div class="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-1">
+                                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                    </div>
                                     <div class="text-xs font-bold">Watchlist</div>
                                     <div class="text-[10px] text-slate-400 mt-0.5">Monitor Traction</div>
                                 </div>
@@ -655,8 +659,10 @@ $flash = get_flash();
 
                             <label class="cursor-pointer">
                                 <input type="radio" name="recommendation" value="pending" class="peer hidden" <?= $diligence['recommendation'] === 'pending' ? 'checked' : '' ?>>
-                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-amber-600 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-950/50 peer-checked:text-amber-800 dark:peer-checked:text-amber-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div class="text-base mb-0.5">⏳</div>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-amber-600 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-950/50 peer-checked:text-amber-800 dark:peer-checked:text-amber-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col items-center">
+                                    <div class="w-6 h-6 rounded-lg bg-amber-100 dark:bg-amber-900/60 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-1">
+                                        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                                    </div>
                                     <div class="text-xs font-bold">Need Info</div>
                                     <div class="text-[10px] text-slate-400 mt-0.5">Data Room Pending</div>
                                 </div>
@@ -664,8 +670,10 @@ $flash = get_flash();
 
                             <label class="cursor-pointer">
                                 <input type="radio" name="recommendation" value="pass" class="peer hidden" <?= $diligence['recommendation'] === 'pass' ? 'checked' : '' ?>>
-                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-rose-600 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/50 peer-checked:text-rose-800 dark:peer-checked:text-rose-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <div class="text-base mb-0.5">⛔</div>
+                                <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 peer-checked:border-rose-600 peer-checked:bg-rose-50 dark:peer-checked:bg-rose-950/50 peer-checked:text-rose-800 dark:peer-checked:text-rose-300 text-slate-600 dark:text-slate-400 transition text-center hover:bg-slate-50 dark:hover:bg-slate-800 flex flex-col items-center">
+                                    <div class="w-6 h-6 rounded-lg bg-rose-100 dark:bg-rose-900/60 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-1">
+                                        <i data-lucide="ban" class="w-3.5 h-3.5"></i>
+                                    </div>
                                     <div class="text-xs font-bold">Pass</div>
                                     <div class="text-[10px] text-slate-400 mt-0.5">Out of Thesis / Risk</div>
                                 </div>

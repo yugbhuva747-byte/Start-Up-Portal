@@ -2005,7 +2005,7 @@ function send_login_otp_email(string $userEmail, string $userName, string $otpCo
                         <td style="background:{$themeGradient};padding:34px 32px 28px 32px;text-align:left;">
                             <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:12px;">
                                 <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
-                                    🔒 {$roleLabel} Account Verification
+                                    [Security] {$roleLabel} Account Verification
                                 </span>
                             </div>
                             <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;line-height:1.3;">
@@ -2034,7 +2034,7 @@ function send_login_otp_email(string $userEmail, string $userName, string $otpCo
                                     {$otpCode}
                                 </div>
                                 <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
-                                    ⏱ Valid for <strong>10 minutes</strong> &bull; Single-use only
+                                    Valid for <strong>10 minutes</strong> &bull; Single-use only
                                 </div>
                             </div>
 
@@ -2210,7 +2210,7 @@ function send_registration_otp_email(string $userEmail, string $userName, string
                         <td style="background:{$themeGradient};padding:34px 32px 28px 32px;text-align:left;">
                             <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:4px 14px;margin-bottom:12px;">
                                 <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;">
-                                    ✨ Welcome to {$appName}
+                                    Welcome to {$appName}
                                 </span>
                             </div>
                             <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:800;line-height:1.3;">
@@ -2239,7 +2239,7 @@ function send_registration_otp_email(string $userEmail, string $userName, string
                                     {$otpCode}
                                 </div>
                                 <div style="font-size: 12px; color: #64748b; margin-top: 8px;">
-                                    ⏱ Valid for <strong>10 minutes</strong> &bull; Single-use only
+                                    Valid for <strong>10 minutes</strong> &bull; Single-use only
                                 </div>
                             </div>
 

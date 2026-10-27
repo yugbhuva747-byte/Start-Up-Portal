@@ -797,13 +797,13 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                         <span>Company</span>
                                     </a>
 
-                                    <!-- Angel Invest CTA -->
+                                    <!-- Share Post CTA -->
                                     <?php if (!$isMyPost && (!$myCompany || $p['company_id'] != $myCompany['id'])): ?>
                                         <button type="button"
-                                            onclick="triggerFeedAngelModal(<?= $p['company_id'] ?>, '<?= htmlspecialchars(addslashes($p['company_name'])) ?>')"
-                                            class="w-full py-2 px-2 rounded-xl text-xs font-black bg-amber-50 dark:bg-amber-950/50 hover:bg-amber-100 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 transition flex items-center justify-center gap-1 cursor-pointer">
-                                            <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-600"></i>
-                                            <span>Invest</span>
+                                            onclick="shareFeedPost(<?= $p['id'] ?>, '<?= htmlspecialchars(addslashes($p['title'])) ?>', '<?= url('founder/company_view.php?id=' . encode_id($p['company_id'])) ?>')"
+                                            class="w-full py-2 px-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                            <i data-lucide="share-2" class="w-3.5 h-3.5 text-indigo-500"></i>
+                                            <span>Share</span>
                                         </button>
                                     <?php else: ?>
                                         <a href="<?= url('founder/company.php') ?>"
@@ -2168,6 +2168,42 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 }, { passive: false });
             }
         });
+
+        // Fast share feed post with native share or clipboard copy
+        function shareFeedPost(id, title, targetUrl) {
+            const fullUrl = new URL(targetUrl, window.location.origin).href;
+            if (navigator.share) {
+                navigator.share({
+                    title: title || 'Startup Update',
+                    text: 'Check out this startup milestone on NEXORA: ' + (title || ''),
+                    url: fullUrl
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(fullUrl).then(() => {
+                    showFeedToast('Post link copied to clipboard!');
+                }).catch(() => {
+                    showFeedToast('Post URL: ' + fullUrl);
+                });
+            }
+        }
+
+        function showFeedToast(message) {
+            let toast = document.getElementById('feed-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'feed-toast';
+                toast.className = 'fixed bottom-5 right-5 z-[99999] px-4 py-3 rounded-2xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-2xl text-xs sm:text-sm font-bold flex items-center gap-2.5 transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-none';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i><span>${message}</span>`;
+            if (window.lucide) lucide.createIcons();
+            toast.classList.remove('translate-y-4', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-4', 'opacity-0');
+            }, 3000);
+        }
     </script>
 </body>
 

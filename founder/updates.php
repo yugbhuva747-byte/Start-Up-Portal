@@ -661,6 +661,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
                                     </span>
                                 </div>
 
+                                <!-- Email Simulator Meta Header (Shown in Email Mode) -->
+                                <div id="prev-email-header" class="hidden p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[11px] font-mono space-y-1 text-slate-600 dark:text-slate-300">
+                                    <div><strong class="text-slate-900 dark:text-white">From:</strong> updates@<?= htmlspecialchars(strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $company['name'] ?? 'startup'))) ?>.com</div>
+                                    <div><strong class="text-slate-900 dark:text-white">To:</strong> All Verified Investors &amp; Syndicates</div>
+                                    <div><strong class="text-slate-900 dark:text-white">Subject:</strong> [Investor Broadcast] <span id="email-subject-prev"><?= htmlspecialchars($company['name'] ?? 'Startup') ?></span></div>
+                                </div>
+
                                 <!-- Live Preview Header -->
                                 <div class="space-y-2">
                                     <div class="flex flex-wrap items-center gap-2">
@@ -885,7 +892,33 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     <script>
         lucide.createIcons();
 
-        gsap.from("#updates-main", { duration: 0.35, y: 8, opacity: 0, ease: "power2.out" });
+        if (window.gsap) {
+            gsap.from("#updates-main", { duration: 0.35, y: 8, opacity: 0, ease: "power2.out" });
+        }
+
+        // Preview Mode Toggle (Card Feed vs Investor Email)
+        let currentPreviewDevice = 'card';
+        function setPreviewDevice(device) {
+            currentPreviewDevice = device;
+            const btnCard = document.getElementById('btn-view-card');
+            const btnEmail = document.getElementById('btn-view-email');
+            const phoneFrame = document.querySelector('.preview-phone-frame');
+            const emailHeader = document.getElementById('prev-email-header');
+
+            if (device === 'email') {
+                if (btnEmail) btnEmail.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-xs font-bold text-slate-800 dark:text-white transition';
+                if (btnCard) btnCard.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition';
+                if (phoneFrame) phoneFrame.classList.add('border-indigo-400', 'dark:border-indigo-600');
+                if (emailHeader) emailHeader.classList.remove('hidden');
+                showToast('Switched to Investor Email Preview format', 'info');
+            } else {
+                if (btnCard) btnCard.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-xs font-bold text-slate-800 dark:text-white transition';
+                if (btnEmail) btnEmail.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium transition';
+                if (phoneFrame) phoneFrame.classList.remove('border-indigo-400', 'dark:border-indigo-600');
+                if (emailHeader) emailHeader.classList.add('hidden');
+                showToast('Switched to Feed Card Preview format', 'info');
+            }
+        }
 
         // Real-time synchronization between form and preview
         function handleLiveSync() {
@@ -894,6 +927,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
             const visibility = document.getElementById('inp-visibility').value;
             const metrics = document.getElementById('inp-metrics').value;
             const content = document.getElementById('inp-content').value;
+
+            const emailSub = document.getElementById('email-subject-prev');
+            if (emailSub) emailSub.textContent = title ? '— ' + title : '';
 
             // Update Char Count
             const charCountEl = document.getElementById('title-char-count');

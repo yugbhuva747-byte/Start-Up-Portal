@@ -394,6 +394,15 @@ function send_notification(int $userId, string $title, string $message, string $
 // 6. Flash Messages
 function set_flash(string $type, string $message): void
 {
+    $validTypes = ['success', 'error', 'danger', 'info', 'warning'];
+    if (!in_array(strtolower($type), $validTypes) && in_array(strtolower($message), $validTypes)) {
+        $temp = $type;
+        $type = $message;
+        $message = $temp;
+    }
+    if (strtolower($type) === 'danger') {
+        $type = 'error';
+    }
     $_SESSION['flash'] = [
         'type' => $type, // 'success', 'error', 'info', 'warning'
         'message' => $message

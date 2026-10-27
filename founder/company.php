@@ -1761,8 +1761,148 @@ $flashStyles = [
             const m = document.getElementById('upload-modal');
             if (m) m.classList.add('hidden');
         }
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeUploadModal(); });
+
+        function openAwardModal() {
+            const m = document.getElementById('award-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+        function closeAwardModal() {
+            const m = document.getElementById('award-modal');
+            if (m) m.classList.add('hidden');
+        }
+
+        function openAwardLightbox(src, title, issuer) {
+            const modal = document.getElementById('company-award-lightbox');
+            const img = document.getElementById('award-lightbox-img');
+            const titleEl = document.getElementById('award-lightbox-title');
+            const issuerEl = document.getElementById('award-lightbox-issuer');
+            if (modal && img) {
+                img.src = src;
+                if (titleEl) titleEl.textContent = title || 'Verified Award';
+                if (issuerEl) issuerEl.textContent = issuer ? ('Issued by: ' + issuer) : '';
+                modal.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+            }
+        }
+        function closeAwardLightbox() {
+            const modal = document.getElementById('company-award-lightbox');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeUploadModal();
+                closeAwardModal();
+                closeAwardLightbox();
+            }
+        });
     </script>
+
+    <!-- Award / Trust Credential Upload Modal -->
+    <div id="award-modal" class="hidden fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/70 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Add Award or Trust Credential</h3>
+                        <p class="text-xs text-slate-500">Showcase recognition, certificates, or compliance badges</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAwardModal()" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form action="<?= url('founder/company.php') ?>" method="POST" enctype="multipart/form-data" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                <input type="hidden" name="action" value="add_award">
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Award / Certificate Title *</label>
+                    <input type="text" name="title" required placeholder="e.g. DPIIT Recognized Startup / Top FinTech 2026"
+                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Category</label>
+                        <select name="category" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                            <option value="Government & Regulatory">Government &amp; Regulatory</option>
+                            <option value="Incubation & Accelerator">Incubation &amp; Accelerator</option>
+                            <option value="Pitch & Hackathon">Pitch &amp; Hackathon</option>
+                            <option value="ISO & Compliance">ISO &amp; Compliance</option>
+                            <option value="Patent & IP">Patent &amp; Intellectual Property</option>
+                            <option value="Industry Recognition">Industry Recognition</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Issuing Authority</label>
+                        <input type="text" name="issuer" placeholder="e.g. Startup India / DPIIT / NASSCOM"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Year of Award</label>
+                        <input type="number" name="award_year" value="<?= date('Y') ?>" min="2000" max="<?= date('Y') + 1 ?>"
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Verification URL (Optional)</label>
+                        <input type="url" name="verification_link" placeholder="https://..."
+                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Certificate / Trophy Photo (Upload)</label>
+                    <input type="file" name="award_file" accept="image/*,.pdf"
+                        class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-amber-100 file:text-amber-800 dark:file:bg-amber-950 dark:file:text-amber-300 cursor-pointer">
+                    <p class="text-[11px] text-slate-400 mt-1">Accepted: PNG, JPG, WebP, PDF (Max 10MB)</p>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" onclick="closeAwardModal()" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-md transition active:scale-95 cursor-pointer flex items-center gap-1.5">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>Save Award</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Company Award Lightbox Modal -->
+    <div id="company-award-lightbox"
+        class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all duration-300"
+        onclick="if (event.target === this) closeAwardLightbox();">
+        <div class="relative max-w-4xl w-full bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800">
+            <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-800 bg-slate-900/95 text-white">
+                <div>
+                    <h4 id="award-lightbox-title" class="font-extrabold text-base sm:text-lg text-white">Verified Award Certificate</h4>
+                    <p id="award-lightbox-issuer" class="text-xs text-amber-400 font-medium mt-0.5"></p>
+                </div>
+                <button type="button" onclick="closeAwardLightbox()"
+                    class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer" aria-label="Close modal">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="p-3 bg-black flex items-center justify-center min-h-[320px] max-h-[75vh] overflow-hidden">
+                <img id="award-lightbox-img" src="" alt="Award Certificate" class="max-h-[70vh] max-w-full object-contain rounded-xl shadow-lg">
+            </div>
+        </div>
+    </div>
 
     <?php include __DIR__ . '/../includes/share_company_modal.php'; ?>
 </body>

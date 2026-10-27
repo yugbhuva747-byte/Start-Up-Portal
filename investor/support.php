@@ -133,24 +133,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
                 </span>
                 <div class="flex flex-wrap gap-2">
                     <button type="button" onclick="selectTopic('Escrow & Payment Wire', 'Question regarding payment wire or escrow confirmation')"
-                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        💳 Payment &amp; Escrow
+                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer inline-flex items-center gap-1.5">
+                        <i data-lucide="credit-card" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+                        <span>Payment &amp; Escrow</span>
                     </button>
                     <button type="button" onclick="selectTopic('Share Certificate & Allotment', 'Inquiry regarding digital share certificate and PAS-3 return')"
-                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        📜 Share Certificates
+                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer inline-flex items-center gap-1.5">
+                        <i data-lucide="file-text" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400"></i>
+                        <span>Share Certificates</span>
                     </button>
                     <button type="button" onclick="selectTopic('KYC & DigiLocker Accreditation', 'Assistance with Aadhaar / PAN DigiLocker verification')"
-                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        🛡️ KYC Verification
+                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer inline-flex items-center gap-1.5">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400"></i>
+                        <span>KYC Verification</span>
                     </button>
                     <button type="button" onclick="selectTopic('Deal Due Diligence Access', 'Requesting data room access for active pitch')"
-                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        🔍 Pitch Data Room
+                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer inline-flex items-center gap-1.5">
+                        <i data-lucide="search" class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400"></i>
+                        <span>Pitch Data Room</span>
                     </button>
                     <button type="button" onclick="selectTopic('General Question', 'General investor query')"
-                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer">
-                        💬 General Query
+                        class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950/60 text-slate-700 dark:text-slate-200 hover:text-[#123B7A] dark:hover:text-blue-300 text-xs font-semibold border border-slate-200 dark:border-slate-700 transition cursor-pointer inline-flex items-center gap-1.5">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5 text-purple-600 dark:text-purple-400"></i>
+                        <span>General Query</span>
                     </button>
                 </div>
             </div>

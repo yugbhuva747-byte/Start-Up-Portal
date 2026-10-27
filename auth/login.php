@@ -798,7 +798,7 @@ $cur = $roleMeta[$role] ?? $roleMeta['unified'];
                 const data = await res.json();
 
                 if (data.success && data.exists) {
-                    if (roleStatus) roleStatus.textContent = '✓ Verified Account';
+                    if (roleStatus) roleStatus.textContent = 'Verified Account';
                     roleIndicator.classList.remove('hidden');
 
                     if (data.role === 'founder') {
