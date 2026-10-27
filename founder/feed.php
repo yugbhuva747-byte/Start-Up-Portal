@@ -154,54 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $db) {
         header('Location: ' . url('founder/feed.php#post-' . $updateId));
         exit;
     }
-
-    // 4. ANGEL CO-INVESTMENT FROM FEED
-    if ($action === 'feed_angel_invest') {
-        $targetCompanyId = (int) ($_POST['company_id'] ?? 0);
-        $amount = (float) ($_POST['amount'] ?? 100000);
-        $ticketType = trim($_POST['investment_type'] ?? 'Direct Angel');
-        $note = trim($_POST['message'] ?? '');
-
-        if ($targetCompanyId > 0 && (!$myCompany || $targetCompanyId != $myCompany['id'])) {
-            $fullMessage = "Angel Syndicate Ticket: ₹" . number_format($amount) . " (" . htmlspecialchars($ticketType) . ")\nNote: " . $note;
-
-            try {
-                // Upsert into investor_interests
-                $chk = $db->prepare("SELECT id FROM investor_interests WHERE investor_id = ? AND company_id = ?");
-                $chk->execute([$user['id'], $targetCompanyId]);
-                $ex = $chk->fetch();
-
-                if ($ex) {
-                    $upd = $db->prepare("UPDATE investor_interests SET message = ?, status = 'pending', updated_at = NOW() WHERE id = ?");
-                    $upd->execute([$fullMessage, $ex['id']]);
-                } else {
-                    $ins = $db->prepare("INSERT INTO investor_interests (investor_id, company_id, message, status) VALUES (?, ?, ?, 'pending')");
-                    $ins->execute([$user['id'], $targetCompanyId, $fullMessage]);
-                }
-
-                // Notify target company founders
-                $tfStmt = $db->prepare("SELECT user_id FROM company_founders WHERE company_id = ?");
-                $tfStmt->execute([$targetCompanyId]);
-                $tfUsers = $tfStmt->fetchAll(PDO::FETCH_COLUMN);
-
-                foreach ($tfUsers as $tfId) {
-                    send_notification(
-                        (int) $tfId,
-                        "Founder Angel Interest from " . $user['name'],
-                        "Founder {$user['name']} expressed angel investment interest of ₹" . number_format($amount) . " in your startup.",
-                        "success",
-                        "founder/investor_interests.php"
-                    );
-                }
-
-                set_flash('success', 'Angel investment interest submitted successfully! The founders have been notified.');
-            } catch (Exception $e) {
-                set_flash('error', 'Failed to express interest: ' . $e->getMessage());
-            }
-        }
-        header('Location: ' . url('founder/feed.php'));
-        exit;
-    }
 }
 
 // -------------------------------------------------------------
@@ -919,14 +871,14 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                     data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
                     class="w-full lg:w-[270px] xl:w-[290px] 2xl:w-[310px] flex-shrink-0 lg:sticky lg:top-24 lg:self-start space-y-3.5 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto custom-scroll no-scrollbar overscroll-contain pb-12 pr-1">
 
-                    <!-- Live Angel Syndicate Rounds (Placed at Top) -->
+                    <!-- Active Startup Rounds (Placed at Top) -->
                     <?php if (!empty($liveRounds)): ?>
                         <div
                             class="rounded-2xl p-4 bg-gradient-to-br from-amber-500/10 via-indigo-500/5 to-transparent border border-amber-500/30 dark:border-amber-500/20 shadow-sm space-y-2.5">
                             <div class="flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                                 <h3 class="text-xs font-black uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                                    Live Angel Syndicates</h3>
+                                    Active Startup Rounds</h3>
                             </div>
 
                             <div class="space-y-2.5">
@@ -946,11 +898,10 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                         </div>
                                         <div class="flex items-center justify-between text-[10.5px] text-slate-500">
                                             <span>Target: ₹<?= number_format($lr['target_amount'] / 100000, 1) ?>L</span>
-                                            <button type="button"
-                                                onclick="triggerFeedAngelModal(<?= $lr['company_id'] ?>, '<?= htmlspecialchars(addslashes($lr['company_name'])) ?>')"
-                                                class="text-indigo-600 font-bold hover:underline cursor-pointer">
-                                                Co-Invest
-                                            </button>
+                                            <a href="<?= url('founder/company_view.php?id=' . encode_id($lr['company_id'])) ?>"
+                                                class="text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                                                View &rarr;
+                                            </a>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -1013,11 +964,6 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                                                 'logo' => get_company_logo_url($ts['logo_url'] ?? ''),
                                                 'class' => 'text-[10px] py-0.5 px-2'
                                             ]) ?>
-                                            <button type="button"
-                                                onclick="triggerFeedAngelModal(<?= $ts['id'] ?>, '<?= htmlspecialchars(addslashes($ts['name'])) ?>')"
-                                                class="px-2 py-0.5 rounded-md bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[10px] uppercase tracking-wider cursor-pointer">
-                                                Invest
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -1700,96 +1646,6 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
         </div>
     </div>
 
-    <!-- ======================================================== -->
-    <!-- ANGEL INVEST / EXPRESS INTEREST MODAL (Triggered from Feed) -->
-    <!-- ======================================================== -->
-    <div id="feed-angel-modal"
-        class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-5 animate-in fade-in zoom-in-95 duration-200">
-            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-                <div class="flex items-center gap-2.5">
-                    <div
-                        class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 flex items-center justify-center font-bold">
-                        <i data-lucide="coins" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base font-extrabold text-slate-900 dark:text-white">Founder Angel Co-Investment
-                        </h3>
-                        <p class="text-xs text-slate-500">Back <span id="angel-modal-company-name"
-                                class="font-bold text-indigo-600">Company</span> as an angel</p>
-                    </div>
-                </div>
-                <button type="button" onclick="closeFeedAngelModal()"
-                    class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <form method="POST" action="<?= url('founder/feed.php') ?>" class="space-y-4">
-                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                <input type="hidden" name="form_action" value="feed_angel_invest">
-                <input type="hidden" name="company_id" id="angel-modal-company-id" value="0">
-
-                <!-- Ticket Size Options -->
-                <div>
-                    <label
-                        class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Select
-                        Proposed Ticket Size (₹)</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <?php foreach ([50000, 100000, 250000, 500000, 1000000, 2500000] as $amt): ?>
-                            <button type="button" onclick="setFeedTicketAmount(<?= $amt ?>)"
-                                class="ticket-btn py-2 px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-indigo-500 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-indigo-50 dark:hover:bg-indigo-950/50 transition text-center cursor-pointer">
-                                ₹<?= $amt >= 100000 ? ($amt / 100000) . ' Lakh' . ($amt > 100000 ? 's' : '') : ($amt / 1000) . 'k' ?>
-                            </button>
-                        <?php endforeach; ?>
-                    </div>
-                    <div class="mt-2.5">
-                        <input type="number" name="amount" id="feed-ticket-input" value="100000" min="10000"
-                            step="10000"
-                            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-black bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white"
-                            placeholder="Custom Amount in INR">
-                    </div>
-                </div>
-
-                <!-- Investment Type -->
-                <div>
-                    <label
-                        class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Syndicate
-                        Role / Type</label>
-                    <select name="investment_type"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200">
-                        <option value="Direct Angel Ticket">Direct Angel Ticket (Cash + Equity)</option>
-                        <option value="Syndicate Co-Investment">Syndicate Co-Investment (Lead / Follower)</option>
-                        <option value="Strategic Founder Advisory + Capital">Strategic Founder Advisory + Capital
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Note to Founder -->
-                <div>
-                    <label
-                        class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Note
-                        to Founder Leadership</label>
-                    <textarea name="message" rows="3"
-                        class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs sm:text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200"
-                        placeholder="e.g. Great progress! Would love to participate in this round and offer strategic founder support..."></textarea>
-                </div>
-
-                <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                    <button type="button" onclick="closeFeedAngelModal()"
-                        class="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition active:scale-95 cursor-pointer">
-                        Send Angel Interest
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Scripts -->
     <script>
         // Clean Background Scroll Lock & Lenis Engine Pause
@@ -1937,10 +1793,8 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
         window.addEventListener('wheel', function(e) {
             const modal = document.getElementById('create-post-modal');
             const analyticsModal = document.getElementById('post-analytics-modal');
-            const angelModal = document.getElementById('feed-angel-modal');
             const isPostModalOpen = modal && !modal.classList.contains('hidden');
             const isAnalyticsModalOpen = analyticsModal && !analyticsModal.classList.contains('hidden');
-            const isAngelModalOpen = angelModal && !angelModal.classList.contains('hidden');
 
             if (isPostModalOpen) {
                 const scrollBody = document.getElementById('createPostScrollBody');
@@ -1962,8 +1816,6 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
                 if (scrollBody) {
                     scrollBody.scrollTop += e.deltaY;
                 }
-                e.preventDefault();
-            } else if (isAngelModalOpen) {
                 e.preventDefault();
             }
         }, { passive: false });
@@ -2136,21 +1988,6 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
             }
         }
 
-        function triggerFeedAngelModal(companyId, companyName) {
-            document.getElementById('angel-modal-company-id').value = companyId;
-            document.getElementById('angel-modal-company-name').textContent = companyName;
-            document.getElementById('feed-angel-modal')?.classList.remove('hidden');
-            lockBodyScroll();
-        }
-        function closeFeedAngelModal() {
-            document.getElementById('feed-angel-modal')?.classList.add('hidden');
-            unlockBodyScroll();
-        }
-        function setFeedTicketAmount(amt) {
-            const input = document.getElementById('feed-ticket-input');
-            if (input) input.value = amt;
-        }
-
         function handleLikeAjax(e, postId) {
             e.preventDefault();
             const form = e.target;
@@ -2298,7 +2135,6 @@ $founderInitials = strtoupper(substr($user['name'] ?? 'F', 0, 2));
             if (e.key === 'Escape') {
                 closePostModal();
                 closePostAnalyticsModal();
-                closeFeedAngelModal();
             }
         });
 

@@ -753,3 +753,23 @@ CREATE TABLE IF NOT EXISTS `user_connections` (
     FOREIGN KEY (`receiver_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ============================================================
+-- 40. Archived User Photos (30-Day Retention Queue for Replaced Photos)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS `archived_user_photos` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `photo_type` VARCHAR(50) DEFAULT 'avatar',
+    `file_url` VARCHAR(500) NOT NULL,
+    `file_path` VARCHAR(500) NOT NULL,
+    `replaced_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `scheduled_delete_at` DATETIME NOT NULL,
+    `deleted_at` DATETIME NULL,
+    `status` ENUM('pending', 'deleted', 'failed', 'cancelled') NOT NULL DEFAULT 'pending',
+    `notes` VARCHAR(255) NULL,
+    `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX `idx_user_id` (`user_id`),
+    INDEX `idx_status_delete` (`status`, `scheduled_delete_at`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

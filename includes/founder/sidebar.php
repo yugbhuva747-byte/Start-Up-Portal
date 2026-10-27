@@ -191,10 +191,13 @@ require_once __DIR__ . '/theme.php';
 
 <aside id="main-sidebar" data-lenis-prevent="true" data-lenis-prevent-wheel="true" data-lenis-prevent-touch="true"
     class="fixed inset-y-0 left-0 z-50 w-72 sm:w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between h-full transform -translate-x-full lg:translate-x-0 lg:sticky lg:top-0 lg:z-30 lg:h-screen lg:w-64 flex-shrink-0 transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none select-none">
-    <div data-lenis-prevent="true" data-lenis-prevent-wheel="true" class="sidebar-scroll-body p-4 sm:p-5 overflow-y-auto flex-1">
+    <div data-lenis-prevent="true" data-lenis-prevent-wheel="true"
+        class="sidebar-scroll-body p-4 sm:p-5 overflow-y-auto flex-1">
         <!-- Brand Logo & Mobile Close Button -->
         <div class="sidebar-brand-header flex items-center justify-between mb-6">
-            <a href="<?= url('founder/dashboard.php') ?>" class="sidebar-brand-link flex items-center space-x-3 group min-w-0" data-tooltip="Founder Hub" title="Founder Hub">
+            <a href="<?= url('founder/dashboard.php') ?>"
+                class="sidebar-brand-link flex items-center space-x-3 group min-w-0" data-tooltip="Founder Hub"
+                title="Founder Hub">
                 <div
                     class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-600/20 group-hover:scale-105 transition flex-shrink-0">
                     <i data-lucide="zap" class="w-5 h-5"></i>
@@ -204,7 +207,8 @@ require_once __DIR__ . '/theme.php';
                         class="font-black text-slate-900 dark:text-white text-base tracking-tight leading-tight flex items-center gap-1 whitespace-nowrap">
                         FOUNDER <span class="text-indigo-600 dark:text-indigo-400">HUB</span>
                     </div>
-                    <div class="text-[11px] text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">Startup Workspace</div>
+                    <div class="text-[11px] text-slate-400 font-bold uppercase tracking-wider whitespace-nowrap">Startup
+                        Workspace</div>
                 </div>
             </a>
             <button type="button" onclick="toggleMobileSidebar()"
@@ -215,10 +219,12 @@ require_once __DIR__ . '/theme.php';
         </div>
 
         <!-- Readiness Progress Card -->
-        <div class="founder-progress-card mb-6 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
+        <div
+            class="founder-progress-card mb-6 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700">
             <div class="flex items-center justify-between text-xs mb-2">
                 <span class="text-slate-600 dark:text-slate-300 font-semibold text-xs">Profile Readiness</span>
-                <span class="text-indigo-600 dark:text-indigo-400 font-bold text-sm"><?= $founderProgress['percentage'] ?>%</span>
+                <span
+                    class="text-indigo-600 dark:text-indigo-400 font-bold text-sm"><?= $founderProgress['percentage'] ?>%</span>
             </div>
             <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-2.5">
                 <div class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-500"
@@ -240,19 +246,16 @@ require_once __DIR__ . '/theme.php';
 
         <!-- Navigation Links -->
         <nav class="space-y-1.5 text-sm font-medium">
-            <a href="<?= url('founder/dashboard.php') ?>"
-               data-tooltip="Overview &amp; KPIs"
-               title="Overview &amp; KPIs"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'dashboard.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/dashboard.php') ?>" data-tooltip="Overview &amp; KPIs" title="Overview &amp; KPIs"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'dashboard.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="layout-dashboard"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'dashboard.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Overview</span>
             </a>
 
-            <a href="<?= url('founder/feed.php') ?>"
-               data-tooltip="Founder Network &amp; Feed"
-               title="Founder Network &amp; Feed"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'feed.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/feed.php') ?>" data-tooltip="Founder Network &amp; Feed"
+                title="Founder Network &amp; Feed"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'feed.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="rss"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'feed.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Network &amp; Feed</span>
@@ -261,69 +264,51 @@ require_once __DIR__ . '/theme.php';
             <?php
             $pendingConnCount = 0;
             if ($founderUser && function_exists('get_pending_connections_count')) {
-                $pendingConnCount = get_pending_connections_count((int)$founderUser['id']);
+                $pendingConnCount = get_pending_connections_count((int) $founderUser['id']);
             }
             ?>
-            <a href="<?= url('founder/network.php') ?>"
-               data-tooltip="My Network<?= $pendingConnCount > 0 ? " ($pendingConnCount Pending)" : '' ?>"
-               title="My Network"
-               class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'network.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
-                <div class="flex items-center space-x-3 min-w-0">
-                    <i data-lucide="users"
-                        class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'network.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
-                    <span class="sidebar-text-item whitespace-nowrap">My Network</span>
-                </div>
-                <?php if ($pendingConnCount > 0): ?>
-                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-600 text-white shadow-2xs">
-                        <?= $pendingConnCount ?>
-                    </span>
-                <?php endif; ?>
-            </a>
 
             <?php
             $hasCompanyProfile = false;
             if ($founderUser) {
-                $hasCompanyProfile = function_exists('founder_has_company') ? founder_has_company((int)$founderUser['id']) : false;
+                $hasCompanyProfile = function_exists('founder_has_company') ? founder_has_company((int) $founderUser['id']) : false;
             }
             ?>
             <a href="<?= url('founder/company.php') ?>"
-               data-tooltip="Company Profile<?= !$hasCompanyProfile ? ' (Setup Required)' : '' ?>"
-               title="Company Profile"
-               class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'company.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                data-tooltip="Company Profile<?= !$hasCompanyProfile ? ' (Setup Required)' : '' ?>"
+                title="Company Profile"
+                class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'company.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <div class="flex items-center space-x-3 min-w-0">
                     <i data-lucide="building-2"
                         class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'company.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                     <span class="sidebar-text-item whitespace-nowrap">Company Profile</span>
                 </div>
                 <?php if (!$hasCompanyProfile): ?>
-                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs">
+                    <span
+                        class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs">
                         Setup
                     </span>
                 <?php endif; ?>
             </a>
 
-            <a href="<?= url('founder/funding_rounds.php') ?>"
-               data-tooltip="Funding Rounds"
-               title="Funding Rounds"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'funding_rounds.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/funding_rounds.php') ?>" data-tooltip="Funding Rounds" title="Funding Rounds"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'funding_rounds.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="circle-dollar-sign"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'funding_rounds.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Funding Rounds</span>
             </a>
 
-            <a href="<?= url('founder/cap_table.php') ?>"
-               data-tooltip="Cap Table &amp; Equity"
-               title="Cap Table &amp; Equity"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'cap_table.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/cap_table.php') ?>" data-tooltip="Cap Table &amp; Equity"
+                title="Cap Table &amp; Equity"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'cap_table.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="pie-chart"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'cap_table.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Cap Table & Equity</span>
             </a>
 
-            <a href="<?= url('founder/verification.php') ?>"
-               data-tooltip="KYC &amp; DigiLocker"
-               title="KYC &amp; DigiLocker"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'verification.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/verification.php') ?>" data-tooltip="KYC &amp; DigiLocker"
+                title="KYC &amp; DigiLocker"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'verification.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="shield-check"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'verification.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">KYC & DigiLocker</span>
@@ -341,49 +326,47 @@ require_once __DIR__ . '/theme.php';
                             WHERE cf.user_id = ? AND ii.status = 'pending'
                         ");
                         $piStmt->execute([$founderUser['id']]);
-                        $pendingInterestsBadge = (int)$piStmt->fetchColumn();
+                        $pendingInterestsBadge = (int) $piStmt->fetchColumn();
                     }
-                } catch (\Throwable $e) {}
+                } catch (\Throwable $e) {
+                }
             }
             ?>
             <a href="<?= url('founder/investor_interests.php') ?>"
-               data-tooltip="Investor Interest<?= $pendingInterestsBadge > 0 ? " ($pendingInterestsBadge Pending)" : '' ?>"
-               title="Investor Interest"
-               class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'investor_interests.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+                data-tooltip="Investor Interest<?= $pendingInterestsBadge > 0 ? " ($pendingInterestsBadge Pending)" : '' ?>"
+                title="Investor Interest"
+                class="sidebar-link flex items-center justify-between px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'investor_interests.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <div class="flex items-center space-x-3 min-w-0">
                     <i data-lucide="handshake"
                         class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'investor_interests.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                     <span class="sidebar-text-item whitespace-nowrap">Investor Interest</span>
                 </div>
                 <?php if ($pendingInterestsBadge > 0): ?>
-                    <span class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs">
+                    <span
+                        class="sidebar-text-item px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs">
                         <?= $pendingInterestsBadge ?>
                     </span>
                 <?php endif; ?>
             </a>
 
-            <a href="<?= url('founder/messages.php') ?>"
-               data-tooltip="Investor Chat"
-               title="Investor Chat"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'messages.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/messages.php') ?>" data-tooltip="Investor Chat" title="Investor Chat"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'messages.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="message-square"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'messages.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Investor Chat</span>
             </a>
 
-            <a href="<?= url('founder/updates.php') ?>"
-               data-tooltip="Updates &amp; Milestones"
-               title="Updates &amp; Milestones"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'updates.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/updates.php') ?>" data-tooltip="Updates &amp; Milestones"
+                title="Updates &amp; Milestones"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'updates.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="newspaper"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'updates.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Updates & Milestones</span>
             </a>
 
-            <a href="<?= url('founder/blogs.php') ?>"
-               data-tooltip="Company Blog &amp; Stories"
-               title="Company Blog &amp; Stories"
-               class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'blogs.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
+            <a href="<?= url('founder/blogs.php') ?>" data-tooltip="Company Blog &amp; Stories"
+                title="Company Blog &amp; Stories"
+                class="sidebar-link flex items-center space-x-3 px-3.5 py-2.5 rounded-xl transition <?= $currentPage === 'blogs.php' ? 'is-active bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold shadow-xs' : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800' ?>">
                 <i data-lucide="book-open"
                     class="w-4.5 h-4.5 flex-shrink-0 <?= $currentPage === 'blogs.php' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400' ?>"></i>
                 <span class="sidebar-text-item whitespace-nowrap">Company Blog & Stories</span>
@@ -391,7 +374,7 @@ require_once __DIR__ . '/theme.php';
         </nav>
     </div>
 
-   
+
 </aside>
 
 <script>

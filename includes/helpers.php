@@ -749,8 +749,210 @@ function handle_avatar_upload(array $file, int $userId): array
         return ['success' => false, 'url' => null, 'error' => 'Failed to save uploaded photo to disk.'];
     }
 
+    // Automatically archive the user's previous photo into the 30-day retention queue
+    archive_old_user_photo($userId);
+
+    // Opportunistically remove any expired archived photos
+    cleanup_expired_archived_photos();
+
     $publicUrl = url('uploads/avatars/' . $filename);
     return ['success' => true, 'url' => $publicUrl, 'error' => null];
+}
+
+/**
+ * 12a. Check if photo URL is a local uploaded file (in /uploads/ directory)
+ */
+function is_local_uploaded_photo(?string $url): bool
+{
+    if (empty($url)) {
+        return false;
+    }
+    if (str_contains($url, 'images.unsplash.com') || str_contains($url, 'ui-avatars.com')) {
+        return false;
+    }
+    return str_contains($url, 'uploads/avatars/') || str_contains($url, 'uploads/');
+}
+
+/**
+ * 12b. Archive user's old photo to the 30-day retention queue
+ * When a user uploads a new photo, this queues the old photo to be permanently removed after 30 days.
+ */
+function archive_old_user_photo(int $userId, ?string $oldPhotoUrl = null, string $photoType = 'avatar'): bool
+{
+    $db = get_db();
+    if (!$db || $userId <= 0) {
+        return false;
+    }
+
+    try {
+        // 1. Resolve current photo URL if not supplied
+        if ($oldPhotoUrl === null || $oldPhotoUrl === '') {
+            $uStmt = $db->prepare("SELECT avatar_url FROM users WHERE id = ? LIMIT 1");
+            $uStmt->execute([$userId]);
+            $oldPhotoUrl = (string) $uStmt->fetchColumn();
+        }
+
+        $oldPhotoUrl = trim($oldPhotoUrl);
+        if ($oldPhotoUrl === '' || !is_local_uploaded_photo($oldPhotoUrl)) {
+            // Not a local uploaded file (external or default avatar), no retention tracking needed
+            return false;
+        }
+
+        // 2. Resolve relative and disk paths
+        $relativePath = '';
+        if (preg_match('~(uploads/avatars/[a-zA-Z0-9_.-]+)~i', $oldPhotoUrl, $matches)) {
+            $relativePath = $matches[1];
+        } elseif (preg_match('~(uploads/[a-zA-Z0-9_/.-]+)~i', $oldPhotoUrl, $matches)) {
+            $relativePath = $matches[1];
+        }
+
+        if (empty($relativePath)) {
+            return false;
+        }
+
+        $diskPath = ROOT_PATH . '/' . $relativePath;
+        if (!file_exists($diskPath)) {
+            return false;
+        }
+
+        // 3. Check if already queued with status 'pending'
+        $chk = $db->prepare("
+            SELECT id FROM archived_user_photos 
+            WHERE user_id = ? AND file_path = ? AND status = 'pending' 
+            LIMIT 1
+        ");
+        $chk->execute([$userId, $diskPath]);
+        if ($chk->fetch()) {
+            return true; // Already queued
+        }
+
+        // 4. Insert into archived_user_photos with 30-day scheduled deletion date
+        $ins = $db->prepare("
+            INSERT INTO archived_user_photos (
+                user_id, photo_type, file_url, file_path, 
+                replaced_at, scheduled_delete_at, status, notes
+            ) VALUES (
+                ?, ?, ?, ?, 
+                NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY), 'pending', 
+                'Replaced on new photo upload. Auto-scheduled for deletion after 30 days.'
+            )
+        ");
+        $ins->execute([$userId, $photoType, $oldPhotoUrl, $diskPath]);
+
+        if (function_exists('log_audit')) {
+            log_audit($userId, 'PHOTO_ARCHIVED_RETENTION', 'users', $userId, "Old {$photoType} queued for 30-day retention cleanup");
+        }
+
+        return true;
+    } catch (\Throwable $e) {
+        error_log("Failed to archive user photo (user {$userId}): " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * 12c. Permanently remove archived photos whose 30-day retention period has expired
+ * Deletes the files from disk and marks them deleted in the database.
+ */
+function cleanup_expired_archived_photos(?PDO $db = null): array
+{
+    if (!$db) {
+        $db = get_db();
+    }
+    if (!$db) {
+        return ['success' => false, 'deleted_count' => 0, 'errors' => ['Database unavailable']];
+    }
+
+    $deletedCount = 0;
+    $errors = [];
+
+    try {
+        // Fetch all pending records whose scheduled_delete_at <= NOW()
+        $stmt = $db->prepare("
+            SELECT id, user_id, file_path, file_url, scheduled_delete_at 
+            FROM archived_user_photos 
+            WHERE status = 'pending' AND scheduled_delete_at <= NOW()
+            ORDER BY scheduled_delete_at ASC
+            LIMIT 200
+        ");
+        $stmt->execute();
+        $expiredRecords = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $updSuccess = $db->prepare("UPDATE archived_user_photos SET status = 'deleted', deleted_at = NOW() WHERE id = ?");
+        $updFailed = $db->prepare("UPDATE archived_user_photos SET status = 'failed', notes = ? WHERE id = ?");
+
+        $uploadsBase = realpath(ROOT_PATH . '/uploads');
+
+        foreach ($expiredRecords as $rec) {
+            $recId = (int) $rec['id'];
+            $filePath = $rec['file_path'];
+
+            // Security guard: Ensure file is strictly inside ROOT_PATH/uploads
+            $realFile = realpath($filePath);
+            if ($realFile && $uploadsBase && str_starts_with($realFile, $uploadsBase)) {
+                if (file_exists($realFile)) {
+                    if (@unlink($realFile)) {
+                        $updSuccess->execute([$recId]);
+                        $deletedCount++;
+                    } else {
+                        $updFailed->execute(['Failed to unlink file from disk', $recId]);
+                        $errors[] = "Could not delete file: {$filePath}";
+                    }
+                } else {
+                    // File was already removed manually
+                    $updSuccess->execute([$recId]);
+                    $deletedCount++;
+                }
+            } else {
+                // If path doesn't exist on disk, mark as deleted anyway so it doesn't loop
+                if (!file_exists($filePath)) {
+                    $updSuccess->execute([$recId]);
+                    $deletedCount++;
+                } else {
+                    $updFailed->execute(['Security check failed: file path outside uploads', $recId]);
+                    $errors[] = "Security check failed for path: {$filePath}";
+                }
+            }
+        }
+
+        return [
+            'success' => true,
+            'deleted_count' => $deletedCount,
+            'errors' => $errors
+        ];
+    } catch (\Throwable $e) {
+        error_log("Photo cleanup error: " . $e->getMessage());
+        return [
+            'success' => false,
+            'deleted_count' => $deletedCount,
+            'errors' => [$e->getMessage()]
+        ];
+    }
+}
+
+/**
+ * 12d. Fetch a user's archived photos with retention countdown
+ */
+function get_user_archived_photos(int $userId): array
+{
+    $db = get_db();
+    if (!$db || $userId <= 0) {
+        return [];
+    }
+
+    try {
+        $stmt = $db->prepare("
+            SELECT id, photo_type, file_url, replaced_at, scheduled_delete_at, deleted_at, status,
+                   GREATEST(0, CEIL(TIMESTAMPDIFF(SECOND, NOW(), scheduled_delete_at) / 86400)) AS days_remaining
+            FROM archived_user_photos
+            WHERE user_id = ?
+            ORDER BY replaced_at DESC
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Throwable $e) {
+        return [];
+    }
 }
 
 /**

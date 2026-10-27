@@ -350,6 +350,10 @@ $flashStyles = [
                                 <span id="file-chosen-name" class="text-sm text-[#667085] font-medium italic">No new
                                     file selected</span>
                             </div>
+                            <p class="text-xs text-[#667085] flex items-center gap-1.5 pt-0.5">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#123B7A] flex-shrink-0"></i>
+                                <span><strong>30-Day Auto Retention:</strong> When you replace your photo, your old photo is safely archived and permanently deleted after 30 days.</span>
+                            </p>
                             <div class="pt-1">
                                 <details class="text-sm text-[#667085] cursor-pointer">
                                     <summary class="hover:text-[#123B7A] font-medium select-none">Or paste an image web

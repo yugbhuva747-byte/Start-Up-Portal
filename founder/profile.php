@@ -46,7 +46,7 @@ if ($db) {
                     if (!empty($avatarRes['success'])) {
                         $db->prepare("UPDATE users SET avatar_url = ? WHERE id = ?")->execute([$avatarRes['url'], $user['id']]);
                         log_audit($user['id'], 'UPDATE_AVATAR', 'users', $user['id'], 'Founder updated avatar photo');
-                        set_flash('success', 'Profile photo updated successfully!');
+                        set_flash('success', 'Profile photo updated successfully! Previous photo is stored in retention archive and will be removed after 30 days.');
                     } else {
                         set_flash('error', $avatarRes['error'] ?? 'Failed to upload avatar photo.');
                     }

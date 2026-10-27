@@ -84,10 +84,16 @@ if ($db) {
     $existingInterest = $iStmt->fetch();
 }
 
-// Handle Angel Investment / Express Interest Submission
+// Handle Angel Investment / Express Interest Submission (Investors Only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'express_angel_interest') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
         set_flash('error', 'Invalid security token.');
+        header('Location: ' . url('founder/company_view.php?id=' . encode_id($companyId)));
+        exit;
+    }
+
+    if (($currentUser['role'] ?? '') !== 'investor') {
+        set_flash('error', 'Only verified investors can submit investment interests.');
         header('Location: ' . url('founder/company_view.php?id=' . encode_id($companyId)));
         exit;
     }
@@ -319,7 +325,7 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                             </div>
                         </div>
 
-                        <!-- Right Actions: Angel Co-Invest & Message -->
+                        <!-- Right Actions: Investor CTA & Message -->
                         <div class="lg:w-80 flex flex-col justify-between gap-3 flex-shrink-0">
                             <?php if (!$isMyCompany): ?>
                                 <?php if (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])): ?>
@@ -330,11 +336,13 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                                     </a>
                                 <?php endif; ?>
 
-                                <button type="button" onclick="openAngelInvestModal()"
-                                        class="w-full py-3 px-5 rounded-2xl <?= (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])) ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700' : 'bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white shadow-lg shadow-indigo-600/25' ?> font-extrabold text-xs sm:text-sm transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                    <i data-lucide="badge-dollar-sign" class="w-4.5 h-4.5 text-amber-400"></i>
-                                    <span><?= $existingInterest ? 'Update Investment Interest' : 'Express Direct / Angel Interest' ?></span>
-                                </button>
+                                <?php if (($currentUser['role'] ?? '') === 'investor'): ?>
+                                    <button type="button" onclick="openAngelInvestModal()"
+                                            class="w-full py-3 px-5 rounded-2xl <?= (!empty($activeRound['id'])) ? 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700' : 'bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white shadow-lg shadow-indigo-600/25' ?> font-extrabold text-xs sm:text-sm transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                        <i data-lucide="badge-dollar-sign" class="w-4.5 h-4.5 text-amber-400"></i>
+                                        <span><?= $existingInterest ? 'Update Investment Interest' : 'Express Direct / Angel Interest' ?></span>
+                                    </button>
+                                <?php endif; ?>
                                 
                                 <?php 
                                 $firstFounderHash = !empty($founders[0]['id']) ? hash_id_encode($founders[0]['id']) : '';
@@ -361,7 +369,7 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                                 </div>
                             <?php endif; ?>
 
-                            <?php if ($existingInterest): ?>
+                            <?php if ($existingInterest && ($currentUser['role'] ?? '') === 'investor'): ?>
                                 <div class="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300 flex items-center gap-2 font-medium">
                                     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600 flex-shrink-0"></i>
                                     <span>You submitted investment interest on <?= date('M d, Y', strtotime($existingInterest['created_at'])) ?> (Status: <strong><?= ucfirst($existingInterest['status']) ?></strong>)</span>
@@ -385,8 +393,8 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                                     Min Angel Ticket: <strong>₹<?= number_format($activeRound['min_ticket_size'] ?? 50000) ?></strong>
                                 </p>
                             </div>
-                            <?php if (!$isMyCompany): ?>
-                                <?php if (($currentUser['role'] ?? '') === 'investor' && !empty($activeRound['id'])): ?>
+                            <?php if (!$isMyCompany && ($currentUser['role'] ?? '') === 'investor'): ?>
+                                <?php if (!empty($activeRound['id'])): ?>
                                     <a href="<?= url('investor/invest.php?round=' . hash_id_encode($activeRound['id'])) ?>" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition shadow-sm active:scale-95 flex-shrink-0 inline-flex items-center gap-1.5">
                                         <i data-lucide="zap" class="w-3.5 h-3.5"></i>
                                         <span>Participate in Round</span>
@@ -558,28 +566,47 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
                         </div>
                     </div>
 
-                    <!-- Angel Synergy Card -->
-                    <div class="rounded-3xl p-6 bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-md space-y-3 relative overflow-hidden">
-                        <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-amber-300">
-                            <i data-lucide="handshake" class="w-5 h-5"></i>
+                    <!-- Synergy / Collaboration Card -->
+                    <?php if (($currentUser['role'] ?? '') === 'investor'): ?>
+                        <div class="rounded-3xl p-6 bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-md space-y-3 relative overflow-hidden">
+                            <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-amber-300">
+                                <i data-lucide="handshake" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-white">Angel & Syndicate Deal Room</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Review confidential diligence docs, traction metrics, and submit strategic direct co-investment tickets.
+                            </p>
+                            <?php if (!$isMyCompany): ?>
+                                <button type="button" onclick="openAngelInvestModal()" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-sm active:scale-95">
+                                    Express Angel Interest
+                                </button>
+                            <?php endif; ?>
                         </div>
-                        <h3 class="text-base font-bold text-white">Founder-to-Founder Angel Syndicate</h3>
-                        <p class="text-xs text-slate-300 leading-relaxed">
-                            Peer founders make the best angels! Back fellow founders with micro-tickets, advice, or distribution power.
-                        </p>
-                        <?php if (!$isMyCompany): ?>
-                            <button type="button" onclick="openAngelInvestModal()" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-sm active:scale-95">
-                                Express Angel Interest
-                            </button>
-                        <?php endif; ?>
-                    </div>
+                    <?php else: ?>
+                        <div class="rounded-3xl p-6 bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-md space-y-3 relative overflow-hidden">
+                            <div class="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center text-indigo-300">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-white">Peer Founder Collaboration</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Connect with peer founders, exchange startup insights, and explore distribution or technical partnerships.
+                            </p>
+                            <?php if (!$isMyCompany): ?>
+                                <a href="<?= $teamMsgUrl ?>" class="w-full py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/20 font-extrabold text-xs uppercase tracking-wider transition cursor-pointer shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
+                                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+                                    <span>Connect with Founders</span>
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </main>
     </div>
 
+    <?php if (($currentUser['role'] ?? '') === 'investor'): ?>
     <!-- ======================================================== -->
-    <!-- ANGEL INVEST / EXPRESS INTEREST MODAL -->
+    <!-- ANGEL INVEST / EXPRESS INTEREST MODAL (Investors Only) -->
     <!-- ======================================================== -->
     <div id="angel-invest-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-7 space-y-5 animate-in fade-in zoom-in-95 duration-200">
@@ -645,6 +672,7 @@ $compInitials = strtoupper(substr($company['name'] ?? 'ST', 0, 2));
             </form>
         </div>
     </div>
+    <?php endif; ?>
 
     <script>
         function openAngelInvestModal() {

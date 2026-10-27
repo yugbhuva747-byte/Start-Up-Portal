@@ -415,7 +415,10 @@ $publicCompanyUrl = $company ? url('company.php?id=' . hash_id_encode($company['
                                 <span id="file-chosen-name" class="text-xs text-slate-500 italic">No file chosen</span>
                             </div>
 
-                            <!-- Single, Clean Web Link Toggle -->
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 pt-0.5">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0"></i>
+                                <span><strong>30-Day Auto Retention:</strong> When you replace your photo, your old photo is safely archived and permanently deleted after 30 days.</span>
+                            </p>
                             <details class="text-xs text-slate-500 dark:text-slate-400 pt-1 cursor-pointer">
                                 <summary class="hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold select-none flex items-center gap-1.5">
                                     <i data-lucide="link" class="w-3.5 h-3.5"></i>
