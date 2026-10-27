@@ -202,10 +202,10 @@ if ($user) {
         </div>
 
         <div class="flex items-center space-x-2.5">
-            <button onclick="navigator.clipboard.writeText('<?= $verificationUrl ?>'); alert('Verification link copied to clipboard!');" 
+            <button type="button" id="btnCopyVerify" onclick="copyVerifyLink(this, '<?= $verificationUrl ?>')" 
                     class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700">
                 <i data-lucide="link-2" class="w-3.5 h-3.5"></i>
-                <span>Copy Verify Link</span>
+                <span id="btnCopyVerifyText">Copy Verify Link</span>
             </button>
             <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition flex items-center space-x-1.5 border border-slate-700">
                 <i data-lucide="printer" class="w-3.5 h-3.5"></i>
@@ -398,6 +398,23 @@ if ($user) {
 
     <script>
         lucide.createIcons();
+
+        function copyVerifyLink(btn, url) {
+            navigator.clipboard.writeText(url).then(() => {
+                const span = document.getElementById('btnCopyVerifyText');
+                const orig = span.innerText;
+                span.innerText = 'Copied to Clipboard!';
+                btn.classList.add('bg-emerald-600', 'text-white', 'border-emerald-500');
+                btn.classList.remove('bg-slate-800', 'text-slate-300');
+                setTimeout(() => {
+                    span.innerText = orig;
+                    btn.classList.remove('bg-emerald-600', 'text-white', 'border-emerald-500');
+                    btn.classList.add('bg-slate-800', 'text-slate-300');
+                }, 2000);
+            }).catch(() => {
+                prompt('Copy this link:', url);
+            });
+        }
 
         function downloadPDF() {
             const btn = document.getElementById('btnDownloadPDF');

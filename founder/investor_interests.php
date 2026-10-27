@@ -467,6 +467,22 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
             }
         }
 
+        function showInterestToast(msg, type = 'error') {
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+            toast.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-bold border transition-all duration-300 transform translate-y-4 opacity-0 ${isError ? 'bg-rose-900 text-rose-100 border-rose-700' : 'bg-emerald-900 text-emerald-100 border-emerald-700'}`;
+            toast.innerHTML = `<i data-lucide="${isError ? 'alert-circle' : 'check-circle'}" class="w-4 h-4 shrink-0"></i><span>${msg}</span>`;
+            document.body.appendChild(toast);
+            lucide.createIcons();
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 350);
+            }, 4000);
+        }
+
         async function acceptInterest(id, btn) {
             if (!confirm('Accept this expression of interest and open direct communications with the investor?')) {
                 return;
@@ -493,17 +509,18 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                     btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                     btn.classList.add('bg-emerald-800');
                     btn.innerHTML = '<span class="inline-flex items-center gap-1"><svg class="w-3.5 h-3.5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> Connected!</span>';
+                    showInterestToast('Interest accepted! Opening message thread...', 'success');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
                 } else {
-                    alert(res.error || 'Failed to accept interest.');
+                    showInterestToast(res.error || 'Failed to accept interest.', 'error');
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
                     lucide.createIcons();
                 }
             } catch (err) {
-                alert('Network error. Please try again.');
+                showInterestToast('Network connection error. Please try again.', 'error');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
                 lucide.createIcons();
@@ -535,13 +552,13 @@ if (!in_array($activeFilter, ['all', 'pending', 'accepted', 'declined'])) {
                     closeDeclineModal();
                     window.location.reload();
                 } else {
-                    alert(res.error || 'Failed to decline interest.');
+                    showInterestToast(res.error || 'Failed to decline interest.', 'error');
                     btn.disabled = false;
                     btn.innerHTML = originalHtml;
                     lucide.createIcons();
                 }
             } catch (err) {
-                alert('Network error. Please try again.');
+                showInterestToast('Network connection error. Please try again.', 'error');
                 btn.disabled = false;
                 btn.innerHTML = originalHtml;
                 lucide.createIcons();

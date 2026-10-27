@@ -832,7 +832,7 @@ $hasActiveFilters = !empty($search) || (!empty($roleFilter) && $roleFilter !== '
 
         function exportAuditCSV() {
             if (!auditLogsData || auditLogsData.length === 0) {
-                alert("No audit logs available to export.");
+                showToast("No audit logs available to export.");
                 return;
             }
 

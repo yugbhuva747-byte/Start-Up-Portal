@@ -263,37 +263,37 @@ if ($db) {
                             Connect with angels who co-invest in specific startup categories:
                         </p>
 
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                        <a href="<?= url('investor/discover.php?q=' . urlencode('AI')) ?>" class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 border border-slate-200 hover:border-blue-300 dark:border-slate-700/60 dark:hover:border-blue-500/50 flex items-center justify-between transition group">
                             <div>
-                                <div class="text-xs font-bold text-slate-900 dark:text-white">AI &amp; Autonomous Agents</div>
-                                <div class="text-[10px] text-slate-400">142 Active Investors</div>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#123B7A] dark:group-hover:text-blue-400 transition">AI &amp; Autonomous Agents</div>
+                                <div class="text-[10px] text-slate-400">142 Active Investors &bull; Explore Deals &rarr;</div>
                             </div>
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" title="Active deals right now"></span>
-                        </div>
+                        </a>
 
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                        <a href="<?= url('investor/discover.php?q=' . urlencode('FinTech')) ?>" class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 border border-slate-200 hover:border-blue-300 dark:border-slate-700/60 dark:hover:border-blue-500/50 flex items-center justify-between transition group">
                             <div>
-                                <div class="text-xs font-bold text-slate-900 dark:text-white">FinTech &amp; Wealth Infra</div>
-                                <div class="text-[10px] text-slate-400">98 Active Investors</div>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#123B7A] dark:group-hover:text-blue-400 transition">FinTech &amp; Wealth Infra</div>
+                                <div class="text-[10px] text-slate-400">98 Active Investors &bull; Explore Deals &rarr;</div>
                             </div>
                             <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                        </div>
+                        </a>
 
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                        <a href="<?= url('investor/discover.php?q=' . urlencode('CleanTech')) ?>" class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 border border-slate-200 hover:border-blue-300 dark:border-slate-700/60 dark:hover:border-blue-500/50 flex items-center justify-between transition group">
                             <div>
-                                <div class="text-xs font-bold text-slate-900 dark:text-white">CleanTech &amp; Green Energy</div>
-                                <div class="text-[10px] text-slate-400">76 Active Investors</div>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#123B7A] dark:group-hover:text-blue-400 transition">CleanTech &amp; Green Energy</div>
+                                <div class="text-[10px] text-slate-400">76 Active Investors &bull; Explore Deals &rarr;</div>
                             </div>
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                        </div>
+                        </a>
 
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 flex items-center justify-between">
+                        <a href="<?= url('investor/discover.php?q=' . urlencode('SaaS')) ?>" class="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 border border-slate-200 hover:border-blue-300 dark:border-slate-700/60 dark:hover:border-blue-500/50 flex items-center justify-between transition group">
                             <div>
-                                <div class="text-xs font-bold text-slate-900 dark:text-white">Enterprise SaaS &amp; Cloud</div>
-                                <div class="text-[10px] text-slate-400">114 Active Investors</div>
+                                <div class="text-xs font-bold text-slate-900 dark:text-white group-hover:text-[#123B7A] dark:group-hover:text-blue-400 transition">Enterprise SaaS &amp; Cloud</div>
+                                <div class="text-[10px] text-slate-400">114 Active Investors &bull; Explore Deals &rarr;</div>
                             </div>
                             <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
-                        </div>
+                        </a>
 
                         <div class="pt-2 text-center border-t border-slate-100 dark:border-slate-800">
                             <span class="text-[11px] text-slate-400 flex items-center justify-center gap-1">

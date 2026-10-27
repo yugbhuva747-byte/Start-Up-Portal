@@ -39,6 +39,7 @@ $flash = get_flash();
 // Determine Role: ALWAYS Unified Single Login (User never has to choose who they are)
 // Backend automatically identifies whether the user is a Founder or Investor from MySQL database
 $role = (isset($_GET['role']) && $_GET['role'] === 'admin') ? 'admin' : 'unified';
+$returnUrl = trim($_POST['return_url'] ?? ($_GET['return_url'] ?? ($_GET['redirect'] ?? '')));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf($_POST['csrf_token'] ?? '')) {
@@ -131,6 +132,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $_SESSION['session_token'] = $sessionToken;
                             $ua = substr($_SERVER['HTTP_USER_AGENT'] ?? 'Unknown', 0, 255);
                             $db->prepare("INSERT INTO login_sessions (user_id, session_token, ip_address, user_agent, created_at, last_active_at) VALUES (?, ?, ?, ?, NOW(), NOW())")->execute([$user['id'], $sessionToken, $clientIp, $ua]);
+
+                            if (!empty($returnUrl) && !str_starts_with($returnUrl, 'http://') && !str_starts_with($returnUrl, 'https://') && !str_starts_with($returnUrl, '//')) {
+                                header('Location: ' . url(ltrim($returnUrl, '/')));
+                                exit;
+                            }
 
                             $redirect = match($user['role']) {
                                 'founder' => 'founder/dashboard.php',
@@ -643,6 +649,7 @@ $cur = $roleMeta[$role] ?? $roleMeta['unified'];
                     <!-- Sign In Form -->
                     <form action="<?= url('auth/login.php') ?>" method="POST" class="space-y-4" id="loginForm">
                         <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                        <input type="hidden" name="return_url" value="<?= htmlspecialchars($returnUrl) ?>">
                         <?= security_honeypot_field() ?>
 
                         <!-- Email Field -->

@@ -374,7 +374,7 @@ foreach ($documents as $doc) {
                             </button>
                         <?php endif; ?>
                     <?php elseif (!$currentUser): ?>
-                        <a href="<?= url('login.php?redirect=' . urlencode('company.php?id=' . $compHash)) ?>" class="w-full justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 flex items-center gap-2 transition">
+                        <a href="<?= url('auth/login.php?return_url=' . urlencode('company.php?id=' . $compHash)) ?>" class="w-full justify-center px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-sm shadow-md shadow-emerald-500/25 flex items-center gap-2 transition">
                             <svg class="w-4 h-4 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                             </svg>

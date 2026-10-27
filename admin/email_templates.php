@@ -717,18 +717,42 @@ elseif ($activeTemplate === 'round_approved') $currentPreviewHtml = $roundApprov
 
         function copyPreviewHtml() {
             const raw = document.getElementById('hiddenRawHtml').value;
-            navigator.clipboard.writeText(raw).then(() => {
-                const btn = document.getElementById('btn-copy-html');
-                const originalHtml = btn.innerHTML;
+            const btn = document.getElementById('btn-copy-html');
+            const originalHtml = btn.innerHTML;
+
+            const indicateSuccess = () => {
                 btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 inline mr-1"></i> <span class="text-emerald-600 font-bold">Copied!</span>';
                 lucide.createIcons();
                 setTimeout(() => {
                     btn.innerHTML = originalHtml;
                     lucide.createIcons();
                 }, 2000);
-            }).catch(err => {
-                alert('Could not copy HTML automatically.');
-            });
+            };
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(raw).then(indicateSuccess).catch(() => {
+                    fallbackCopy(raw, indicateSuccess);
+                });
+            } else {
+                fallbackCopy(raw, indicateSuccess);
+            }
+        }
+
+        function fallbackCopy(text, onSuccess) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            try {
+                document.execCommand('copy');
+                if (typeof onSuccess === 'function') onSuccess();
+            } catch (e) {
+                // Silently ignore or select
+            }
+            document.body.removeChild(ta);
         }
 
         function viewLoggedEmail(htmlContent, subject, recipient) {
